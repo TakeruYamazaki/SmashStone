@@ -171,6 +171,7 @@
     <ClCompile Include="source\meshSphere.cpp" />
     <ClCompile Include="source\motionModel.cpp" />
     <ClCompile Include="source\number.cpp" />
+    <ClCompile Include="source\object.cpp" />
     <ClCompile Include="source\pause.cpp" />
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\ranking.cpp" />
@@ -199,6 +200,8 @@
     <ClInclude Include="source\meshSphere.h" />
     <ClInclude Include="source\motionModel.h" />
     <ClInclude Include="source\number.h" />
+    <ClInclude Include="source\object.h" />
+    <ClInclude Include="source\objManager.h" />
     <ClInclude Include="source\pause.h" />
     <ClInclude Include="source\player.h" />
     <ClInclude Include="source\ranking.h" />
