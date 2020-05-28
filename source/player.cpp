@@ -63,12 +63,7 @@ CPlayer::~CPlayer()
 //==================================================================================================================
 void CPlayer::Init(void)
 {
-	m_pos = D3DXVECTOR3(0.0f, WhileY, 0.0f);				// 位置
-	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// 前回の位置
-	m_rot = D3DXVECTOR3(0.0f, D3DX_PI, 0.0f);				// 回転
-	m_difference = D3DXVECTOR3(0.0f, D3DX_PI, 0.0f);		// 回転の目標地点
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 移動量
-	m_size = D3DXVECTOR3(1.0f, 1.0f, 1.0f);					// 大きさ
+	CCharacter::Init();
 
 	//モーションの初期化
 	for (int nCntMotion = 0; nCntMotion < PLAYER_MOTION_MAX; nCntMotion++)
@@ -143,6 +138,8 @@ void CPlayer::Uninit(void)
 		// ポインタ用NULL
 		m_MotionModel[nCnt] = nullptr;
 	}
+
+	CCharacter::Uninit();
 }
 
 //==================================================================================================================
@@ -150,7 +147,7 @@ void CPlayer::Uninit(void)
 //==================================================================================================================
 void CPlayer::Update(void)
 {
-	m_pos = GetPos();			// 位置取得
+	/*m_pos = GetPos();			// 位置取得
 	m_rot = GetRot();			// 回転取得
 	m_size = GetSize();			// 大きさ取得
 
@@ -162,7 +159,9 @@ void CPlayer::Update(void)
 
 	SetPos(m_pos);				// 位置設定
 	SetRot(m_rot);				// 回転設定
-	SetSize(m_size);			// 大きさ設定
+	SetSize(m_size);			// 大きさ設定*/
+
+	CCharacter::Update();
 
 #ifdef _DEBUG
 	// デバッグ表示
@@ -177,25 +176,7 @@ void CPlayer::Update(void)
 //==================================================================================================================
 void CPlayer::Draw(void)
 {
-	D3DXMATRIX mtxRot, mtxTrans, mtxScale;			// 計算用格納変数
-
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
-
-	// スケールを反映
-	D3DXMatrixScaling(&mtxScale, m_size.x, m_size.y, m_size.z);
-	// 2つの行列の積
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
-
-	// 回転を反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	// 2つの行列の積
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-
-	// 移動を反映
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
-	// 2つの行列の積
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+	CCharacter::Draw();
 
 	// モデルの描画
 	for (int nCnt = 0; nCnt < PLAYER_MAX_MODEL; nCnt++)

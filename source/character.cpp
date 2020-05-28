@@ -74,12 +74,6 @@ void CCharacter::Init(void)
 	m_size = D3DXVECTOR3(1.0f, 1.0f, 1.0f);					// 大きさ
 	m_bJump = false;										// ジャンプしたかどうか
 	m_bWalk = false;										// 歩いているかどうか
-
-	// キャラクターの種類がペンギンンとき
-	if (m_Type == CHARACTER_PENGUIN)
-	{
-		m_pPenguin = CPlayer::Create();
-	}
 }
 
 //==================================================================================================================
@@ -101,9 +95,9 @@ void CCharacter::Update(void)
 	// コントローラー取得
 	CInputGamepad *pInputGamepad = CManager::GetInputGamepad();
 
-	m_pos = GetPos();					// 位置取得
-	m_rot = GetRot();					// 回転取得
-	m_size = GetSize();					// 大きさ取得
+	//m_pos = GetPos();					// 位置取得
+	//m_rot = GetRot();					// 回転取得
+	//m_size = GetSize();					// 大きさ取得
 	m_posOld = m_pos;					// 今の位置を前回の位置にする
 
 	// ジャンプスピードが規定値を超えたら
@@ -166,9 +160,9 @@ void CCharacter::Update(void)
 		OperationMove(pInputKeyboard, pInputGamepad);
 	}
 
-	SetPos(m_pos);			// 位置設定
-	SetRot(m_rot);			// 回転設定
-	SetSize(m_size);		// 大きさ設定
+	//SetPos(m_pos);			// 位置設定
+	//SetRot(m_rot);			// 回転設定
+	//SetSize(m_size);		// 大きさ設定
 
 #ifdef _DEBUG
 	// デバッグ表示
@@ -202,21 +196,6 @@ void CCharacter::Draw(void)
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	// 2つの行列の積
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-}
-
-//==================================================================================================================
-// 生成処理
-//==================================================================================================================
-CCharacter *CCharacter::Create(CCharacter::CHARACTER type)
-{
-	// シーン動的に確保
-	m_pCharacter[m_nNumAll][type] = new CCharacter(CScene::PRIORITY_PLAYER);
-
-	m_pCharacter[m_nNumAll][type]->m_Type = type;	// キャラクターの種類
-	m_pCharacter[m_nNumAll][type]->Init();			// キャラクターの初期化
-
-	// 値を返す
-	return m_pCharacter[m_nNumAll][type];
 }
 
 //==================================================================================================================

@@ -22,7 +22,7 @@
 #include "pause.h"
 #include "inputGamepad.h"
 #include "meshSphere.h"
-#include "character.h"
+#include "player.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -34,7 +34,7 @@
 //==================================================================================================================
 //	静的メンバ変数宣言
 //==================================================================================================================
-CCharacter *CGame::m_pCharacter = NULL;								// キャラクター情報
+CPlayer *CGame::m_pPlayer = NULL;								// キャラクター情報
 CMeshField *CGame::m_pMeshField = NULL;								// メッシュフィールド情報
 CCamera *CGame::m_pCamera = NULL;									// カメラ情報
 CLight *CGame::m_pLight = NULL;										// ライト情報
@@ -81,11 +81,11 @@ void CGame::Init(void)
 	m_pMeshSphere = CMeshSphere::Create();
 
 	// キャラクター生成処理
-	m_pCharacter = CCharacter::Create(CCharacter::CHARACTER_PENGUIN);
+	m_pPlayer = CPlayer::Create();
 	// 位置設定
-	m_pCharacter->SetPos(D3DXVECTOR3(0, WhileY, 0));
+	m_pPlayer->SetPos(D3DXVECTOR3(0, WhileY, 0));
 	// 回転設定
-	m_pCharacter->SetRot(D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0f));
+	m_pPlayer->SetRot(D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0f));
 
 	// メッシュフィールド生成
 	m_pMeshField = CMeshField::Create();
@@ -250,12 +250,4 @@ void CGame::SetGameState(GAMESTATE state)
 CGame::GAMESTATE CGame::GetGameState(void)
 {
 	return m_gameState;
-}
-
-//==================================================================================================================
-//	プレイヤー情報取得
-//==================================================================================================================
-CCharacter * CGame::GetCharacter(void)
-{
-	return m_pCharacter;
 }

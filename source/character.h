@@ -52,8 +52,6 @@ public:
 	void Update(void);								// 更新処理
 	void Draw(void);								// 描画処理
 
-	static CCharacter *Create(CHARACTER type);		// 生成処理
-
 	void SetPos(D3DXVECTOR3 pos);					// 位置設定処理
 	void SetRot(D3DXVECTOR3 rot);					// 回転設定処理
 	void SetSize(D3DXVECTOR3 size);					// 大きさ設定処理
@@ -63,26 +61,25 @@ public:
 	D3DXVECTOR3 GetSize(void) { return m_size; }	// 大きさ取得処理
 
 protected:
+	D3DXVECTOR3 m_pos;			// 位置
+	D3DXVECTOR3 m_posOld;		// 前回の位置
+	D3DXVECTOR3 m_rot;			// 回転
+	D3DXVECTOR3 m_difference;	// 回転の目標地点
+	D3DXVECTOR3 m_move;			// 移動
+	D3DXVECTOR3 m_size;			// 大きさ
+	D3DXMATRIX  m_mtxWorld;							// マトリックス
 
 private:
 
 	void OperationMove(CInputKeyboard *pInputKeyboard,
 		CInputGamepad *pInputGamepad);				// 操作処理
 
-	D3DXMATRIX  m_mtxWorld;							// マトリックス
 	CHARACTER m_Type;								// キャラクターの種類
 
 	static CCharacter *m_pCharacter[MAX_CHARA][CHARACTER_MAX];	// キャラクターの情報ポインタ
 	static CCamera *m_pCamera;									// カメラの情報ポインタ
 	static CPlayer *m_pPenguin;									// ペンギンの情報ポインタ
 	static int m_nNumAll;										// プレイヤーの人数
-
-	D3DXVECTOR3 m_pos;			// 位置
-	D3DXVECTOR3 m_posOld;		// 前回の位置
-	D3DXVECTOR3 m_rot;			// 回転
-	D3DXVECTOR3 m_move;			// 移動
-	D3DXVECTOR3 m_size;			// 大きさ
-	D3DXVECTOR3 m_difference;	// 回転の目標地点
 
 	bool m_bJump;				// ジャンプしたかどうか
 	bool m_bWalk;				// 歩いてるかどうか

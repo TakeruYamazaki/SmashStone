@@ -109,16 +109,9 @@ private:
 
 	CMotionModel *m_MotionModel[PLAYER_MAX_MODEL];	// モデル情報
 	MOTION_PLAYER m_PlayerMotion[PLAYER_MOTION_MAX];// モーション情報
-	D3DXMATRIX  m_mtxWorld;							// マトリックス
 
 	static CCamera *m_pCamera;				// カメラの情報ポインタ
 
-	D3DXVECTOR3 m_pos;						// 位置
-	D3DXVECTOR3 m_posOld;					// 前回の位置
-	D3DXVECTOR3 m_rot;						// 回転
-	D3DXVECTOR3 m_move;						// 移動
-	D3DXVECTOR3 m_size;						// 大きさ
-	D3DXVECTOR3 m_difference;				// 回転の目標地点
 	D3DXVECTOR3 posBET[PLAYER_MAX_MODEL];	// 各パーツの位置
 	D3DXVECTOR3 rotBET[PLAYER_MAX_MODEL];	// 各パーツの回転
 
