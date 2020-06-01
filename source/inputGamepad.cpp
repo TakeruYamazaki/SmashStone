@@ -1,433 +1,210 @@
-//==================================================================================================================
+// ===================================================================
 //
-// ゲームパッド処理 [inputGamepad.cpp]
-// Author : Seiya Takahashi
+// XInputゲームパッド処理 [ inputGamepad.cpp ]
+// Author : KANAN NAGANAWA
 //
-//==================================================================================================================
-
-//==================================================================================================================
-//インクルード
-//==================================================================================================================
+// ===================================================================
 #include "inputGamepad.h"
+#include "manager.h"
+#include "debugProc.h"
 
-//==================================================================================================================
+// ===================================================================
 // 静的メンバ変数の初期化
-//==================================================================================================================
-int CInputGamepad::m_nCntPad = 0;
-LPDIRECTINPUTDEVICE8 CInputGamepad::m_apDIDevGamepad[NUM_JOYPAD_MAX] = {};
+// ===================================================================
+bool CInputGamepad::m_bAllVib = false;	// 振動設定
 
-//==================================================================================================================
+// ===================================================================
 // コンストラクタ
-//==================================================================================================================
+// ===================================================================
 CInputGamepad::CInputGamepad()
 {
-	m_nCntPad = 0;
 
-	//DEffectの開放
-	m_pDIEffect = NULL;
-
-	// ジョイパッドの終了処理
-	for (int nCntPad = 0; nCntPad < NUM_JOYPAD_MAX; nCntPad++)
-	{
-		m_apDIDevGamepad[nCntPad] = NULL;
-	}
 }
 
-//==================================================================================================================
+// ===================================================================
 // デストラクタ
-//==================================================================================================================
+// ===================================================================
 CInputGamepad::~CInputGamepad()
 {
 
 }
 
-//==================================================================================================================
-// 初期化処理
-//==================================================================================================================
+// ===================================================================
+// 初期化
+// ===================================================================
 HRESULT CInputGamepad::Init(HINSTANCE hInstance, HWND hWnd)
 {
-	HRESULT hr;
-
-	if (FAILED(CInput::Init(hInstance, hWnd)))
-	{
-		MessageBox(hWnd, "InputInit失敗", "警告", MB_ICONWARNING);
-		return E_FAIL;
-	}
-
-
-	for (m_nCntPad = 0; m_nCntPad < NUM_JOYPAD_MAX; m_nCntPad++)
-	{
-		//ジョイパッドを探す
-		hr = m_pInput->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoyCallbackGamepad, NULL, DIEDFL_FORCEFEEDBACK | DIEDFL_ATTACHEDONLY);
-		if (FAILED(hr) || m_apDIDevGamepad[m_nCntPad] == NULL)
-		{
-			//MessageBox(hWnd, "ジョイパッドがありません", "警告", MB_ICONWARNING);
-			return hr;
-		}
-
-		// データフォーマットを設定
-		hr = m_apDIDevGamepad[m_nCntPad]->SetDataFormat(&c_dfDIJoystick);
-		if (FAILED(hr))
-		{
-
-			MessageBox(hWnd, "ジョイパッドのデータフォーマットを設定できませんでした。", "警告", MB_ICONWARNING);
-			return hr;
-		}
-
-		// 協調モードを設定（フォアグラウンド＆排他モード）
-		hr = m_apDIDevGamepad[m_nCntPad]->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
-		if (FAILED(hr))
-		{
-			MessageBox(hWnd, "ジョイパッドの協調モードを設定できませんでした。", "警告", MB_ICONWARNING);
-			return hr;
-		}
-
-		hr = m_apDIDevGamepad[m_nCntPad]->EnumObjects(EnumAxesCallbackGamepad, (VOID*)&m_dwNumForceFeedbackAxis, DIDFT_AXIS);
-		if (FAILED(hr))
-		{
-			MessageBox(hWnd, "ジョイパッドが見つかりませんでした", "警告", MB_ICONWARNING);
-			return hr;
-		}
-
-		if (m_dwNumForceFeedbackAxis > 2)
-		{
-			m_dwNumForceFeedbackAxis = 2;
-		}
-
-		//エフェクトの生成
-		hr = CreateEffect(hWnd);
-		if (FAILED(hr))
-		{
-			MessageBox(hWnd, "エフェクトが生成できませんでした", "警告", MB_ICONWARNING);
-			return hr;
-		}
-	}
-	return TRUE;
+	m_bVibration = false;
+	return S_OK;
 }
 
-//==================================================================================================================
-// 終了処理
-//==================================================================================================================
+// ===================================================================
+// 終了
+// ===================================================================
 void CInputGamepad::Uninit(void)
 {
-	//DEffectの開放
-	if (m_pDIEffect != NULL)
-	{
-		m_pDIEffect->Release();
-		m_pDIEffect = NULL;
-	}
-
-	// ジョイパッドの終了処理
-	for (int nCntPad = 0; nCntPad < NUM_JOYPAD_MAX; nCntPad++)
-	{
-		if (m_apDIDevGamepad[nCntPad] != NULL)
-		{// デバイスオブジェクトの開放
-			m_apDIDevGamepad[nCntPad]->Release();
-			m_apDIDevGamepad[nCntPad] = NULL;
-		}
-	}
-	CInput::Uninit();
+	// 使用しない
+	// falseにすることで [ボタン押下無し・スティック軸中央・トリガー0・バイブレーション停止] を送信する
+	XInputEnable(false);
 }
 
-//==================================================================================================================
-// 更新処理
-//==================================================================================================================
+// ===================================================================
+// 更新
+// ===================================================================
 void CInputGamepad::Update(void)
 {
-	HRESULT hr;
-	bool aKeyStateOld[JOYPADKEY_MAX];
+	// 前回の情報の保存
+	m_stateOld = m_state;
 
-	// パッドの最大数までカウント
-	for (int nCntPad = 0; nCntPad < NUM_JOYPAD_MAX; nCntPad++)
+	// 接続の確認
+	UpdateControlState();
+
+	// 左スティックの値がデッドゾーン(微量な値)内
+	if ((m_state.Gamepad.sThumbLX <  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+		m_state.Gamepad.sThumbLX > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) &&
+		(m_state.Gamepad.sThumbLY <  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+		m_state.Gamepad.sThumbLY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
 	{
-		if (m_apDIDevGamepad[nCntPad] == NULL)
-		{
-			return;
-		}
-		// 前回のデータを保存
-		for (int nCntKey = 0; nCntKey < JOYPADKEY_MAX; nCntKey++)
-		{
-			aKeyStateOld[nCntKey] = m_aKeyStateGamepad[nCntPad][nCntKey];
-		}
-
-		// デバイスからデータを取得
-		hr = m_apDIDevGamepad[nCntPad]->GetDeviceState(sizeof(m_aGamepadState[nCntPad]), &m_aGamepadState[nCntPad]);
-		if (SUCCEEDED(hr))
-		{
-			// キー情報設定
-			SetKeyStateGamepad(nCntPad);
-
-			// キーの最大数までカウント
-			for (int nCntKey = 0; nCntKey < JOYPADKEY_MAX; nCntKey++)
-			{
-				// トリガー・リリース情報の作成
-				m_aKeyStateTriggerGamepad[nCntPad][nCntKey] = (aKeyStateOld[nCntKey] ^ m_aKeyStateGamepad[nCntPad][nCntKey]) & m_aKeyStateGamepad[nCntPad][nCntKey];
-				m_aKeyStateReleaseGamepad[nCntPad][nCntKey] = (aKeyStateOld[nCntKey] ^ m_aKeyStateGamepad[nCntPad][nCntKey]) & !m_aKeyStateGamepad[nCntPad][nCntKey];
-			}
-		}
-		else
-		{
-			m_apDIDevGamepad[nCntPad]->Acquire();
-		}
+		// 0に正す
+		m_state.Gamepad.sThumbLX = 0;
+		m_state.Gamepad.sThumbLY = 0;
 	}
+
+	// 右スティックの値がデッドゾーン(微量な値)内
+	if ((m_state.Gamepad.sThumbRX <  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
+		m_state.Gamepad.sThumbRX > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) &&
+		(m_state.Gamepad.sThumbRY <  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
+		m_state.Gamepad.sThumbRY > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE))
+	{
+		// 0に正す
+		m_state.Gamepad.sThumbRX = 0;
+		m_state.Gamepad.sThumbRY = 0;
+	}
+
+	// バイブレーションの更新
+	UpdateVibration();
 }
 
-//==================================================================================================================
-// ジョイスティック問い合わせ用コールバック関数
-//==================================================================================================================
-BOOL CInputGamepad::EnumJoyCallbackGamepad(const DIDEVICEINSTANCE * lpddi, VOID * pvRef)
+// ===================================================================
+// 接続されているか確認
+// ===================================================================
+HRESULT CInputGamepad::UpdateControlState(void)
 {
-	static GUID pad_discrimination[NUM_JOYPAD_MAX];	// 各デバイスの識別子を格納
-	DIDEVCAPS	diDevCaps;				// デバイス情報
-	HRESULT		hRes;
+	// 初期化
+	ZeroMemory(&m_state, sizeof(XINPUT_STATE));
 
+	// コントローラーステートの取得
+	DWORD dwResult = XInputGetState(0, &m_state);
 
-	// ジョイスティック用デバイスオブジェクトを作成
-	hRes = m_pInput->CreateDevice(lpddi->guidInstance, &m_apDIDevGamepad[m_nCntPad], NULL);
-	if (FAILED(hRes))
-	{
-		return DIENUM_CONTINUE;		// 列挙を続ける
-	}
-
-	// ジョイスティックの能力を調べる
-	diDevCaps.dwSize = sizeof(DIDEVCAPS);
-	hRes = m_apDIDevGamepad[m_nCntPad]->GetCapabilities(&diDevCaps);
-	if (FAILED(hRes))
-	{
-		m_apDIDevGamepad[m_nCntPad]->Release();
-		m_apDIDevGamepad[m_nCntPad] = NULL;
-		// 列挙を続ける
-		return DIENUM_CONTINUE;
-	}
-
-	// デバイスの識別子を保存
-	pad_discrimination[0] = lpddi->guidInstance;
-
-	// このデバイスを使うので列挙を終了する
-	return DIENUM_STOP;
-}
-
-//==================================================================================================================
-// ジョイスティック問い合わせ用コールバック関数
-//==================================================================================================================
-BOOL CInputGamepad::EnumAxesCallbackGamepad(const DIDEVICEOBJECTINSTANCE  *pdidoi, VOID * pvRef)
-{
-	HRESULT hr;
-
-	for (int nCntPad = 0; nCntPad < NUM_JOYPAD_MAX; nCntPad++)
-	{
-		DIPROPRANGE diprg;
-
-		// スティック軸の値の範囲を設定（-32768～32767）
-		ZeroMemory(&diprg, sizeof(diprg));
-		diprg.diph.dwSize = sizeof(diprg);
-		diprg.diph.dwHeaderSize = sizeof(diprg.diph);
-		diprg.diph.dwObj = pdidoi->dwType;
-		diprg.diph.dwHow = DIPH_BYID;
-		diprg.lMin = -32768;
-		diprg.lMax = 32767;
-
-		hr = m_apDIDevGamepad[nCntPad]->SetProperty(DIPROP_RANGE, &diprg.diph);
-		if (FAILED(hr))
-		{
-			return DIENUM_STOP;
-		}
-
-		//フォースフィードバック
-		DWORD *pdwNumForceFeedbackAxis = (DWORD*)pvRef;
-		if ((pdidoi->dwFlags & DIDOI_FFACTUATOR) != 0)
-		{
-			(*pdwNumForceFeedbackAxis)++;
-		}
-	}
-
-	return DIENUM_CONTINUE;
-}
-
-//==================================================================================================================
-// エフェクト生成
-//==================================================================================================================
-BOOL CInputGamepad::CreateEffect(HWND hWnd)
-{
-	DWORD           rgdwAxes[2] = { DIJOFS_X , DIJOFS_Y };
-	LONG            rglDirection[2] = { 1 , 1 };
-	DICONSTANTFORCE cf;
-	DIEFFECT        eff;
-	HRESULT         hr;
-
-	//エフェクト設定
-	ZeroMemory(&eff, sizeof(eff));
-	eff.dwSize = sizeof(DIEFFECT);
-	eff.dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
-	eff.dwDuration = INFINITE;
-	eff.dwSamplePeriod = 0;
-	eff.dwGain = DI_FFNOMINALMAX;
-	eff.dwTriggerButton = DIEB_NOTRIGGER;
-	eff.dwTriggerRepeatInterval = 0;
-	eff.cAxes = m_dwNumForceFeedbackAxis;
-	eff.rgdwAxes = rgdwAxes;
-	eff.rglDirection = rglDirection;
-	eff.lpEnvelope = 0;
-	eff.cbTypeSpecificParams = sizeof(DICONSTANTFORCE);
-	eff.lpvTypeSpecificParams = &cf;
-	eff.dwStartDelay = 0;
-
-	//エフェクトのクリエイト
-	hr = m_apDIDevGamepad[m_nCntPad]->CreateEffect(GUID_ConstantForce, &eff, &m_pDIEffect, NULL);
-	if (FAILED(hr)) {
-		MessageBox(hWnd, "エフェクトのクリエイトに失敗", "Error", MB_OK);
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-//==================================================================================================================
-// ジョイパッドのキー情報設定
-//==================================================================================================================
-void CInputGamepad::SetKeyStateGamepad(int nIDPad)
-{
-	if (m_aGamepadState[nIDPad].rgdwPOV[0] >= 225 * 100 && m_aGamepadState[nIDPad].rgdwPOV[0] <= 315 * 100)
-	{// 十字キー[左]が押されている
-		m_aKeyStateGamepad[nIDPad][JOYPADKEY_LEFT] = true;
-	}
+	// 取得できた
+	if (dwResult == ERROR_SUCCESS)
+		m_bConnect = true;
+	// できなかった
 	else
+		m_bConnect = false;
+
+	return S_OK;
+}
+
+// ===================================================================
+// バイブレーションの更新
+// ===================================================================
+void CInputGamepad::UpdateVibration(void)
+{
+	// 振動する設定が切れている
+	if (!m_bAllVib)
 	{
-		m_aKeyStateGamepad[nIDPad][JOYPADKEY_LEFT] = false;
+		// 処理を終える
+		return;
 	}
 
-	if (m_aGamepadState[nIDPad].rgdwPOV[0] >= 45 * 100 && m_aGamepadState[nIDPad].rgdwPOV[0] <= 135 * 100)
-	{// 十字キー[右]が押されている
-		m_aKeyStateGamepad[nIDPad][JOYPADKEY_RIGHT] = true;
-	}
+	XINPUT_VIBRATION vibration; // バイブレーションの構造体
+
+	// 初期化
+	ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
+
+	// それぞれの周波を設定
+	if (m_bVibration)
+		vibration.wLeftMotorSpeed = 65535;
 	else
+		vibration.wLeftMotorSpeed = 0;
+	vibration.wRightMotorSpeed = 0;
+
+	// バイブレーションを実行
+	XInputSetState(0, &vibration);
+}
+
+// ===================================================================
+// トリガー入力
+// ===================================================================
+bool CInputGamepad::GetTrigger(JOYPADKEY button)
+{
+	// ボタンの処理
+	if (m_state.Gamepad.wButtons & button)
 	{
-		m_aKeyStateGamepad[nIDPad][JOYPADKEY_RIGHT] = false;
+		// 現在のキーと前回のキーが違う
+		if (m_state.Gamepad.wButtons & button && !(m_stateOld.Gamepad.wButtons & button))
+			return true;
 	}
 
-	if ((m_aGamepadState[nIDPad].rgdwPOV[0] >= 315 * 100 && m_aGamepadState[nIDPad].rgdwPOV[0] <= 360 * 100)
-		|| (m_aGamepadState[nIDPad].rgdwPOV[0] >= 0 * 100 && m_aGamepadState[nIDPad].rgdwPOV[0] <= 45 * 100))
-	{// 十字キー[上]が押されている
-		m_aKeyStateGamepad[nIDPad][JOYPADKEY_UP] = true;
-	}
-	else
+	// トリガーキーの処理
+	if (button == JOYPADKEY_L2 &&
+		m_state.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
 	{
-		m_aKeyStateGamepad[nIDPad][JOYPADKEY_UP] = false;
+		if (m_state.Gamepad.wButtons & button && !(m_stateOld.Gamepad.wButtons & button))
+			return true;
 	}
 
-	if (m_aGamepadState[nIDPad].rgdwPOV[0] >= 135 * 100 && m_aGamepadState[nIDPad].rgdwPOV[0] <= 225 * 100)
-	{// 十字キー[下]が押されている
-		m_aKeyStateGamepad[nIDPad][JOYPADKEY_DOWN] = true;
-	}
-	else
+	// トリガーキーの処理
+	if (button == JOYPADKEY_R2 &&
+		m_state.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
 	{
-		m_aKeyStateGamepad[nIDPad][JOYPADKEY_DOWN] = false;
+		if (m_state.Gamepad.wButtons & button && !(m_stateOld.Gamepad.wButtons & button))
+			return true;
 	}
 
-	for (int nKey = JOYPADKEY_X; nKey <= JOYPADKEY_START; nKey++)
-	{
-		if (m_aGamepadState[nIDPad].rgbButtons[nKey])
-		{// ボタンが押されている
-			m_aKeyStateGamepad[nIDPad][nKey] = true;
-		}
-		else
-		{
-			m_aKeyStateGamepad[nIDPad][nKey] = false;
-		}
-	}
+	return false;
 }
 
-//==================================================================================================================
-// キー情報取得（プレス）
-//==================================================================================================================
-bool CInputGamepad::GetPress(int nIDPad, JOYPADKEY key)
+// ===================================================================
+// プレス入力
+// ===================================================================
+bool CInputGamepad::GetPress(JOYPADKEY button)
 {
-	return m_aKeyStateGamepad[nIDPad][key];
+	// ボタンの処理
+	if (m_state.Gamepad.wButtons & button)
+		return true;
+
+	// トリガーキーの処理
+	if (button == JOYPADKEY_L2 &&
+		m_state.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+		return true;		// bLeftTriggerがマクロより大きければ入力
+
+	// トリガーキーの処理
+	if (button == JOYPADKEY_R2 &&
+		m_state.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+		return true;		// bRightTriggerがマクロより大きければ入力
+
+	return false;
 }
 
-//==================================================================================================================
-// キー情報取得（トリガー）
-//==================================================================================================================
-bool CInputGamepad::GetTrigger(int nIDPad, JOYPADKEY key)
+// ===================================================================
+// 左スティックの取得
+// ===================================================================
+void CInputGamepad::GetStickLeft(float * pValueH, float * pValueV)
 {
-	return m_aKeyStateTriggerGamepad[nIDPad][key];
+	// スティックの有効範囲で割り、-1.0f ～ 1.0f で出力する
+	*pValueH = m_state.Gamepad.sThumbLX / JOY_MAX_RANGE;
+	*pValueV = m_state.Gamepad.sThumbLY / JOY_MAX_RANGE;
+
 }
 
-//==================================================================================================================
-// キー情報取得（リリース）
-//==================================================================================================================
-bool CInputGamepad::GetRelease(int nIDPad, JOYPADKEY key)
+// ===================================================================
+// 右スティックの取得
+// ===================================================================
+void CInputGamepad::GetStickRight(float * pValueH, float * pValueV)
 {
-	return m_aKeyStateReleaseGamepad[nIDPad][key];
-}
-
-//==================================================================================================================
-// キー取得処理（左トリガー）
-//==================================================================================================================
-int CInputGamepad::GetTriggerLeft(int nIDPad)
-{
-	return m_aGamepadState[nIDPad].rgbButtons[JOYPADKEY_L2];
-}
-
-//==================================================================================================================
-// キー情報取得（右トリガー）
-//==================================================================================================================
-int CInputGamepad::GetTriggerRight(int nIDPad)
-{
-	return m_aGamepadState[nIDPad].rgbButtons[JOYPADKEY_R2];
-}
-//==================================================================================================================
-// キー情報取得（左スティック）
-//==================================================================================================================
-void CInputGamepad::GetStickLeft(int nIDPad, float * pValueH, float * pValueV)
-{
-	*pValueH = (float)m_aGamepadState[nIDPad].lX;
-	*pValueV = (float)-m_aGamepadState[nIDPad].lY;
-}
-
-//==================================================================================================================
-// キー情報取得（右スティック）
-//==================================================================================================================
-void CInputGamepad::GetStickRight(int nIDPad, float * pValueH, float * pValueV)
-{
-	*pValueH = (float)m_aGamepadState[nIDPad].lZ;
-	*pValueV = (float)-m_aGamepadState[nIDPad].lRz;
-}
-
-//==================================================================================================================
-// フォースフィードバックスタート
-//==================================================================================================================
-void CInputGamepad::StartForeFeedback()
-{
-	//
-	cout << "GPAD振動関数に入った\n";
-
-	if (m_pDIEffect != NULL)
-	{
-		//
-		cout << "GPAD振動呼び出しに入った\n";
-
-		HRESULT hr = m_pDIEffect->Start(1, DIES_SOLO);
-
-		if (FAILED(hr))
-		{
-			cout << "振動失敗\n";
-		}
-		else
-		{
-			cout << "振動成功\n";
-			cout << hr;
-		}
-	}
-}
-
-//==================================================================================================================
-// フォースフィードバックストップ
-//==================================================================================================================
-void CInputGamepad::StopForeFeedback()
-{
-	if (m_pDIEffect != NULL)
-	{
-		m_pDIEffect->Stop();
-	}
+	// スティックの有効範囲で割り、-1.0f ～ 1.0f で出力する
+	*pValueH = m_state.Gamepad.sThumbRX / JOY_MAX_RANGE;
+	*pValueV = m_state.Gamepad.sThumbRY / JOY_MAX_RANGE;
 }

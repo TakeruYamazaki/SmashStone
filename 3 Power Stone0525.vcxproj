@@ -164,6 +164,7 @@
     <ClCompile Include="source\input.cpp" />
     <ClCompile Include="source\inputGamepad.cpp" />
     <ClCompile Include="source\inputKeyboard.cpp" />
+    <ClCompile Include="source\kananlibrary.cpp" />
     <ClCompile Include="source\light.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\manager.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="source\input.h" />
     <ClInclude Include="source\inputGamepad.h" />
     <ClInclude Include="source\inputKeyboard.h" />
+    <ClInclude Include="source\kananlibrary.h" />
     <ClInclude Include="source\light.h" />
     <ClInclude Include="source\main.h" />
     <ClInclude Include="source\manager.h" />
