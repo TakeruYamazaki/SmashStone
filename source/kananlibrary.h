@@ -69,6 +69,17 @@ public:
 	static float OutputSqrt(D3DXVECTOR3 difpos);				// 平方根計算
 	static float OutputDistance(D3DXVECTOR3 difpos);			// 距離計算
 
+#ifdef _DEBUG
+	static void ShowDebugInfo(void);					// ImGuiの更新
+	static bool GetWire(void) { return m_WireFrame; }	// ワイヤーフレーム描画の取得
+#endif
+
 private:
+
+#ifdef _DEBUG
+	static bool m_WireFrame;			// ワイヤーフレーム描画の切り替え用
+	static int m_nCulling;				// カリングの切り替え用
+#endif
+
 };
 #endif

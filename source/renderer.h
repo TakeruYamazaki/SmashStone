@@ -91,7 +91,8 @@ private:
 
 #ifdef _DEBUG
 	void InitImGui(D3DPRESENT_PARAMETERS d3dpp, HWND hWnd);	// ImGuiの初期化
-	void DrawDebug(void);									// デバッグの描画
+	void UpdateImGui(void);									// ImGuiの更新
+	void DrawImGui(void);									// ImGuiの描画
 	void ResetDevice();										// デバイスのリセット
 
 	D3DPRESENT_PARAMETERS	m_d3dpp;					// ImGuiに必要

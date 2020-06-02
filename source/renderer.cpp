@@ -15,10 +15,16 @@
 #include "tutorial.h"
 #include "ranking.h"
 #include "sound.h"
+#include "kananlibrary.h"
 
 #include "ImGui/imgui.h"			// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"	// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"	// Imguiの実装に必要
+
+//==================================================================================================================
+// マクロ定義
+//==================================================================================================================
+#define NAME_CAPTION_IMGUI	("Debug")	// ImGuiキャプション名
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -273,6 +279,12 @@ void CRenderer::Uninit(void)
 		break;
 	}
 
+#ifdef _DEBUG
+	// Imguiの終了
+	ImGui_ImplDX9_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+#endif
 }
 
 //==================================================================================================================
@@ -280,6 +292,15 @@ void CRenderer::Uninit(void)
 //==================================================================================================================
 void CRenderer::Update(void)
 {
+#ifdef _DEBUG
+	// Imguiの新しい枠を作る
+	ImGui_ImplDX9_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	// キャプション名
+	ImGui::Begin(NAME_CAPTION_IMGUI);
+#endif
+
 	// ゲームの状態取得
 	CGame::GAMESTATE gameState = CGame::GetGameState();
 
@@ -319,6 +340,11 @@ void CRenderer::Update(void)
 		m_pRanking->Update();
 		break;
 	}
+
+#ifdef _DEBUG
+	// ImGuiの更新
+	UpdateImGui();
+#endif
 }
 
 //==================================================================================================================
@@ -328,6 +354,8 @@ void CRenderer::Draw(void)
 {
 	// バックバッファ&Zバッファのクリア
 	m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
+	// ステンシルバッファを0にクリア
+	m_pD3DDevice->Clear(0, 0, D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(50, 50, 50, 0), 1.0f, 0);
 
 	// Direc3Dによる描画開始
 	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
@@ -378,6 +406,9 @@ void CRenderer::Draw(void)
 
 		// デバッグロゴの描画
 		m_pDebugProc->Draw();
+
+		// ImGuiの描画
+		DrawImGui();
 #endif
 
 		// 開始されたシーンの終了
@@ -385,7 +416,14 @@ void CRenderer::Draw(void)
 	}
 
 	// バックバッファとフロントバッファの入れ替え
-	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+	HRESULT result =  m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+
+#ifdef _DEBUG
+	// デバイスのリセット
+	if (result == D3DERR_DEVICELOST && 
+		m_pD3DDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
+		ResetDevice();
+#endif
 }
 
 //==================================================================================================================
@@ -539,19 +577,45 @@ LPDIRECT3DDEVICE9 CRenderer::GetDevice(void)
 //==================================================================================================================
 // デバッグの描画
 //==================================================================================================================
-void CRenderer::DrawDebug(void)
+void CRenderer::DrawImGui(void)
 {
-	// デバッグは常に通常描画
-	//m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	//
-	//// Imguiの描画
-	//ImGui::Render();
-	//ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-	//
+	// ImGuiウィンドウは常に通常描画
+	m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	
+	// Imguiの描画
+	ImGui::Render();
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+	
 	// 元の描画方法に戻す
-	/*CKananLibrary::GetWire() ?
-		m_pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME) :		// ワイヤーフレーム
-		m_pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);			// 通常*/
+	CKananLibrary::GetWire() ?
+		m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME) :	// ワイヤーフレーム
+		m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);		// 通常
+}
+
+//==================================================================================================================
+// デバイスのクリーンアップ
+//==================================================================================================================
+void CRenderer::CleanupDeviceD3D()
+{
+	if (m_pD3DDevice) 
+		{ m_pD3DDevice->Release(); m_pD3DDevice = NULL; }
+	if (m_pD3D) 
+		{ m_pD3D->Release(); m_pD3D = NULL; }
+}
+
+//==================================================================================================================
+// デバイスのリセット
+//==================================================================================================================
+void CRenderer::ResetDevice()
+{
+	ImGui_ImplDX9_InvalidateDeviceObjects();
+
+	HRESULT hr = m_pD3DDevice->Reset(&m_d3dpp);
+
+	if (hr == D3DERR_INVALIDCALL)
+		IM_ASSERT(0);
+
+	ImGui_ImplDX9_CreateDeviceObjects();
 }
 
 //==================================================================================================================
@@ -560,24 +624,39 @@ void CRenderer::DrawDebug(void)
 void CRenderer::InitImGui(D3DPRESENT_PARAMETERS d3dpp, HWND hWnd)
 {
 	// プレゼンテーションパラメータを保存
-	//m_d3dpp = d3dpp;
-	//
-	//// 要素の初期化
-	//m_nCntWire = 0;
-	//m_bWire = false;
-	//
-	//// ImGuiの初期化
-	//IMGUI_CHECKVERSION();
-	//ImGui::CreateContext();
-	//ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//
-	//// Imguiのスタイル (見た目) の決定
-	//ImGui::StyleColorsDark();
-	//
-	//// プラットフォームに合わせたセットアップを行う
-	//ImGui_ImplWin32_Init(hWnd);
-	//// ImgGuiのレンダラーをバインド
-	//ImGui_ImplDX9_Init(m_pD3DDevice);
+	m_d3dpp = d3dpp;
+	
+	// 要素の初期化
+	m_nCntWire = 0;
+	m_bWire = false;
+	
+	// ImGuiの初期化
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	
+	// Imguiのスタイル (見た目) の決定
+	ImGui::StyleColorsDark();
+	
+	// プラットフォームに合わせたセットアップを行う
+	ImGui_ImplWin32_Init(hWnd);
+	// ImgGuiのレンダラーをバインド
+	ImGui_ImplDX9_Init(m_pD3DDevice);
 }
 
+//==================================================================================================================
+// ImGuiの更新
+//==================================================================================================================
+void CRenderer::UpdateImGui(void)
+{
+	// デバッグの基本情報の更新
+	CKananLibrary::ShowDebugInfo();
+
+	ImGui::End();
+
+	// 枠を作り終わったら必ず書く
+	ImGui::EndFrame();
+	// ステンシルテストを終える
+	m_pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+}
 #endif
