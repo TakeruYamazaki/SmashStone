@@ -16,6 +16,10 @@
 #include "ranking.h"
 #include "sound.h"
 
+#include "ImGui/imgui.h"			// Imguiの実装に必要
+#include "ImGui/imgui_impl_dx9.h"	// Imguiの実装に必要
+#include "ImGui/imgui_impl_win32.h"	// Imguiの実装に必要
+
 //==================================================================================================================
 // 静的メンバ変数の初期化
 //==================================================================================================================
@@ -144,6 +148,11 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+
+#ifdef _DEBUG
+	// ImGuiの初期化
+	InitImGui(d3dpp, hWnd);
+#endif
 
 	switch (m_mode)
 	{
@@ -525,3 +534,50 @@ LPDIRECT3DDEVICE9 CRenderer::GetDevice(void)
 	// 値を返す
 	return m_pD3DDevice;
 }
+
+#ifdef _DEBUG
+//==================================================================================================================
+// デバッグの描画
+//==================================================================================================================
+void CRenderer::DrawDebug(void)
+{
+	// デバッグは常に通常描画
+	//m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	//
+	//// Imguiの描画
+	//ImGui::Render();
+	//ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+	//
+	// 元の描画方法に戻す
+	/*CKananLibrary::GetWire() ?
+		m_pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME) :		// ワイヤーフレーム
+		m_pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);			// 通常*/
+}
+
+//==================================================================================================================
+// ImGuiの初期化
+//==================================================================================================================
+void CRenderer::InitImGui(D3DPRESENT_PARAMETERS d3dpp, HWND hWnd)
+{
+	// プレゼンテーションパラメータを保存
+	//m_d3dpp = d3dpp;
+	//
+	//// 要素の初期化
+	//m_nCntWire = 0;
+	//m_bWire = false;
+	//
+	//// ImGuiの初期化
+	//IMGUI_CHECKVERSION();
+	//ImGui::CreateContext();
+	//ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//
+	//// Imguiのスタイル (見た目) の決定
+	//ImGui::StyleColorsDark();
+	//
+	//// プラットフォームに合わせたセットアップを行う
+	//ImGui_ImplWin32_Init(hWnd);
+	//// ImgGuiのレンダラーをバインド
+	//ImGui_ImplDX9_Init(m_pD3DDevice);
+}
+
+#endif

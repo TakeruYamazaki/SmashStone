@@ -170,7 +170,7 @@ void CGame::Update(void)
 	}
 
 	// キーボードの[P] 又は コントローラーの[START]ボタンが押されたとき
-	if (pInputKeyboard->GetKeyboardTrigger(DIK_P) || pInputGamepad->GetTrigger(0, CInputGamepad::JOYPADKEY_START))
+	if (pInputKeyboard->GetKeyboardTrigger(DIK_P) || pInputGamepad->GetTrigger(CInputGamepad::JOYPADKEY_START))
 	{// ポーズ切り替え
 		// ゲーム状態がポーズのとき
 		if (m_gameState == GAMESTATE_PAUSE)

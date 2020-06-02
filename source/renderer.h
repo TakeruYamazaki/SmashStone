@@ -63,6 +63,10 @@ public:
 
 	LPDIRECT3DDEVICE9 GetDevice(void);					// デバイス取得関数
 
+#ifdef _DEBUG
+	void CleanupDeviceD3D();							// デバイスのクリーンアップ
+#endif
+
 protected:
 
 private:
@@ -84,5 +88,16 @@ private:
 	CRecord *m_pRecord;									// 記録の情報ポインタ
 
 	int			m_nCountFPS = 0;						// FPSカウンタ
+
+#ifdef _DEBUG
+	void InitImGui(D3DPRESENT_PARAMETERS d3dpp, HWND hWnd);	// ImGuiの初期化
+	void DrawDebug(void);									// デバッグの描画
+	void ResetDevice();										// デバイスのリセット
+
+	D3DPRESENT_PARAMETERS	m_d3dpp;					// ImGuiに必要
+	int						m_nCntWire;					// ワイヤーフレームを連続入力しないためのカウンタ
+	bool					m_bWire;					// ワイヤーフレーム
+#endif
+
 };
 #endif

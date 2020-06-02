@@ -111,7 +111,7 @@ void CCharacter::Update(void)
 	if (m_bJump == false)
 	{
 		// キーボードの[SPACE] 又は コントローラーのBが押されたとき
-		if (pInputKeyboard->GetKeyboardTrigger(DIK_SPACE) || pInputGamepad->GetTrigger(0, CInputGamepad::JOYPADKEY_B))
+		if (pInputKeyboard->GetKeyboardTrigger(DIK_SPACE) || pInputGamepad->GetTrigger(CInputGamepad::JOYPADKEY_B))
 		{
 			// 上に移動量を規定値増やす
 			m_move.y += JUMP_MOVE;
@@ -235,7 +235,7 @@ void CCharacter::OperationMove(CInputKeyboard *pInputKeyboard, CInputGamepad *pI
 	float fMove = 0.0f;			// コントローラースティック移動量
 
 	// 移動処理 左スティック
-	pInputGamepad->GetStickLeft(0, &fValueV, &fValueH);
+	pInputGamepad->GetStickLeft(&fValueV, &fValueH);
 
 	// キーボードの移動キーが押されていないとき
 	if (!pInputKeyboard->GetKeyboardPress(DIK_D) && !pInputKeyboard->GetKeyboardPress(DIK_A))

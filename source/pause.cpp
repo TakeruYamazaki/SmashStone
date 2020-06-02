@@ -146,11 +146,11 @@ void CPause::Update(void)
 	}
 
 	// コントローラーの[十字キー上]が押されたとき
-	if (pInputGamepad->GetTrigger(0, CInputGamepad::JOYPADKEY_UP))
+	if (pInputGamepad->GetTrigger(CInputGamepad::JOYPADKEY_UP))
 	{//選択処理
 		m_nSelect--;
 	}
-	else if (pInputGamepad->GetTrigger(0, CInputGamepad::JOYPADKEY_DOWN))
+	else if (pInputGamepad->GetTrigger(CInputGamepad::JOYPADKEY_DOWN))
 	{// コントローラーの[十字キー下]が押されたとき
 		m_nSelect++;
 	}
@@ -183,7 +183,7 @@ void CPause::Update(void)
 	}
 
 	// キーボードの[エンター] 又は コントローラーの[B]が押されたとき
-	if (pInputKeyboard->GetKeyboardPress(DIK_RETURN) || pInputGamepad->GetPress(0, CInputGamepad::JOYPADKEY_B))
+	if (pInputKeyboard->GetKeyboardPress(DIK_RETURN) || pInputGamepad->GetPress(CInputGamepad::JOYPADKEY_B))
 	{
 		// 選択番号がスタートからやり直す番号のとき
 		if (m_nSelect == PAUSETEXTURE_START)

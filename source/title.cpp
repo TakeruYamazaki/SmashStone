@@ -128,7 +128,7 @@ void CTitle::Update(void)
 	m_pLight->Update();
 
 	// キーボードの[Enter] 又は コントローラーの[START]を押したとき
-	if (pInputKeyboard->GetKeyboardTrigger(DIK_RETURN) || pInputGamepad->GetPress(0, CInputGamepad::JOYPADKEY_START))
+	if (pInputKeyboard->GetKeyboardTrigger(DIK_RETURN) || pInputGamepad->GetPress(CInputGamepad::JOYPADKEY_START))
 	{
 		// フェードが何もない時
 		if (fade == CFade::FADE_NONE)
