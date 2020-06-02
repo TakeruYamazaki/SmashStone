@@ -60,13 +60,7 @@ public:
 	void SetObjInfo(D3DXVECTOR3 pos,
 		D3DXVECTOR3 rot);			// パーツの情報設定
 
-	//bool CollObject(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, D3DXVECTOR3 *move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax);
-
 	bool GetRelease(void) { return m_bRelease; }	// リリースするかどうか
-
-#ifdef _DEBUG
-	//void ShowObjectInfo(char cPrintText[16]);
-#endif
 
 private:
 	bool		m_bRelease;		// リリースするかどうか
