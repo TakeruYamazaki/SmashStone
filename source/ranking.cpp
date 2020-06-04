@@ -84,7 +84,7 @@ void CRanking::Update(void)
 	m_nTime++;
 
 	// キーボードの[Enter]が押されたとき 又は タイムカウントがMAX超えた 又は コントローラーの[START]が押されたとき
-	if (pInputKeyboard->GetKeyboardTrigger(DIK_RETURN) || m_nTime > TIME_COUNT || pInputGamepad->GetPress(0, CInputGamepad::JOYPADKEY_START))
+	if (pInputKeyboard->GetKeyboardTrigger(DIK_RETURN) || m_nTime > TIME_COUNT || pInputGamepad->GetPress(CInputGamepad::JOYPADKEY_START))
 	{
 		// フェード状態がない時
 		if (Fade == CFade::FADE_NONE)

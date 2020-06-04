@@ -35,6 +35,7 @@ using namespace std;
 #pragma comment(lib,"dxguid.lib")				// DirectXコンポーネント（部品）使用に必要
 #pragma comment(lib,"winmm.lib")				// システム時間取得に必要
 #pragma comment(lib,"dinput8.lib")				// 入力に必要
+#pragma comment(lib, "xinput.lib")				// XInput入力処理に必要
 
 //==================================================================================================================
 // マクロ定義

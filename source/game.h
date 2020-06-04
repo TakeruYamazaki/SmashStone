@@ -56,13 +56,14 @@ public:
 
 	static void SetGameState(GAMESTATE state);	// ゲームの状態設定
 	static GAMESTATE GetGameState(void);		// ゲームの状態取得
-	static CPlayer *GetPlayer(void) { return m_pPlayer; }			// キャラクターの情報取得処理
+	static CPlayer *GetPlayer(void) { return m_pPlayer0; }			// キャラクターの情報取得処理
 
 protected:
 
 private:
 	static GAMESTATE m_gameState;				// ゲーム状態
-	static CPlayer *m_pPlayer;					// キャラクターの情報ポインタ
+	static CPlayer *m_pPlayer0;					// キャラクター0の情報ポインタ
+	static CPlayer *m_pPlayer1;					// キャラクター1情報ポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドの情報ポインタ
 	static CCamera *m_pCamera;					// カメラの情報ポインタ
 	static CLight *m_pLight;					// ライトの情報ポインタ

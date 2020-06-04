@@ -71,14 +71,16 @@ protected:
 
 private:
 
-	void OperationMove(CInputKeyboard *pInputKeyboard,
-		CInputGamepad *pInputGamepad);				// 操作処理
+	void OperationMove0(CInputKeyboard *pInputKeyboard,
+		CInputGamepad *pInputGamepad);				// 0番目のプレイヤー操作処理
+	void OperationMove1(CInputKeyboard *pInputKeyboard,
+		CInputGamepad *pInputGamepad);				// 1番目のプレイヤー操作処理
 
 	CHARACTER m_Type;								// キャラクターの種類
 
 	static CCharacter *m_pCharacter[MAX_CHARA][CHARACTER_MAX];	// キャラクターの情報ポインタ
 	static CCamera *m_pCamera;									// カメラの情報ポインタ
-	static CPlayer *m_pPenguin;									// ペンギンの情報ポインタ
+	static CPlayer *m_pPenguin[MAX_CHARA];						// ペンギンの情報ポインタ
 	static int m_nNumAll;										// プレイヤーの人数
 
 	bool m_bJump;				// ジャンプしたかどうか

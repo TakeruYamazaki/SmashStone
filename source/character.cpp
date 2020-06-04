@@ -24,13 +24,13 @@
 //==================================================================================================================
 CCamera *CCharacter::m_pCamera = NULL;									// カメラ情報
 CCharacter *CCharacter::m_pCharacter[MAX_CHARA][CHARACTER_MAX] = {};	// キャラクター情報
-CPlayer *CCharacter::m_pPenguin = NULL;									// ペンギン情報
+CPlayer *CCharacter::m_pPenguin[MAX_CHARA] = {};									// ペンギン情報
 int CCharacter::m_nNumAll = 0;											// プレイヤーの人数
 
 //==================================================================================================================
 // マクロ定義
 //==================================================================================================================
-#define PLAYER_MOVE 0.25f			// プレイヤーの移動量
+#define PLAYER_MOVE 0.125f			// プレイヤーの移動量
 #define JUMP_MOVE 11.0f				// ジャンプするときの移動量
 #define MAX_JAMP_SPEED 0.05f		// 最大ジャンプスピード
 #define MAX_GRAVITY -6.0f			// 重力の最大値
@@ -39,6 +39,7 @@ int CCharacter::m_nNumAll = 0;											// プレイヤーの人数
 #define ROT_SPEED 0.4f				// 回転速度
 #define ROT_AMOUNT 0.1f				// 回転の差を減らしていく量
 #define REDUCE_SPEED 0.06f			// 減速スピード
+
 
 //==================================================================================================================
 // コンストラクタ
@@ -95,6 +96,11 @@ void CCharacter::Update(void)
 	// コントローラー取得
 	CInputGamepad *pInputGamepad = CManager::GetInputGamepad();
 
+	// キャラの人数カウント
+	for (int nCnt = 0; nCnt < MAX_CHARA; nCnt++)
+	{
+		m_pPenguin[nCnt] = (CPlayer*)CScene::GetScene(PRIORITY_PLAYER, nCnt);
+	}
 	//m_pos = GetPos();					// 位置取得
 	//m_rot = GetRot();					// 回転取得
 	//m_size = GetSize();					// 大きさ取得
@@ -111,7 +117,7 @@ void CCharacter::Update(void)
 	if (m_bJump == false)
 	{
 		// キーボードの[SPACE] 又は コントローラーのBが押されたとき
-		if (pInputKeyboard->GetKeyboardTrigger(DIK_SPACE) || pInputGamepad->GetTrigger(0, CInputGamepad::JOYPADKEY_B))
+		if (pInputKeyboard->GetKeyboardTrigger(DIK_SPACE) || pInputGamepad->GetTrigger(CInputGamepad::JOYPADKEY_B))
 		{
 			// 上に移動量を規定値増やす
 			m_move.y += JUMP_MOVE;
@@ -156,8 +162,19 @@ void CCharacter::Update(void)
 	// チュートリアル 又は ゲームのとき
 	if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL || CRenderer::GetMode() == CRenderer::MODE_GAME)
 	{
-		// 移動処理
-		OperationMove(pInputKeyboard, pInputGamepad);
+		// 0番目のキャラがいるとき
+		if (m_pPenguin[0] != NULL)
+		{
+			// 移動処理
+			OperationMove0(pInputKeyboard, pInputGamepad);
+		}
+
+		// 1番目のキャラがいるとき
+		if (m_pPenguin[1] != NULL)
+		{
+			// 移動処理
+			OperationMove1(pInputKeyboard, pInputGamepad);
+		}
 	}
 
 	//SetPos(m_pos);			// 位置設定
@@ -225,7 +242,7 @@ void CCharacter::SetSize(D3DXVECTOR3 size)
 //==================================================================================================================
 // 操作処理
 //==================================================================================================================
-void CCharacter::OperationMove(CInputKeyboard *pInputKeyboard, CInputGamepad *pInputGamepad)
+void CCharacter::OperationMove0(CInputKeyboard *pInputKeyboard, CInputGamepad *pInputGamepad)
 {
 	D3DXVECTOR3 Diff;	// 計算用格納変数
 
@@ -235,7 +252,7 @@ void CCharacter::OperationMove(CInputKeyboard *pInputKeyboard, CInputGamepad *pI
 	float fMove = 0.0f;			// コントローラースティック移動量
 
 	// 移動処理 左スティック
-	pInputGamepad->GetStickLeft(0, &fValueV, &fValueH);
+	pInputGamepad->GetStickLeft(&fValueV, &fValueH);
 
 	// キーボードの移動キーが押されていないとき
 	if (!pInputKeyboard->GetKeyboardPress(DIK_D) && !pInputKeyboard->GetKeyboardPress(DIK_A))
@@ -298,93 +315,93 @@ void CCharacter::OperationMove(CInputKeyboard *pInputKeyboard, CInputGamepad *pI
 			// キーボードの[W]が押されたとき
 			if (pInputKeyboard->GetKeyboardPress(DIK_W))
 			{// 左上
-				m_move.x += sinf(-D3DX_PI * 0.25f) * PLAYER_MOVE;
-				m_move.z += cosf(-D3DX_PI * 0.25f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.x += sinf(-D3DX_PI * 0.25f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.z += cosf(-D3DX_PI * 0.25f) * PLAYER_MOVE;
 
 				// 回転の目標地点を代入
-				m_difference.y = D3DX_PI * 0.75f;
+				m_pPenguin[0]->m_difference.y = D3DX_PI * 0.75f;
 			}
 			else if (pInputKeyboard->GetKeyboardPress(DIK_S))
 			{// キーボードの[S]が押されたとき
 			 // 左下
-				m_move.x += sinf(-D3DX_PI * 0.75f) * PLAYER_MOVE;
-				m_move.z += cosf(-D3DX_PI * 0.75f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.x += sinf(-D3DX_PI * 0.75f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.z += cosf(-D3DX_PI * 0.75f) * PLAYER_MOVE;
 
 				// 回転の目標地点を代入
-				m_difference.y = D3DX_PI * 0.25f;
+				m_pPenguin[0]->m_difference.y = D3DX_PI * 0.25f;
 			}
 			else
 			{// 左
-				m_move.x += sinf(-D3DX_PI * 0.5f) * PLAYER_MOVE;
-				m_move.z += cosf(-D3DX_PI * 0.5f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.x += sinf(-D3DX_PI * 0.5f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.z += cosf(-D3DX_PI * 0.5f) * PLAYER_MOVE;
 
 				// 回転の目標地点を代入
-				m_difference.y = D3DX_PI * 0.5f;
+				m_pPenguin[0]->m_difference.y = D3DX_PI * 0.5f;
 			}
 
 			//// モーションさせる
 			//m_MotionType = PLAYER_MOTION_WALK;
 
 			// 歩く状態にする
-			m_bWalk = true;
+			m_pPenguin[0]->m_bWalk = true;
 		}
 		else if (pInputKeyboard->GetKeyboardPress(DIK_D))
 		{// キーボードの[D]が押されたとき
 		 // キーボードの[W]が押されたとき
 			if (pInputKeyboard->GetKeyboardPress(DIK_W))
 			{// 右上
-				m_move.x += sinf(D3DX_PI * 0.25f) * PLAYER_MOVE;
-				m_move.z += cosf(D3DX_PI * 0.25f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.x += sinf(D3DX_PI * 0.25f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.z += cosf(D3DX_PI * 0.25f) * PLAYER_MOVE;
 
 				// 回転の目標地点を代入
-				m_difference.y = -D3DX_PI * 0.75f;
+				m_pPenguin[0]->m_difference.y = -D3DX_PI * 0.75f;
 			}
 			else if (pInputKeyboard->GetKeyboardPress(DIK_S))
 			{// キーボードの[S]が押されたとき
 			 // 右下
-				m_move.x += sinf(D3DX_PI * 0.75f) * PLAYER_MOVE;
-				m_move.z += cosf(D3DX_PI * 0.75f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.x += sinf(D3DX_PI * 0.75f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.z += cosf(D3DX_PI * 0.75f) * PLAYER_MOVE;
 
 				// 回転の目標地点を代入
-				m_difference.y = -D3DX_PI * 0.25f;
+				m_pPenguin[0]->m_difference.y = -D3DX_PI * 0.25f;
 			}
 			else
 			{// 右
-				m_move.x += sinf(D3DX_PI * 0.5f) * PLAYER_MOVE;
-				m_move.z += cosf(D3DX_PI * 0.5f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.x += sinf(D3DX_PI * 0.5f) * PLAYER_MOVE;
+				m_pPenguin[0]->m_move.z += cosf(D3DX_PI * 0.5f) * PLAYER_MOVE;
 
 				// 回転の目標地点を代入
-				m_difference.y = -D3DX_PI * 0.5f;
+				m_pPenguin[0]->m_difference.y = -D3DX_PI * 0.5f;
 			}
 
 			//// モーションさせる
 			//m_MotionType = PLAYER_MOTION_WALK;
 
 			// 歩く状態にする
-			m_bWalk = true;
+			m_pPenguin[0]->m_bWalk = true;
 		}
 		else if (pInputKeyboard->GetKeyboardPress(DIK_W))
 		{// キーボードの[W]が押されたとき
 		 // 上
-			m_move.x += sinf(-D3DX_PI * 0.0f) * PLAYER_MOVE;
-			m_move.z += cosf(-D3DX_PI * 0.0f) * PLAYER_MOVE;
+			m_pPenguin[0]->m_move.x += sinf(-D3DX_PI * 0.0f) * PLAYER_MOVE;
+			m_pPenguin[0]->m_move.z += cosf(-D3DX_PI * 0.0f) * PLAYER_MOVE;
 
 			// 回転の目標地点を代入
-			m_difference.y = D3DX_PI * 1.0f;
+			m_pPenguin[0]->m_difference.y = D3DX_PI * 1.0f;
 		}
 		else if (pInputKeyboard->GetKeyboardPress(DIK_S))
 		{// キーボードの[S]が押されたとき
 		 // 下
-			m_move.x += sinf(-D3DX_PI * 1.0f) * PLAYER_MOVE;
-			m_move.z += cosf(-D3DX_PI * 1.0f) * PLAYER_MOVE;
+			m_pPenguin[0]->m_move.x += sinf(-D3DX_PI * 1.0f) * PLAYER_MOVE;
+			m_pPenguin[0]->m_move.z += cosf(-D3DX_PI * 1.0f) * PLAYER_MOVE;
 
 			// 回転の目標地点を代入
-			m_difference.y = D3DX_PI * 0.0f;
+			m_pPenguin[0]->m_difference.y = D3DX_PI * 0.0f;
 		}
 	}
 
 	// プレイヤーの回転と目標地点の差を格納
-	Diff.y = m_rot.y - m_difference.y;
+	Diff.y = m_pPenguin[0]->m_rot.y - m_pPenguin[0]->m_difference.y;
 
 	// D3DX_PIより大きいとき
 	if (Diff.y > D3DX_PI)
@@ -397,21 +414,215 @@ void CCharacter::OperationMove(CInputKeyboard *pInputKeyboard, CInputGamepad *pI
 	}
 
 	// プレイヤーを徐々に回転させていく
-	m_rot.y -= Diff.y * ROT_AMOUNT;
+	m_pPenguin[0]->m_rot.y -= Diff.y * ROT_AMOUNT;
 
 	// プレイヤーの回転がD3DX_PIより大きい場合
-	if (m_rot.y > D3DX_PI)
+	if (m_pPenguin[0]->m_rot.y > D3DX_PI)
 	{
-		m_rot.y -= D3DX_PI * 2;
+		m_pPenguin[0]->m_rot.y -= D3DX_PI * 2;
 	}
-	else if (m_rot.y < -D3DX_PI)
+	else if (m_pPenguin[0]->m_rot.y < -D3DX_PI)
 	{// プレイヤーの回転が-D3DX_PIより小さい場合
-		m_rot.y += D3DX_PI * 2;
+		m_pPenguin[0]->m_rot.y += D3DX_PI * 2;
 	}
 
 	// 絶対値がD3DX_PIより大きい場合
-	if (fabs(m_rot.y) > D3DX_PI)
+	if (fabs(m_pPenguin[0]->m_rot.y) > D3DX_PI)
 	{
-		m_rot.y *= -1;
+		m_pPenguin[0]->m_rot.y *= -1;
+	}
+}
+
+//==================================================================================================================
+// 操作処理
+//==================================================================================================================
+void CCharacter::OperationMove1(CInputKeyboard *pInputKeyboard, CInputGamepad *pInputGamepad)
+{
+	D3DXVECTOR3 Diff;	// 計算用格納変数
+
+	// コントローラー
+	float fValueH = 0.0f;		// 縦
+	float fValueV = 0.0f;		// 横
+	float fMove = 0.0f;			// コントローラースティック移動量
+
+	// 移動処理 左スティック
+	pInputGamepad->GetStickLeft(&fValueV, &fValueH);
+
+	// キーボードの移動キーが押されていないとき
+	if (!pInputKeyboard->GetKeyboardPress(DIK_D) && !pInputKeyboard->GetKeyboardPress(DIK_A))
+	{
+		// 横スティック 又は 縦スティックが0じゃないとき
+		if (fValueH != 0 || fValueV != 0)
+		{
+			// 左にスティックが倒れたとき
+			if (fValueV >= -JOY_MAX_RANGE && fValueV < 0)
+			{
+				// 移動量計算
+				fMove = fValueV * -PLAYER_MOVE / JOY_MAX_RANGE;
+
+				// スティックの傾き度で移動させる
+				m_move.x += sinf(D3DX_PI + m_rot.y) * PLAYER_MOVE;
+				m_move.z += cosf(D3DX_PI + m_rot.y) * PLAYER_MOVE;
+
+				// 回転の目標地点を決める
+				m_difference.z = -ROT_LIMIT;
+
+				// 回転の目標地点を代入
+				m_difference.y = m_rot.y - ROT_SPEED;
+
+				//// モーションさせる
+				//m_MotionType = PLAYER_MOTION_WALK;
+
+				// 歩く状態にする
+				m_bWalk = true;
+			}
+			else if (fValueV <= JOY_MAX_RANGE && fValueV > 0)
+			{// 右にスティックが倒れたとき
+			 // 移動量計算
+				fMove = fValueV * PLAYER_MOVE / JOY_MAX_RANGE;
+
+				// スティックの傾き度で移動させる
+				m_move.x += sinf(D3DX_PI + m_rot.y) * PLAYER_MOVE;
+				m_move.z += cosf(D3DX_PI + m_rot.y) * PLAYER_MOVE;
+
+				// 回転の目標地点を決める
+				m_difference.z = ROT_LIMIT;
+
+				// 回転の目標地点を代入
+				m_difference.y = m_rot.y + ROT_SPEED;
+
+				//// モーションさせる
+				//m_MotionType = PLAYER_MOTION_WALK;
+
+				// 歩く状態にする
+				m_bWalk = true;
+			}
+		}
+	}
+
+	// コントローラーの左スティックが倒されていないとき
+	if (fValueV == 0)
+	{
+		// キーボードの[A]が押されたとき
+		if (pInputKeyboard->GetKeyboardPress(DIK_LEFTARROW))
+		{
+			// キーボードの[W]が押されたとき
+			if (pInputKeyboard->GetKeyboardPress(DIK_UPARROW))
+			{// 左上
+				m_pPenguin[1]->m_move.x += sinf(-D3DX_PI * 0.25f) * PLAYER_MOVE;
+				m_pPenguin[1]->m_move.z += cosf(-D3DX_PI * 0.25f) * PLAYER_MOVE;
+
+				// 回転の目標地点を代入
+				m_pPenguin[1]->m_difference.y = D3DX_PI * 0.75f;
+			}
+			else if (pInputKeyboard->GetKeyboardPress(DIK_DOWNARROW))
+			{// キーボードの[S]が押されたとき
+			 // 左下
+				m_pPenguin[1]->m_move.x += sinf(-D3DX_PI * 0.75f) * PLAYER_MOVE;
+				m_pPenguin[1]->m_move.z += cosf(-D3DX_PI * 0.75f) * PLAYER_MOVE;
+
+				// 回転の目標地点を代入
+				m_pPenguin[1]->m_difference.y = D3DX_PI * 0.25f;
+			}
+			else
+			{// 左
+				m_pPenguin[1]->m_move.x += sinf(-D3DX_PI * 0.5f) * PLAYER_MOVE;
+				m_pPenguin[1]->m_move.z += cosf(-D3DX_PI * 0.5f) * PLAYER_MOVE;
+
+				// 回転の目標地点を代入
+				m_pPenguin[1]->m_difference.y = D3DX_PI * 0.5f;
+			}
+
+			//// モーションさせる
+			//m_MotionType = PLAYER_MOTION_WALK;
+
+			// 歩く状態にする
+			m_pPenguin[1]->m_bWalk = true;
+		}
+		else if (pInputKeyboard->GetKeyboardPress(DIK_RIGHTARROW))
+		{// キーボードの[D]が押されたとき
+		 // キーボードの[W]が押されたとき
+			if (pInputKeyboard->GetKeyboardPress(DIK_UPARROW))
+			{// 右上
+				m_pPenguin[1]->m_move.x += sinf(D3DX_PI * 0.25f) * PLAYER_MOVE;
+				m_pPenguin[1]->m_move.z += cosf(D3DX_PI * 0.25f) * PLAYER_MOVE;
+
+				// 回転の目標地点を代入
+				m_pPenguin[1]->m_difference.y = -D3DX_PI * 0.75f;
+			}
+			else if (pInputKeyboard->GetKeyboardPress(DIK_DOWNARROW))
+			{// キーボードの[S]が押されたとき
+			 // 右下
+				m_move.x += sinf(D3DX_PI * 0.75f) * PLAYER_MOVE;
+				m_move.z += cosf(D3DX_PI * 0.75f) * PLAYER_MOVE;
+
+				// 回転の目標地点を代入
+				m_difference.y = -D3DX_PI * 0.25f;
+			}
+			else
+			{// 右
+				m_pPenguin[1]->m_move.x += sinf(D3DX_PI * 0.5f) * PLAYER_MOVE;
+				m_pPenguin[1]->m_move.z += cosf(D3DX_PI * 0.5f) * PLAYER_MOVE;
+
+				// 回転の目標地点を代入
+				m_pPenguin[1]->m_difference.y = -D3DX_PI * 0.5f;
+			}
+
+			//// モーションさせる
+			//m_MotionType = PLAYER_MOTION_WALK;
+
+			// 歩く状態にする
+			m_pPenguin[1]->m_bWalk = true;
+		}
+		else if (pInputKeyboard->GetKeyboardPress(DIK_UPARROW))
+		{// キーボードの[W]が押されたとき
+		 // 上
+			m_pPenguin[1]->m_move.x += sinf(-D3DX_PI * 0.0f) * PLAYER_MOVE;
+			m_pPenguin[1]->m_move.z += cosf(-D3DX_PI * 0.0f) * PLAYER_MOVE;
+
+			// 回転の目標地点を代入
+			m_pPenguin[1]->m_difference.y = D3DX_PI * 1.0f;
+		}
+		else if (pInputKeyboard->GetKeyboardPress(DIK_DOWNARROW))
+		{// キーボードの[S]が押されたとき
+		 // 下
+			m_pPenguin[1]->m_move.x += sinf(-D3DX_PI * 1.0f) * PLAYER_MOVE;
+			m_pPenguin[1]->m_move.z += cosf(-D3DX_PI * 1.0f) * PLAYER_MOVE;
+
+			// 回転の目標地点を代入
+			m_pPenguin[1]->m_difference.y = D3DX_PI * 0.0f;
+		}
+	}
+
+	// プレイヤーの回転と目標地点の差を格納
+	Diff.y = m_pPenguin[1]->m_rot.y - m_pPenguin[1]->m_difference.y;
+
+	// D3DX_PIより大きいとき
+	if (Diff.y > D3DX_PI)
+	{
+		Diff.y -= D3DX_PI * 2;
+	}
+	else if (Diff.y < -D3DX_PI)
+	{// D3DX_PIより小さいとき
+		Diff.y += D3DX_PI * 2;
+	}
+
+	// プレイヤーを徐々に回転させていく
+	m_pPenguin[1]->m_rot.y -= Diff.y * ROT_AMOUNT;
+
+	// プレイヤーの回転がD3DX_PIより大きい場合
+	if (m_pPenguin[1]->m_rot.y > D3DX_PI)
+	{
+		m_pPenguin[1]->m_rot.y -= D3DX_PI * 2;
+	}
+	else if (m_pPenguin[1]->m_rot.y < -D3DX_PI)
+	{// プレイヤーの回転が-D3DX_PIより小さい場合
+		m_pPenguin[1]->m_rot.y += D3DX_PI * 2;
+	}
+
+	// 絶対値がD3DX_PIより大きい場合
+	if (fabs(m_pPenguin[1]->m_rot.y) > D3DX_PI)
+	{
+		m_pPenguin[1]->m_rot.y *= -1;
 	}
 }
