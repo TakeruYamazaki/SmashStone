@@ -102,6 +102,17 @@
     <ClCompile Include="source\kananlibrary.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\charaICHIYAS.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charaKURURU.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charaNYAS.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charaZAVAEL.cpp">
+      <Filter>ソース ファイル</Filter>
     <ClCompile Include="source\ImGui\imgui.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
@@ -206,6 +217,17 @@
     <ClInclude Include="source\kananlibrary.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\charaICHIYAS.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charaKURURU.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charaNYAS.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charaZAVAEL.h">
+      <Filter>ヘッダー ファイル</Filter>
     <ClInclude Include="source\inputGamepad.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>

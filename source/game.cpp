@@ -34,7 +34,8 @@
 //==================================================================================================================
 //	静的メンバ変数宣言
 //==================================================================================================================
-CPlayer *CGame::m_pPlayer = NULL;								// キャラクター情報
+CPlayer *CGame::m_pPlayer0 = NULL;									// キャラクター情報
+CPlayer *CGame::m_pPlayer1 = NULL;									// キャラクター情報
 CMeshField *CGame::m_pMeshField = NULL;								// メッシュフィールド情報
 CCamera *CGame::m_pCamera = NULL;									// カメラ情報
 CLight *CGame::m_pLight = NULL;										// ライト情報
@@ -81,11 +82,18 @@ void CGame::Init(void)
 	m_pMeshSphere = CMeshSphere::Create();
 
 	// キャラクター生成処理
-	m_pPlayer = CPlayer::Create();
+	m_pPlayer0 = CPlayer::Create();
 	// 位置設定
-	m_pPlayer->SetPos(D3DXVECTOR3(0, WhileY, 0));
+	m_pPlayer0->SetPos(D3DXVECTOR3(0, WhileY, 0));
 	// 回転設定
-	m_pPlayer->SetRot(D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0f));
+	m_pPlayer0->SetRot(D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0f));
+
+	// キャラクター生成処理
+	m_pPlayer1 = CPlayer::Create();
+	// 位置設定
+	m_pPlayer1->SetPos(D3DXVECTOR3(50, WhileY, 0));
+	// 回転設定
+	m_pPlayer1->SetRot(D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0f));
 
 	// メッシュフィールド生成
 	m_pMeshField = CMeshField::Create();
