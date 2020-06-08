@@ -20,7 +20,7 @@
 #include<Windows.h>
 #include"d3dx9.h"
 
-#include "dinput.h"							// ダイレクトインプット
+#include <dinput.h>							// ダイレクトインプット
 #include <Xinput.h>							// エックスインプット
 
 #include "xaudio2.h"

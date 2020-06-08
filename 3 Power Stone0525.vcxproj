@@ -165,6 +165,12 @@
     <ClCompile Include="source\debugProc.cpp" />
     <ClCompile Include="source\fade.cpp" />
     <ClCompile Include="source\game.cpp" />
+    <ClCompile Include="source\ImGui\imgui.cpp" />
+    <ClCompile Include="source\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="source\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="source\ImGui\imgui_impl_dx9.cpp" />
+    <ClCompile Include="source\ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="source\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="source\input.cpp" />
     <ClCompile Include="source\inputGamepad.cpp" />
     <ClCompile Include="source\inputKeyboard.cpp" />
@@ -199,6 +205,14 @@
     <ClInclude Include="source\debugProc.h" />
     <ClInclude Include="source\fade.h" />
     <ClInclude Include="source\game.h" />
+    <ClInclude Include="source\ImGui\imconfig.h" />
+    <ClInclude Include="source\ImGui\imgui.h" />
+    <ClInclude Include="source\ImGui\imgui_impl_dx9.h" />
+    <ClInclude Include="source\ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="source\ImGui\imgui_internal.h" />
+    <ClInclude Include="source\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="source\ImGui\imstb_textedit.h" />
+    <ClInclude Include="source\ImGui\imstb_truetype.h" />
     <ClInclude Include="source\input.h" />
     <ClInclude Include="source\inputGamepad.h" />
     <ClInclude Include="source\inputKeyboard.h" />

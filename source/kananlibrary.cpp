@@ -13,6 +13,9 @@
 #include "inputKeyboard.h"
 #include "inputGamepad.h"
 #include "light.h"
+#include "ImGui/imgui.h"				// Imguiの実装に必要
+#include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
+#include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
 
 //=============================================================================
 // マクロ定義
@@ -29,6 +32,8 @@
 //=============================================================================
 // 静的メンバ変数の初期化
 //=============================================================================
+bool CKananLibrary::m_WireFrame = false;
+int CKananLibrary::m_nCulling = 0;
 
 //=============================================================================
 // マトリックス計算
@@ -316,3 +321,56 @@ HRESULT CKananLibrary::Pause(CInputKeyboard * Key, CInputGamepad * pGamepad)
 	// 入力無し
 	return FALSE;
 }
+
+#ifdef _DEBUG
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
+void CKananLibrary::ShowDebugInfo(void)
+{
+	// ツリーのヘッダー
+	if (ImGui::CollapsingHeader("DebugInfo"))
+	{
+		// デバイスの取得
+		LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+
+		// FPSの表示
+		ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+		//// Scene2D総数の表示
+		//ImGui::Text("NumScene2D : %d", CScene2D::GetNumScene2D());
+		//// Scene2D総数の表示
+		//ImGui::Text("NumScene3D : %d", CScene3D::GetNumScene3D());
+		//// Scene2D総数の表示
+		//ImGui::Text("NumSceneX  : %d", CSceneX::GetNumSceneX());
+
+		// ワイヤーフレーム
+		if (ImGui::Checkbox("WireFrame", &m_WireFrame))
+		{
+			// ? A : B (条件演算子 : 真(A)偽(B)どちらかが当てはまっていれば、それを実行する)
+			m_WireFrame ?
+				pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME) :	//ワイヤー
+				pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);			//通常
+		}
+
+		// 全体のカリング
+		if (ImGui::TreeNode("Culling"))
+		{
+			// カリング
+			if (ImGui::RadioButton("CCW", &m_nCulling, 0))
+				pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);		// 裏面(左回り)をカリングする
+			// 改行しない
+			ImGui::SameLine();
+			if (ImGui::RadioButton("CW", &m_nCulling, 1))
+				pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);		// 表面(右回り)をカリングする
+			// 改行しない
+			ImGui::SameLine();
+			if (ImGui::RadioButton("NONE", &m_nCulling, 2))
+				pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);		// 両面カリング
+
+			// ツリーの最後に必ず書く
+			ImGui::TreePop();
+		}
+	}
+}
+#endif

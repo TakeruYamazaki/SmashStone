@@ -6,7 +6,10 @@
 //==================================================================================================================
 #include "main.h"
 #include "manager.h"
+#include "renderer.h"
+
 #define _CRTDBG_MAP_ALLOC
+
 #include <stdlib.h>
 #include <crtdbg.h>
 
@@ -57,29 +60,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 		CLASS_NAME,							// ウィンドウクラスの名前
 		LoadIcon(NULL, IDI_APPLICATION)		// 小さいアイコンの指定
 	};
-	// ウィンドウハンドル（識別子）
-	HWND hWnd;
-	// メッセージを格納する変数
-	MSG msg;
-	// 現在時間
-	DWORD dwCurrentTime;
-	// 最後に処理した時間
-	DWORD dwExeclastTime;
-	// 描画数をカウント
-	DWORD dwFrameCount;
-	// FPSを最後に測定した時刻
-	DWORD dwFPSLastTime;
+
+	HWND hWnd;					// ウィンドウハンドル
+	MSG msg;					// メッセージを格納する変数
+	RECT rect =					// ウィンドウサイズ
+	{ 0,	0, 
+		SCREEN_WIDTH, SCREEN_HEIGHT };
+
+	DWORD dwCurrentTime;		// 現在時刻
+	DWORD dwExecLastTime;		// 最後に処理した時刻	
+	DWORD dwFrameCount;			// 描画数をカウント
+	DWORD dwFPSLastTime;		// FPSを最後に計測した時刻
+
 	// ウィンドウクラスの登録
 	RegisterClassEx(&wcex);
-	// ウィンドの生成
+
+	// 指定したクライアント領域を確保するために必要なウィンドウ座標を計算
+	AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+
+	// ウインドウを作成
 	hWnd = CreateWindowEx(0,
 		CLASS_NAME,
 		WINDOW_NAME,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		SCREEN_WIDTH,
-		SCREEN_HEIGHT,
+		(rect.right - rect.left),	// キャプションサイズを差し引いたウィンドウサイズ
+		(rect.bottom - rect.top),	// キャプションサイズを差し引いたウィンドウサイズ
 		NULL,
 		NULL,
 		hInstance,
@@ -92,7 +99,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	UpdateWindow(hWnd);
 	timeBeginPeriod(1);					// 分解能の設定
 	dwCurrentTime = 0;
-	dwExeclastTime = timeGetTime();		// 現在時間を取得
+	dwExecLastTime = timeGetTime();		// 現在時間を取得
 	dwFrameCount = 0;
 	dwFPSLastTime = timeGetTime();
 	// メッセージループ（メッセージキューからメッセージを取得）
@@ -127,10 +134,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 				// カウントをクリア
 				dwFrameCount = 0;
 			}
-			if ((dwCurrentTime - dwExeclastTime) >= (1000 / 60))
+			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))
 			{
 				// 処理した時間で保存
-				dwExeclastTime = dwCurrentTime;
+				dwExecLastTime = dwCurrentTime;
 				// 更新処理
 				pManager->Update();
 				// 描画処理
@@ -139,6 +146,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 			}
 		}
 	}
+
+#ifdef _DEBUG
+	// デバイスのクリーンアップ
+	pManager->GetRenderer()->CleanupDeviceD3D();
+#endif
 
 	// マネージャがあるとき
 	if (pManager != NULL)
@@ -160,8 +172,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 //==================================================================================================================
 // ウィンドウプロシージャ関数
 //==================================================================================================================
+// Win32 message handler
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+		return true;
+
 	switch (uMsg)
 	{
 		// ウィンドウ破棄メッセージ
