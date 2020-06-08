@@ -21,12 +21,14 @@
 class CSceneX : public CScene
 {
 public:
+	CSceneX();
 	CSceneX(PRIORITY type);															// コンストラクタ
 	~CSceneX();																		// デストラクタ
 	void Init(void);																// 初期化処理
 	void Uninit(void);																// 終了処理
 	void Update(void);																// 更新処理
 	void Draw(void);																// 描画処理
+	void DrawMesh(void);															// メッシュの描画
 
 	static CSceneX *Create(void);													// 生成処理
 
@@ -42,10 +44,12 @@ public:
 	bool SetCollisionBox(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXVECTOR3 posOld);	// 矩形の当たり判定処理
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; }										// 位置取得処理
+	D3DXVECTOR3 GetPosOld(void) { return m_posOld; }								// 前回の位置取得
 	D3DXVECTOR3 GetSize(void) { return m_size; }									// 大きさ取得処理
 	D3DXVECTOR3 GetMove(void) { return m_move; }									// 移動量取得処理
 	D3DXVECTOR3 GetRot(void) { return m_rot; }										// 回転取得処理
 	D3DXVECTOR3 GetVecAxis(void) { return m_vecAxis; }								// 回転軸取得処理
+	D3DXMATRIX	*GetMatrix(void)		{ return &m_mtxWorld; }							// マトリックスの取得
 
 	float GetValueRot(void) { return m_fValueRot; }									// 回転角取得処理
 
@@ -65,6 +69,7 @@ private:
 
 	D3DXVECTOR3 m_vecAxis;						// 回転軸
 	D3DXVECTOR3 m_pos;							// 位置
+	D3DXVECTOR3 m_posOld;						// 前回の位置
 	D3DXVECTOR3 m_size;							// 大きさ
 	D3DXVECTOR3 m_move;							// 移動量
 	D3DXVECTOR3 m_rot;							// 回転

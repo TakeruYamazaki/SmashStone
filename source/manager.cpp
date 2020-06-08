@@ -10,6 +10,7 @@
 #include "renderer.h"
 #include "inputKeyboard.h"
 #include "inputGamepad.h"
+#include "mouse.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -17,6 +18,7 @@
 CRenderer *CManager::m_pRenderer = NULL;				// レンダラー情報
 CInputKeyboard *CManager::m_pInputKeyboard = NULL;		// キーボード情報
 CInputGamepad *CManager::m_pInputGamepad = NULL;		// ゲームパッド情報
+CMouse *CManager::m_pMouse = nullptr;
 
 //==================================================================================================================
 // コンストラクタ
@@ -48,6 +50,8 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 	// コントローラー動的に確保
 	m_pInputGamepad = new CInputGamepad;
 
+	m_pMouse = new CMouse;
+
 	// 初期化処理
 	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
 	{
@@ -59,6 +63,8 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 
 	// コントローラー初期化
 	m_pInputGamepad->Init(hInstance, hWnd);
+
+	m_pMouse->Init(hInstance, hWnd);
 
 	// 値を返す
 	return S_OK;
@@ -110,6 +116,13 @@ void CManager::Uninit(void)
 		// NULLにする
 		m_pInputGamepad = NULL;
 	}
+
+	if (m_pMouse)
+	{
+		m_pMouse->Uninit();
+		delete m_pMouse;
+		m_pMouse = nullptr;
+	}
 }
 
 //==================================================================================================================
@@ -143,6 +156,9 @@ void CManager::Update(void)
 		// コントローラーの更新処理
 		m_pInputGamepad->Update();
 	}
+
+	if (m_pMouse)
+		m_pMouse->Update();
 }
 
 //==================================================================================================================

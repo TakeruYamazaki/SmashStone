@@ -13,6 +13,7 @@
 #include "inputKeyboard.h"
 #include "inputGamepad.h"
 #include "light.h"
+#include "game.h"
 #include "ImGui/imgui.h"				// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
@@ -52,6 +53,101 @@ void CKananLibrary::CalcMatrix(D3DXMATRIX * pMtx, const D3DXVECTOR3 & pos, const
 	// 位置を反映
 	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(pMtx, pMtx, &mtxTrans);
+}
+
+//=============================================================================
+// 影のマトリックス計算
+//=============================================================================
+void CKananLibrary::CalcShadowMatrix(D3DXMATRIX & mtxShadow, D3DXVECTOR3 const & pos, D3DXVECTOR3 const & nor)
+{
+	D3DXPLANE planeField;
+	D3DXVECTOR3 LightVec = CManager::GetRenderer()->GetGame()->GetLight()->GetLightVec(0);	// ライトの取得
+	D3DXVECTOR4 ShadowVec = ZeroVector4;
+
+	// マトリックスの初期化
+	D3DXMatrixIdentity(&mtxShadow);
+
+	// 光と逆向きにベクトルを設定
+	ShadowVec = D3DXVECTOR4(-LightVec.x, -LightVec.y, -LightVec.z, 0);
+
+	// 平面の座標を決める
+	D3DXPlaneFromPointNormal(&planeField, &pos, &nor);
+
+	// 影のマトリックスを決定
+	D3DXMatrixShadow(&mtxShadow, &ShadowVec, &planeField);
+}
+
+//=============================================================================
+// メッシュから頂点座標の最大最小を出力
+//=============================================================================
+MODEL_VTX CKananLibrary::OutputModelVtxColl(LPD3DXMESH mesh)
+{
+	int			nNumVertices = mesh->GetNumVertices();					// 頂点数取得
+	DWORD		sizeFVF = D3DXGetFVFVertexSize(mesh->GetFVF());		// 頂点フォーマットのサイズを取得
+	BYTE		*pVertexBuffer;	// 頂点バッファのポインタ
+	MODEL_VTX	outVtx;			// 出力する頂点情報
+
+								// 頂点バッファをロック
+	mesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVertexBuffer);
+
+	// 頂点数分繰り返す
+	for (int nCntVtx = 0; nCntVtx < nNumVertices; nCntVtx++)
+	{
+		// バッファから頂点座標を取得
+		D3DXVECTOR3 vtx = *(D3DXVECTOR3*)pVertexBuffer;
+
+		// 全ての頂点情報を比較して、最小値・最大値を抜き出す
+		// 最小値
+		if (outVtx.VtxMin.x > vtx.x)
+			outVtx.VtxMin.x = vtx.x;
+		if (outVtx.VtxMin.y > vtx.y)
+			outVtx.VtxMin.y = vtx.y;
+		if (outVtx.VtxMin.z > vtx.z)
+			outVtx.VtxMin.z = vtx.z;
+		// 最大値
+		if (outVtx.VtxMax.x < vtx.x)
+			outVtx.VtxMax.x = vtx.x;
+		if (outVtx.VtxMax.y < vtx.y)
+			outVtx.VtxMax.y = vtx.y;
+		if (outVtx.VtxMax.z < vtx.z)
+			outVtx.VtxMax.z = vtx.z;
+
+		// サイズ分ポインタを進める
+		pVertexBuffer += sizeFVF;
+	}
+
+	// 頂点バッファをアンロック
+	mesh->UnlockVertexBuffer();
+
+	// 値を返す
+	return outVtx;
+}
+
+//=============================================================================
+// モデル情報の破棄
+//=============================================================================
+void CKananLibrary::ReleaseModelInfo(MODELINFO *pModelInfo)
+{
+	// バッファの開放
+	if (pModelInfo->matBuff)
+	{
+		pModelInfo->matBuff->Release();
+		pModelInfo->matBuff = nullptr;
+	}
+	// メッシュの開放
+	if (pModelInfo->mesh)
+	{
+		pModelInfo->mesh->Release();
+		pModelInfo->mesh = nullptr;
+	}
+	if (pModelInfo->pTexture)
+	{
+		//pModelInfo->pTexture->Release();
+		pModelInfo->pTexture = nullptr;
+	}
+
+	// マテリアル数の初期化
+	pModelInfo->matNum = 0;
 }
 
 //=============================================================================
@@ -118,7 +214,7 @@ float CKananLibrary::OutputSqrt(D3DXVECTOR3 difpos)
 }
 
 //=============================================================================
-// 距離計算
+// 距離計算ん
 //=============================================================================
 float CKananLibrary::OutputDistance(D3DXVECTOR3 difpos)
 {
@@ -126,13 +222,161 @@ float CKananLibrary::OutputDistance(D3DXVECTOR3 difpos)
 }
 
 //=============================================================================
+// ビルボード化処理
+//=============================================================================
+void CKananLibrary::Billboard(D3DXMATRIX *mtxWorld, const D3DXMATRIX mtxView)
+{
+	mtxWorld->_11 = mtxView._11;
+	mtxWorld->_12 = mtxView._21;
+	mtxWorld->_13 = mtxView._31;
+	mtxWorld->_21 = mtxView._12;
+	mtxWorld->_22 = mtxView._22;
+	mtxWorld->_23 = mtxView._32;
+	mtxWorld->_31 = mtxView._13;
+	mtxWorld->_32 = mtxView._23;
+	mtxWorld->_33 = mtxView._33;
+}
+
+//=============================================================================
 // 慣性の処理
 //=============================================================================
 void CKananLibrary::InertiaMove(D3DXVECTOR3 *move)
 {
-	move->x += (0 - move->x) * INERTIA;
-	move->y += (0 - move->y) * INERTIA;
-	move->z += (0 - move->z) * INERTIA;
+	move->x += (0 - move->x) * 0.3f;
+	move->y += (0 - move->y) * 0.3f;
+	move->z += (0 - move->z) * 0.3f;
+}
+
+//=============================================================================
+// int型の上限設定
+//=============================================================================
+void CKananLibrary::IntegerUpperLimit(int * nValue, int upperLimit)
+{
+	if (*nValue > upperLimit)
+	{
+		*nValue = upperLimit;
+	}
+}
+
+//=============================================================================
+// int型の下限設定
+//=============================================================================
+void CKananLibrary::IntegerLowerLimit(int *nValue, int lowerLimit)
+{
+	if (*nValue < lowerLimit)
+	{
+		*nValue = lowerLimit;
+	}
+}
+
+//=============================================================================
+// 上限加減の制限処理
+//=============================================================================
+bool CKananLibrary::LimitVector3(D3DXVECTOR3 &Value, const D3DXVECTOR3 lowerLimit, const D3DXVECTOR3 upperLimit)
+{
+	bool bLimit = false;
+
+	if (Value.x > upperLimit.x)
+	{
+		Value.x = upperLimit.x;
+		bLimit = true;
+	}
+	if (Value.x < lowerLimit.x)
+	{
+		Value.x = lowerLimit.x;
+		bLimit = true;
+	}
+	if (Value.y > upperLimit.y)
+	{
+		Value.y = upperLimit.y;
+	}
+	if (Value.y < lowerLimit.y)
+	{
+		Value.y = lowerLimit.y;
+	}
+	if (Value.z > upperLimit.z)
+	{
+		Value.z = upperLimit.z;
+		bLimit = true;
+	}
+	if (Value.z < lowerLimit.z)
+	{
+		Value.z = lowerLimit.z;
+		bLimit = true;
+	}
+
+	return bLimit;
+}
+
+bool CKananLibrary::LimitVector2(D3DXVECTOR2 & Value, const D3DXVECTOR2 lowerLimit, const D3DXVECTOR2 upperLimit)
+{
+	bool bLimit = false;
+
+	if (Value.x > upperLimit.x)
+	{
+		Value.x = upperLimit.x;
+		bLimit = true;
+	}
+	if (Value.x < lowerLimit.x)
+	{
+		Value.x = lowerLimit.x;
+		bLimit = true;
+	}
+	if (Value.y > upperLimit.y)
+	{
+		Value.y = upperLimit.y;
+	}
+	if (Value.y < lowerLimit.y)
+	{
+		Value.y = lowerLimit.y;
+	}
+
+	return bLimit;
+}
+
+//=============================================================================
+// 上限加減のループ処理
+//=============================================================================
+void CKananLibrary::LimitLoopVector3(D3DXVECTOR3 * Value, const D3DXVECTOR3 lowerLimit, const D3DXVECTOR3 upperLimit)
+{
+	if (Value->x > upperLimit.x)
+	{
+		Value->x = lowerLimit.x;
+	}
+	if (Value->x < lowerLimit.x)
+	{
+		Value->x = upperLimit.x;
+	}
+	if (Value->y > upperLimit.y)
+	{
+		Value->y = lowerLimit.y;
+	}
+	if (Value->y < lowerLimit.y)
+	{
+		Value->y = upperLimit.y;
+	}
+	if (Value->z > upperLimit.z)
+	{
+		Value->z = lowerLimit.z;
+	}
+	if (Value->z < lowerLimit.z)
+	{
+		Value->z = upperLimit.z;
+	}
+}
+
+//=============================================================================
+// フォグの生成
+//=============================================================================
+void CKananLibrary::SetFog(const float fStartPos, const float fEndPos, const D3DXCOLOR col)
+{
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	// デバイスの取得
+	pDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);						// フォグon
+	pDevice->SetRenderState(D3DRS_FOGCOLOR, col);						// カラー設定
+	pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_NONE);			// 頂点モード
+	pDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);			// テーブルモード
+	pDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&fStartPos));		// 開始位置
+	pDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&fEndPos));			// 終了位置
 }
 
 //=============================================================================
@@ -141,6 +385,82 @@ void CKananLibrary::InertiaMove(D3DXVECTOR3 *move)
 void CKananLibrary::PrintBlockCommentFrame(void)
 {
 	std::cout << "==================================================" << std::endl;
+}
+
+//=============================================================================
+// ブロックコメントの開始
+//=============================================================================
+void CKananLibrary::StartBlockComment(const std::string & str)
+{
+	PrintBlockCommentFrame();
+	std::cout << &str << std::endl;
+}
+
+//=============================================================================
+// ブロックコメントの終了
+//=============================================================================
+void CKananLibrary::EndBlockComment(const std::string & str)
+{
+	std::cout << &str << std::endl;
+	PrintBlockCommentFrame();
+}
+
+//=============================================================================
+// 上限加減の処理
+//=============================================================================
+void CKananLibrary::LimitColor(D3DXCOLOR & col, const D3DXCOLOR lowerLimit, const D3DXCOLOR upperLimit)
+{
+	if (col.r > upperLimit.r)
+	{
+		col.r = upperLimit.r;
+	}
+	if (col.r < lowerLimit.r)
+	{
+		col.r = lowerLimit.r;
+	}
+	if (col.g > upperLimit.g)
+	{
+		col.g = upperLimit.g;
+	}
+	if (col.g < lowerLimit.g)
+	{
+		col.g = lowerLimit.g;
+	}
+	if (col.b > upperLimit.b)
+	{
+		col.b = upperLimit.b;
+	}
+	if (col.b < lowerLimit.b)
+	{
+		col.b = lowerLimit.b;
+	}
+	if (col.a > upperLimit.a)
+	{
+		col.a = upperLimit.a;
+	}
+	if (col.a < lowerLimit.a)
+	{
+		col.a = lowerLimit.a;
+	}
+}
+
+//=============================================================================
+// モデル生成
+//=============================================================================
+void CKananLibrary::CreateModelInfo(MODELINFO * pModelInfo)
+{
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+
+	// モデル生成
+	D3DXLoadMeshFromX(pModelInfo->cModelName,
+		D3DXMESH_SYSTEMMEM,
+		pDevice,
+		NULL,
+		&pModelInfo->matBuff,
+		NULL,
+		&pModelInfo->matNum,
+		&pModelInfo->mesh);
 }
 
 //=============================================================================

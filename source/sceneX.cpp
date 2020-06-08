@@ -18,6 +18,10 @@ CSceneX *CSceneX::m_pSceneX = NULL;				// CSceneX情報
 //==================================================================================================================
 // コンストラクタ
 //==================================================================================================================
+CSceneX::CSceneX()
+{
+}
+
 CSceneX::CSceneX(PRIORITY type) : CScene(type)
 {
 
@@ -166,6 +170,42 @@ void CSceneX::Draw(void)
 	//テクスチャの設定
 	pDevice->SetTexture(0, NULL);
 
+}
+
+//==================================================================================================================
+// メッシュの描画
+//==================================================================================================================
+void CSceneX::DrawMesh(void)
+{
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+
+	D3DXMATERIAL *pMat;
+	D3DMATERIAL9 matDef;
+
+	// テクスチャの設定
+	pDevice->SetTexture(0, NULL);
+
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
+	// 現在のマテリアルを取得
+	pDevice->GetMaterial(&matDef);
+
+	// マテリアル情報に対するポインタを取得
+	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+
+	for (int nCntMat = 0; nCntMat < (int)m_nNumMat; nCntMat++)
+	{
+		// マテリアルの設定
+		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+		// 描画
+		m_pMesh->DrawSubset(nCntMat);
+	}
+
+	// マテリアルをデフォルトに戻す
+	pDevice->SetMaterial(&matDef);
 }
 
 //==================================================================================================================

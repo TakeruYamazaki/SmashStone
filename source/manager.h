@@ -18,6 +18,7 @@
 class CRenderer;
 class CInputKeyboard;
 class CInputGamepad;
+class CMouse;
 
 //==================================================================================================================
 //
@@ -37,10 +38,12 @@ public:
 	static CRenderer *GetRenderer(void);							// レンダラーの取得
 	static CInputKeyboard *GetInputKeyboard(void);					// キーボードの取得
 	static CInputGamepad *GetInputGamepad(void);					// ゲームパッドの取得
+	static CMouse *GetMouse(void) { return m_pMouse; }				// マウスの取得
 
 protected:
 
 private:
+	static CMouse	*m_pMouse;										// マウスのポインタ
 	static CRenderer *m_pRenderer;									// レンダラー情報のポインタ
 	static CInputKeyboard *m_pInputKeyboard;						// キーボード情報のポインタ
 	static CInputGamepad *m_pInputGamepad;							// ゲームパッド情報のポインタ

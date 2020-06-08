@@ -40,6 +40,7 @@ public:
 
 	D3DXVECTOR3 GetRot(void);			// ‰ñ“]æ“¾ˆ—
 	D3DXVECTOR3 GetPosV(void);			// ‹“_ˆÊ’uİ’èˆ—
+	D3DXVECTOR3 GetPosR(void) { return m_posR; }
 
 protected:
 

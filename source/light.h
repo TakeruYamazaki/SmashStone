@@ -33,6 +33,8 @@ public:
 
 	static CLight *Create(void);					// ¶¬ˆ—
 
+	D3DXVECTOR3 GetLightVec(int nLight) { return m_avecDir[nLight]; }
+
 protected:
 
 private:

@@ -57,6 +57,8 @@ public:
 	static void SetGameState(GAMESTATE state);	// ゲームの状態設定
 	static GAMESTATE GetGameState(void);		// ゲームの状態取得
 	static CPlayer *GetPlayer(void) { return m_pPlayer0; }			// キャラクターの情報取得処理
+	static CCamera *GetCamera(void) { return m_pCamera; }
+	static CLight *GetLight(void) { return m_pLight; }
 
 protected:
 

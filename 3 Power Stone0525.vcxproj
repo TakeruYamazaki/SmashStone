@@ -157,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\camera.cpp" />
+    <ClCompile Include="source\character(1).cpp" />
     <ClCompile Include="source\character.cpp" />
     <ClCompile Include="source\charaICHIYAS.cpp" />
     <ClCompile Include="source\charaKURURU.cpp" />
@@ -180,9 +181,14 @@
     <ClCompile Include="source\manager.cpp" />
     <ClCompile Include="source\meshField.cpp" />
     <ClCompile Include="source\meshSphere.cpp" />
+    <ClCompile Include="source\modelCharacter.cpp" />
+    <ClCompile Include="source\modelParts.cpp" />
+    <ClCompile Include="source\motion.cpp" />
     <ClCompile Include="source\motionModel.cpp" />
+    <ClCompile Include="source\mouse.cpp" />
     <ClCompile Include="source\number.cpp" />
     <ClCompile Include="source\object.cpp" />
+    <ClCompile Include="source\objManager.cpp" />
     <ClCompile Include="source\pause.cpp" />
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\ranking.cpp" />
@@ -197,6 +203,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\camera.h" />
+    <ClInclude Include="source\character(1).h" />
     <ClInclude Include="source\character.h" />
     <ClInclude Include="source\charaICHIYAS.h" />
     <ClInclude Include="source\charaKURURU.h" />
@@ -222,7 +229,11 @@
     <ClInclude Include="source\manager.h" />
     <ClInclude Include="source\meshField.h" />
     <ClInclude Include="source\meshSphere.h" />
+    <ClInclude Include="source\modelCharacter.h" />
+    <ClInclude Include="source\modelParts.h" />
+    <ClInclude Include="source\motion.h" />
     <ClInclude Include="source\motionModel.h" />
+    <ClInclude Include="source\mouse.h" />
     <ClInclude Include="source\number.h" />
     <ClInclude Include="source\object.h" />
     <ClInclude Include="source\objManager.h" />

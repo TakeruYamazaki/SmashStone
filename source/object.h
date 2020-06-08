@@ -14,7 +14,7 @@
 //=============================================================================
 #include "main.h"
 #include "sceneX.h"
-#include <memory>	// スマートポインタ使用に必要
+#include "kananlibrary.h"
 
 //=============================================================================
 // マクロ定義
@@ -23,48 +23,43 @@
 //=============================================================================
 // クラス定義
 //=============================================================================
+
 class CObject : public CSceneX
 {
 public:
-	typedef struct MODEL_VTX
-	{	// モデルの最大・最小頂点座標
-		D3DXVECTOR3 VtxMax;	// 頂点の最大値
-		D3DXVECTOR3 VtxMin;	// 頂点の最小値
-		MODEL_VTX() {};		// コンストラクタ
-		MODEL_VTX(const D3DXVECTOR3 Max, const D3DXVECTOR3 Min)
-		{
-			VtxMax = Max;
-			VtxMin = Min;
-		}
-	} MODEL_VTX;
+	CObject(CSceneX::PRIORITY nPriority);
+	~CObject();
 
-	typedef struct
-	{	// モデル一つ一つの情報
-		char			cModelName[128];	// モデルのファイル名
-		LPD3DXMESH		mesh;				// メッシュ
-		LPD3DXBUFFER	matBuff;			// 頂点情報
-		DWORD			matNum;				// マテリアル数
-		MODEL_VTX		modelVtx;			// モデルの最大・最小頂点座標
-	} MODELINFO;
+	void Init(void);								// 初期化
+	void Uninit(void);								// 終了
+	void Update(void);								// 更新
+	void Draw(void);								// 描画
 
-	CObject(PRIORITY type);		// コンストラクタ
-	~CObject();					// デストラクタ
+	static CObject *Create(void);
 
-	void Init(void);			// 初期化
-	void Uninit(void);			// 終了
-	void Update(void);			// 更新
-	void Draw(void);			// 描画
+	void SetObjInfo(const D3DXVECTOR3 & pos,
+		const D3DXVECTOR3 & rot,
+		const LPDIRECT3DTEXTURE9 & pTexture,
+		const int & type,
+		const bool & bCollision);						// オブジェクトの情報設定
 
-	static std::unique_ptr<CObject> Create(void);	// 生成
+	bool CollObject(D3DXVECTOR3 *pos,
+		const D3DXVECTOR3 & posOld,
+		D3DXVECTOR3 *move,
+		const MODEL_VTX & modelVtx);
 
-	void SetObjInfo(D3DXVECTOR3 pos,
-		D3DXVECTOR3 rot);			// パーツの情報設定
+	bool GetRelease(void)	{ return m_bRelease; }		// リリースするかどうか
+	bool GetbColl(void)		{ return m_bCollision; }	// 当たり判定を行うか
+	int	 GetType(void)		{ return m_nType; }			// タイプ取得
 
-	bool GetRelease(void) { return m_bRelease; }	// リリースするかどうか
+#ifdef _DEBUG
+	void ShowObjectInfo(char cPrintText[16]);
+#endif
 
 private:
-	bool		m_bRelease;		// リリースするかどうか
-	MODELINFO	m_modelInfo;	// モデル情報
+	int		m_nType;		// オブジェクトタイプ
+	bool	m_bRelease;		// リリースするかどうか
+	bool	m_bCollision;	// 当たり判定処理を行うか
 };
 
 #endif

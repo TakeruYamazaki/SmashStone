@@ -29,6 +29,7 @@ public:
 		PRIORITY_MESH_SPHERE = 0,		// メッシュ球
 		PRIORITY_PLAYER,				// プレイヤー
 		PRIORITY_MODEL,					// モデル
+		PRIORITY_OBJECT,				// オブジェクト
 		PRIORITY_FIELD,					// フィールド
 		PRIORITY_SHADOW,				// 影
 		PRIORITY_EFFECT,				// エフェクト
