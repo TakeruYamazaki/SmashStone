@@ -1,11 +1,11 @@
 //==================================================================================================================
 //
-// ロゴ[logo.h]
+// UI[UI.h]
 // Author : Seiya Takahashi
 //
 //==================================================================================================================
-#ifndef _LOGO_H_
-#define _LOGO_H_
+#ifndef _UI_H_
+#define _UI_H_
 
 //==================================================================================================================
 // インクルードファイル
@@ -23,7 +23,7 @@ class CScene2D;
 // ロゴクラスの定義
 //
 //==================================================================================================================
-class CLogo : public CScene
+class CUI : public CScene
 {
 public:
 	//=============================================================================
@@ -70,62 +70,38 @@ public:
 		LOGOTYPE_DOT8,					// タイムとタイムの間の点8
 		LOGOTYPE_DOT9,					// タイムとタイムの間の点9
 		LOGOTYPE_MAX					// 最大
-	} LOGOTYPE;
+	} UITYPE;
 
-	//=============================================================================
-	// 列挙型定義
-	//=============================================================================
-	typedef enum
-	{
-		STARTCOUNT_NONE = 0,			// 何もない
-		STARTCOUNT_ONE,					// カウント1
-		STARTCOUNT_TWO,					// カウント2
-		STARTCOUNT_THREE,				// カウント3
-		STARTCOUNT_MAX					// 最大
-	} STARTCOUNT;
-
-	CLogo(PRIORITY type);																// コンストラクタ
-	~CLogo();																			// デストラクタ
+	CUI(PRIORITY type);																	// コンストラクタ
+	~CUI();																				// デストラクタ
 	void Init(void);																	// 初期化処理
 	void Uninit(void);																	// 終了処理
 	void Update(void);																	// 更新処理
 	void Draw(void);																	// 描画処理
 
-	static CLogo *Create(void);															// 生成処理
+	static CUI *Create(void);															// 生成処理
 	static HRESULT Load(void);															// テクスチャ情報ロード処理
 	static void Unload(void);															// テクスチャ情報アンロード処理
-	static void SetEnter(bool bEnter);													// エンター設定処理
 
-	void SetPos(D3DXVECTOR3 pos);														// 位置設定処理
-	void SetLogo(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nCnt, D3DXCOLOR col);	// ロゴ設定処理
+	void SetUI(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nCnt, D3DXCOLOR col);	// ロゴ設定処理
 
-	LOGOTYPE GetType(void);																// ロゴタイプ取得処理
+	UITYPE GetType(void);																// ロゴタイプ取得処理
 
 protected:
 
 private:
 	static LPDIRECT3DTEXTURE9 m_pTexture[LOGOTYPE_MAX];		// テクスチャ情報
 	static char *m_apFileName[LOGOTYPE_MAX];				// ロゴのファイル名
-	static bool m_bEnter;									// エンターキーが押されたかどうか
 
-	LOGOTYPE m_type;										// ロゴタイプ変数
-	STARTCOUNT m_StartCount;								// スタート時のカウント状態
+	UITYPE m_type;											// ロゴタイプ変数
 	CScene2D *m_pScene2D[LOGOTYPE_MAX];						// scene2Dの情報
 
 	D3DXVECTOR3 m_pos;										// 位置
 
 	int m_nCounterAnim;										// カウンター
 	int m_nPatternAnim;										// パターンNo
-	int m_nCountGoal;										// ゴールした時のカウント
-	int m_nCountStart;										// スタートするときのカウント
-	int m_nGoalTime;										// ゴールした時のタイムカウント
 
 	float m_fWidth;											// 縦幅
 	float m_fSize;											// 横幅
-	float m_posX;											// スクロール用計算変数
-	float m_TitlePosX;										// タイトル用位置X変数
-	float m_TitlePosY;										// タイトル用位置Y変数
-
-	bool m_bStartLogo;										// スタートロゴが表示されたかどうか
 };
 #endif

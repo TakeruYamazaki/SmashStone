@@ -1,10 +1,10 @@
 //==================================================================================================================
 //
-// ロゴ処理[logo.cpp]
+// UI処理[UI.cpp]
 // Author : Seiya Takahashi
 //
 //==================================================================================================================
-#include "logo.h"
+#include "UI.h"
 #include "renderer.h"
 #include "inputKeyboard.h"
 #include "fade.h"
@@ -172,9 +172,8 @@
 //==================================================================================================================
 // 静的メンバー変数の初期化
 //==================================================================================================================
-LPDIRECT3DTEXTURE9 CLogo::m_pTexture[LOGOTYPE_MAX] = {};		// テクスチャ情報
-bool CLogo::m_bEnter = false;									// エンターキーを押しているかどうか
-char *CLogo::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
+LPDIRECT3DTEXTURE9 CUI::m_pTexture[LOGOTYPE_MAX] = {};		// テクスチャ情報
+char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 {
 	{ "data/TEXTURE/title.png" },				// タイトル
 	{ "data/TEXTURE/PRESS START.png" },			// エンター
@@ -221,7 +220,7 @@ char *CLogo::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 // コンストラクタ
 //
 //==================================================================================================================
-CLogo::CLogo(PRIORITY type = CScene::PRIORITY_UI) : CScene(type)
+CUI::CUI(PRIORITY type = CScene::PRIORITY_UI) : CScene(type)
 {
 
 }
@@ -231,7 +230,7 @@ CLogo::CLogo(PRIORITY type = CScene::PRIORITY_UI) : CScene(type)
 // デストラクタ
 //
 //==================================================================================================================
-CLogo::~CLogo()
+CUI::~CUI()
 {
 
 }
@@ -239,18 +238,9 @@ CLogo::~CLogo()
 //==================================================================================================================
 // 初期化処理
 //==================================================================================================================
-void CLogo::Init(void)
+void CUI::Init(void)
 {
-	m_StartCount = STARTCOUNT_THREE;			// スタート時のカウント状態
-	m_bEnter = false;							// エンターキーが押されたかどうか
 	m_nCounterAnim = 0;							// アニメーションカウンタ
-	m_nCountGoal = 0;							// ゴールした時のカウント
-	m_nCountStart = 0;							// スタートするときのカウント
-	m_nGoalTime = 0;							// ゴールタイム
-	m_posX = 0.0f;								// スクロール用変数
-	m_TitlePosX = 0.0f;							// タイトル用位置X変数
-	m_TitlePosY = 0.0f;							// タイトル用位置Y変数
-	m_bStartLogo = false;						// スタートロゴが表示されたかどうか
 
 	// ロゴの最大枚数カウント
 	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
@@ -276,7 +266,7 @@ void CLogo::Init(void)
 				break;
 				// エンター
 			case LOGOTYPE_ENTER:
-				SetLogo(D3DXVECTOR3(SCREEN_WIDTH / 2, TITLE_ENTER_POSY, 0.0f), ENTER_SIZEX, ENTER_SIZEY, LOGOTYPE_ENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, TITLE_ENTER_POSY, 0.0f), ENTER_SIZEX, ENTER_SIZEY, LOGOTYPE_ENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 			}
 		}
@@ -299,59 +289,59 @@ void CLogo::Init(void)
 			{
 				// フレームロゴ
 			case LOGOTYPE_TIMEFRAME:
-				SetLogo(D3DXVECTOR3(TUTORIAL_FREAMLOGO_POSX, TUTORIAL_FREAMLOGO_POSY, 0.0f), TUTORIAL_FREAMLOGO_SIZEX, TUTORIAL_FREAMLOGO_SIZEY, LOGOTYPE_TIMEFRAME, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_FREAMLOGO_POSX, TUTORIAL_FREAMLOGO_POSY, 0.0f), TUTORIAL_FREAMLOGO_SIZEX, TUTORIAL_FREAMLOGO_SIZEY, LOGOTYPE_TIMEFRAME, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// チュートリアルロゴ
 			case LOGOTYPE_TUTORIAL0:
-				SetLogo(D3DXVECTOR3(TUTORIAL_LOGO_POSX, TUTORIAL_LOGO_POSY, 0.0f), TUTORIAL_LOGO_SIZEX, TUTORIAL_LOGO_SIZEY, LOGOTYPE_TUTORIAL0, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_LOGO_POSX, TUTORIAL_LOGO_POSY, 0.0f), TUTORIAL_LOGO_SIZEX, TUTORIAL_LOGO_SIZEY, LOGOTYPE_TUTORIAL0, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// チュートリアルロゴ
 			case LOGOTYPE_TUTORIAL1:
-				SetLogo(D3DXVECTOR3(TUTORIAL_LOGO2_POSX, TUTORIAL_LOGO2_POSY, 0.0f), TUTORIAL_LOGO2_SIZEX, TUTORIAL_LOGO2_SIZEY, LOGOTYPE_TUTORIAL1, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_LOGO2_POSX, TUTORIAL_LOGO2_POSY, 0.0f), TUTORIAL_LOGO2_SIZEX, TUTORIAL_LOGO2_SIZEY, LOGOTYPE_TUTORIAL1, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// チュートリアルエンターロゴ
 			case LOGOTYPE_TUTORIALENTER:
-				SetLogo(D3DXVECTOR3(TUTORIAL_ENTERLOGO_POSX, TUTORIAL_ENTERLOGO_POSY, 0.0f), TUTORIAL_ENTERLOGO_SIZEX, TUTORIAL_ENTERLOGO_SIZEY, LOGOTYPE_TUTORIALENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_ENTERLOGO_POSX, TUTORIAL_ENTERLOGO_POSY, 0.0f), TUTORIAL_ENTERLOGO_SIZEX, TUTORIAL_ENTERLOGO_SIZEY, LOGOTYPE_TUTORIALENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// でロゴ
 			case LOGOTYPE_DE:
-				SetLogo(D3DXVECTOR3(TUTORIAL_DELOGO_POSX, TUTORIAL_DELOGO_POSY, 0.0f), TUTORIAL_DELOGO_SIZEX, TUTORIAL_DELOGO_SIZEY, LOGOTYPE_DE, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_DELOGO_POSX, TUTORIAL_DELOGO_POSY, 0.0f), TUTORIAL_DELOGO_SIZEX, TUTORIAL_DELOGO_SIZEY, LOGOTYPE_DE, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// スキップロゴ
 			case LOGOTYPE_SKIP:
-				SetLogo(D3DXVECTOR3(TUTORIAL_SKIPLOGO_POSX, TUTORIAL_SKIPLOGO_POSY, 0.0f), TUTORIAL_SKIPLOGO_SIZEX, TUTORIAL_SKIPLOGO_SIZEY, LOGOTYPE_SKIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_SKIPLOGO_POSX, TUTORIAL_SKIPLOGO_POSY, 0.0f), TUTORIAL_SKIPLOGO_SIZEX, TUTORIAL_SKIPLOGO_SIZEY, LOGOTYPE_SKIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// キーボードのA
 			case LOGOTYPE_A:
-				SetLogo(D3DXVECTOR3(TUTORIAL_ALOGO_POSX, TUTORIAL_ALOGO_POSY, 0.0f), TUTORIAL_ALOGO_SIZEX, TUTORIAL_ALOGO_SIZEY, LOGOTYPE_A, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_ALOGO_POSX, TUTORIAL_ALOGO_POSY, 0.0f), TUTORIAL_ALOGO_SIZEX, TUTORIAL_ALOGO_SIZEY, LOGOTYPE_A, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 左旋回
 			case LOGOTYPE_LEFT:
-				SetLogo(D3DXVECTOR3(TUTORIAL_LEFTLOGO_POSX, TUTORIAL_LEFTLOGO_POSY, 0.0f), TUTORIAL_LEFTLOGO_SIZEX, TUTORIAL_LEFTLOGO_SIZEY, LOGOTYPE_LEFT, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_LEFTLOGO_POSX, TUTORIAL_LEFTLOGO_POSY, 0.0f), TUTORIAL_LEFTLOGO_SIZEX, TUTORIAL_LEFTLOGO_SIZEY, LOGOTYPE_LEFT, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// キーボードのD
 			case LOGOTYPE_D:
-				SetLogo(D3DXVECTOR3(TUTORIAL_DLOGO_POSX, TUTORIAL_DLOGO_POSY, 0.0f), TUTORIAL_DLOGO_SIZEX, TUTORIAL_DLOGO_SIZEY, LOGOTYPE_D, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_DLOGO_POSX, TUTORIAL_DLOGO_POSY, 0.0f), TUTORIAL_DLOGO_SIZEX, TUTORIAL_DLOGO_SIZEY, LOGOTYPE_D, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 右旋回
 			case LOGOTYPE_RIGHT:
-				SetLogo(D3DXVECTOR3(TUTORIAL_RIGHTLOGO_POSX, TUTORIAL_RIGHTLOGO_POSY, 0.0f), TUTORIAL_RIGHTLOGO_SIZEX, TUTORIAL_RIGHTLOGO_SIZEY, LOGOTYPE_RIGHT, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_RIGHTLOGO_POSX, TUTORIAL_RIGHTLOGO_POSY, 0.0f), TUTORIAL_RIGHTLOGO_SIZEX, TUTORIAL_RIGHTLOGO_SIZEY, LOGOTYPE_RIGHT, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// キーボードのS
 			case LOGOTYPE_S:
-				SetLogo(D3DXVECTOR3(TUTORIAL_SLOGO_POSX, TUTORIAL_SLOGO_POSY, 0.0f), TUTORIAL_SLOGO_SIZEX, TUTORIAL_SLOGO_SIZEY, LOGOTYPE_S, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_SLOGO_POSX, TUTORIAL_SLOGO_POSY, 0.0f), TUTORIAL_SLOGO_SIZEX, TUTORIAL_SLOGO_SIZEY, LOGOTYPE_S, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 減速ロゴ
 			case LOGOTYPE_REDUCE_SPEED:
-				SetLogo(D3DXVECTOR3(TUTORIAL_SPEEDLOGO_POSX, TUTORIAL_SPEEDLOGO_POSY, 0.0f), TUTORIAL_SPEEDLOGO_SIZEX, TUTORIAL_SPEEDLOGO_SIZEY, LOGOTYPE_REDUCE_SPEED, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_SPEEDLOGO_POSX, TUTORIAL_SPEEDLOGO_POSY, 0.0f), TUTORIAL_SPEEDLOGO_SIZEX, TUTORIAL_SPEEDLOGO_SIZEY, LOGOTYPE_REDUCE_SPEED, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// キーボードのスペース
 			case LOGOTYPE_SPACE:
-				SetLogo(D3DXVECTOR3(TUTORIAL_SPACELOGO_POSX, TUTORIAL_SPACELOGO_POSY, 0.0f), TUTORIAL_SPACELOGO_SIZEX, TUTORIAL_SPACELOGO_SIZEY, LOGOTYPE_SPACE, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_SPACELOGO_POSX, TUTORIAL_SPACELOGO_POSY, 0.0f), TUTORIAL_SPACELOGO_SIZEX, TUTORIAL_SPACELOGO_SIZEY, LOGOTYPE_SPACE, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// ジャンプロゴ
 			case LOGOTYPE_JUMP:
-				SetLogo(D3DXVECTOR3(TUTORIAL_JUMPLOGO_POSX, TUTORIAL_JUMPLOGO_POSY, 0.0f), TUTORIAL_JUMPLOGO_SIZEX, TUTORIAL_JUMPLOGO_SIZEY, LOGOTYPE_JUMP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(TUTORIAL_JUMPLOGO_POSX, TUTORIAL_JUMPLOGO_POSY, 0.0f), TUTORIAL_JUMPLOGO_SIZEX, TUTORIAL_JUMPLOGO_SIZEY, LOGOTYPE_JUMP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 			}
 		}
@@ -374,35 +364,35 @@ void CLogo::Init(void)
 			{
 				// タイマーフレーム
 			case LOGOTYPE_TIMEFRAME:
-				SetLogo(D3DXVECTOR3(GAME_TIMEFREAMELOGO_POSX, GAME_TIMEFREAMELOGO_POSY, 0.0f), GAME_TIMEFREAMELOGO_SIZEX, GAME_TIMEFREAMELOGO_SIZEY, LOGOTYPE_TIMEFRAME, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(GAME_TIMEFREAMELOGO_POSX, GAME_TIMEFREAMELOGO_POSY, 0.0f), GAME_TIMEFREAMELOGO_SIZEX, GAME_TIMEFREAMELOGO_SIZEY, LOGOTYPE_TIMEFRAME, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 現在のタイム
 			case LOGOTYPE_NOW_TIME:
-				SetLogo(D3DXVECTOR3(GAME_NOWTIMEFREAMELOGO_POSX, GAME_NOWTIMEFREAMELOGO_POSY, 0.0f), GAME_NOWTIMEFREAMELOGO_SIZEX, GAME_NOWTIMEFREAMELOGO_SIZEY, LOGOTYPE_NOW_TIME, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(GAME_NOWTIMEFREAMELOGO_POSX, GAME_NOWTIMEFREAMELOGO_POSY, 0.0f), GAME_NOWTIMEFREAMELOGO_SIZEX, GAME_NOWTIMEFREAMELOGO_SIZEY, LOGOTYPE_NOW_TIME, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 最高のタイム
 			case LOGOTYPE_BEST_TIME:
-				SetLogo(D3DXVECTOR3(GAME_BESTTIME_POSX, GAME_BESTTIME_POSY, 0.0f), GAME_BESTTIME_SIZEX, GAME_BESTTIME_SIZEY, LOGOTYPE_BEST_TIME, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(GAME_BESTTIME_POSX, GAME_BESTTIME_POSY, 0.0f), GAME_BESTTIME_SIZEX, GAME_BESTTIME_SIZEY, LOGOTYPE_BEST_TIME, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// タイムとタイムの間の点
 			case LOGOTYPE_DOT0:
-				SetLogo(D3DXVECTOR3(GAME_DOT0_POSX, GAME_DOT0_POSY, 0.0f), GAME_DOT0_SIZEX, GAME_DOT0_SIZEY, LOGOTYPE_DOT0, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(GAME_DOT0_POSX, GAME_DOT0_POSY, 0.0f), GAME_DOT0_SIZEX, GAME_DOT0_SIZEY, LOGOTYPE_DOT0, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// タイムとタイムの間の点
 			case LOGOTYPE_DOT1:
-				SetLogo(D3DXVECTOR3(GAME_DOT1_POSX, GAME_DOT1_POSY, 0.0f), GAME_DOT1_SIZEX, GAME_DOT1_SIZEY, LOGOTYPE_DOT1, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(GAME_DOT1_POSX, GAME_DOT1_POSY, 0.0f), GAME_DOT1_SIZEX, GAME_DOT1_SIZEY, LOGOTYPE_DOT1, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// タイムとタイムの間の点
 			case LOGOTYPE_DOT2:
-				SetLogo(D3DXVECTOR3(GAME_DOT2_POSX, GAME_DOT2_POSY, 0.0f), GAME_DOT2_SIZEX, GAME_DOT2_SIZEY, LOGOTYPE_DOT2, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(GAME_DOT2_POSX, GAME_DOT2_POSY, 0.0f), GAME_DOT2_SIZEX, GAME_DOT2_SIZEY, LOGOTYPE_DOT2, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// タイムとタイムの間の点
 			case LOGOTYPE_DOT3:
-				SetLogo(D3DXVECTOR3(GAME_DOT3_POSX, GAME_DOT3_POSY, 0.0f), GAME_DOT3_SIZEX, GAME_DOT3_SIZEY, LOGOTYPE_DOT3, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(GAME_DOT3_POSX, GAME_DOT3_POSY, 0.0f), GAME_DOT3_SIZEX, GAME_DOT3_SIZEY, LOGOTYPE_DOT3, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// ポーズロゴ
 			case LOGOTYPE_PAUSE:
-				SetLogo(D3DXVECTOR3(GAME_PAUSE_POSX, GAME_PAUSE_POSY, 0.0f), GAME_PAUSE_SIZEX, GAME_PAUSE_SIZEY, LOGOTYPE_PAUSE, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(GAME_PAUSE_POSX, GAME_PAUSE_POSY, 0.0f), GAME_PAUSE_SIZEX, GAME_PAUSE_SIZEY, LOGOTYPE_PAUSE, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 			}
 		}
@@ -425,55 +415,55 @@ void CLogo::Init(void)
 			{
 				// ランクのとき
 			case LOGOTYPE_RANK:
-				SetLogo(D3DXVECTOR3(RANKING_RANK_POSX, RANKING_RANK_POSY, 0.0f), RANKING_RANK_SIZEX, RANKING_RANK_SIZEY, LOGOTYPE_RANK, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_RANK_POSX, RANKING_RANK_POSY, 0.0f), RANKING_RANK_SIZEX, RANKING_RANK_SIZEY, LOGOTYPE_RANK, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// ランキングロゴのとき
 			case LOGOTYPE_RANKING_LOGO:
-				SetLogo(D3DXVECTOR3(RANKING_LOGO_POSX, RANKING_LOGO_POSY, 0.0f), RANKING_LOGO_SIZEX, RANKING_LOGO_SIZEY, LOGOTYPE_RANKING_LOGO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_LOGO_POSX, RANKING_LOGO_POSY, 0.0f), RANKING_LOGO_SIZEX, RANKING_LOGO_SIZEY, LOGOTYPE_RANKING_LOGO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// エンター
 			case LOGOTYPE_ENTER:
-				SetLogo(D3DXVECTOR3(RANKING_ENTER_POSX, RANKING_ENTER_POSY, 0.0f), RANKING_ENTER_SIZEX, RANKING_ENTER_SIZEY, LOGOTYPE_ENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_ENTER_POSX, RANKING_ENTER_POSY, 0.0f), RANKING_ENTER_SIZEX, RANKING_ENTER_SIZEY, LOGOTYPE_ENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 数字と数字の間の点0
 			case LOGOTYPE_DOT0:
-				SetLogo(D3DXVECTOR3(RANKING_DOT0_POSX, RANKING_DOT0_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT0, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_DOT0_POSX, RANKING_DOT0_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT0, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 数字と数字の間の点1
 			case LOGOTYPE_DOT1:
-				SetLogo(D3DXVECTOR3(RANKING_DOT1_POSX, RANKING_DOT1_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT1, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_DOT1_POSX, RANKING_DOT1_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT1, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 数字と数字の間の点2
 			case LOGOTYPE_DOT2:
-				SetLogo(D3DXVECTOR3(RANKING_DOT2_POSX, RANKING_DOT2_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT2, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_DOT2_POSX, RANKING_DOT2_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT2, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 数字と数字の間の点3
 			case LOGOTYPE_DOT3:
-				SetLogo(D3DXVECTOR3(RANKING_DOT3_POSX, RANKING_DOT3_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT3, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_DOT3_POSX, RANKING_DOT3_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT3, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 数字と数字の間の点4
 			case LOGOTYPE_DOT4:
-				SetLogo(D3DXVECTOR3(RANKING_DOT4_POSX, RANKING_DOT4_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT4, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_DOT4_POSX, RANKING_DOT4_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT4, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 数字と数字の間の点5
 			case LOGOTYPE_DOT5:
-				SetLogo(D3DXVECTOR3(RANKING_DOT5_POSX, RANKING_DOT5_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT5, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_DOT5_POSX, RANKING_DOT5_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT5, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 数字と数字の間の点6
 			case LOGOTYPE_DOT6:
-				SetLogo(D3DXVECTOR3(RANKING_DOT6_POSX, RANKING_DOT6_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT6, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_DOT6_POSX, RANKING_DOT6_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT6, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 数字と数字の間の点7
 			case LOGOTYPE_DOT7:
-				SetLogo(D3DXVECTOR3(RANKING_DOT7_POSX, RANKING_DOT7_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT7, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_DOT7_POSX, RANKING_DOT7_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT7, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 数字と数字の間の点8
 			case LOGOTYPE_DOT8:
-				SetLogo(D3DXVECTOR3(RANKING_DOT8_POSX, RANKING_DOT8_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT8, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_DOT8_POSX, RANKING_DOT8_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT8, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 				// 数字と数字の間の点9
 			case LOGOTYPE_DOT9:
-				SetLogo(D3DXVECTOR3(RANKING_DOT9_POSX, RANKING_DOT9_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT9, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetUI(D3DXVECTOR3(RANKING_DOT9_POSX, RANKING_DOT9_POSY, 0.0f), RANKING_DOT_SIZE, RANKING_DOT_SIZE, LOGOTYPE_DOT9, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				break;
 			}
 		}
@@ -483,7 +473,7 @@ void CLogo::Init(void)
 //==================================================================================================================
 // 終了処理
 //==================================================================================================================
-void CLogo::Uninit(void)
+void CUI::Uninit(void)
 {
 
 }
@@ -491,197 +481,15 @@ void CLogo::Uninit(void)
 //==================================================================================================================
 // 更新処理
 //==================================================================================================================
-void CLogo::Update(void)
+void CUI::Update(void)
 {
-	// タイトルのとき
-	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
-	{
-		// プレイヤーの取得
-		CPlayer *pPlayer = CTitle::GetPlayer();
 
-		// タイトルフェード判定処理
-		bool bTitleFade = pPlayer->GetbTitleFade();
-
-		// タイトルフェード判定がtrueのとき
-		if (bTitleFade)
-		{
-			// タイトルロゴ
-			SetLogo(D3DXVECTOR3(TITLEFADE_POSX + m_TitlePosX, TITLEFADE_POSY + m_TitlePosY, 0.0f), TITLELOGO_SIZEX, TITLELOGO_SIZEY, 
-				LOGOTYPE_TITLE, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
-			// ロゴが規定値より小さいとき
-			if (TITLEFADE_POSX + m_TitlePosX < TITLE_CENTER_POSX)
-			{
-				// 位置を右にずらす
-				m_TitlePosX += TITLELOGO_SPEEDX;
-			}
-		}
-	}
-
-	// チュートリアルのとき
-	if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
-	{
-		// プレイヤーの取得
-		CPlayer *pPlayer = CTutorial::GetPlayer();
-
-		// スタート判定取得
-		bool bStart = pPlayer->GetStart();
-
-		// 位置を左にずらす
-		m_posX -= TUTORIAL_MOVE;
-
-		// チュートリアルロゴ設定
-		SetLogo(D3DXVECTOR3(TUTORIALLOGO_POSX1 + m_posX, TUTORIALLOGO_POSY, 0.0f), TUTORIALLOGO_SIZEX, TUTORIALLOGO_SIZEY, LOGOTYPE_TUTORIAL0, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
-		// チュートリアルロゴ設定
-		SetLogo(D3DXVECTOR3(TUTORIALLOGO_POSX2 + m_posX, TUTORIALLOGO_POSY, 0.0f), TUTORIALLOGO_SIZEX, TUTORIALLOGO_SIZEY, LOGOTYPE_TUTORIAL1, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
-		// ロゴ全体が画面外にいったら
-		if (TUTORIALLOGO_POSX1 + m_posX <= TUTORIALLOGO_POSX2)
-		{
-			// 値を0にする
-			m_posX = 0.0f;
-		}
-
-		// スタートしていないとき
-		if (!bStart)
-		{
-			// 試し泳ぎロゴ設定
-			SetLogo(D3DXVECTOR3(TUTORIAL_PRESSJUMP_POSX, TUTORIAL_PRESSJUMP_POSY, 0.0f), TUTORIAL_PRESSJUMP_SIZEX, TUTORIAL_PRESSJUMP_SIZEY, LOGOTYPE_PRESSJUMP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
-			// 試し泳ぎロゴ設定
-			SetLogo(D3DXVECTOR3(TUTORIAL_PLAYSWIM_POSX, TUTORIAL_PLAYSWIM_POSY, 0.0f), TUTORIAL_PLAYSWIM_SIZEX, TUTORIAL_PLAYSWIM_SIZEY, LOGOTYPE_PLAYSWIM, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-		}
-		else
-		{
-			// 試し泳ぎロゴ設定
-			SetLogo(D3DXVECTOR3(TUTORIAL_PRESSJUMP_POSX, TUTORIAL_PRESSJUMP_POSY, 0.0f), 0.0f, 0.0f, LOGOTYPE_PRESSJUMP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
-
-			// 試し泳ぎロゴ設定
-			SetLogo(D3DXVECTOR3(TUTORIAL_PLAYSWIM_POSX, TUTORIAL_PLAYSWIM_POSY, 0.0f), 0.0f, 0.0f, LOGOTYPE_PLAYSWIM, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
-
-		}
-	}
-
-	// ゲームのとき
-	if (CRenderer::GetMode() == CRenderer::MODE_GAME)
-	{
-		// プレイヤーの取得
-		CPlayer *pPlayer = CGame::GetPlayer();
-
-		// ゴール判定取得
-		bool bGoal = pPlayer->GetbGoal();
-
-		// スタート判定取得
-		bool bStart = pPlayer->GetStart();
-
-		// スタートしていないとき
-		if (bStart == false)
-		{
-			// スタート時のサイズ変更用カウンタ加算
-			m_nCountStart += 2;
-
-			// スタートカウントロゴ設定設定
-			SetLogo(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), START_SIZE - m_nCountStart, START_SIZE - m_nCountStart,
-				LOGOTYPE_START + m_StartCount, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
-			// スタート時の状態で切替する
-			switch (m_StartCount)
-			{
-				// スタートカウントが1のとき
-			case STARTCOUNT_ONE:
-				// ロゴサイズが規定値以下になったとき
-				if (START_SIZE - m_nCountStart <= 0)
-				{
-					// 初期値に戻す
-					m_nCountStart = 0;
-
-					// スタートカウント0にする
-					m_StartCount = STARTCOUNT_NONE;
-
-					// スタートした状態にする
-					bStart = true;
-
-					// プレイヤーのスタート判定設定
-					pPlayer->SetbStart(bStart);
-				}
-				break;
-				// スタートカウントが2のとき
-			case STARTCOUNT_TWO:
-				// ロゴサイズが規定値以下になったとき
-				if (START_SIZE - m_nCountStart <= 0)
-				{
-					// 初期値に戻す
-					m_nCountStart = 0;
-
-					// スタートカウント1にする
-					m_StartCount = STARTCOUNT_ONE;
-				}
-				break;
-				// スタートカウントが3のとき
-			case STARTCOUNT_THREE:
-				// ロゴサイズが規定値以下になったとき
-				if (START_SIZE - m_nCountStart <= 0)
-				{
-					// 初期値に戻す
-					m_nCountStart = 0;
-
-					// スタートカウント2にする
-					m_StartCount = STARTCOUNT_TWO;
-				}
-				break;
-			}
-		}
-		else
-		{// スタートしたとき
-			// スタートロゴが表示されていないとき
-			if (m_bStartLogo == false)
-			{
-				// スタート時のサイズ変更用カウンタ加算
-				m_nCountStart += 4;
-
-				// スタートロゴの横の大きさが0以下のとき
-				if (LOGO_START_SIZEX - m_nCountStart <= 0)
-				{
-					// サイズを0にする
-					m_nCountStart = 0;
-
-					// スタートロゴが表示された状態にする
-					m_bStartLogo = true;
-				}
-				else
-				{// スタートロゴの横の大きさが0以上のとき
-					// スタートカウントロゴ設定設定
-					SetLogo(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), LOGO_START_SIZEX - m_nCountStart, LOGO_START_SIZEY - m_nCountStart,
-						LOGOTYPE_START, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
-				}
-			}
-		}
-
-		// ゴールしたとき
-		if (bGoal == true)
-		{
-			// ゴールカウント加算
-			m_nCountGoal += GOAL_COUNT;
-
-			// ゴールカウントが規定値を超えたとき
-			if (m_nCountGoal >= GOAL_COUNTMAX)
-			{
-				// カウント加算減らす
-				m_nCountGoal = GOAL_COUNTMAX;
-			}
-
-			// ゴールロゴ設定
-			SetLogo(D3DXVECTOR3(SCREEN_WIDTH / 2, GOAL_LOGO_POSY, 0.0f), 3.0f * m_nCountGoal, 1.5f * m_nCountGoal, LOGOTYPE_GOAL, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-		}
-	}
 }
 
 //==================================================================================================================
 // 描画処理
 //==================================================================================================================
-void CLogo::Draw(void)
+void CUI::Draw(void)
 {
 
 }
@@ -689,30 +497,22 @@ void CLogo::Draw(void)
 //==================================================================================================================
 // 生成処理
 //==================================================================================================================
-CLogo *CLogo::Create(void)
+CUI *CUI::Create(void)
 {
 	// シーン動的に確保
-	CLogo *pLogo = new CLogo(CScene::PRIORITY_UI);
+	CUI *pUI = new CUI(CScene::PRIORITY_UI);
 
 	// シーン初期化
-	pLogo->Init();
+	pUI->Init();
 
 	// 値を返す
-	return pLogo;
-}
-
-//==================================================================================================================
-// 位置設定
-//==================================================================================================================
-void CLogo::SetPos(D3DXVECTOR3 pos)
-{
-
+	return pUI;
 }
 
 //==================================================================================================================
 // テクスチャロード
 //==================================================================================================================
-HRESULT CLogo::Load(void)
+HRESULT CUI::Load(void)
 {
 	CRenderer *pRenderer = CManager::GetRenderer();			// レンダラー情報取得
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();		// デバイスの取得
@@ -732,7 +532,7 @@ HRESULT CLogo::Load(void)
 //==================================================================================================================
 // 破棄
 //==================================================================================================================
-void CLogo::Unload(void)
+void CUI::Unload(void)
 {
 	// ロゴの最大種類までカウント
 	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
@@ -745,7 +545,7 @@ void CLogo::Unload(void)
 //==================================================================================================================
 // 種類取得
 //==================================================================================================================
-CLogo::LOGOTYPE CLogo::GetType(void)
+CUI::UITYPE CUI::GetType(void)
 {
 	return m_type;
 }
@@ -753,17 +553,9 @@ CLogo::LOGOTYPE CLogo::GetType(void)
 //==================================================================================================================
 // ロゴ作成
 //==================================================================================================================
-void CLogo::SetLogo(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nCnt, D3DXCOLOR col)
+void CUI::SetUI(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nCnt, D3DXCOLOR col)
 {
 	m_pScene2D[nCnt]->SetPos(pos);												// 位置設定
 	m_pScene2D[nCnt]->SetSize(D3DXVECTOR3(fSizeX, fSizeY, 0.0f));				// 大きさ設定
 	m_pScene2D[nCnt]->SetCol(col);												// 色設定
-}
-
-//==================================================================================================================
-// 状態管理
-//==================================================================================================================
-void CLogo::SetEnter(bool bEnter)
-{
-	m_bEnter = bEnter;
 }
