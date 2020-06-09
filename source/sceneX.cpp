@@ -11,9 +11,13 @@
 #include "debugProc.h"
 
 //==================================================================================================================
+// マクロ定義
+//==================================================================================================================
+#define COLOR_SHADOW		(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f))	// 影のカラー
+
+//==================================================================================================================
 // 静的メンバ変数の初期化
 //==================================================================================================================
-CSceneX *CSceneX::m_pSceneX = NULL;				// CSceneX情報
 
 //==================================================================================================================
 // コンストラクタ
@@ -41,12 +45,12 @@ CSceneX::~CSceneX()
 void CSceneX::Init(void)
 {
 	// 初期化
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 位置
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 移動量
-	m_size = D3DXVECTOR3(1.0f, 1.0f, 1.0f);					// 大きさ
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 回転
-	m_vecAxis = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// 回転軸
-	m_fValueRot = 0.0f;										// 回転角（回転量）
+	m_pos		= ZeroVector3;	// 位置
+	m_move		= ZeroVector3;	// 移動量
+	m_size		= OneVector3;	// 大きさ
+	m_rot		= ZeroVector3;	// 回転
+	m_vecAxis	= ZeroVector3;	// 回転軸
+	m_fValueRot = 0.0f;			// 回転角（回転量）
 }
 
 //==================================================================================================================
@@ -63,49 +67,10 @@ void CSceneX::Uninit(void)
 //==================================================================================================================
 void CSceneX::Update(void)
 {
-	// 位置取得
-	m_pos = GetPos();
+	// 回転しすぎた分を補正する
+	CKananLibrary::InterpolationFloat(m_fValueRot);
 
-	// 回転取得
-	m_rot = GetRot();
 
-	// 移動量取得
-	m_move = GetMove();
-
-	// 回転軸取得
-	m_vecAxis = GetVecAxis();
-
-	// 回転量取得
-	m_fValueRot = GetValueRot();
-
-	// 回転情報が-D3DX_PIより小さくなったとき
-	if (m_fValueRot < -D3DX_PI)
-	{
-		// 一周回転させる
-		m_fValueRot += D3DX_PI * 2;
-	}
-
-	// 回転情報がD3DX_PIより大きくなったとき
-	if (m_fValueRot > D3DX_PI)
-	{
-		// 一周戻す
-		m_fValueRot -= D3DX_PI * 2;
-	}
-
-	// 回転軸設定
-	SetVecAxis(m_vecAxis);
-
-	// 回転量設定
-	SetValueRot(m_fValueRot);
-
-	// 位置設定
-	SetPos(m_pos);
-
-	// 回転設定
-	SetRot(m_rot);
-
-	// 移動量設定
-	SetMove(m_move);
 }
 
 //==================================================================================================================
@@ -146,23 +111,23 @@ void CSceneX::Draw(void)
 	pDevice->GetMaterial(&matDef);
 
 	// マテリアル情報に対するポインタを取得
-	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+	pMat = (D3DXMATERIAL*)m_pModelInfo->matBuff->GetBufferPointer();
 
 	// キャラクターの影描画
-	for (int nCntMat = 0; nCntMat < (int)m_nNumMat; nCntMat++)
+	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo->matNum; nCntMat++)
 	{
 		// マテリアルの設定
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 		// 描画
-		m_pMesh->DrawSubset(nCntMat);
+		m_pModelInfo->mesh->DrawSubset(nCntMat);
 	}
 
 	// マテリアルをデフォルトに戻す
 	pDevice->SetMaterial(&matDef);
 
 	//テクスチャの設定
-	pDevice->SetTexture(0, m_pTexture);
+	pDevice->SetTexture(0, m_pModelInfo->pTexture);
 
 	//ポリゴン描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
@@ -184,7 +149,7 @@ void CSceneX::DrawMesh(void)
 	D3DMATERIAL9 matDef;
 
 	// テクスチャの設定
-	pDevice->SetTexture(0, NULL);
+	pDevice->SetTexture(0, m_pModelInfo->pTexture);
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
@@ -193,85 +158,76 @@ void CSceneX::DrawMesh(void)
 	pDevice->GetMaterial(&matDef);
 
 	// マテリアル情報に対するポインタを取得
-	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+	pMat = (D3DXMATERIAL*)m_pModelInfo->matBuff->GetBufferPointer();
 
-	for (int nCntMat = 0; nCntMat < (int)m_nNumMat; nCntMat++)
+	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo->matNum; nCntMat++)
 	{
 		// マテリアルの設定
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 		// 描画
-		m_pMesh->DrawSubset(nCntMat);
+		m_pModelInfo->mesh->DrawSubset(nCntMat);
 	}
 
 	// マテリアルをデフォルトに戻す
 	pDevice->SetMaterial(&matDef);
 }
 
-//==================================================================================================================
-// テクスチャを結合する
-//==================================================================================================================
-void CSceneX::BindTex(LPDIRECT3DTEXTURE9 tex)
-{
-	m_pTexture = tex;
-}
 
-//==================================================================================================================
-// モデルを結合する
-//==================================================================================================================
-void CSceneX::BindModel(LPD3DXBUFFER pBuffMat, DWORD nNumMat, LPD3DXMESH pMesh)
+//=============================================================================
+// 影の描画
+//=============================================================================
+void CSceneX::DrawShadow(void)
 {
-	m_pBuffMat = pBuffMat;
-	m_nNumMat = nNumMat;
-	m_pMesh = pMesh;
-}
+	// デバイス取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
-//==================================================================================================================
-// 位置設定
-//==================================================================================================================
-void CSceneX::SetPos(D3DXVECTOR3 pos)
-{
-	m_pos = pos;
-}
+	D3DXMATERIAL *pMat;
+	D3DMATERIAL9 matDef, matBlack;
 
-//==================================================================================================================
-// 大きさ設定
-//==================================================================================================================
-void CSceneX::SetSize(D3DXVECTOR3 size)
-{
-	m_size = size;
-}
+	// 現在のマテリアルを取得
+	pDevice->GetMaterial(&matDef);
 
-//==================================================================================================================
-// 移動量設定
-//==================================================================================================================
-void CSceneX::SetMove(D3DXVECTOR3 move)
-{
-	m_move = move;
-}
+	matBlack = matDef;
 
-//==================================================================================================================
-// 回転設定
-//==================================================================================================================
-void CSceneX::SetRot(D3DXVECTOR3 rot)
-{
-	m_rot = rot;
-}
+	// 色の設定
+	matBlack.Diffuse = COLOR_SHADOW;
 
-//==================================================================================================================
-// 回転軸設定
-//==================================================================================================================
-void CSceneX::SetVecAxis(D3DXVECTOR3 vecAxis)
-{
-	m_vecAxis = vecAxis;
-}
+	// マテリアル情報に対するポインタを取得
+	pMat = (D3DXMATERIAL*)m_pModelInfo->matBuff->GetBufferPointer();
 
-//==================================================================================================================
-// 回転角設定
-//==================================================================================================================
-void CSceneX::SetValueRot(float ValueRot)
-{
-	m_fValueRot = ValueRot;
+	// ========================ステンシル============================
+	// [ピクセル単位で参照値を設定し、								]
+	// [その値と条件を比較してピクセルの描画を行うか判断する手法	]
+	// ==============================================================
+
+	// 参照値	: D3DRS_STENCILPASS						(ステンシルテスト・Zテストを両方成功していたら +1)
+	// 条件		: D3DRS_STENCILREF, D3DRS_STENCILFUNC	(参照値が0のみステンシルテスト合格)
+	// よって、参照値 = 0 だと描画する					(ステンシルテストを合格しているピクセルのみ、描画される)
+
+	// ステンシルの値を0にする
+	//pDevice->Clear(0, NULL, D3DCLEAR_STENCIL, 0, 1.0f, 0);
+	//
+	//pDevice->SetRenderState(D3DRS_STENCILENABLE, TRUE);				// ステンシルテスト有効
+	//pDevice->SetRenderState(D3DRS_STENCILREF, 0);					// ステンシルの条件の値
+	//pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL);		// (EQUAL : 条件と同じ)
+
+	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo->matNum; nCntMat++)
+	{
+		// インクリメント
+		//pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCR);
+
+		// マテリアルの設定
+		pDevice->SetMaterial(&matBlack);
+
+		// 描画
+		m_pModelInfo->mesh->DrawSubset(nCntMat);
+	}
+	// マテリアルをデフォルトに戻す
+	pDevice->SetMaterial(&matDef);
+
+	// ステンシルテスト無効
+	//pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
 }
 
 //==================================================================================================================
@@ -301,11 +257,11 @@ bool CSceneX::SetCollisionBox(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXVECTOR3 pos
 CSceneX *CSceneX::Create(void)
 {
 	// シーン動的に確保
-	m_pSceneX = new CSceneX(CScene::PRIORITY_FIELD);
+	CSceneX *pSceneX = new CSceneX(CScene::PRIORITY_FIELD);
 
 	// シーン初期化
-	m_pSceneX->Init();
+	pSceneX->Init();
 
 	// 値を返す
-	return m_pSceneX;
+	return pSceneX;
 }

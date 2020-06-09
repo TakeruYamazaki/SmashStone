@@ -42,6 +42,7 @@ using namespace std;
 //==================================================================================================================
 #define SCREEN_WIDTH	(1280)					// ウィンドウの幅
 #define SCREEN_HEIGHT	(720)					// ウィンドウの高さ
+#define MAX_PLAYER		(2)						// プレイヤーの総数
 
 // 2Dポリゴン頂点フォーマット
 #define FVF_VERTEX_2D (D3DFVF_XYZRHW|D3DFVF_DIFFUSE | D3DFVF_TEX1)
@@ -68,5 +69,9 @@ typedef struct
 } VERTEX_3D;
 
 int GetFPS(void);		// FPSの取得
+
+#ifdef _DEBUG
+void DispConsol(void);	// コンソールウィンドウ出力
+#endif
 
 #endif

@@ -92,22 +92,10 @@ public:
 
 	static CPlayer *Create(void);					// 生成処理
 
-	//void SetPos(D3DXVECTOR3 pos);					// 位置設定処理
-	//void SetRot(D3DXVECTOR3 rot);					// 回転設定処理
-	//void SetSize(D3DXVECTOR3 size);					// 大きさ設定処理
-
-	//D3DXVECTOR3 GetPos(void) { return m_pos; }		// 位置取得処理
-	//D3DXVECTOR3 GetRot(void) { return m_rot; }		// 回転取得処理
-	//D3DXVECTOR3 GetMove(void) { return m_move; }	// 移動量取得処理
-	//D3DXVECTOR3 GetSize(void) { return m_size; }	// 大きさ取得処理
-
 protected:
 
 private:
-	void LoadMotion(void);							// モーション読み込み
-	void Moation(void);								// モーションさせる
-
-	CMotionModel *m_MotionModel[PLAYER_MAX_MODEL];	// モデル情報
+	/*CMotionModel *m_MotionModel[PLAYER_MAX_MODEL];	// モデル情報
 	MOTION_PLAYER m_PlayerMotion[PLAYER_MOTION_MAX];// モーション情報
 
 	static CCamera *m_pCamera;				// カメラの情報ポインタ
@@ -121,6 +109,6 @@ private:
 	int m_nCntKeySet;						// キーセットのカウント
 	int m_nCntState;						// ステータスのカウント
 
-	float m_RotModel;						// モデルの回転情報
+	float m_RotModel;						// モデルの回転情報*/
 };
 #endif

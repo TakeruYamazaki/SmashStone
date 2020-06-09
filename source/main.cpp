@@ -92,6 +92,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 		hInstance,
 		NULL);
 	
+#ifdef _DEBUG
+	// コンソールウィンドウの表示
+	DispConsol();
+#endif
+
 	pManager->Init(hInstance,hWnd, TRUE);
 
 	// ウィンドウの表示
@@ -215,3 +220,21 @@ int GetFPS(void)
 {
 	return g_nFpsCnt;
 }
+
+#ifdef _DEBUG
+//==================================================================================================================
+// コンソールウィンドウ出力
+//==================================================================================================================
+void DispConsol()
+{
+	// これでコンソールが表示される
+	AllocConsole();
+
+	// 変数宣言
+	FILE *fp = NULL;
+
+	// ストリーム先の変更 これがないと文字が表示されない
+	freopen_s(&fp, "CONOUT$", "w", stdout);
+
+}
+#endif

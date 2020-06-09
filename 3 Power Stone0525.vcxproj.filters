@@ -22,9 +22,6 @@
     <ClCompile Include="source\camera.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\character.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\character(1).cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
@@ -132,6 +129,9 @@
     </ClCompile>
     <ClCompile Include="source\mouse.cpp">
       <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="source\character.cpp">
+      <Filter>ソースファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -252,9 +252,6 @@
     <ClInclude Include="source\charaICHIYAS.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\character.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\character(1).h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
@@ -272,6 +269,9 @@
     </ClInclude>
     <ClInclude Include="source\mouse.h">
       <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="source\character.h">
+      <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

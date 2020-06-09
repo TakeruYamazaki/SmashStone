@@ -39,9 +39,9 @@ public:
 	void SetMotion(CMotion::MOTION_TYPE motiontype);				// モーションを設定
 	void ResetMotion();												// モーションのリセット
 
-	static int GetPartsNum(CHARACTER_TYPE type);					// キャラクターのパーツ数を取得
-	CMotion::MOTION_TYPE GetMotion(void);							// モーションを取得
-	CModelParts *GetModelParts(void);								// モデルパーツの取得
+	static int GetPartsNum(CHARACTER_TYPE type) { return m_pModelCharacter[type].nNumParts; }	// キャラクターのパーツ数を取得
+	CMotion::MOTION_TYPE GetMotion(void)		{ return m_motion; }							// モーションを取得
+	CModelParts *GetModelParts(void)			{ return m_pModelParts; }						// モデルパーツの取得
 
 private:
 	static MODELCHARACTER m_pModelCharacter[CHARACTER_MAX];			// 全てのモデルキャラクタの情報格納

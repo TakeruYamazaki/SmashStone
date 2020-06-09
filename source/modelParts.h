@@ -33,15 +33,12 @@ public:
 	void SetPartsInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot);		// パーツの情報設定
 	void SetMotionRotDest(CMotion::MOTION_TYPE motiontype, int nKey);					// モーションの目的の回転の設定
 
-	int GetParent(void);																// 親番号取得
-	D3DXMATRIX *GetMtxParts(void);														// マトリックスの取得
+	int GetParent(void)				{ return m_nParent; }								// 親番号取得
+	D3DXMATRIX *GetMtxParts(void)	{ return m_pParentMtx; }							// マトリックスの取得
 
 	void ShowModelPartsInfo(void);														// ImGuiの更新
 
 	CModelParts();
-
-	void OnCollisionEnter(CScene *pScene) {};
-	void OnCollisionStay(CScene *pScene) {};
 
 private:
 	D3DXVECTOR3	m_rot1F;																// 回転の差分

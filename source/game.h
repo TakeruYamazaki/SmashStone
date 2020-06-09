@@ -13,6 +13,10 @@
 #include "main.h"
 
 //==================================================================================================================
+// マクロ定義
+//==================================================================================================================
+
+//==================================================================================================================
 // 前方宣言
 //==================================================================================================================
 class CMeshField;
@@ -54,18 +58,18 @@ public:
 	void Draw(void);							// 描画処理
 	static CGame *Create(void);					// 生成処理
 
-	static void SetGameState(GAMESTATE state);	// ゲームの状態設定
-	static GAMESTATE GetGameState(void);		// ゲームの状態取得
-	static CPlayer *GetPlayer(void) { return m_pPlayer0; }			// キャラクターの情報取得処理
-	static CCamera *GetCamera(void) { return m_pCamera; }
-	static CLight *GetLight(void) { return m_pLight; }
+	static void SetGameState(GAMESTATE state)	{ m_gameState = state; }	// ゲームの状態設定
+
+	static GAMESTATE GetGameState(void)			{ return m_gameState; }			// ゲームの状態取得
+	static CPlayer *GetPlayer(int nPlayer)		{ return m_pPlayer[nPlayer]; }	// キャラクターの情報取得処理
+	static CCamera *GetCamera(void)				{ return m_pCamera; }			// カメラの取得
+	static CLight *GetLight(void)				{ return m_pLight; }			// ライトの取得
 
 protected:
 
 private:
 	static GAMESTATE m_gameState;				// ゲーム状態
-	static CPlayer *m_pPlayer0;					// キャラクター0の情報ポインタ
-	static CPlayer *m_pPlayer1;					// キャラクター1情報ポインタ
+	static CPlayer *m_pPlayer[MAX_PLAYER];		// プレイヤーの配列ポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドの情報ポインタ
 	static CCamera *m_pCamera;					// カメラの情報ポインタ
 	static CLight *m_pLight;					// ライトの情報ポインタ

@@ -16,6 +16,7 @@
 #include "debugproc.h"
 #include "sceneX.h"
 #include "motion.h"
+#include "kananlibrary.h"
 #include "ImGui/imgui.h"				// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
@@ -30,9 +31,7 @@
 MODELCHARACTER	CModelCharacter::m_pModelCharacter[CHARACTER_MAX] = {};
 char			CModelCharacter::m_aFileName[CHARACTER_MAX][64] =
 {
-	{ "data/OFFSET/offset_man.txt" },
-	{ "data/OFFSET/offset_fish00.txt" },
-	{ "data/OFFSET/offset_rob.txt" }
+	{ "data/OFFSET/offset_trans_fokker.txt" },
 };
 
 //=============================================================================
@@ -64,9 +63,8 @@ HRESULT CModelCharacter::Init()
 	{
 		// 初期化
 		m_pModelParts[nCnt].Init();
-
 		// モデル情報設定
-		m_pModelParts[nCnt].BindModel(m_pModelCharacter[m_type].pModelInfo[nCnt].matBuff, m_pModelCharacter[m_type].pModelInfo[nCnt].matNum, m_pModelCharacter[m_type].pModelInfo[nCnt].mesh);
+		m_pModelParts[nCnt].BindModel(m_pModelCharacter[m_type].pModelInfo[nCnt]);
 	}
 	// パーツのオフセット取得
 	LoadOffset(m_type);
@@ -128,10 +126,8 @@ void CModelCharacter::Update()
 	{
 		// nullcheck
 		if (&m_pModelParts[nCnt])
-		{
 			// 更新
 			m_pModelParts[nCnt].Update();
-		}
 	}
 
 #ifdef _DEBUG
@@ -150,10 +146,8 @@ void CModelCharacter::Draw()
 	{
 		// nullcheck
 		if (&m_pModelParts[nCnt])
-		{
 			// 描画
-			m_pModelParts[nCnt].Draw();
-		}
+			m_pModelParts[nCnt].DrawMesh();
 	}
 }
 
@@ -171,6 +165,7 @@ CModelCharacter *CModelCharacter::Create(CHARACTER_TYPE modeltype)
 	// 初期化
 	pModelCharacter->Init();
 
+	// 値を返す
 	return pModelCharacter;
 }
 
@@ -188,6 +183,11 @@ HRESULT CModelCharacter::Load()
 		// モデル名取得
 		LoadFileName((CHARACTER_TYPE)nCntModel);
 
+		// ブロックコメント
+		char cComment[MAX_TEXT];
+		sprintf(cComment, "キャラクター %d のモデル読み込み開始", nCntModel);
+		CKananLibrary::StartBlockComment(cComment);
+
 		// テクスチャ数分回す
 		for (int nCntTex = 0; nCntTex < m_pModelCharacter[nCntModel].nNumTexture; nCntTex++)
 		{
@@ -200,10 +200,7 @@ HRESULT CModelCharacter::Load()
 					&m_pModelCharacter[nCntModel].pModelInfo[nCntParts].pTexture)))
 				{
 					// できなければ失敗
-					char cText[128];
-					sprintf(cText, "テクスチャ生成失敗 (キャラクター %d, テクスチャ %d)", nCntModel, nCntTex);
-					printf("%s\n", &cText[0]);
-					return E_FAIL;
+					printf("テクスチャ生成失敗 (テクスチャ %d)\n", nCntTex);
 				}
 			}
 		}
@@ -211,23 +208,24 @@ HRESULT CModelCharacter::Load()
 		// パーツ数分回す
 		for (int nCntParts = 0; nCntParts < m_pModelCharacter[nCntModel].nNumParts; nCntParts++)
 		{
-			// モデル生成
+			// Xファイルの読み込み
 			if (FAILED(D3DXLoadMeshFromX(&m_pModelCharacter[nCntModel].pModelInfo[nCntParts].cModelName[0],
 				D3DXMESH_SYSTEMMEM,
 				pDevice,
-				NULL,
+				nullptr,
 				&m_pModelCharacter[nCntModel].pModelInfo[nCntParts].matBuff,
-				NULL,
+				nullptr,
 				&m_pModelCharacter[nCntModel].pModelInfo[nCntParts].matNum,
 				&m_pModelCharacter[nCntModel].pModelInfo[nCntParts].mesh)))
 			{
 				// できなければ失敗
-				char cText[128];
-				sprintf(cText, "モデル生成失敗 (キャラクター %d, パーツ %d)", nCntModel, nCntParts);
-				printf("%s\n", &cText[0]);
-				return E_FAIL;
+				printf("モデル生成失敗 (パーツ %d)\n", nCntParts);
 			}
 		}
+
+		// ブロックコメント
+		sprintf(cComment, "キャラクター %d のモデル読み込み終了", nCntModel);
+		CKananLibrary::EndBlockComment(cComment);
 	}
 
 	// 成功
@@ -239,16 +237,17 @@ HRESULT CModelCharacter::Load()
 //=============================================================================
 void CModelCharacter::Unload(void)
 {
+	// キャラ数分繰り返す
 	for (int nCntModel = 0; nCntModel < CHARACTER_MAX; nCntModel++)
 	{
 		// リリースを行う
 		for (int nCnt = 0; nCnt < m_pModelCharacter[nCntModel].nNumParts; nCnt++)
-		{
 			CKananLibrary::ReleaseModelInfo(&m_pModelCharacter[nCntModel].pModelInfo[nCnt]);
-		}
 
+		// nullcheck
 		if (m_pModelCharacter[nCntModel].pModelInfo)
 		{
+			// 破棄
 			delete[] m_pModelCharacter[nCntModel].pModelInfo;
 			m_pModelCharacter[nCntModel].pModelInfo = nullptr;
 		}
@@ -265,32 +264,12 @@ void CModelCharacter::SetCharacterMtx(D3DXMATRIX *mtx)
 	{
 		// 親がいない時
 		if (m_pModelParts[nCnt].GetParent() == -1)
-		{
 			// 大元のマトリックス設定
 			m_pModelParts[nCnt].SetParentMtx(mtx);
-		}
 		else
-		{
 			// 親パーツのマトリックス設定	
 			m_pModelParts[nCnt].SetParentMtx(m_pModelParts[m_pModelParts[nCnt].GetParent()].GetMatrix());
-		}
 	}
-}
-
-//=============================================================================
-// モーション情報取得
-//=============================================================================
-CMotion::MOTION_TYPE CModelCharacter::GetMotion(void)
-{
-	return m_motion;
-}
-
-//=============================================================================
-// モデルパーツの取得
-//=============================================================================
-CModelParts *CModelCharacter::GetModelParts(void)
-{
-	return m_pModelParts;
 }
 
 //=============================================================================
@@ -305,9 +284,7 @@ void CModelCharacter::SetMotion(CMotion::MOTION_TYPE motiontype)
 	{
 		// nullcheck
 		if (&m_pModelParts[nCnt])
-		{
 			m_pModelParts[nCnt].SetMotionRotDest(motiontype, m_nKey);
-		}
 	}
 }
 
@@ -323,6 +300,7 @@ HRESULT CModelCharacter::LoadOffset(CHARACTER_TYPE type)
 	char cDieText[MAX_TEXT];
 	int nCntParts = 0;
 
+	// 格納用
 	D3DXVECTOR3 pos;
 	D3DXVECTOR3 rot;
 	int nParent;
@@ -453,115 +431,97 @@ HRESULT CModelCharacter::LoadFileName(CHARACTER_TYPE type)
 	char cDieText[MAX_TEXT];
 	int nNumModel = 0;
 	int nNumTexture = 0;
-	int nCntModel = 0;
-	int nCntTexture = 0;
 
 	// ファイルを開く
 	pFile = fopen(&m_aFileName[type][0], "r");
 
+	CKananLibrary::StartBlockComment("モデルファイル読み込み開始");
+
 	// nullcheck
-	if (pFile)
+	if (!pFile)
 	{
-		// スクリプトがくるまで繰り返す
-		while (strcmp(cHeadText, "SCRIPT") != 0)
+		// ファイル読み込み失敗
+		CKananLibrary::EndBlockComment("モデルファイルを開けませんでした");
+		return E_FAIL;
+	}
+
+	// スクリプトがくるまで繰り返す
+	while (strcmp(cHeadText, "SCRIPT") != 0)
+	{
+		fgets(cReadText, sizeof(cReadText), pFile);
+		sscanf(cReadText, "%s", &cHeadText);
+	}
+	// スクリプトが来たら
+	if (strcmp(cHeadText, "SCRIPT") == 0)
+	{
+		// エンドスクリプトが来るまで繰り返す
+		while (strcmp(cHeadText, "END_SCRIPT") != 0)
 		{
 			fgets(cReadText, sizeof(cReadText), pFile);
 			sscanf(cReadText, "%s", &cHeadText);
-		}
-		// スクリプトが来たら
-		if (strcmp(cHeadText, "SCRIPT") == 0)
-		{
-			// エンドスクリプトが来るまで繰り返す
-			while (strcmp(cHeadText, "END_SCRIPT") != 0)
+			// 改行
+			if (strcmp(cHeadText, "\n") == 0)
 			{
-				fgets(cReadText, sizeof(cReadText), pFile);
-				sscanf(cReadText, "%s", &cHeadText);
-				// 改行
-				if (strcmp(cHeadText, "\n") == 0)
-				{
-				}
-				// モデル番号が来たら
-				else if (strcmp(cHeadText, "NUM_MODEL") == 0)
-				{
-					sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &nNumModel);
+			}
+			// モデル番号が来たら
+			else if (strcmp(cHeadText, "NUM_MODEL") == 0)
+			{
+				sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &nNumModel);
+				m_pModelCharacter[type].pModelInfo = new MODELINFO[nNumModel];
+				m_pModelCharacter[type].nNumParts = nNumModel;
+				printf("読み込んだパーツ数 : %d\n", nNumModel);
 
-					m_pModelCharacter[type].pModelInfo = new MODELINFO[nNumModel];
-					m_pModelCharacter[type].nNumParts = nNumModel;
-
-					// モデルがあれば
-					if (nNumModel > 0)
+				// 読み込んだモデル数
+				int nCntModel = 0;
+				// モデル数分繰り返す
+				while (nCntModel < nNumModel)
+				{
+					fgets(cReadText, sizeof(cReadText), pFile);
+					sscanf(cReadText, "%s", &cHeadText);
+					// ファイル名読み込み
+					if (strcmp(cHeadText, "MODEL_FILENAME") == 0)
 					{
-						// モデル数分繰り返す
-						while (1)
-						{
-							fgets(cReadText, sizeof(cReadText), pFile);
-							sscanf(cReadText, "%s", &cHeadText);
-							// ファイル名読み込み
-							if (strcmp(cHeadText, "MODEL_FILENAME") == 0)
-							{
-								// モデル名取得
-								sscanf(cReadText, "%s %s %s %s %s", &cDieText, &cDieText, m_pModelCharacter[type].pModelInfo[nCntModel].cModelName, &cDieText, &cDieText);
+						// モデル名取得
+						sscanf(cReadText, "%s %s %s", &cDieText, &cDieText, m_pModelCharacter[type].pModelInfo[nCntModel].cModelName);
+						printf("ファイル %s を取得\n", m_pModelCharacter[type].pModelInfo[nCntModel].cModelName);
 
-								// モデルカウント加算
-								nCntModel++;
-
-								// モデルカウントがモデル数分になったら
-								if (nCntModel == nNumModel)
-								{
-									// ループを抜ける
-									break;
-								}
-							}
-						}
+						// モデルカウント加算
+						nCntModel++;
 					}
 				}
-				// テクスチャ番号が来たら
-				else if (strcmp(cHeadText, "NUM_TEXTURE") == 0)
+			}
+			// テクスチャ番号が来たら
+			else if (strcmp(cHeadText, "NUM_TEXTURE") == 0)
+			{
+				sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &nNumTexture);
+				m_pModelCharacter[type].nNumTexture = nNumTexture;
+
+				// 読み込んだテクスチャ数
+				int nCntTexture = 0;
+				// テクスチャ数分繰り返す
+				while (nCntTexture < nNumTexture)
 				{
-					sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &nNumTexture);
-
-					m_pModelCharacter[type].nNumTexture = nNumTexture;
-
-					// テクスチャがあれば
-					if (nNumTexture > 0)
+					fgets(cReadText, sizeof(cReadText), pFile);
+					sscanf(cReadText, "%s", &cHeadText);
+					// ファイル名読み込み
+					if (strcmp(cHeadText, "TEXTURE_FILENAME") == 0)
 					{
-						// テクスチャ数分繰り返す
-						while (1)
-						{
-							fgets(cReadText, sizeof(cReadText), pFile);
-							sscanf(cReadText, "%s", &cHeadText);
-							// ファイル名読み込み
-							if (strcmp(cHeadText, "TEXTURE_FILENAME") == 0)
-							{
-								// テクスチャ名取得
-								sscanf(cReadText, "%s %s %s %s %s", &cDieText, &cDieText, m_pModelCharacter[type].pModelInfo[nCntTexture].cTextureName, &cDieText, &cDieText);
+						// テクスチャ名取得
+						sscanf(cReadText, "%s %s %s", &cDieText, &cDieText, m_pModelCharacter[type].pModelInfo[nCntTexture].cTextureName);
+						printf("ファイル %s を取得\n", m_pModelCharacter[type].pModelInfo[nCntTexture].cTextureName);
 
-								// テクスチャカウント加算
-								nCntTexture++;
-
-								// テクスチャカウントがテクスチャ数分になったら
-								if (nCntTexture == nNumTexture)
-								{
-									// ループを抜ける
-									break;
-								}
-							}
-						}
+						// テクスチャカウント加算
+						nCntTexture++;
 					}
 				}
 			}
 		}
-
-		// ファイルを閉じる
-		fclose(pFile);
 	}
 
-	// ファイルを開けなかったとき
-	else
-	{
-		printf("モデルファイルを開けませんでした。\n");
-		return E_FAIL;
-	}
+	// ファイルを閉じる
+	fclose(pFile);
+
+	CKananLibrary::EndBlockComment("モデルファイル読み込み終了");
 
 	return S_OK;
 }
@@ -573,14 +533,6 @@ void CModelCharacter::ResetMotion()
 {
 	m_nFrame = 0;
 	m_nKey = 0;
-}
-
-//=============================================================================
-// キャラクターのモデル数を取得
-//=============================================================================
-int CModelCharacter::GetPartsNum(CHARACTER_TYPE type)
-{
-	return m_pModelCharacter[type].nNumParts;
 }
 
 #ifdef _DEBUG

@@ -137,7 +137,7 @@ void CModelParts::SetPartsTexInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DX
 	CSceneX::SetRot(rot);
 	m_nParent = nParent;
 	m_nIndex = nIndex;
-	//CSceneX::BindTexture(pTexture);
+	CSceneX::BindTex(pTexture);
 }
 
 //=============================================================================
@@ -149,22 +149,6 @@ void CModelParts::SetPartsInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DXVEC
 	CSceneX::SetRot(rot);
 	m_nParent = nParent;
 	m_nIndex = nIndex;
-}
-
-//=============================================================================
-// 親番号取得
-//=============================================================================
-int CModelParts::GetParent(void)
-{
-	return m_nParent;
-}
-
-//=============================================================================
-// マトリックスの取得
-//=============================================================================
-D3DXMATRIX * CModelParts::GetMtxParts(void)
-{
-	return m_pParentMtx;
 }
 
 //=============================================================================

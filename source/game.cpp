@@ -23,6 +23,7 @@
 #include "inputGamepad.h"
 #include "meshSphere.h"
 #include "player.h"
+#include "modelCharacter.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -34,16 +35,15 @@
 //==================================================================================================================
 //	静的メンバ変数宣言
 //==================================================================================================================
-CPlayer *CGame::m_pPlayer0 = NULL;									// キャラクター情報
-CPlayer *CGame::m_pPlayer1 = NULL;									// キャラクター情報
-CMeshField *CGame::m_pMeshField = NULL;								// メッシュフィールド情報
-CCamera *CGame::m_pCamera = NULL;									// カメラ情報
-CLight *CGame::m_pLight = NULL;										// ライト情報
-CLogo *CGame::m_pLogo = NULL;										// ロゴ情報
-CPause *CGame::m_pPause = NULL;										// ポーズ情報
-CMeshSphere *CGame::m_pMeshSphere = NULL;							// メッシュ球の情報
-CGame::GAMESTATE CGame::m_gameState = CGame::GAMESTATE_NONE;		// ゲーム状態
-int CGame::m_nCounterGameState = NULL;								// ゲームの状態管理カウンター
+CPlayer				*CGame::m_pPlayer[MAX_PLAYER]	= {};							// キャラクター情報
+CMeshField			*CGame::m_pMeshField			= NULL;							// メッシュフィールド情報
+CCamera				*CGame::m_pCamera				= NULL;							// カメラ情報
+CLight				*CGame::m_pLight				= NULL;							// ライト情報
+CLogo				*CGame::m_pLogo					= NULL;							// ロゴ情報
+CPause				*CGame::m_pPause				= NULL;							// ポーズ情報
+CMeshSphere			*CGame::m_pMeshSphere			= NULL;							// メッシュ球の情報
+CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
+int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 
 //==================================================================================================================
 //	コンストラクタ
@@ -81,19 +81,8 @@ void CGame::Init(void)
 	// メッシュ球の生成処理
 	m_pMeshSphere = CMeshSphere::Create();
 
-	// キャラクター生成処理
-	m_pPlayer0 = CPlayer::Create();
-	// 位置設定
-	m_pPlayer0->SetPos(D3DXVECTOR3(0, WhileY, 0));
-	// 回転設定
-	m_pPlayer0->SetRot(D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0f));
-
-	// キャラクター生成処理
-	m_pPlayer1 = CPlayer::Create();
-	// 位置設定
-	m_pPlayer1->SetPos(D3DXVECTOR3(50, WhileY, 0));
-	// 回転設定
-	m_pPlayer1->SetRot(D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0f));
+	// プレイヤー生成
+	//m_pPlayer[0] = CPlayer::Create();
 
 	// メッシュフィールド生成
 	m_pMeshField = CMeshField::Create();
@@ -119,6 +108,7 @@ void CGame::Uninit(void)
 	CNumber::Unload();					// 数字テクスチャアンロード
 	CMeshField::Unload();				// 床テクスチャアンロード
 	CMotionModel::Unload();				// モーション用モデルアンロード
+//	CModelCharacter::Unload();
 
 	// ポーズの終了処理
 	m_pPause->Uninit();
@@ -241,21 +231,7 @@ CGame * CGame::Create(void)
 	pGame = new CGame;			// 動的に確保
 	pGame->Init();				// 初期化処理
 
+//	CModelCharacter::Load();
+
 	return pGame;				// 値を返す
-}
-
-//==================================================================================================================
-//	ゲームの状態設定
-//==================================================================================================================
-void CGame::SetGameState(GAMESTATE state)
-{
-	m_gameState = state;
-}
-
-//==================================================================================================================
-//	ゲームの状態取得
-//==================================================================================================================
-CGame::GAMESTATE CGame::GetGameState(void)
-{
-	return m_gameState;
 }

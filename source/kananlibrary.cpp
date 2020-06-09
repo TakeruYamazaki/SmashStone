@@ -393,7 +393,7 @@ void CKananLibrary::PrintBlockCommentFrame(void)
 void CKananLibrary::StartBlockComment(const std::string & str)
 {
 	PrintBlockCommentFrame();
-	std::cout << &str << std::endl;
+	std::cout << str << std::endl;
 }
 
 //=============================================================================
@@ -401,7 +401,7 @@ void CKananLibrary::StartBlockComment(const std::string & str)
 //=============================================================================
 void CKananLibrary::EndBlockComment(const std::string & str)
 {
-	std::cout << &str << std::endl;
+	std::cout << str << std::endl;
 	PrintBlockCommentFrame();
 }
 

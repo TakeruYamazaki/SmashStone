@@ -1,89 +1,77 @@
-//==================================================================================================================
+// ===================================================================
 //
-// キャラクター[character.h]
+// キャラクター処理 [ character.h ]
 // Author : Seiya Takahashi
 //
-//==================================================================================================================
+// ===================================================================
 #ifndef _CHARACTER_H_
 #define _CHARACTER_H_
 
-//==================================================================================================================
+#define _CRT_SECURE_NO_WARNINGS // 警告除去
+
+// ===================================================================
 // インクルードファイル
-//==================================================================================================================
+// ===================================================================
 #include "main.h"
-#include "sceneX.h"
-#include "fade.h"
+#include "scene.h"
+#include "motion.h"
+#include "kananlibrary.h"
 
-//==================================================================================================================
+// ===================================================================
 // マクロ定義
-//==================================================================================================================
-#define MAX_CHARA 2							// キャラクターの最大数
+// ===================================================================
 
-//==================================================================================================================
-// 前方宣言
-//==================================================================================================================
-class CCamera;
-class CMotionModel;
-class CMeshField;
-class CInputKeyboard;
-class CInputGamepad;
-class CPlayer;
+// ===================================================================
+// クラス定義
+// ===================================================================
+class CModelCharacter;
 
-//==================================================================================================================
-//
-// プレイヤークラスの定義
-//
-//==================================================================================================================
 class CCharacter : public CScene
 {
 public:
+	CCharacter(CScene::PRIORITY nPriority);
+	~CCharacter();
 
-	// キャラクターの種類
-	typedef enum
-	{
-		CHARACTER_PENGUIN = 0,						// ペンギン
-		CHARACTER_MAX								// 最大
-	}CHARACTER;										// キャラクター変数名
+	void Init(void);								// 初期化
+	void Uninit(void);								// 終了
+	void Update(void);								// 更新
+	void Draw(void);								// 描画
+	static CCharacter *Create(D3DXVECTOR3 pos);		// 生成
 
-	CCharacter(PRIORITY type);						// コンストラクタ
-	~CCharacter();									// デストラクタ
-	void Init(void);								// 初期化処理
-	void Uninit(void);								// 終了処理
-	void Update(void);								// 更新処理
-	void Draw(void);								// 描画処理
+	void SetPos(const D3DXVECTOR3 & pos)			{ m_pos = pos; }			// 位置の設定
+	void SetMove(const D3DXVECTOR3 & move)			{ m_move = move; }			// 移動値の設定
+	void SetRot(const D3DXVECTOR3 & rot)			{ m_rot = rot; }			// 回転の設定
+	void SetRotDest(const D3DXVECTOR3 & rotDest)	{ m_rotDest = rotDest; }	// 目的の回転の設定
+	void SetModelType(CHARACTER_TYPE type);			// モデルの設定
 
-	void SetPos(D3DXVECTOR3 pos);					// 位置設定処理
-	void SetRot(D3DXVECTOR3 rot);					// 回転設定処理
-	void SetSize(D3DXVECTOR3 size);					// 大きさ設定処理
-
-	D3DXVECTOR3 GetPos(void) { return m_pos; }		// 位置取得処理
-	D3DXVECTOR3 GetRot(void) { return m_rot; }		// 回転取得処理
-	D3DXVECTOR3 GetSize(void) { return m_size; }	// 大きさ取得処理
-
-protected:
-	D3DXVECTOR3 m_pos;			// 位置
-	D3DXVECTOR3 m_posOld;		// 前回の位置
-	D3DXVECTOR3 m_rot;			// 回転
-	D3DXVECTOR3 m_difference;	// 回転の目標地点
-	D3DXVECTOR3 m_move;			// 移動
-	D3DXVECTOR3 m_size;			// 大きさ
-	D3DXMATRIX  m_mtxWorld;							// マトリックス
+	D3DXVECTOR3 GetPos(void)		{ return m_pos; }		// 位置の取得
+	D3DXVECTOR3 GetMove(void)		{ return m_move; }		// 移動値の取得
+	D3DXVECTOR3 GetRot(void)		{ return m_rot; }		// 回転の取得
+	D3DXVECTOR3 GetRotDest(void)	{ return m_rotDest; }	// 回転先の取得
 
 private:
+	void Move(void);								// 移動関数
+	void Rot(void);									// 回転関数
 
-	void OperationMove0(CInputKeyboard *pInputKeyboard,
-		CInputGamepad *pInputGamepad);				// 0番目のプレイヤー操作処理
-	void OperationMove1(CInputKeyboard *pInputKeyboard,
-		CInputGamepad *pInputGamepad);				// 1番目のプレイヤー操作処理
+	CModelCharacter *m_pModelCharacter;				// モデルキャラクターのポインタ
 
-	CHARACTER m_Type;								// キャラクターの種類
+	LPD3DXMESH		m_pMesh;						// メッシュ情報
+	LPD3DXBUFFER	m_pBuffMat;						// マテリアル情報
+	DWORD			m_nNumMat;						// マテリアル情報の数
 
-	static CCharacter *m_pCharacter[MAX_CHARA][CHARACTER_MAX];	// キャラクターの情報ポインタ
-	static CCamera *m_pCamera;									// カメラの情報ポインタ
-	static CPlayer *m_pPenguin[MAX_CHARA];						// ペンギンの情報ポインタ
-	static int m_nNumAll;										// プレイヤーの人数
+	D3DXVECTOR3 m_pos;								// 位置
+	D3DXVECTOR3 m_posBegin;							// 初期位置
+	D3DXVECTOR3 m_move;								// 移動値
+	D3DXVECTOR3 m_rot;								// 回転
+	D3DXVECTOR3 m_rotDest;							// 目的の回転
+	D3DXVECTOR3 m_rotDif;							// 回転の差
+	D3DXMATRIX	m_mtxWorld;							// ワールドマトリックス
 
-	bool m_bJump;				// ジャンプしたかどうか
-	bool m_bWalk;				// 歩いてるかどうか
+	int			m_nCntMove;							// どれぐらいの時間動いているか
+	bool		m_bJump;							// ジャンプしたかどうか
+	bool		m_bWalk;							// 歩いてるかどうか
+
+	static int	m_nNumCharacter;					// キャラクターの総数
 };
+
 #endif

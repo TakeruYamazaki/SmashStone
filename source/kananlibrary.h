@@ -13,6 +13,7 @@
 // インクルードファイル
 // ===================================================================
 #include "main.h"
+#include <string>	// string型などの文字列の操作に必要
 
 // ===================================================================
 // マクロ定義
@@ -21,6 +22,7 @@
 #define ZeroVector2		(D3DXVECTOR2(0.0f, 0.0f))
 #define OneVector2		(D3DXVECTOR2(1.0f, 1.0f))
 #define ZeroVector3		(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
+#define OneVector3		(D3DXVECTOR3(1.0f, 1.0f, 1.0f))
 #define OneVec2Zero		(D3DXVECTOR3(1.0f, 1.0f, 0.0f))
 #define ZeroVector4		(D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f))
 
@@ -101,9 +103,9 @@ typedef enum
 {	// キャラクターの種類
 	CHARACTER_NONE,			// 何もない
 	CHARACTER_1 = 0,		// プレイヤー
-	CHARACTER_2,			// プレイヤー
-	CHARACTER_3,			// プレイヤー
-	CHARACTER_4,			// プレイヤー
+	//CHARACTER_2,			// プレイヤー
+	//CHARACTER_3,			// プレイヤー
+	//CHARACTER_4,			// プレイヤー
 	CHARACTER_MAX			// キャラクターの最大数
 } CHARACTER_TYPE;
 

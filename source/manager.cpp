@@ -11,6 +11,7 @@
 #include "inputKeyboard.h"
 #include "inputGamepad.h"
 #include "mouse.h"
+#include "modelCharacter.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -52,6 +53,8 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 
 	m_pMouse = new CMouse;
 
+	//CModelCharacter::Load();
+
 	// 初期化処理
 	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
 	{
@@ -77,6 +80,8 @@ void CManager::Uninit(void)
 {
 	// 全てを破棄
 	CScene::ReleaseAll();
+
+	//CModelCharacter::Unload();
 
 	// レンダラーがあるとき
 	if (m_pRenderer != NULL)

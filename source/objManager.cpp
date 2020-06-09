@@ -285,7 +285,7 @@ HRESULT CObjectManager::LoadOffset(void)
 				}
 
 				// モデル情報をバインド
-				m_pObject[nModel]->BindModel(m_objInfo[nType].modelInfo.matBuff, m_objInfo[nType].modelInfo.matNum, m_objInfo[nType].modelInfo.mesh);
+				m_pObject[nModel]->BindModel(m_objInfo[nType].modelInfo);
 				// テクスチャ付きのパーツ情報格納
 				m_pObject[nModel]->SetObjInfo(pos, rot, m_objInfo[nType].modelInfo.pTexture, nType, bCollision);
 
@@ -514,7 +514,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			m_pFakeObject->Init();
 
 			// モデル情報をバインド
-			m_pFakeObject->BindModel(m_objInfo[0].modelInfo.matBuff, m_objInfo[0].modelInfo.matNum, m_objInfo[0].modelInfo.mesh);
+			m_pFakeObject->BindModel(m_objInfo[0].modelInfo);
 			// 初期モデルを設定
 			m_pFakeObject->SetObjInfo(pCamera->GetPosR(), ZeroVector3, m_objInfo[0].modelInfo.pTexture, 0, false);
 		}
@@ -547,7 +547,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			}
 
 			// タイプが変わったらモデル変更
-			m_pFakeObject->BindModel(m_objInfo[m_nFakeType].modelInfo.matBuff, m_objInfo[m_nFakeType].modelInfo.matNum, m_objInfo[m_nFakeType].modelInfo.mesh);
+			m_pFakeObject->BindModel(m_objInfo[m_nFakeType].modelInfo);
 			// モデル情報格納
 			m_pFakeObject->SetObjInfo(m_pFakeObject->GetPos(), m_pFakeObject->GetRot(), m_objInfo[m_nFakeType].modelInfo.pTexture, m_nFakeType, false);
 		}
@@ -559,7 +559,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			m_pObject.push_back(CObject::Create());
 			// 初期化・情報設定
 			m_pObject[(int)m_pObject.size() - 1]->Init();
-			m_pObject[(int)m_pObject.size() - 1]->BindModel(m_objInfo[m_nFakeType].modelInfo.matBuff, m_objInfo[m_nFakeType].modelInfo.matNum, m_objInfo[m_nFakeType].modelInfo.mesh);
+			m_pObject[(int)m_pObject.size() - 1]->BindModel(m_objInfo[m_nFakeType].modelInfo);
 			// モデル情報格納
 			m_pFakeObject->SetObjInfo(m_pFakeObject->GetPos(), m_pFakeObject->GetRot(), m_objInfo[m_nFakeType].modelInfo.pTexture, m_nFakeType, false);
 		}
