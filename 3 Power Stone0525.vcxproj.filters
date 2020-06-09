@@ -130,7 +130,11 @@
     <ClCompile Include="source\mouse.cpp">
       <Filter>input</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="source\character.cpp">
+=======
+    <ClCompile Include="source\UI.cpp">
+>>>>>>> 86f1d4c217d92ae93e406a5aef7d67cbbaf8bcbc
       <Filter>ソースファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -270,7 +274,11 @@
     <ClInclude Include="source\mouse.h">
       <Filter>input</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="source\character.h">
+=======
+    <ClInclude Include="source\UI.h">
+>>>>>>> 86f1d4c217d92ae93e406a5aef7d67cbbaf8bcbc
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
