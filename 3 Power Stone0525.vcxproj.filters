@@ -1,6 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="source\ImGui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ImGui\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ImGui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="source\ImGui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
@@ -10,19 +19,37 @@
     <ClCompile Include="source\ImGui\imgui_impl_dx9.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="source\ImGui\imgui_draw.cpp">
-      <Filter>ImGui</Filter>
+    <ClCompile Include="source\input.cpp">
+      <Filter>input</Filter>
     </ClCompile>
-    <ClCompile Include="source\ImGui\imgui_demo.cpp">
-      <Filter>ImGui</Filter>
+    <ClCompile Include="source\inputGamepad.cpp">
+      <Filter>input</Filter>
     </ClCompile>
-    <ClCompile Include="source\ImGui\imgui.cpp">
-      <Filter>ImGui</Filter>
+    <ClCompile Include="source\inputKeyboard.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="source\sceneX.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="source\scene3D.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="source\scene2D.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="source\scene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="source\mouse.cpp">
+      <Filter>input</Filter>
     </ClCompile>
     <ClCompile Include="source\camera.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\character(1).cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\character.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\charaICHIYAS.cpp">
@@ -49,10 +76,10 @@
     <ClCompile Include="source\kananlibrary.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\light.cpp">
+    <ClCompile Include="source\main.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\main.cpp">
+    <ClCompile Include="source\light.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\manager.cpp">
@@ -97,18 +124,6 @@
     <ClCompile Include="source\renderer.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\scene.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\scene2D.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\scene3D.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\sceneX.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\sound.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
@@ -118,27 +133,17 @@
     <ClCompile Include="source\tutorial.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\input.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
-    <ClCompile Include="source\inputGamepad.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
-    <ClCompile Include="source\inputKeyboard.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
-    <ClCompile Include="source\mouse.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="source\character.cpp">
-=======
     <ClCompile Include="source\UI.cpp">
->>>>>>> 86f1d4c217d92ae93e406a5aef7d67cbbaf8bcbc
       <Filter>ソースファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\ImGui\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ImGui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="source\ImGui\imstb_truetype.h">
       <Filter>ImGui</Filter>
     </ClInclude>
@@ -157,16 +162,58 @@
     <ClInclude Include="source\ImGui\imgui_impl_dx9.h">
       <Filter>ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="source\ImGui\imgui.h">
-      <Filter>ImGui</Filter>
+    <ClInclude Include="source\input.h">
+      <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="source\ImGui\imconfig.h">
-      <Filter>ImGui</Filter>
+    <ClInclude Include="source\inputGamepad.h">
+      <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="source\game.h">
+    <ClInclude Include="source\inputKeyboard.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="source\sceneX.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\scene3D.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\scene2D.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\scene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\mouse.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="source\camera.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\character(1).h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\character.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charaICHIYAS.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charaKURURU.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charaNYAS.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charaZAVAEL.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\debugProc.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\fade.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\game.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\kananlibrary.h">
@@ -220,18 +267,6 @@
     <ClInclude Include="source\renderer.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\scene.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\scene2D.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\scene3D.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\sceneX.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\sound.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
@@ -241,59 +276,25 @@
     <ClInclude Include="source\tutorial.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\debugProc.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charaZAVAEL.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charaKURURU.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charaNYAS.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charaICHIYAS.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\character(1).h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\camera.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\input.h">
-      <Filter>input</Filter>
-    </ClInclude>
-    <ClInclude Include="source\inputGamepad.h">
-      <Filter>input</Filter>
-    </ClInclude>
-    <ClInclude Include="source\inputKeyboard.h">
-      <Filter>input</Filter>
-    </ClInclude>
-    <ClInclude Include="source\mouse.h">
-      <Filter>input</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="source\character.h">
-=======
     <ClInclude Include="source\UI.h">
->>>>>>> 86f1d4c217d92ae93e406a5aef7d67cbbaf8bcbc
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ImGui">
-      <UniqueIdentifier>{58b6541c-c5c8-4701-a710-94544ddfded7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル">
-      <UniqueIdentifier>{b6ad13a3-2874-43e1-853c-cc27e36d52cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル">
-      <UniqueIdentifier>{19f8dd4d-db6b-4054-8b3b-218ab16fbed4}</UniqueIdentifier>
+      <UniqueIdentifier>{a7794e7d-a9ef-4348-a3ae-74d33e154335}</UniqueIdentifier>
     </Filter>
     <Filter Include="input">
-      <UniqueIdentifier>{1323d40d-5d4c-48ee-bef1-f41263826be0}</UniqueIdentifier>
+      <UniqueIdentifier>{66cba57f-7bbe-4aeb-9f43-c81e286c4ac4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scene">
+      <UniqueIdentifier>{fae1eb8d-ce69-446b-b049-699ffb3f0635}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル">
+      <UniqueIdentifier>{6759c4d6-805f-40ce-85b6-da1002ebb30d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル">
+      <UniqueIdentifier>{5f1fc8d3-9b4b-48ec-a030-91f37bc4df42}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
