@@ -133,6 +133,9 @@
     <ClCompile Include="source\mouse.cpp">
       <Filter>input</Filter>
     </ClCompile>
+    <ClCompile Include="source\UI.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ImGui\imstb_truetype.h">
@@ -272,6 +275,9 @@
     </ClInclude>
     <ClInclude Include="source\mouse.h">
       <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI.h">
+      <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
