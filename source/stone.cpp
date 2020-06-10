@@ -11,6 +11,7 @@
 #include "stone.h"
 #include "manager.h"
 #include "renderer.h"
+#include "debugProc.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -18,7 +19,7 @@
 #define CSTONE_INITVTXVALUE_MAX		1000000.0f
 #define CSTONE_INITVTXVALUE_MIN		-1000000.0f
 
-#define CSTONE_SHAKE_SIZE			10.0f			// ゆれの大きさ
+#define CSTONE_SHAKE_SIZE			0.1f			// ゆれの大きさ
 #define CSTONE_SHAKECOEFF			0.02f			// ゆれる係数
 #define CSTONE_ROTSPEED				0.02f			// 回転速度
 
@@ -48,7 +49,7 @@ CStone::CStone(PRIORITY type) : CSceneX(type)
 HRESULT CStone::Load(void)
 {
 	// 変数宣言
-	CString* pFileName;
+	CString* pFileName;			// ファイル名
 	pFileName = CStone::GetResource();
 	// 取得に失敗した時
 	if (pFileName == NULL)
@@ -94,6 +95,16 @@ HRESULT CStone::Load(void)
 		CreateTexturefrom_Xfile(nCntModelType, pFileName[nCntModelType].Get());
 #endif
 	}
+
+	// 文字列の開放
+	for (int nCntFileName = 0; nCntFileName < m_nNumTypeAll; nCntFileName++)
+	{
+		pFileName[nCntFileName].release();
+	}
+	// ファイル名の開放
+	delete[] pFileName;
+	pFileName = NULL;
+
 	return S_OK;
 }
 
@@ -219,12 +230,6 @@ CString * CStone::GetResource(void)
 			// 比較用の初期化
 			cComp[0] = MYLIB_CHAR_UNSET;
 		}
-
-		// 同じになったときループを抜ける
-		if (nCntFileName == m_nNumTypeAll)
-		{
-			break;
-		}
 	}
 	// ファイルを閉じる
 	fclose(pFile);
@@ -264,10 +269,11 @@ CStone * CStone::Create(CONST STONE_ID eumID, CONST D3DXVECTOR3 & pos)
 
 	// 初期化
 	pStone->Init();
+	// モデル情報の設定
 	pStone->m_pModelInfo.matBuff = m_pAllStoneTypeInfo[eumID].pBuffMat;
 	pStone->m_pModelInfo.matNum = m_pAllStoneTypeInfo[eumID].nNumMat;
 	pStone->m_pModelInfo.mesh = m_pAllStoneTypeInfo[eumID].pMesh;
-
+	pStone->m_pModelInfo.pTexture = NULL;
 	// モデル情報の結合
 	pStone->BindModel(pStone->m_pModelInfo);
 
@@ -301,6 +307,10 @@ void CStone::Update(void)
 	CMylibrary::SetFixTheRotation(&this->m_rot.y);
 	// ゆらゆら
 	this->m_pos.y += sinf((m_fCntShake++) * CSTONE_SHAKECOEFF) * CSTONE_SHAKE_SIZE;
+
+#ifdef CSTONE_DEBUG_DRAW
+	CDebugProc::Print("Stoneの位置Y = [%.4f]\n", this->m_pos.y);
+#endif // CSTONE_DEBUG_DRAW
 }
 
 //-------------------------------------------------------------------------------------------------------------

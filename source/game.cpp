@@ -24,6 +24,7 @@
 #include "meshSphere.h"
 #include "player.h"
 #include "modelCharacter.h"
+#include "stone.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -71,6 +72,9 @@ void CGame::Init(void)
 	CMotionModel::Load();					// モーション用モデルロード
 	CPause::Load();							// ポーズテクスチャロード
 	CMeshSphere::Load();					// メッシュ球のテクスチャロード
+	CStone::Load();
+
+	CStone::Create(CStone::STONE_ID_DEFAULT);
 
 	// カメラの生成処理
 	m_pCamera = CCamera::Create();
@@ -105,6 +109,7 @@ void CGame::Uninit(void)
 	CScene2D::ReleaseAll();				// 2Dのもの全て破棄
 	CScene3D::ReleaseAll();				// 3Dのもの全て破棄
 
+	CStone::Unload();
 	CNumber::Unload();					// 数字テクスチャアンロード
 	CMeshField::Unload();				// 床テクスチャアンロード
 	CMotionModel::Unload();				// モーション用モデルアンロード
