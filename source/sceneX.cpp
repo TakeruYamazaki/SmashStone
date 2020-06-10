@@ -148,6 +148,9 @@ void CSceneX::DrawMesh(void)
 	D3DXMATERIAL *pMat;
 	D3DMATERIAL9 matDef;
 
+	// ワールドマトリックスの計算
+	CKananLibrary::CalcMatrix(&m_mtxWorld, m_pos, m_rot);
+
 	// テクスチャの設定
 	pDevice->SetTexture(0, m_pModelInfo->pTexture);
 
