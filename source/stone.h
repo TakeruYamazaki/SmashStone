@@ -20,6 +20,14 @@
 //#define CSTONE_USE_TEXTURE	// テクスチャを使う
 #endif // !CSTONE_USE_TEXTURE
 
+#ifndef CSTONE_DEBUG_DRAW
+#define CSTONE_DEBUG_DRAW
+#endif // !CSTONE_DEBUG_DRAW
+#ifndef _DEBUG
+#undef CSTONE_DEBUG_DRAW
+#endif // _DEBUG
+
+
 //-------------------------------------------------------------------------------------------------------------
 // クラス定義
 //-------------------------------------------------------------------------------------------------------------
