@@ -73,7 +73,7 @@ void CObject::Draw(void)
 
 	D3DXMATRIX *pMtx = GetMatrix();;
 
-	CKananLibrary::CalcMatrix(pMtx, GetPos(), GetRot());
+	CKananLibrary::CalcMatrix(pMtx, *GetPos(), *GetRot());
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, pMtx);
@@ -121,8 +121,8 @@ void CObject::SetObjInfo(const D3DXVECTOR3 & pos, const D3DXVECTOR3 & rot, const
 bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTOR3 *move, const MODEL_VTX & modelVtx)
 {
 	bool bLand = false;
-	D3DXVECTOR3 objPos = GetPos();
-	D3DXVECTOR3 objPosOld = GetPosOld();
+	D3DXVECTOR3 objPos = *GetPos();
+	D3DXVECTOR3 objPosOld = *GetPosOld();
 	MODEL_VTX	Vtx = CObjectManager::GetModelVtx(m_nType);
 
 	if (pos->x + modelVtx.VtxMax.x > objPos.x + Vtx.VtxMin.x && pos->x + modelVtx.VtxMin.x < objPos.x + Vtx.VtxMax.x &&
@@ -198,8 +198,8 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 void CObject::ShowObjectInfo(char cPrintText[16])
 {
 	// 情報取得
-	D3DXVECTOR3 pos = GetPos();
-	D3DXVECTOR3 rot = GetRot();
+	D3DXVECTOR3 pos = *GetPos();
+	D3DXVECTOR3 rot = *GetRot();
 
 	// ツリー
 	if (ImGui::TreeNode(cPrintText))
