@@ -549,7 +549,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			// タイプが変わったらモデル変更
 			m_pFakeObject->BindModel(m_objInfo[m_nFakeType].modelInfo);
 			// モデル情報格納
-			m_pFakeObject->SetObjInfo(m_pFakeObject->GetPos(), m_pFakeObject->GetRot(), m_objInfo[m_nFakeType].modelInfo.pTexture, m_nFakeType, false);
+			m_pFakeObject->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), m_objInfo[m_nFakeType].modelInfo.pTexture, m_nFakeType, false);
 		}
 
 		// オブジェクトの生成
@@ -561,7 +561,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			m_pObject[(int)m_pObject.size() - 1]->Init();
 			m_pObject[(int)m_pObject.size() - 1]->BindModel(m_objInfo[m_nFakeType].modelInfo);
 			// モデル情報格納
-			m_pFakeObject->SetObjInfo(m_pFakeObject->GetPos(), m_pFakeObject->GetRot(), m_objInfo[m_nFakeType].modelInfo.pTexture, m_nFakeType, false);
+			m_pFakeObject->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), m_objInfo[m_nFakeType].modelInfo.pTexture, m_nFakeType, false);
 		}
 	}
 
@@ -744,9 +744,9 @@ HRESULT CObjectManager::SaveObject(void)
 				sprintf(cWriteText, "	%s %s %.1f %.1f %.1f",
 					&cHeadText,
 					&cEqual,
-					m_pObject[nCnt]->GetPos().x,
-					m_pObject[nCnt]->GetPos().y,
-					m_pObject[nCnt]->GetPos().z);
+					m_pObject[nCnt]->GetPos()->x,
+					m_pObject[nCnt]->GetPos()->y,
+					m_pObject[nCnt]->GetPos()->z);
 				fputs(cWriteText, pFile);											//	POS = GetPos()
 				fputs(COMMENT_NEW_LINE, pFile);											//	\n
 
@@ -754,9 +754,9 @@ HRESULT CObjectManager::SaveObject(void)
 				sprintf(cWriteText, "	%s %s %.1f %.1f %.1f",
 					&cHeadText,
 					&cEqual,
-					m_pObject[nCnt]->GetRot().x,
-					m_pObject[nCnt]->GetRot().y,
-					m_pObject[nCnt]->GetRot().z);
+					m_pObject[nCnt]->GetRot()->x,
+					m_pObject[nCnt]->GetRot()->y,
+					m_pObject[nCnt]->GetRot()->z);
 				fputs(cWriteText, pFile);											//	ROT = GetRot()
 				fputs(COMMENT_NEW_LINE, pFile);											//	\n
 

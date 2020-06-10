@@ -136,6 +136,12 @@
     <ClCompile Include="source\UI.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\Mylibrary.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\stone.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ImGui\imgui.h">
@@ -279,6 +285,12 @@
     <ClInclude Include="source\UI.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\stone.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Mylibrary.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ImGui">
@@ -296,5 +308,8 @@
     <Filter Include="ヘッダーファイル">
       <UniqueIdentifier>{5f1fc8d3-9b4b-48ec-a030-91f37bc4df42}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\mylibrary.inl" />
   </ItemGroup>
 </Project>

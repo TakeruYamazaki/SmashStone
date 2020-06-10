@@ -1,0 +1,12 @@
+ƒƒ‚
+# ŒÂ”‚Ístone.h‚Ì—ñ‹“Œ^‚É‡‚í‚¹‚é
+
+SCRIPT
+
+# ŒÂ”
+NUMBER = 1
+
+# ƒtƒ@ƒCƒ‹–¼
+FILENAME = data/MODEL/stone/Stone000.x
+
+END_SCRIPT

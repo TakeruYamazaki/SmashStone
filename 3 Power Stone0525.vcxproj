@@ -186,6 +186,7 @@
     <ClCompile Include="source\motion.cpp" />
     <ClCompile Include="source\motionModel.cpp" />
     <ClCompile Include="source\mouse.cpp" />
+    <ClCompile Include="source\Mylibrary.cpp" />
     <ClCompile Include="source\number.cpp" />
     <ClCompile Include="source\object.cpp" />
     <ClCompile Include="source\objManager.cpp" />
@@ -198,6 +199,7 @@
     <ClCompile Include="source\scene3D.cpp" />
     <ClCompile Include="source\sceneX.cpp" />
     <ClCompile Include="source\sound.cpp" />
+    <ClCompile Include="source\stone.cpp" />
     <ClCompile Include="source\title.cpp" />
     <ClCompile Include="source\tutorial.cpp" />
     <ClCompile Include="source\UI.cpp" />
@@ -235,6 +237,7 @@
     <ClInclude Include="source\motion.h" />
     <ClInclude Include="source\motionModel.h" />
     <ClInclude Include="source\mouse.h" />
+    <ClInclude Include="source\Mylibrary.h" />
     <ClInclude Include="source\number.h" />
     <ClInclude Include="source\object.h" />
     <ClInclude Include="source\objManager.h" />
@@ -247,9 +250,13 @@
     <ClInclude Include="source\scene3D.h" />
     <ClInclude Include="source\sceneX.h" />
     <ClInclude Include="source\sound.h" />
+    <ClInclude Include="source\stone.h" />
     <ClInclude Include="source\title.h" />
     <ClInclude Include="source\tutorial.h" />
     <ClInclude Include="source\UI.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\mylibrary.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

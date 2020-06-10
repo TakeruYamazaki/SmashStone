@@ -70,7 +70,7 @@ void CModelParts::Uninit(void)
 void CModelParts::Update(void)
 {
 	//現在の回転首都kj
-	D3DXVECTOR3 rot = GetRot();
+	D3DXVECTOR3 rot = *GetRot();
 
 	//回転に加算
 	rot += m_rot1F;
@@ -95,7 +95,7 @@ void CModelParts::Draw(void)
 	D3DXMATRIX			*mtxWorld = GetMatrix();	// モデルのマトリックス
 
 	// マトリックス計算
-	CKananLibrary::CalcMatrix(mtxWorld, GetPos(), GetRot());
+	CKananLibrary::CalcMatrix(mtxWorld, *GetPos(), *GetRot());
 	D3DXMatrixMultiply(mtxWorld, mtxWorld, m_pParentMtx);
 
 	// モデルの描画
@@ -157,7 +157,7 @@ void CModelParts::SetPartsInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DXVEC
 void CModelParts::SetMotionRotDest(CMotion::MOTION_TYPE motiontype, int nKey)
 {
 	D3DXVECTOR3 rotDest = CMotion::GetRotDest(motiontype, nKey, m_nIndex);		// 目的の回転
-	D3DXVECTOR3 rot = GetRot();													// 現在の回転
+	D3DXVECTOR3 rot = *GetRot();													// 現在の回転
 	int nFrame = CMotion::GetFrame(motiontype, nKey);							// かかるフレーム数
 
 	// 1Fあたりの回転量を取得
