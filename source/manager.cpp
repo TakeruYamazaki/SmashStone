@@ -53,13 +53,13 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 
 	m_pMouse = new CMouse;
 
-	//CModelCharacter::Load();
-
 	// 初期化処理
 	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
 	{
 		return-1;
 	}
+
+	CModelCharacter::Load();
 
 	// キーボード初期化
 	m_pInputKeyboard->Init(hInstance, hWnd);
@@ -81,7 +81,7 @@ void CManager::Uninit(void)
 	// 全てを破棄
 	CScene::ReleaseAll();
 
-	//CModelCharacter::Unload();
+	CModelCharacter::Unload();
 
 	// レンダラーがあるとき
 	if (m_pRenderer != NULL)

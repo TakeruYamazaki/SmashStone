@@ -208,13 +208,13 @@ HRESULT CModelCharacter::Load()
 		// パーツ数分回す
 		for (int nCntParts = 0; nCntParts < m_pModelCharacter[nCntModel].nNumParts; nCntParts++)
 		{
-			// Xファイルの読み込み
+			// モデル生成
 			if (FAILED(D3DXLoadMeshFromX(&m_pModelCharacter[nCntModel].pModelInfo[nCntParts].cModelName[0],
 				D3DXMESH_SYSTEMMEM,
 				pDevice,
-				nullptr,
+				NULL,
 				&m_pModelCharacter[nCntModel].pModelInfo[nCntParts].matBuff,
-				nullptr,
+				NULL,
 				&m_pModelCharacter[nCntModel].pModelInfo[nCntParts].matNum,
 				&m_pModelCharacter[nCntModel].pModelInfo[nCntParts].mesh)))
 			{
@@ -498,9 +498,14 @@ HRESULT CModelCharacter::LoadFileName(CHARACTER_TYPE type)
 
 				// 読み込んだテクスチャ数
 				int nCntTexture = 0;
+				// 初期化
+				sprintf(m_pModelCharacter[type].pModelInfo[nCntTexture].cTextureName, "");
 				// テクスチャ数分繰り返す
 				while (nCntTexture < nNumTexture)
 				{
+					// 初期化
+					sprintf(m_pModelCharacter[type].pModelInfo[nCntTexture].cTextureName, "");
+
 					fgets(cReadText, sizeof(cReadText), pFile);
 					sscanf(cReadText, "%s", &cHeadText);
 					// ファイル名読み込み
