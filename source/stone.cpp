@@ -264,11 +264,12 @@ CStone * CStone::Create(CONST STONE_ID eumID, CONST D3DXVECTOR3 & pos)
 		return nullptr;
 #endif
 	}
-	// ˆÊ’u‚ÌÝ’è
-	pStone->m_pos = pos;
 
 	// ‰Šú‰»
 	pStone->Init();
+	// ˆÊ’u‚ÌÝ’è
+	pStone->m_pos = pos;
+
 	// ƒ‚ƒfƒ‹î•ñ‚ÌÝ’è
 	pStone->m_pModelInfo.matBuff = m_pAllStoneTypeInfo[eumID].pBuffMat;
 	pStone->m_pModelInfo.matNum = m_pAllStoneTypeInfo[eumID].nNumMat;

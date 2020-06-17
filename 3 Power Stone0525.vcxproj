@@ -158,7 +158,6 @@
   <ItemGroup>
     <ClCompile Include="source\bar.cpp" />
     <ClCompile Include="source\camera.cpp" />
-    <ClCompile Include="source\character(1).cpp" />
     <ClCompile Include="source\character.cpp" />
     <ClCompile Include="source\charaICHIYAS.cpp" />
     <ClCompile Include="source\charaKURURU.cpp" />
@@ -209,7 +208,6 @@
   <ItemGroup>
     <ClInclude Include="source\bar.h" />
     <ClInclude Include="source\camera.h" />
-    <ClInclude Include="source\character(1).h" />
     <ClInclude Include="source\character.h" />
     <ClInclude Include="source\charaICHIYAS.h" />
     <ClInclude Include="source\charaKURURU.h" />

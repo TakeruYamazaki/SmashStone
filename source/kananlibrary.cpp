@@ -693,4 +693,13 @@ void CKananLibrary::ShowDebugInfo(void)
 		}
 	}
 }
+//=============================================================================
+// ç¿ïWÇ»Ç«ÇÃèÓïÒ
+//=============================================================================
+void CKananLibrary::ShowOffsetInfo(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &rot, const D3DXVECTOR3 &move)
+{
+	ImGui::Text("pos (%.4f, %.4f, %.4f)", pos.x, pos.y, pos.z);
+	ImGui::Text("rot (%.4f, %.4f, %.4f)", rot.x, rot.y, rot.z);
+	ImGui::Text("move (%.4f, %.4f, %.4f)", move.x, move.y, move.z);
+}
 #endif

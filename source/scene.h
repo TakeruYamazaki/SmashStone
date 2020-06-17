@@ -28,7 +28,6 @@ public:
 	{
 		PRIORITY_MESH_SPHERE = 0,		// メッシュ球
 		PRIORITY_PLAYER,				// プレイヤー
-		PRIORITY_MODEL,					// モデル
 		PRIORITY_OBJECT,				// オブジェクト
 		PRIORITY_FIELD,					// フィールド
 		PRIORITY_SHADOW,				// 影
@@ -50,7 +49,7 @@ public:
 	static void DrawAll(void);								// 全ての描画処理
 	static void ReleaseAll(void);							// 全てに死亡フラグ立てる処理
 
-	void Deleate(CScene *pScene, int type);					// 削除する
+	void Deleate(int type);					// 削除する
 
 	CScene *GetScene(PRIORITY nPriority, int nCntScene);	// シーン取得
 
@@ -61,8 +60,8 @@ private:
 	static CScene *m_pTop[PRIORITY_MAX];					// 先頭オブジェクトへのポインタ
 	static CScene *m_pCur[PRIORITY_MAX];					// 現在(最後尾)へのポインタ
 
-	CScene *m_pPrev;										// 前のオブジェクトへのポインタ
-	CScene *m_pNext;										// 次のオブジェクトへのポインタ
+	CScene *m_pPrev[PRIORITY_MAX];							// 前のオブジェクトへのポインタ
+	CScene *m_pNext[PRIORITY_MAX];							// 次のオブジェクトへのポインタ
 
 	bool m_bDeth;											// 死亡フラグ
 };

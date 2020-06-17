@@ -36,7 +36,6 @@ public:
 	void Uninit(void);								// 終了
 	void Update(void);								// 更新
 	void Draw(void);								// 描画
-	static CCharacter *Create(D3DXVECTOR3 pos);		// 生成
 
 	void SetPos(const D3DXVECTOR3 & pos)			{ m_pos = pos; }			// 位置の設定
 	void SetMove(const D3DXVECTOR3 & move)			{ m_move = move; }			// 移動値の設定

@@ -40,37 +40,6 @@ class CFade;
 class CPlayer : public CCharacter
 {
 public:
-	//=============================================================================
-	// 構造体定義
-	//=============================================================================
-	// キー要素
-	typedef struct
-	{
-		D3DXVECTOR3 pos;				// キー要素の位置
-		D3DXVECTOR3 rot;				// キー要素の回転
-	}KEY;
-
-	// キー情報
-	typedef struct
-	{
-		KEY key[PLAYER_MAX_MODEL];		// パーツ数
-		int nFram;						// フレーム
-	}KEY_INFO;
-
-	// プレイヤーのモーション
-	typedef struct
-	{
-		KEY_INFO key_info[10];				// キーが何セットあるか
-		D3DXVECTOR3 CollisionOfset;			// オフセット
-		int nLoop;							// ループ
-		int nNumKey;						// キー情報の数
-		int Collision_nParts;				// パーツ番号
-		int CollisionStartFram;				// 開始フレーム
-		int CollisionEndFram;				// 終了フレーム
-		int Collision_Damage;				// ダメージ数
-		float CollisionRadius;				// 円の半径
-	}MOTION_PLAYER;
-
 	// モーションのタイプ
 	typedef enum
 	{
@@ -95,20 +64,8 @@ public:
 protected:
 
 private:
-	/*CMotionModel *m_MotionModel[PLAYER_MAX_MODEL];	// モデル情報
-	MOTION_PLAYER m_PlayerMotion[PLAYER_MOTION_MAX];// モーション情報
-
-	static CCamera *m_pCamera;				// カメラの情報ポインタ
-
-	D3DXVECTOR3 posBET[PLAYER_MAX_MODEL];	// 各パーツの位置
-	D3DXVECTOR3 rotBET[PLAYER_MAX_MODEL];	// 各パーツの回転
-
-	int m_MotionType;						// モーションの種類
-	int m_MotionOld;						// 前のモーション
-	int m_Fram;								// フレーム
-	int m_nCntKeySet;						// キーセットのカウント
-	int m_nCntState;						// ステータスのカウント
-
-	float m_RotModel;						// モデルの回転情報*/
+#ifdef _DEBUG
+	void ShowDebugInfo(void);									// ImGuiの更新
+#endif
 };
 #endif

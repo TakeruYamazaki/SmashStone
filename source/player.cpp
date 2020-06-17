@@ -19,6 +19,9 @@
 #include "inputGamepad.h"
 #include "character.h"
 #include "scene.h"
+#include "ImGui/imgui.h"				// Imguiの実装に必要
+#include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
+#include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -68,6 +71,9 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {
 	CCharacter::Update();
+#ifdef _DEBUG
+	ShowDebugInfo();
+#endif
 }
 
 //==================================================================================================================
@@ -86,8 +92,26 @@ CPlayer *CPlayer::Create(void)
 	// シーン動的に確保
 	CPlayer *pPlayer = new CPlayer(CScene::PRIORITY_PLAYER);
 
-	pPlayer->Init();			// プレイヤーの初期化
+	// 失敗
+	if (!pPlayer)
+		return nullptr;
+
+	// 初期化
+	pPlayer->Init();
 
 	// 値を返す
 	return pPlayer;
 }
+
+#ifdef _DEBUG
+//==================================================================================================================
+// ImGuiの更新
+//==================================================================================================================
+void CPlayer::ShowDebugInfo()
+{
+	if (ImGui::CollapsingHeader("Player"))
+	{
+		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
+	}
+}
+#endif

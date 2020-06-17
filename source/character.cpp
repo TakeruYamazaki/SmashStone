@@ -82,16 +82,17 @@ void CCharacter::Uninit()
 //=============================================================================
 void CCharacter::Update()
 {
-	D3DXVECTOR3 pos = GetPos();
-
 	// 移動処理
 	Move();
 
 	// 回転処理
 	Rot();
 
+	// ワールドマトリックスの設定
+	m_pModelCharacter->SetCharacterMtx(&m_mtxWorld);
+
 	// モデルの更新
-	//m_pModelCharacter->Update();
+	m_pModelCharacter->Update();
 
 	// ワールドマトリックスの計算
 	CKananLibrary::CalcMatrix(&m_mtxWorld, m_pos, m_rot);
@@ -104,27 +105,6 @@ void CCharacter::Draw()
 {
 	// モデルの描画
 	m_pModelCharacter->Draw();
-}
-
-//=============================================================================
-// 生成
-//=============================================================================
-CCharacter *CCharacter::Create(D3DXVECTOR3 pos)
-{
-	// 変数宣言
-	CCharacter *pCharacter;
-
-	// メモリ確保
-	pCharacter = new CCharacter(PRIORITY_PLAYER);
-
-	// 初期化
-	pCharacter->Init();
-
-	// 位置設定
-	pCharacter->m_pos = pos;
-
-	// 値を返す
-	return pCharacter;
 }
 
 //=============================================================================

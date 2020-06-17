@@ -16,7 +16,7 @@
 #include "ranking.h"
 #include "sound.h"
 #include "kananlibrary.h"
-
+#include "modelCharacter.h"
 #include "ImGui/imgui.h"			// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"	// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"	// Imguiの実装に必要
@@ -160,6 +160,9 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	InitImGui(d3dpp, hWnd);
 #endif
 
+	// モデルキャラのロード
+	CModelCharacter::Load();
+
 	switch (m_mode)
 	{
 		// タイトルのとき
@@ -243,6 +246,8 @@ void CRenderer::Uninit(void)
 		// ポインタNULL
 		m_pSound = nullptr;
 	}
+
+	CModelCharacter::Unload();
 
 	switch (m_mode)
 	{

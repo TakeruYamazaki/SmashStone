@@ -51,6 +51,7 @@ void CSceneX::Init(void)
 	m_rot		= ZeroVector3;	// 回転
 	m_vecAxis	= ZeroVector3;	// 回転軸
 	m_fValueRot = 0.0f;			// 回転角（回転量）
+	m_bParent	= false;		// 親無し
 }
 
 //==================================================================================================================
@@ -61,16 +62,19 @@ void CSceneX::Uninit(void)
 
 }
 
-
 //==================================================================================================================
 // 更新処理
 //==================================================================================================================
 void CSceneX::Update(void)
 {
+	// 前回の位置を保存
+	m_posOld = m_pos;
+
 	// 回転しすぎた分を補正する
 	CKananLibrary::InterpolationFloat(m_fValueRot);
 
-
+	// 位置更新
+	m_pos += m_move;
 }
 
 //==================================================================================================================
@@ -151,8 +155,13 @@ void CSceneX::DrawMesh(void)
 	// ワールドマトリックスの計算
 	CKananLibrary::CalcMatrix(&m_mtxWorld, m_pos, m_rot);
 
+	//親の情報をいれる
+	if (m_bParent)
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, m_mtxParent);
+
 	// テクスチャの設定
-	pDevice->SetTexture(0, m_pModelInfo->pTexture);
+	if (m_pModelInfo->bTex)
+		pDevice->SetTexture(0, m_pModelInfo->pTexture);
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);

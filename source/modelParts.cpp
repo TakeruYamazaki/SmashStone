@@ -27,12 +27,7 @@
 //=============================================================================
 CModelParts::CModelParts()
 {
-}
-
-CModelParts::CModelParts(PRIORITY nPriority) : CSceneX(nPriority)
-{
 	//初期化
-	m_pParentMtx = nullptr;
 	m_nIndex = 0;
 	m_nParent = 0;
 	m_rot1F = ZeroVector3;
@@ -51,8 +46,7 @@ CModelParts::~CModelParts()
 //=============================================================================
 void CModelParts::Init(void)
 {
-	// シーンの初期化
-	CSceneX::Init();
+
 }
 
 //=============================================================================
@@ -60,8 +54,7 @@ void CModelParts::Init(void)
 //=============================================================================
 void CModelParts::Uninit(void)
 {
-	// シーンの終了
-	CSceneX::Uninit();
+
 }
 
 //=============================================================================
@@ -69,17 +62,8 @@ void CModelParts::Uninit(void)
 //=============================================================================
 void CModelParts::Update(void)
 {
-	//現在の回転首都kj
-	D3DXVECTOR3 rot = *GetRot();
-
-	//回転に加算
-	rot += m_rot1F;
-
-	//更新した回転情報を代入
-	CSceneX::SetRot(rot);
-
-	//更新
-	CSceneX::Update();
+	// 回転に加算
+	//m_rot += m_rot1F;
 }
 
 //=============================================================================
@@ -90,16 +74,42 @@ void CModelParts::Draw(void)
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
-	D3DXMATRIX			mtxShadow;		// 影のワールドマトリックス
-	D3DXMATRIX			DrawMtx;		// 描画用のワールドマトリックス
-	D3DXMATRIX			*mtxWorld = GetMatrix();	// モデルのマトリックス
+	D3DXMATRIX		mtxShadow;		// 影のワールドマトリックス
+	D3DXMATRIX		DrawMtx;		// 描画用のワールドマトリックス
+	D3DXMATERIAL	*pMat;
+	D3DMATERIAL9	matDef;
 
-	// マトリックス計算
-	CKananLibrary::CalcMatrix(mtxWorld, *GetPos(), *GetRot());
-	D3DXMatrixMultiply(mtxWorld, mtxWorld, m_pParentMtx);
+	// ワールドマトリックスの計算
+	CKananLibrary::CalcMatrix(&m_mtxWorld, m_pos, m_rot);
 
-	// モデルの描画
-	CSceneX::DrawMesh();
+	// 親の情報をいれる
+	if (m_nParent >= 0)
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, m_mtxParent);
+
+	// テクスチャの設定
+	if (m_pModelInfo->bTex)
+		pDevice->SetTexture(0, m_pModelInfo->pTexture);
+
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
+	// 現在のマテリアルを取得
+	pDevice->GetMaterial(&matDef);
+
+	// マテリアル情報に対するポインタを取得
+	pMat = (D3DXMATERIAL*)m_pModelInfo->matBuff->GetBufferPointer();
+
+	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo->matNum; nCntMat++)
+	{
+		// マテリアルの設定
+		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+		// 描画
+		m_pModelInfo->mesh->DrawSubset(nCntMat);
+	}
+
+	// マテリアルをデフォルトに戻す
+	pDevice->SetMaterial(&matDef);
 
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&mtxShadow);
@@ -121,23 +131,15 @@ void CModelParts::Draw(void)
 }
 
 //=============================================================================
-// 親のマトリックス設定
-//=============================================================================
-void CModelParts::SetParentMtx(D3DXMATRIX *mtx)
-{
-	m_pParentMtx = mtx;
-}
-
-//=============================================================================
 // いろんな情報セット (テクスチャ付き)
 //=============================================================================
 void CModelParts::SetPartsTexInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot, LPDIRECT3DTEXTURE9 pTexture)
 {
-	CSceneX::SetPos(pos);
-	CSceneX::SetRot(rot);
+	m_pos = pos;
+	m_rot = rot;
 	m_nParent = nParent;
 	m_nIndex = nIndex;
-	CSceneX::BindTex(pTexture);
+	m_pTexture = pTexture;
 }
 
 //=============================================================================
@@ -145,8 +147,8 @@ void CModelParts::SetPartsTexInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DX
 //=============================================================================
 void CModelParts::SetPartsInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
-	CSceneX::SetPos(pos);
-	CSceneX::SetRot(rot);
+	m_pos = pos;
+	m_rot = rot;
 	m_nParent = nParent;
 	m_nIndex = nIndex;
 }
@@ -157,7 +159,7 @@ void CModelParts::SetPartsInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DXVEC
 void CModelParts::SetMotionRotDest(CMotion::MOTION_TYPE motiontype, int nKey)
 {
 	D3DXVECTOR3 rotDest = CMotion::GetRotDest(motiontype, nKey, m_nIndex);		// 目的の回転
-	D3DXVECTOR3 rot = *GetRot();													// 現在の回転
+	D3DXVECTOR3 rot = m_rot;													// 現在の回転
 	int nFrame = CMotion::GetFrame(motiontype, nKey);							// かかるフレーム数
 
 	// 1Fあたりの回転量を取得

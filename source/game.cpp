@@ -86,7 +86,7 @@ void CGame::Init(void)
 	m_pMeshSphere = CMeshSphere::Create();
 
 	// プレイヤー生成
-	//m_pPlayer[0] = CPlayer::Create();
+	m_pPlayer[0] = CPlayer::Create();
 
 	// メッシュフィールド生成
 	m_pMeshField = CMeshField::Create();
@@ -113,7 +113,6 @@ void CGame::Uninit(void)
 	CNumber::Unload();					// 数字テクスチャアンロード
 	CMeshField::Unload();				// 床テクスチャアンロード
 	CMotionModel::Unload();				// モーション用モデルアンロード
-//	CModelCharacter::Unload();
 
 	// ポーズの終了処理
 	m_pPause->Uninit();

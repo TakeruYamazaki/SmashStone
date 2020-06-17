@@ -41,7 +41,9 @@ public:
 	void SetMove(CONST D3DXVECTOR3 &move)	{ m_move = move; }					// 移動量設定処理
 	void SetRot(CONST D3DXVECTOR3 &rot)		{ m_rot = rot; }					// 回転設定処理
 	void SetVecAxis(D3DXVECTOR3 vecAxis)	{ m_vecAxis = vecAxis; }			// 回転軸設定処理
+	void SetbParent(CONST bool &bParent)	{ m_bParent = bParent; }			// 親が存在する
 	void SetValueRot(float ValueRot)		{ m_fValueRot = ValueRot; }			// 回転角設定処理
+	void SetMtxParent(D3DXMATRIX *mtxParent) { m_mtxParent = mtxParent; }	// 親のマトリックスの設定
 
 	bool SetCollisionBox(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXVECTOR3 posOld);	// 矩形の当たり判定処理
 
@@ -58,6 +60,7 @@ protected:
 	MODELINFO *m_pModelInfo;					// メッシュやマテリアルの情報参照用ポインタ
 	D3DXMATRIX m_mtxRot;						// 回転マトリックス（保存用）
 	D3DXMATRIX m_mtxWorld;						// ワールドマトリックス
+	D3DXMATRIX *m_mtxParent;					// 親のマトリックス
 	D3DXQUATERNION m_quat;						// クォータニオン
 
 	D3DXVECTOR3 m_vecAxis;						// 回転軸
@@ -70,6 +73,7 @@ protected:
 	float m_fValueRot;							// 回転角（回転量）
 	float m_fAngle;								// 角度
 	float m_fLength;							// 長さ
+	bool  m_bParent;							// 親モデルが存在する
 private:
 
 };

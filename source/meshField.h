@@ -17,7 +17,7 @@
 // マクロ定義
 //==================================================================================================================
 #define Depth 570									// 縦のポリゴン数
-#define Width 20									// 横のブロック数
+#define WIDTH 20									// 横のブロック数
 #define WhileX 10.0f								// イチマスの長さ横
 #define WhileY 6.0f									// イチマスの長さ高さ
 #define WhileZ 10.0f								// イチマスの長さ縦
@@ -69,8 +69,8 @@ private:
 	D3DXVECTOR3 m_pos;										// 位置
 	D3DXVECTOR3 m_rot;										// 回転
 	D3DXVECTOR3 m_move;										// 移動
-	D3DXVECTOR3 m_aVecA[Depth * Width];						// 法線ベクトルを面の数分一時的に格納
-	D3DXVECTOR3 m_aVecB[Depth * Width];						// 法線ベクトルを面の数分一時的に格納
+	D3DXVECTOR3 m_aVecA[Depth * WIDTH];						// 法線ベクトルを面の数分一時的に格納
+	D3DXVECTOR3 m_aVecB[Depth * WIDTH];						// 法線ベクトルを面の数分一時的に格納
 	D3DXVECTOR3 m_vectorA;									// Aベクトル
 	D3DXVECTOR3 m_vectorB;									// Bベクトル
 	D3DXVECTOR3 m_vectorC;									// Cベクトル

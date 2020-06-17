@@ -59,8 +59,6 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 		return-1;
 	}
 
-	CModelCharacter::Load();
-
 	// キーボード初期化
 	m_pInputKeyboard->Init(hInstance, hWnd);
 
@@ -80,8 +78,6 @@ void CManager::Uninit(void)
 {
 	// 全てを破棄
 	CScene::ReleaseAll();
-
-	CModelCharacter::Unload();
 
 	// レンダラーがあるとき
 	if (m_pRenderer != NULL)

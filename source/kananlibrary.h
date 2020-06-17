@@ -84,6 +84,7 @@ typedef struct
 	LPD3DXBUFFER	matBuff;			// 頂点情報
 	DWORD			matNum;				// マテリアル数
 	LPDIRECT3DTEXTURE9 pTexture;		// テクスチャ
+	bool			bTex;				// テクスチャがあるか
 } MODELINFO;
 
 typedef struct
@@ -158,6 +159,7 @@ public:
 
 #ifdef _DEBUG
 	static void ShowDebugInfo(void);					// ImGuiの更新
+	static void ShowOffsetInfo(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &rot, const D3DXVECTOR3 &move);					// 座標などの情報
 	static bool GetWire(void) { return m_WireFrame; }	// ワイヤーフレーム描画の取得
 #endif
 

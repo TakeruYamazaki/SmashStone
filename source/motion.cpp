@@ -28,11 +28,7 @@
 CMotion::MOTION_INFO *CMotion::m_pMotionInfo = nullptr;
 char * CMotion::m_apFileName[CMotion::MOTION_MAX] =
 {
-	{ "data/PLAYER/motion/man_neutral.txt" },
-	{ "data/PLAYER/motion/man_swim_begin.txt" },
-	{ "data/PLAYER/motion/man_swim.txt" },
-	{ "data/FISH/MOTION/fish000_neutral.txt" },
-	{ "data/FISH/MOTION/fish001_neutral.txt" }
+	{ "data/MOTION/fokker/motion_neutral.txt" },
 };
 
 //=============================================================================

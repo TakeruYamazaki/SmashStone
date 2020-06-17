@@ -21,18 +21,22 @@ CScene::CScene(PRIORITY type)
 	// 先頭オブジェクトが無い時
 	if (m_pTop[type] == NULL)
 	{
-		m_pPrev = NULL;						// 前のオブジェクトのポインタ
-		m_pTop[type] = this;				// 先頭オブジェクトのポインタをこれにする
+		m_pPrev[type] = NULL;					// 前のオブジェクトのポインタ
+		m_pTop[type] = this;					// 先頭オブジェクトのポインタをこれにする
+		m_pCur[type] = this;
+		m_pNext[type] = NULL;
 	}
-	m_pNext = NULL;							// 最後尾の次はNULL指定
-	m_pPrev = m_pCur[type];					// 現在のオブジェクトを前のオブジェクトに代入
-
-	// 最後尾があるとき
-	if (m_pCur[type] != NULL)
+	else
 	{
-		m_pCur[type]->m_pNext = this;		// m_pNextを操作する
+		// 最後尾の要素を設定する
+		if (m_pCur[type] != NULL)
+		{
+			m_pCur[type]->m_pNext[type] = this;
+			this->m_pPrev[type] = m_pCur[type];
+			m_pCur[type] = this;
+		}
 	}
-	m_pCur[type] = this;					// 現在(最後尾)のオブジェクトのポインタをこれにする
+
 	m_bDeth = false;						// 死亡フラグは立っていない状態にする
 }
 
@@ -49,27 +53,30 @@ CScene::~CScene()
 //==================================================================================================================
 void CScene::UpdateAll(void)
 {
-	// 描画順番のfor文
 	for (int nCnt = 0; nCnt < PRIORITY_MAX; nCnt++)
 	{
-		CScene *pScene = m_pTop[nCnt];					// 変数を作り初期化する
-		while (pScene)									// pSceneがNULLになるまでエンドレス
+		// 更新
+		if (m_pTop[nCnt])
 		{
-			CScene *pSceneNext = pScene->m_pNext;		// 次の情報格納
-			pScene->Update();							// 今の情報の更新処理
-			pScene = pSceneNext;						// pSceneに次の情報代入
+			CScene *pScene = m_pTop[nCnt];
+			while (pScene)
+			{
+				CScene *pNextScene = pScene->m_pNext[nCnt];
+				pScene->Update();
+				pScene = pNextScene;
+			}
 		}
-	}
 
-	// 描画順番のfor文
-	for (int nCnt = 0; nCnt < PRIORITY_MAX; nCnt++)
-	{
-		CScene *pScene = m_pTop[nCnt];					// 変数を作り初期化する
-		while (pScene)									// pSceneがNULLになるまでエンドレス
+		// 開放判定を行う
+		if (m_pTop[nCnt])
 		{
-			CScene *pSceneNext = pScene->m_pNext;		// 次の情報格納
-			pScene->Deleate(pScene, nCnt);				// 今の情報の破棄
-			pScene = pSceneNext;						// pSceneに次の情報代入
+			CScene *pScene = m_pTop[nCnt];
+			while (pScene)
+			{
+				CScene *pNextScene = pScene->m_pNext[nCnt];
+				pScene->Deleate(nCnt);
+				pScene = pNextScene;
+			}
 		}
 	}
 }
@@ -85,7 +92,7 @@ void CScene::DrawAll(void)
 		CScene *pScene = m_pTop[nCnt];				// 変数を作り初期化する
 		while (pScene)								// pSceneがNULLになるまでエンドレス
 		{
-			CScene *pSceneNext = pScene->m_pNext;	// 次の情報格納	
+			CScene *pSceneNext = pScene->m_pNext[nCnt];	// 次の情報格納	
 			pScene->Draw();							// 今の情報の描画処理
 			pScene = pSceneNext;					// pSceneに次の情報代入
 		}
@@ -100,13 +107,27 @@ void CScene::ReleaseAll(void)
 	// 描画順番のfor文
 	for (int nCnt = 0; nCnt < PRIORITY_MAX; nCnt++)
 	{
-		CScene *pScene = m_pTop[nCnt];				// 変数を作り初期化する
-		while (pScene)								// pSceneがNULLになるまでエンドレス
+		// nullcheck
+		if (m_pTop[nCnt])
 		{
-			CScene *pSceneNext = pScene->m_pNext;	// 次の情報に格納
-			pScene->Release();						// 全てのものに死亡フラグ
-			pScene->Deleate(pScene, nCnt);			// 破棄
-			pScene = pSceneNext;					// pSceneに次の情報代入
+			// pSceneが空になるまで繰り返す
+			CScene *pScene = m_pTop[nCnt];
+
+			// nullcheck
+			while (pScene)
+			{
+				// 次のポインタを保存
+				CScene *pSceneNext = pScene->m_pNext[nCnt];
+
+				// 今のポインタをリリース
+				pScene->Release();
+
+				// 今のポインタを破棄
+				pScene->Deleate(nCnt);
+
+				// 今のポインタを次のポインタに上書きする
+				pScene = pSceneNext;
+			}
 		}
 	}
 }
@@ -129,8 +150,8 @@ CScene *CScene::GetScene(PRIORITY nPriority, int nCntScene)
 	// 先頭からnCntScene分次のオブジェクトにポインタを渡す
 	for (int nCnt = 0; nCnt < nCntScene; nCnt++)
 	{
-		CScene *pSceneNext = pScene->m_pNext;			// 次の情報格納	
-		pScene = pSceneNext;							// pSceneに次の情報代入
+		CScene *pSceneNext = pScene->m_pNext[nPriority];	// 次の情報格納	
+		pScene = pSceneNext;								// pSceneに次の情報代入
 	}
 
 	return pScene;										// 値を返す
@@ -139,44 +160,33 @@ CScene *CScene::GetScene(PRIORITY nPriority, int nCntScene)
 //==================================================================================================================
 // 破棄
 //==================================================================================================================
-void CScene::Deleate(CScene *pScene, int type)
+void CScene::Deleate(int type)
 {
 	// 死亡フラグが立っているとき
 	if (m_bDeth)
 	{
-		// pSceneがあるとき
-		if (pScene != NULL)
+		this->Uninit();
+
+		// 削除時に配列に穴抜けができるので、順を入れ替える
+		if (this == m_pTop[type] && this == m_pCur[type])
 		{
-			// 削除しようとする対象が先頭だったら
-			if (pScene == m_pTop[type])
-			{
-				// 次のオブジェクトのポインタを先頭にする
-				m_pTop[type] = m_pNext;
-			}
-			else
-			{
-				// 削除しようとする一個前の次のオブジェクト情報を今の次のオブジェクト情報に書き換える
-				m_pPrev->m_pNext = m_pNext;
-			}
-
-			// 削除しようとする対象が最後尾だったら
-			if (pScene == m_pCur[type])
-			{// ぼくだけがいない街
-				 // 削除しようとする一個前を最後尾にする
-				m_pCur[type] = m_pPrev;
-			}
-			else
-			{
-				// 削除しようとする一個後の前のオブジェクト情報を今の前のオブジェクト情報に書き換える
-				m_pNext->m_pPrev = m_pPrev;
-			}
-
-			// pSceneの終了処理
-			pScene->Uninit();
-			// 開放
-			delete pScene;
-			// NULLにする
-			pScene = NULL;
+			m_pTop[type] = m_pCur[type] = nullptr;
 		}
+		else if (this == m_pTop[type])
+		{
+			m_pTop[type] = m_pTop[type]->m_pNext[type];
+			m_pTop[type]->m_pPrev[type] = nullptr;
+		}
+		else if (this == m_pCur[type])
+		{
+			m_pCur[type] = m_pCur[type]->m_pPrev[type];
+			m_pCur[type]->m_pNext[type] = nullptr;
+		}
+		else
+		{
+			m_pPrev[type]->m_pNext[type] = this->m_pNext[type];
+			m_pNext[type]->m_pPrev[type] = this->m_pPrev[type];
+		}
+		delete this;
 	}
 }

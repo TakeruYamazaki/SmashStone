@@ -31,7 +31,7 @@
 MODELCHARACTER	CModelCharacter::m_pModelCharacter[CHARACTER_MAX] = {};
 char			CModelCharacter::m_aFileName[CHARACTER_MAX][64] =
 {
-	{ "data/OFFSET/offset_trans_fokker.txt" },
+	{ "data/OFFSET/offset_fokker.txt" },
 };
 
 //=============================================================================
@@ -59,15 +59,18 @@ HRESULT CModelCharacter::Init()
 	// モデルを個数分生成
 	m_pModelParts = new CModelParts[m_pModelCharacter[m_type].nNumParts];
 
-	for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)
+	if (m_pModelParts)
 	{
-		// 初期化
-		m_pModelParts[nCnt].Init();
-		// モデル情報設定
-		m_pModelParts[nCnt].BindModel(m_pModelCharacter[m_type].pModelInfo[nCnt]);
+		for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)
+		{
+			// 初期化
+			m_pModelParts[nCnt].Init();
+			// モデル情報設定
+			m_pModelParts[nCnt].BindModelInfo(&m_pModelCharacter[m_type].pModelInfo[nCnt]);
+		}
+		// パーツのオフセット取得
+		LoadOffset(m_type);
 	}
-	// パーツのオフセット取得
-	LoadOffset(m_type);
 
 	return S_OK;
 }
@@ -92,7 +95,7 @@ void CModelCharacter::Uninit()
 void CModelCharacter::Update()
 {
 	// フレーム加算
-	m_nFrame++;
+	/*m_nFrame++;
 
 	// フレームが一定値まで来た時
 	if (m_nFrame >= CMotion::GetFrame(m_motion, m_nKey))
@@ -119,13 +122,13 @@ void CModelCharacter::Update()
 
 		// 次のモーション情報をセット
 		SetMotion(m_motion);
-	}
+	}*/
 
 	// モデル数分繰り返す
 	for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)
 	{
 		// nullcheck
-		if (&m_pModelParts[nCnt])
+		if (m_pModelParts)
 			// 更新
 			m_pModelParts[nCnt].Update();
 	}
@@ -145,9 +148,9 @@ void CModelCharacter::Draw()
 	for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)
 	{
 		// nullcheck
-		if (&m_pModelParts[nCnt])
+		if (m_pModelParts)
 			// 描画
-			m_pModelParts[nCnt].DrawMesh();
+			m_pModelParts[nCnt].Draw();
 	}
 }
 
@@ -158,6 +161,10 @@ CModelCharacter *CModelCharacter::Create(CHARACTER_TYPE modeltype)
 {
 	// メモリ確保
 	CModelCharacter *pModelCharacter = new CModelCharacter;
+
+	// 失敗
+	if (!pModelCharacter)
+		return nullptr;
 
 	// タイプの設定
 	pModelCharacter->m_type = modeltype;
@@ -201,6 +208,7 @@ HRESULT CModelCharacter::Load()
 				{
 					// できなければ失敗
 					printf("テクスチャ生成失敗 (テクスチャ %d)\n", nCntTex);
+					m_pModelCharacter[nCntModel].pModelInfo[nCntParts].bTex = false;
 				}
 			}
 		}
@@ -262,13 +270,18 @@ void CModelCharacter::SetCharacterMtx(D3DXMATRIX *mtx)
 	// モデル総数分
 	for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)
 	{
-		// 親がいない時
-		if (m_pModelParts[nCnt].GetParent() == -1)
-			// 大元のマトリックス設定
-			m_pModelParts[nCnt].SetParentMtx(mtx);
-		else
-			// 親パーツのマトリックス設定	
-			m_pModelParts[nCnt].SetParentMtx(m_pModelParts[m_pModelParts[nCnt].GetParent()].GetMatrix());
+		if (m_pModelParts)
+		{
+			// 親がいない時
+			if (m_pModelParts[nCnt].GetParent() == -1)
+				// 大元のマトリックス設定
+				m_pModelParts[nCnt].SetMtxParent(mtx);
+			else
+			{
+				// 親パーツのマトリックス設定
+				m_pModelParts[nCnt].SetMtxParent(m_pModelParts[m_pModelParts[nCnt].GetParent()].GetMtx());
+			}
+		}
 	}
 }
 
@@ -379,7 +392,7 @@ HRESULT CModelCharacter::LoadOffset(CHARACTER_TYPE type)
 								}
 								if (strcmp(cHeadText, "END_PARTSSET") == 0)
 								{
-									if (m_pModelCharacter[type].nNumTexture > 0)
+									if (m_pModelCharacter[type].pModelInfo[nCntParts].bTex)
 									{
 										// テクスチャ付きのパーツ情報格納
 										m_pModelParts[nCntParts].SetPartsTexInfo(nCntParts, nParent, pos, rot, m_pModelCharacter[type].pModelInfo[nCntParts].pTexture);
@@ -484,6 +497,7 @@ HRESULT CModelCharacter::LoadFileName(CHARACTER_TYPE type)
 						// モデル名取得
 						sscanf(cReadText, "%s %s %s", &cDieText, &cDieText, m_pModelCharacter[type].pModelInfo[nCntModel].cModelName);
 						printf("ファイル %s を取得\n", m_pModelCharacter[type].pModelInfo[nCntModel].cModelName);
+						m_pModelCharacter[type].pModelInfo[nCntModel].bTex = false;
 
 						// モデルカウント加算
 						nCntModel++;
@@ -500,10 +514,12 @@ HRESULT CModelCharacter::LoadFileName(CHARACTER_TYPE type)
 				int nCntTexture = 0;
 				// 初期化
 				sprintf(m_pModelCharacter[type].pModelInfo[nCntTexture].cTextureName, "");
+
 				// テクスチャ数分繰り返す
 				while (nCntTexture < nNumTexture)
 				{
 					// 初期化
+					m_pModelCharacter[type].pModelInfo[nCntTexture].bTex = false;
 					sprintf(m_pModelCharacter[type].pModelInfo[nCntTexture].cTextureName, "");
 
 					fgets(cReadText, sizeof(cReadText), pFile);
@@ -514,6 +530,7 @@ HRESULT CModelCharacter::LoadFileName(CHARACTER_TYPE type)
 						// テクスチャ名取得
 						sscanf(cReadText, "%s %s %s", &cDieText, &cDieText, m_pModelCharacter[type].pModelInfo[nCntTexture].cTextureName);
 						printf("ファイル %s を取得\n", m_pModelCharacter[type].pModelInfo[nCntTexture].cTextureName);
+						m_pModelCharacter[type].pModelInfo[nCntTexture].bTex = true;
 
 						// テクスチャカウント加算
 						nCntTexture++;
