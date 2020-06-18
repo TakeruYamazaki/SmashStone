@@ -126,9 +126,6 @@ void CPause::Update(void)
 	// キーボード取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
 
-	// コントローラー取得
-	CInputGamepad *pInputGamepad = CManager::GetInputGamepad();
-
 	// ゲーム情報取得
 	CGame *pGame = CRenderer::GetGame();
 
@@ -146,14 +143,14 @@ void CPause::Update(void)
 	}
 
 	// コントローラーの[十字キー上]が押されたとき
-	if (pInputGamepad->GetTrigger(CInputGamepad::JOYPADKEY_UP))
+	/*if (pInputGamepad->GetTrigger(CInputGamepad::JOYPADKEY_UP))
 	{//選択処理
 		m_nSelect--;
 	}
 	else if (pInputGamepad->GetTrigger(CInputGamepad::JOYPADKEY_DOWN))
 	{// コントローラーの[十字キー下]が押されたとき
 		m_nSelect++;
-	}
+	}*/
 
 	// 選択番号が表示するテクスチャ番号を超えたら
 	if (m_nSelect == PAUSETEXTURE_MAX)
@@ -183,7 +180,7 @@ void CPause::Update(void)
 	}
 
 	// キーボードの[エンター] 又は コントローラーの[B]が押されたとき
-	if (pInputKeyboard->GetKeyboardPress(DIK_RETURN) || pInputGamepad->GetPress(CInputGamepad::JOYPADKEY_B))
+	if (pInputKeyboard->GetKeyboardPress(DIK_RETURN))
 	{
 		// 選択番号がスタートからやり直す番号のとき
 		if (m_nSelect == PAUSETEXTURE_START)

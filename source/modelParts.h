@@ -27,6 +27,7 @@ public:
 	void Uninit(void);																	// 終了
 	void Update(void);																	// 更新
 	void Draw(void);																	// 描画
+	void DrawShadow(void);																// 影の描画
 
 	void SetPartsTexInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot, LPDIRECT3DTEXTURE9 pTexture);		// パーツの情報設定
 	void SetPartsInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot);		// パーツの情報設定

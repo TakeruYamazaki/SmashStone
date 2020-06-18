@@ -74,8 +74,6 @@ void CModelParts::Draw(void)
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
-	D3DXMATRIX		mtxShadow;		// 影のワールドマトリックス
-	D3DXMATRIX		DrawMtx;		// 描画用のワールドマトリックス
 	D3DXMATERIAL	*pMat;
 	D3DMATERIAL9	matDef;
 
@@ -110,24 +108,62 @@ void CModelParts::Draw(void)
 
 	// マテリアルをデフォルトに戻す
 	pDevice->SetMaterial(&matDef);
+}
 
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&mtxShadow);
+//=============================================================================
+// 影の描画
+//=============================================================================
+void CModelParts::DrawShadow(void)
+{
+	// デバイス取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
-	// モデルのワールド座標取得
-	pDevice->GetTransform(D3DTS_WORLD, &DrawMtx);
+	D3DXMATERIAL *pMat;
+	D3DMATERIAL9 matDef, matBlack;
 
-	// 影のマトリックス計算
-	CKananLibrary::CalcShadowMatrix(mtxShadow, D3DXVECTOR3(0.0f, 1.0f, 0.0f), AboveNormal);
+	// 現在のマテリアルを取得
+	pDevice->GetMaterial(&matDef);
 
-	// 描画用のマトリックスにかけ合わせる
-	D3DXMatrixMultiply(&DrawMtx, &DrawMtx, &mtxShadow);
+	matBlack = matDef;
 
-	// モデル座標からワールド座標に設定
-	pDevice->SetTransform(D3DTS_WORLD, &DrawMtx);
+	// 色の設定
+	matBlack.Diffuse = BlackColor;
 
-	// 影の描画
-	//CSceneX::DrawShadow();
+	// マテリアル情報に対するポインタを取得
+	pMat = (D3DXMATERIAL*)m_pModelInfo->matBuff->GetBufferPointer();
+
+	// ========================ステンシル============================
+	// [ピクセル単位で参照値を設定し、								]
+	// [その値と条件を比較してピクセルの描画を行うか判断する手法	]
+	// ==============================================================
+
+	// 参照値	: D3DRS_STENCILPASS						(ステンシルテスト・Zテストを両方成功していたら +1)
+	// 条件		: D3DRS_STENCILREF, D3DRS_STENCILFUNC	(参照値が0のみステンシルテスト合格)
+	// よって、参照値 = 0 だと描画する					(ステンシルテストを合格しているピクセルのみ、描画される)
+
+	// ステンシルの値を0にする
+	//pDevice->Clear(0, NULL, D3DCLEAR_STENCIL, 0, 1.0f, 0);
+	//
+	//pDevice->SetRenderState(D3DRS_STENCILENABLE, TRUE);				// ステンシルテスト有効
+	//pDevice->SetRenderState(D3DRS_STENCILREF, 0);					// ステンシルの条件の値
+	//pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL);		// (EQUAL : 条件と同じ)
+
+	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo->matNum; nCntMat++)
+	{
+		// インクリメント
+		//pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCR);
+
+		// マテリアルの設定
+		pDevice->SetMaterial(&matBlack);
+
+		// 描画
+		m_pModelInfo->mesh->DrawSubset(nCntMat);
+	}
+	// マテリアルをデフォルトに戻す
+	pDevice->SetMaterial(&matDef);
+
+	// ステンシルテスト無効
+	//pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
 }
 
 //=============================================================================

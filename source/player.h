@@ -59,11 +59,17 @@ public:
 	void Update(void);								// 更新処理
 	void Draw(void);								// 描画処理
 
-	static CPlayer *Create(void);					// 生成処理
+	static CPlayer *Create(int nPlayer);			// 生成処理
 
 protected:
 
 private:
+	void Control(void);								// 操作関数
+	void ControlGamepad(CInputGamepad *pGamepad);	// ゲームパッド操作
+	void ControlKeyboard(CInputKeyboard *pKeyboard);// キーボード操作
+
+	int m_nPlayer;			// プレイヤー番号
+
 #ifdef _DEBUG
 	void ShowDebugInfo(void);									// ImGuiの更新
 #endif

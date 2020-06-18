@@ -115,9 +115,6 @@ void CTitle::Update(void)
 	// キーボード取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
 
-	//コントローラーの取得
-	CInputGamepad *pInputGamepad = CManager::GetInputGamepad();
-
 	// フェード取得
 	CFade::FADE fade = CFade::GetFade();
 
@@ -128,7 +125,7 @@ void CTitle::Update(void)
 	m_pLight->Update();
 
 	// キーボードの[Enter] 又は コントローラーの[START]を押したとき
-	if (pInputKeyboard->GetKeyboardTrigger(DIK_RETURN) || pInputGamepad->GetPress(CInputGamepad::JOYPADKEY_START))
+	if (pInputKeyboard->GetKeyboardTrigger(DIK_RETURN))
 	{
 		// フェードが何もない時
 		if (fade == CFade::FADE_NONE)

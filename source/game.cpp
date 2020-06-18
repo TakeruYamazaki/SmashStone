@@ -85,8 +85,11 @@ void CGame::Init(void)
 	// メッシュ球の生成処理
 	m_pMeshSphere = CMeshSphere::Create();
 
-	// プレイヤー生成
-	m_pPlayer[0] = CPlayer::Create();
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+	{
+		// プレイヤー生成
+		m_pPlayer[nCnt] = CPlayer::Create(nCnt);
+	}
 
 	// メッシュフィールド生成
 	m_pMeshField = CMeshField::Create();
@@ -135,9 +138,6 @@ void CGame::Update(void)
 	// キーボード取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
 
-	// コントローラー取得
-	CInputGamepad *pInputGamepad = CManager::GetInputGamepad();
-
 	// フェード取得
 	CFade::FADE fade = CFade::GetFade();
 
@@ -172,7 +172,7 @@ void CGame::Update(void)
 	}
 
 	// キーボードの[P] 又は コントローラーの[START]ボタンが押されたとき
-	if (pInputKeyboard->GetKeyboardTrigger(DIK_P) || pInputGamepad->GetTrigger(CInputGamepad::JOYPADKEY_START))
+	if (pInputKeyboard->GetKeyboardTrigger(DIK_P))
 	{// ポーズ切り替え
 		// ゲーム状態がポーズのとき
 		if (m_gameState == GAMESTATE_PAUSE)

@@ -18,7 +18,7 @@
 //==================================================================================================================
 CRenderer *CManager::m_pRenderer = NULL;				// レンダラー情報
 CInputKeyboard *CManager::m_pInputKeyboard = NULL;		// キーボード情報
-CInputGamepad *CManager::m_pInputGamepad = NULL;		// ゲームパッド情報
+CInputGamepad *CManager::m_pInputGamepad[MAX_PLAYER] = {};		// ゲームパッド情報
 CMouse *CManager::m_pMouse = nullptr;
 
 //==================================================================================================================
@@ -49,7 +49,10 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 	m_pInputKeyboard = new CInputKeyboard;
 
 	// コントローラー動的に確保
-	m_pInputGamepad = new CInputGamepad;
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+	{
+		m_pInputGamepad[nCnt] = new CInputGamepad;
+	}
 
 	m_pMouse = new CMouse;
 
@@ -62,8 +65,11 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 	// キーボード初期化
 	m_pInputKeyboard->Init(hInstance, hWnd);
 
-	// コントローラー初期化
-	m_pInputGamepad->Init(hInstance, hWnd);
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+	{
+		// コントローラー初期化
+		m_pInputGamepad[nCnt]->Init(hInstance, hWnd);
+	}
 
 	m_pMouse->Init(hInstance, hWnd);
 
@@ -105,17 +111,16 @@ void CManager::Uninit(void)
 		m_pInputKeyboard = NULL;
 	}
 
-	// コントローラーがあるとき
-	if (m_pInputGamepad != NULL)
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 	{
-		// コントローラーの終了処理
-		m_pInputGamepad->Uninit();
-
-		// 破棄
-		delete[] m_pInputGamepad;
-
-		// NULLにする
-		m_pInputGamepad = NULL;
+		// nullcheck
+		if (m_pInputGamepad)
+		{
+			// 破棄
+			m_pInputGamepad[nCnt]->Uninit();
+			delete m_pInputGamepad[nCnt];
+			m_pInputGamepad[nCnt] = nullptr;
+		}
 	}
 
 	if (m_pMouse)
@@ -151,11 +156,11 @@ void CManager::Update(void)
 		m_pInputKeyboard->Update();
 	}
 
-	// コントローラーがあるとき
-	if (m_pInputGamepad != NULL)
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 	{
-		// コントローラーの更新処理
-		m_pInputGamepad->Update();
+		// 接続されているなら更新
+		if (m_pInputGamepad[nCnt]->GetbConnect())
+			m_pInputGamepad[nCnt]->Update();
 	}
 
 	if (m_pMouse)
@@ -194,7 +199,7 @@ CInputKeyboard *CManager::GetInputKeyboard(void)
 //==================================================================================================================
 // コントローラー情報取得
 //==================================================================================================================
-CInputGamepad * CManager::GetInputGamepad(void)
+CInputGamepad * CManager::GetInputGamepad(int nPlayer)
 {
-	return m_pInputGamepad;
+	return m_pInputGamepad[nPlayer];
 }
