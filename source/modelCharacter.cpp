@@ -17,6 +17,7 @@
 #include "sceneX.h"
 #include "motion.h"
 #include "kananlibrary.h"
+#include "motion.h"
 #include "ImGui/imgui.h"				// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
@@ -95,7 +96,7 @@ void CModelCharacter::Uninit()
 void CModelCharacter::Update()
 {
 	// フレーム加算
-	/*m_nFrame++;
+	m_nFrame++;
 
 	// フレームが一定値まで来た時
 	if (m_nFrame >= CMotion::GetFrame(m_motion, m_nKey))
@@ -122,7 +123,7 @@ void CModelCharacter::Update()
 
 		// 次のモーション情報をセット
 		SetMotion(m_motion);
-	}*/
+	}
 
 	// モデル数分繰り返す
 	for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)

@@ -101,6 +101,14 @@ typedef struct
 } MODELCHARACTER;
 
 typedef enum
+{	// 移動用のキー
+	UP = DIK_W,		// 上入力
+	DOWN = DIK_S,	// 下入力
+	LEFT = DIK_A,	// 左入力
+	RIGHT = DIK_D	// 右入力
+} MOVE_KEY;
+
+typedef enum
 {	// キャラクターの種類
 	CHARACTER_NONE,			// 何もない
 	CHARACTER_1 = 0,		// プレイヤー
@@ -153,6 +161,7 @@ public:
 	static HRESULT Decide(CInputKeyboard *Key,	CInputGamepad *pGamepad);	// 決定入力
 	static HRESULT Return(CInputKeyboard *Key,	CInputGamepad *pGamepad);	// 戻り入力
 	static HRESULT Pause(CInputKeyboard *Key,	CInputGamepad *pGamepad);	// ポーズ入力
+	static HRESULT GetMoveByKeyboard(CInputKeyboard *pKey);		// キーボードで移動入力しているか取得
 
 	static float OutputSqrt(D3DXVECTOR3 difpos);				// 平方根計算
 	static float OutputDistance(D3DXVECTOR3 difpos);			// 距離計算

@@ -14,11 +14,13 @@
 #include "renderer.h"
 #include "camera.h"
 #include "modelCharacter.h"
+#include "debugProc.h"
+#include "motion.h"
 
 //=============================================================================
 // マクロ定義
 //=============================================================================	
-#define SPEED_ROT		(0.05f)	// 回転のスピード
+#define SPEED_ROT		(0.1f)	// 回転のスピード
 
 //=============================================================================
 // 静的メンバ変数の初期化
@@ -88,6 +90,9 @@ void CCharacter::Update()
 	// 回転処理
 	Rot();
 
+	// モーション処理
+	Motion();
+
 	// ワールドマトリックスの設定
 	m_pModelCharacter->SetCharacterMtx(&m_mtxWorld);
 
@@ -126,6 +131,9 @@ void CCharacter::Move(void)
 {
 	D3DXVECTOR3 difMove;	// 現在の移動値と目的の移動値の差
 
+	// 慣性
+	CKananLibrary::InertiaMove(&m_move);
+
 	//移動量加算
 	m_pos += m_move;
 }
@@ -146,4 +154,15 @@ void CCharacter::Rot(void)
 
 	// 回転の補間
 	CKananLibrary::InterpolationRot(&m_rot);
+}
+
+//=============================================================================
+// モーションの処理
+//=============================================================================
+void CCharacter::Motion(void)
+{
+	if (!m_bWalk)
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);
+	else
+		m_pModelCharacter->SetMotion(CMotion::MOTION_NONE);
 }

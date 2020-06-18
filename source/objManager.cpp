@@ -516,7 +516,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			// モデル情報をバインド
 			m_pFakeObject->BindModel(m_objInfo[0].modelInfo);
 			// 初期モデルを設定
-			m_pFakeObject->SetObjInfo(pCamera->GetPosR(), ZeroVector3, m_objInfo[0].modelInfo.pTexture, 0, false);
+			m_pFakeObject->SetObjInfo(*pCamera->GetPosR(), ZeroVector3, m_objInfo[0].modelInfo.pTexture, 0, false);
 		}
 	}
 

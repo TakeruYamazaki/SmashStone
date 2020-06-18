@@ -35,12 +35,16 @@ public:
 	static CCamera *Create(void);		// 生成処理
 
 	void SetCamera(void);				// カメラの設定処理
-	void SetRot(D3DXVECTOR3 rot);		// 回転設定処理
-	void SetPosV(D3DXVECTOR3 posV);		// 視点位置設定処理
+	void SetRot(const D3DXVECTOR3 &rot)		{ m_rot = rot; }		// 回転設定処理
+	void SetPosV(const D3DXVECTOR3 &posV)	{ m_posV = posV; }		// 視点位置設定処理
+	void SetPosR(const D3DXVECTOR3 &posR)	{ m_posR = posR; }		// 注視点の設定
 
-	D3DXVECTOR3 GetRot(void);			// 回転取得処理
-	D3DXVECTOR3 GetPosV(void);			// 視点位置設定処理
-	D3DXVECTOR3 GetPosR(void) { return m_posR; }
+
+	D3DXVECTOR3 *GetRot(void)	{ return &m_rot; }	// 回転取得処理
+	D3DXVECTOR3 *GetPosV(void)	{ return &m_posV; }	// 視点位置設定処理
+	D3DXVECTOR3 *GetPosR(void)	{ return &m_posR; }	// 注視点の取得
+	float		GetRotY(void)	{ return m_rot.y; }	// 回転(Y軸)の取得
+	D3DXVECTOR3 *GetVec(void);						// ベクトルの取得
 
 protected:
 
@@ -62,6 +66,7 @@ private:
 	int m_nCntTitleFade;				// タイトルフェードのカウンタ
 
 	float m_fDistance;					// 距離
+	float m_fDisScale;					// 拡張可能な距離
 
 	bool m_bCameraMode;					// カメラモードかどうか
 };

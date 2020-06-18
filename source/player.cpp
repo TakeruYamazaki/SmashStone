@@ -26,6 +26,7 @@
 //==================================================================================================================
 // 静的メンバ変数の初期化
 //==================================================================================================================
+#define VALUE_MOVE_PLAYER	(1.0f)	// プレイヤーの移動値
 
 //==================================================================================================================
 // マクロ定義
@@ -69,6 +70,7 @@ void CPlayer::Uninit(void)
 //==================================================================================================================
 void CPlayer::Update(void)
 {
+	Control();
 	CCharacter::Update();
 #ifdef _DEBUG
 	ShowDebugInfo();
@@ -109,6 +111,17 @@ CPlayer *CPlayer::Create(int nPlayer)
 //==================================================================================================================
 void CPlayer::Control(void)
 {
+	CInputGamepad *pGamepad = CManager::GetInputGamepad(m_nPlayer);	// ゲームパッド取得
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();		// キーボードの取得
+
+	// ゲームパッド有効時
+	if (pGamepad->GetbConnect())
+		// ゲームパッド操作
+		ControlGamepad(pGamepad);
+	// ゲームパッド無効時
+	else
+		// キーボード操作
+		ControlKeyboard(pKeyboard);
 }
 
 //==================================================================================================================
@@ -116,6 +129,55 @@ void CPlayer::Control(void)
 //==================================================================================================================
 void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 {
+	float fValueX, fValueY;	// ゲームパッドのスティック情報の取得用
+
+	// 左スティック取得
+	pGamepad->GetStickLeft(&fValueX, &fValueY);
+
+	// スティックが動いてなければ処理しない
+	if (fValueX == 0 && fValueY == 0)
+	{
+		SetbWalk(false);
+		return;
+	}
+
+	// 歩いている
+	SetbWalk(true);
+
+	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// カメラ取得
+
+	D3DXVECTOR3 move = GetMove();					// 移動値取得
+	D3DXVECTOR3 rotDest = GetRotDest();				// 目的の向きを格納する変数
+	D3DXVECTOR3 *vecCamera = pCamera->GetVec();		// カメラの向いている方向の取得
+	float		CameraRotY = pCamera->GetRotY();	// カメラのY軸回転の取得
+	float		fSpeed = 0.0f;						// プレイヤーの速度
+	float		fAngle;								// スティック角度の計算用変数
+
+	// 角度の計算して補正
+	fAngle = atan2f(fValueX, fValueY);
+	CKananLibrary::InterpolationFloat(fAngle);
+
+	// スティックの倒れ具合でスピードを決定
+	if (abs(fValueX) > abs(fValueY))
+		fSpeed = (abs(fValueX));		// 横の倒れ具合
+	else
+		fSpeed = (abs(fValueY));		// 縦の倒れ具合
+
+	// スティックの角度によってプレイヤー移動
+	move.x += sinf(fAngle + CameraRotY) * fSpeed;
+	move.z += cosf(fAngle + CameraRotY) * fSpeed;
+
+	// 目的の向きを決定
+	rotDest.y = D3DX_PI + fAngle + CameraRotY;
+
+	// 回転の補正
+	CKananLibrary::InterpolationRot(&rotDest);
+
+	// 移動値の設定
+	SetMove(move);
+
+	// 目的の回転の設定
+	SetRotDest(rotDest);
 }
 
 //==================================================================================================================
@@ -123,6 +185,112 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 //==================================================================================================================
 void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 {
+	// 入力されていなければ処理を終える
+	if (FAILED(CKananLibrary::GetMoveByKeyboard(pKeyboard)))
+	{
+		SetbWalk(false);
+		return;
+	}
+
+	// 歩いている
+	SetbWalk(true);
+
+	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// カメラ取得
+
+	D3DXVECTOR3 move		= GetMove();			// 移動値取得
+	D3DXVECTOR3 rotDest		= GetRotDest();			// 目的の向きを格納する変数
+	float		CameraRotY	= pCamera->GetRotY();	// カメラのY軸回転の取得
+
+	// Aキー長押し
+	if (pKeyboard->GetKeyboardPress(LEFT))
+	{
+		// Wキー長押し
+		if (pKeyboard->GetKeyboardPress(UP))
+		{
+			// 左上移動
+			move.x += sinf(-D3DX_PI * 0.75f - CameraRotY) * VALUE_MOVE_PLAYER;
+			move.z -= cosf(-D3DX_PI * 0.75f - CameraRotY) * VALUE_MOVE_PLAYER;
+			// 目的の向きを決定
+			rotDest.y = D3DX_PI * 0.75f + CameraRotY;
+		}
+		// Sキー長押し
+		else if (pKeyboard->GetKeyboardPress(DOWN))
+		{
+			// 左下移動
+			move.x += sinf(-D3DX_PI * 0.25f - CameraRotY) * VALUE_MOVE_PLAYER;
+			move.z -= cosf(-D3DX_PI * 0.25f - CameraRotY) * VALUE_MOVE_PLAYER;
+			// 目的の向きを決定
+			rotDest.y = D3DX_PI * 0.25f + CameraRotY;
+		}
+		// Aキーのみ
+		else
+		{
+			// 左移動
+			move.x += sinf(-D3DX_PI * 0.5f - CameraRotY) * VALUE_MOVE_PLAYER;
+			move.z -= cosf(-D3DX_PI * 0.5f - CameraRotY) * VALUE_MOVE_PLAYER;
+			// 目的の向きを決定
+			rotDest.x = 0.0f;
+			rotDest.y = D3DX_PI * 0.5f + CameraRotY;
+		}
+	}
+	// Dキー長押し
+	else if (pKeyboard->GetKeyboardPress(RIGHT))
+	{
+		// Wキー長押し
+		if (pKeyboard->GetKeyboardPress(UP))
+		{
+			// 右上移動
+			move.x += sinf(D3DX_PI * 0.75f - CameraRotY) * VALUE_MOVE_PLAYER;
+			move.z -= cosf(D3DX_PI * 0.75f - CameraRotY) * VALUE_MOVE_PLAYER;
+			// 目的の向きを決定
+			rotDest.y = -D3DX_PI * 0.75f + CameraRotY;
+		}
+		// Sキー長押し
+		else if (pKeyboard->GetKeyboardPress(DOWN))
+		{
+			// 右下移動
+			move.x += sinf(D3DX_PI * 0.25f - CameraRotY) * VALUE_MOVE_PLAYER;
+			move.z -= cosf(D3DX_PI * 0.25f - CameraRotY) * VALUE_MOVE_PLAYER;
+			// 目的の向きを決定
+			rotDest.y = -D3DX_PI * 0.25f + CameraRotY;
+		}
+		// Dキーのみ
+		else
+		{
+			// 右移動
+			move.x += sinf(D3DX_PI * 0.5f - CameraRotY) * VALUE_MOVE_PLAYER;
+			move.z -= cosf(D3DX_PI * 0.5f - CameraRotY) * VALUE_MOVE_PLAYER;
+			// 目的の向きを決定
+			rotDest.y = -D3DX_PI * 0.5f + CameraRotY;
+		}
+	}
+	// Wキー長押し
+	else if (pKeyboard->GetKeyboardPress(UP))
+	{
+		// 上移動
+		move.x += sinf(D3DX_PI * 1.0f - CameraRotY) * VALUE_MOVE_PLAYER;
+		move.z -= cosf(D3DX_PI * 1.0f - CameraRotY) * VALUE_MOVE_PLAYER;
+		// 目的の向きを決定
+		rotDest.y = -D3DX_PI * 1.0f + CameraRotY;
+	}
+	// Sキー長押し
+	else if (pKeyboard->GetKeyboardPress(DOWN))
+	{
+		// 下移動
+		move.x += sinf(D3DX_PI * 0.0f - CameraRotY) * VALUE_MOVE_PLAYER;
+		move.z -= cosf(D3DX_PI * 0.0f - CameraRotY) * VALUE_MOVE_PLAYER;
+		// 目的の向きを決定
+		rotDest.y = CameraRotY;
+	}
+
+	// 回転の補正
+	CKananLibrary::InterpolationRot(&rotDest);
+
+	// 移動値の設定
+	SetMove(move);
+
+	// 目的の回転の設定
+	SetRotDest(rotDest);
 }
 
 #ifdef _DEBUG

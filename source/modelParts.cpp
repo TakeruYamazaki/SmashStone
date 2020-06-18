@@ -63,7 +63,7 @@ void CModelParts::Uninit(void)
 void CModelParts::Update(void)
 {
 	// 回転に加算
-	//m_rot += m_rot1F;
+	m_rot += m_rot1F;
 }
 
 //=============================================================================
@@ -81,8 +81,7 @@ void CModelParts::Draw(void)
 	CKananLibrary::CalcMatrix(&m_mtxWorld, m_pos, m_rot);
 
 	// 親の情報をいれる
-	if (m_nParent >= 0)
-		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, m_mtxParent);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, m_mtxParent);
 
 	// テクスチャの設定
 	if (m_pModelInfo->bTex)

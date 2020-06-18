@@ -11,7 +11,6 @@
 #include "inputKeyboard.h"
 #include "inputGamepad.h"
 #include "mouse.h"
-#include "modelCharacter.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -68,7 +67,12 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 	{
 		// コントローラー初期化
-		m_pInputGamepad[nCnt]->Init(hInstance, hWnd);
+		if (FAILED(m_pInputGamepad[nCnt]->Init(hInstance, hWnd)))
+		{
+			printf("ゲームパッド[%d]が読み込まれていません\n", nCnt);
+			m_pInputGamepad[nCnt]->Uninit();
+			m_pInputGamepad[nCnt] = nullptr;
+		}
 	}
 
 	m_pMouse->Init(hInstance, hWnd);

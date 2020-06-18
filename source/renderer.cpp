@@ -17,6 +17,7 @@
 #include "sound.h"
 #include "kananlibrary.h"
 #include "modelCharacter.h"
+#include "motion.h"
 #include "ImGui/imgui.h"			// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"	// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"	// Imguiの実装に必要
@@ -160,8 +161,9 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	InitImGui(d3dpp, hWnd);
 #endif
 
-	// モデルキャラのロード
+	// ロード
 	CModelCharacter::Load();
+	CMotion::Load();
 
 	switch (m_mode)
 	{
@@ -247,7 +249,9 @@ void CRenderer::Uninit(void)
 		m_pSound = nullptr;
 	}
 
+	// アンロード
 	CModelCharacter::Unload();
+	CMotion::UnLoad();
 
 	switch (m_mode)
 	{

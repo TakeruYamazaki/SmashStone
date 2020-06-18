@@ -59,10 +59,8 @@ HRESULT CMotion::Load()
 	{
 		// モデル読み込み
 		if (FAILED(LoadMotion((CMotion::MOTION_TYPE)nCnt)))
-		{
 			// 失敗
 			return E_FAIL;
-		}
 	}
 
 	// 成功
@@ -157,135 +155,139 @@ HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
 						// ファイルを開く
 	pFile = fopen(m_apFileName[motiontype], "r");
 
+	CKananLibrary::StartBlockComment("モーションファイルの読み込み開始");
+
 	// nullcheck
-	if (pFile != NULL)
+	if (!pFile)
 	{
-		// スクリプトがくるまで繰り返す
-		while (strcmp(cHeadText, "SCRIPT") != 0)
+		// ファイル読み込み失敗
+		CKananLibrary::EndBlockComment("モーションファイルを開けませんでした");
+		return E_FAIL;
+	}
+
+	// スクリプトがくるまで繰り返す
+	while (strcmp(cHeadText, "SCRIPT") != 0)
+	{
+		fgets(cReadText, sizeof(cReadText), pFile);
+		sscanf(cReadText, "%s", &cHeadText);
+	}
+	// スクリプトが来たら
+	if (strcmp(cHeadText, "SCRIPT") == 0)
+	{
+		// エンドスクリプトがくるまで繰り返す
+		while (strcmp(cHeadText, "END_SCRIPT") != 0)
 		{
 			fgets(cReadText, sizeof(cReadText), pFile);
 			sscanf(cReadText, "%s", &cHeadText);
-		}
-		// スクリプトが来たら
-		if (strcmp(cHeadText, "SCRIPT") == 0)
-		{
-			// エンドスクリプトがくるまで繰り返す
-			while (strcmp(cHeadText, "END_SCRIPT") != 0)
+			// 改行
+			if (strcmp(cHeadText, "\n") == 0)
 			{
-				fgets(cReadText, sizeof(cReadText), pFile);
-				sscanf(cReadText, "%s", &cHeadText);
-				// 改行
-				if (strcmp(cHeadText, "\n") == 0)
+			}
+			// モーションセット
+			else if (strcmp(cHeadText, "MOTIONSET") == 0)
+			{
+				// エンドモーションセットがくるまで繰り返す
+				while (strcmp(cHeadText, "END_MOTIONSET") != 0)
 				{
-				}
-				// モーションセット
-				else if (strcmp(cHeadText, "MOTIONSET") == 0)
-				{
-					// エンドモーションセットがくるまで繰り返す
-					while (strcmp(cHeadText, "END_MOTIONSET") != 0)
+					fgets(cReadText, sizeof(cReadText), pFile);
+					sscanf(cReadText, "%s", &cHeadText);
+					// 改行
+					if (strcmp(cHeadText, "\n") == 0)
 					{
-						fgets(cReadText, sizeof(cReadText), pFile);
-						sscanf(cReadText, "%s", &cHeadText);
-						// 改行
-						if (strcmp(cHeadText, "\n") == 0)
+					}
+					// ループするか
+					else if (strcmp(cHeadText, "LOOP") == 0)
+					{
+						// 一度int型で格納する
+						sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &nLoop);
+
+						// 1か0でboolとして判断する
+						m_pMotionInfo[motiontype].bLoop = nLoop ? true : false;
+					}
+					// キー数
+					else if (strcmp(cHeadText, "NUM_KEY") == 0 && !bInfo)
+					{
+						sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_pMotionInfo[motiontype].nNumKey);
+
+						// キー数分メモリ確保
+						m_pMotionInfo[motiontype].pKeyInfo = new KEY_INFO[m_pMotionInfo[motiontype].nNumKey];
+
+						// キーセットを行うので、キー情報カウントを初期化する
+						nCntkeyInfo = 0;
+
+						bInfo = true;
+					}
+					// キーセット
+					else if (strcmp(cHeadText, "KEYSET") == 0)
+					{
+						// パーツ数分のキーを宣言
+						int nKey = CModelCharacter::GetPartsNum((CHARACTER_TYPE)CheckCharacter(motiontype));
+
+						// キー数分メモリ確保
+						m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey = new KEY[nKey];
+
+						// キーカウントを初期化する
+						nCntKey = 0;
+
+						// エンドキーセットがくるまで繰り返す
+						while (strcmp(cHeadText, "END_KEYSET") != 0)
 						{
-						}
-						// ループするか
-						else if (strcmp(cHeadText, "LOOP") == 0)
-						{
-							// 一度int型で格納する
-							sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &nLoop);
-
-							// 1か0でboolとして判断する
-							m_pMotionInfo[motiontype].bLoop = nLoop ? true : false;
-						}
-						// キー数
-						else if (strcmp(cHeadText, "NUM_KEY") == 0 && !bInfo)
-						{
-							sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_pMotionInfo[motiontype].nNumKey);
-
-							// キー数分メモリ確保
-							m_pMotionInfo[motiontype].pKeyInfo = new KEY_INFO[m_pMotionInfo[motiontype].nNumKey];
-
-							// キーセットを行うので、キー情報カウントを初期化する
-							nCntkeyInfo = 0;
-
-							bInfo = true;
-						}
-						// キーセット
-						else if (strcmp(cHeadText, "KEYSET") == 0)
-						{
-							// パーツ数分のキーを宣言
-							int nKey = CModelCharacter::GetPartsNum((CHARACTER_TYPE)CheckCharacter(motiontype));
-
-							// キー数分メモリ確保
-							m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey = new KEY[nKey];
-
-							// キーカウントを初期化する
-							nCntKey = 0;
-
-							// エンドキーセットがくるまで繰り返す
-							while (strcmp(cHeadText, "END_KEYSET") != 0)
+							fgets(cReadText, sizeof(cReadText), pFile);
+							sscanf(cReadText, "%s", &cHeadText);
+							// フレーム数
+							if (strcmp(cHeadText, "FRAME") == 0)
 							{
-								fgets(cReadText, sizeof(cReadText), pFile);
-								sscanf(cReadText, "%s", &cHeadText);
-								// フレーム数
-								if (strcmp(cHeadText, "FRAME") == 0)
+								sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].nFrame);
+							}
+							// キー
+							if (strcmp(cHeadText, "KEY") == 0)
+							{
+								// エンドキーがくるまで繰り返す
+								while (strcmp(cHeadText, "END_KEY") != 0)
 								{
-									sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].nFrame);
-								}
-								// キー
-								if (strcmp(cHeadText, "KEY") == 0)
-								{
-									// エンドキーがくるまで繰り返す
-									while (strcmp(cHeadText, "END_KEY") != 0)
+									fgets(cReadText, sizeof(cReadText), pFile);
+									sscanf(cReadText, "%s", &cHeadText);
+									// 位置
+									if (strcmp(cHeadText, "POS") == 0)
 									{
-										fgets(cReadText, sizeof(cReadText), pFile);
-										sscanf(cReadText, "%s", &cHeadText);
-										// 位置
-										if (strcmp(cHeadText, "POS") == 0)
-										{
-											sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.x,
-												&m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.y, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.z);
-										}
-										// 回転
-										if (strcmp(cHeadText, "ROT") == 0)
-										{
-											sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.x,
-												&m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.y, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.z);
-										}
-										// 終了
-										if (strcmp(cHeadText, "END_KEY") == 0)
-										{
-											// キー加算
-											nCntKey++;
-										}
+										sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.x,
+											&m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.y, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.z);
+									}
+									// 回転
+									if (strcmp(cHeadText, "ROT") == 0)
+									{
+										sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.x,
+											&m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.y, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.z);
+									}
+									// 終了
+									if (strcmp(cHeadText, "END_KEY") == 0)
+									{
+										// キー加算
+										nCntKey++;
 									}
 								}
-								// 終了
-								if (strcmp(cHeadText, "END_KEYSET") == 0)
-								{
-									// キー情報加算
-									nCntkeyInfo++;
-									bInfo = false;
-								}
+							}
+							// 終了
+							if (strcmp(cHeadText, "END_KEYSET") == 0)
+							{
+								// キー情報加算
+								nCntkeyInfo++;
+								bInfo = false;
 							}
 						}
 					}
 				}
 			}
 		}
-		// ファイルを閉じる
-		fclose(pFile);
 	}
-	else
-	{	// 開けなかった時
-		printf("開けませんでした。\n");
-		return E_FAIL;
-	}
+	// ファイルを閉じる
+	fclose(pFile);
+
+	CKananLibrary::EndBlockComment("モーションファイルの読み込み終了");
 
 	return S_OK;
 }
+
 //=============================================================================
 // キャラクターがどれか確認
 //=============================================================================

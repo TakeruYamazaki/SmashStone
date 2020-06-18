@@ -45,7 +45,8 @@ public:
 	// モーション
 	typedef enum
 	{
-		PLAYER_NEUTRAL,			// プレイヤー　ニュートラル
+		MOTION_NONE,
+		PLAYER_NEUTRAL = 0,		// プレイヤー　ニュートラル
 		MOTION_MAX				// 最大値
 	} MOTION_TYPE;
 

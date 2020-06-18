@@ -642,6 +642,25 @@ HRESULT CKananLibrary::Pause(CInputKeyboard * Key, CInputGamepad * pGamepad)
 	return FALSE;
 }
 
+//=============================================================================
+// キーボードで移動入力しているかの確認
+//=============================================================================
+HRESULT CKananLibrary::GetMoveByKeyboard(CInputKeyboard * pKey)
+{
+	// 入力されていない
+	if (!pKey->GetKeyboardPress(MOVE_KEY::UP)	 &&
+		!pKey->GetKeyboardPress(MOVE_KEY::DOWN)	 &&
+		!pKey->GetKeyboardPress(MOVE_KEY::RIGHT) &&
+		!pKey->GetKeyboardPress(MOVE_KEY::LEFT))
+	{
+		// 移動していない
+		return E_FAIL;
+	}
+
+	// 移動している
+	return S_OK;
+}
+
 #ifdef _DEBUG
 //=============================================================================
 // ImGuiの更新

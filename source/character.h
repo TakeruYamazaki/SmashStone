@@ -41,6 +41,8 @@ public:
 	void SetMove(const D3DXVECTOR3 & move)			{ m_move = move; }			// 移動値の設定
 	void SetRot(const D3DXVECTOR3 & rot)			{ m_rot = rot; }			// 回転の設定
 	void SetRotDest(const D3DXVECTOR3 & rotDest)	{ m_rotDest = rotDest; }	// 目的の回転の設定
+	void SetbWalk(const bool &bWalk)				{ m_bWalk = bWalk; }		// 歩きの設定
+	void SetbJump(const bool &bJump)				{ m_bJump = bJump; }		// ジャンプの設定
 	void SetModelType(CHARACTER_TYPE type);			// モデルの設定
 
 	D3DXVECTOR3 GetPos(void)		{ return m_pos; }		// 位置の取得
@@ -51,6 +53,7 @@ public:
 private:
 	void Move(void);								// 移動関数
 	void Rot(void);									// 回転関数
+	void Motion(void);								// モーション関数
 
 	CModelCharacter *m_pModelCharacter;				// モデルキャラクターのポインタ
 
