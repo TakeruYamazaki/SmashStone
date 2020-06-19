@@ -22,6 +22,7 @@
 #include "ImGui/imgui.h"				// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
+#include "3DBoxCollider.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -55,6 +56,7 @@ void CPlayer::Init(void)
 {
 	CCharacter::Init();
 	CCharacter::SetModelType(CHARACTER_1);
+	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), C3DBoxCollider::ID_CHARACTER);
 }
 
 //==================================================================================================================
@@ -72,6 +74,7 @@ void CPlayer::Update(void)
 {
 	Control();
 	CCharacter::Update();
+	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->GetPos(), MYLIB_3DVECTOR_ZERO);
 #ifdef _DEBUG
 	ShowDebugInfo();
 #endif

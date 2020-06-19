@@ -156,7 +156,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\bar.cpp" />
+    <ClCompile Include="source\3DBoxCollider.cpp" />
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\character.cpp" />
     <ClCompile Include="source\charaICHIYAS.cpp" />
@@ -166,7 +166,6 @@
     <ClCompile Include="source\debugProc.cpp" />
     <ClCompile Include="source\fade.cpp" />
     <ClCompile Include="source\game.cpp" />
-    <ClCompile Include="source\hitpoint.cpp" />
     <ClCompile Include="source\ImGui\imgui.cpp" />
     <ClCompile Include="source\ImGui\imgui_demo.cpp" />
     <ClCompile Include="source\ImGui\imgui_draw.cpp" />
@@ -206,7 +205,7 @@
     <ClCompile Include="source\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\bar.h" />
+    <ClInclude Include="source\3DBoxCollider.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\character.h" />
     <ClInclude Include="source\charaICHIYAS.h" />
@@ -216,7 +215,6 @@
     <ClInclude Include="source\debugProc.h" />
     <ClInclude Include="source\fade.h" />
     <ClInclude Include="source\game.h" />
-    <ClInclude Include="source\hitpoint.h" />
     <ClInclude Include="source\ImGui\imconfig.h" />
     <ClInclude Include="source\ImGui\imgui.h" />
     <ClInclude Include="source\ImGui\imgui_impl_dx9.h" />

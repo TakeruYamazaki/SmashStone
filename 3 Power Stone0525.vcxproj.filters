@@ -139,10 +139,7 @@
     <ClCompile Include="source\stone.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\bar.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\hitpoint.cpp">
+    <ClCompile Include="source\3DBoxCollider.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -291,10 +288,7 @@
     <ClInclude Include="source\Mylibrary.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\bar.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\hitpoint.h">
+    <ClInclude Include="source\3DBoxCollider.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>

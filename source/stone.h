@@ -20,11 +20,32 @@
 //#define CSTONE_USE_TEXTURE	// テクスチャを使う
 #endif // !CSTONE_USE_TEXTURE
 
+#ifndef CSTONE_USE_NULLPTR
+#define CSTONE_USE_NULLPTR		// nullptrを使う
+#endif // CSTONE_USE_NULL
+
+#ifndef CSTONE_UPDATE
+#define CSTONE_UPDATE
+#endif // !CSTONE_UPDATE
+
+#ifndef CSTONE_DRAW
+#define CSTONE_DRAW
+#endif // !CSTONE_DRAW
+
+
+// DEBUG時
+#ifdef _DEBUG
+
 #ifndef CSTONE_DEBUG_DRAW
 #define CSTONE_DEBUG_DRAW
 #endif // !CSTONE_DEBUG_DRAW
-#ifndef _DEBUG
-#undef CSTONE_DEBUG_DRAW
+
+#ifndef CSTONE_LAOD_DEBUG_DRAW
+#define CSTONE_LAOD_DEBUG_DRAW
+#endif // !CSTONE_LAOD_DEBUG_DRAW
+
+//#undef CSTONE_UPDATE
+//#undef CSTONE_DRAW
 #endif // _DEBUG
 
 
@@ -96,9 +117,15 @@ private:
 	/* メンバ変数　*/
 	static MODEL_INFO* m_pAllStoneTypeInfo;		// ストーンの全てのモデル情報
 	static int         m_nNumTypeAll;			// ストーンの種類数
+	static const float m_fDoublePi;				// 円周率の2倍
 	STONE_ID           m_enmStoneID;			// ストーンID
-	int                m_fCntShake;				// ゆれるカウント
+	unsigned int       m_fCntShake;				// ゆれるカウント
 	MODELINFO          m_pModelInfo;			// モデルを参照するための情報
+	int                m_nBoxClliderID;			// ボックスコライダーID
+#ifdef CSTONE_DEBUG_DRAW
+	static int         m_nNumAll;				// 全ての個数
+	int                m_nNumID;				// 個数ID(何個目)
+#endif // CSTONE_DEBUG_DRAW
 };
 
 
