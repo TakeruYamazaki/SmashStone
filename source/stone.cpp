@@ -1,82 +1,93 @@
-//*************************************************************************************************************
+﻿//*************************************************************************************************************
 //
-// �X�g�[������[stone.cpp]
+// ストーン処理[stone.cpp]
 // Author : Sekine Ikuto
 //
 //*************************************************************************************************************
 
 //-------------------------------------------------------------------------------------------------------------
-// �C���N���[�h�t�@�C��
+// インクルードファイル
 //-------------------------------------------------------------------------------------------------------------
 #include "stone.h"
 #include "manager.h"
 #include "renderer.h"
 #include "debugProc.h"
+#include "3DBoxCollider.h"
 
 //-------------------------------------------------------------------------------------------------------------
-// �}�N����`
+// マクロ定義
 //-------------------------------------------------------------------------------------------------------------
 #define CSTONE_INITVTXVALUE_MAX		1000000.0f
 #define CSTONE_INITVTXVALUE_MIN		-1000000.0f
 
-#define CSTONE_SHAKE_SIZE			0.1f			// ���̑傫��
-#define CSTONE_SHAKECOEFF			0.02f			// ����W��
-#define CSTONE_ROTSPEED				0.02f			// ��]���x
+#define CSTONE_SHAKE_SIZE			0.1f			// ゆれの大きさ
+#define CSTONE_SHAKECOEFF			0.02f			// ゆれる係数
+#define CSTONE_ROTSPEED				0.02f			// 回転速度
+
+#define CSTONE_SOPENFILENAME		"data/TEXT/StoneInfo/StoneTypeFileName.txt"
 
 //-------------------------------------------------------------------------------------------------------------
-// �ÓI�����o�ϐ��̏�����
+// 静的メンバ変数の初期化
 //-------------------------------------------------------------------------------------------------------------
-CStone::MODEL_INFO* CStone::m_pAllStoneTypeInfo = NULL;				// �X�g�[���̑S�Ẵ��f�����
-int                 CStone::m_nNumTypeAll       = MYLIB_INT_UNSET;	// �X�g�[���̎�ސ�
+CStone::MODEL_INFO* CStone::m_pAllStoneTypeInfo = NULL;				// ストーンの全てのモデル情報
+int                 CStone::m_nNumTypeAll       = MYLIB_INT_UNSET;	// ストーンの種類数
 
+#ifdef CSTONE_DEBUG_DRAW
+int                 CStone::m_nNumAll           = MYLIB_INT_UNSET;	// 全ての個数
+#endif
 //-------------------------------------------------------------------------------------------------------------
-// �R���X�g���N�^
+// コンストラクタ
 //-------------------------------------------------------------------------------------------------------------
 CStone::CStone()
 {
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ��������R���X�g���N�^
+// 引数ありコンストラクタ
 //-------------------------------------------------------------------------------------------------------------
 CStone::CStone(PRIORITY type) : CSceneX(type)
 {
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// �ǂݍ���
+// 読み込み
 //-------------------------------------------------------------------------------------------------------------
 HRESULT CStone::Load(void)
 {
-	// �ϐ��錾
-	CString* pFileName;			// �t�@�C����
+#ifdef CSTONE_LAOD_DEBUG_DRAW
+	cout << "---------------------------------------------------------------------\n";
+	cout << "CStone::Load ストーンのモデル読み込み開始\n";
+	DWORD start = timeGetTime();			// 計測スタート時間
+#endif
+	// 変数宣言
+	CString* pFileName;			// ファイル名
 	pFileName = CStone::GetResource();
-	// �擾�Ɏ��s������
+	// 取得に失敗した時
 	if (pFileName == NULL)
 	{
 		return E_FAIL;
 	}
-	// �X�g�[���̑S�Ẵ��f�����̐���
+	// ストーンの全てのモデル情報の生成
 	if (m_pAllStoneTypeInfo == NULL)
 	{
 		m_pAllStoneTypeInfo = new MODEL_INFO[m_nNumTypeAll];
 	}
 
-	// �ϐ��錾
-	LPDIRECT3DDEVICE9 pDevice;		// �f�o�C�X�̎擾
-	// �f�o�C�X�̎擾
+	// 変数宣言
+	LPDIRECT3DDEVICE9 pDevice;		// デバイスの取得
+	// デバイスの取得
 	pDevice = CManager::GetRenderer()->GetDevice();
 
-	// �X�g�[���̎�ސ����[�v
+	// ストーンの種類数ループ
 	for (int nCntModelType = 0; nCntModelType < m_nNumTypeAll; nCntModelType++)
 	{
 #ifdef CSTONE_USE_TEXTURE
-		// �e�N�X�`�����̏�����
+		// テクスチャ情報の初期化
 		m_pAllStoneTypeInfo[nCntModelType].pTextureID = NULL;
 		m_pAllStoneTypeInfo[nCntModelType].ppTexture = NULL;
 		m_pAllStoneTypeInfo[nCntModelType].nNumTexture = MYLIB_INT_UNSET;
 #endif
-		// X�t�@�C���̓ǂݍ���
+		// Xファイルの読み込み
 		if (FAILED(D3DXLoadMeshFromX(pFileName[nCntModelType].Get(),
 			D3DXMESH_SYSTEMMEM,
 			pDevice,
@@ -88,47 +99,60 @@ HRESULT CStone::Load(void)
 		{
 			return E_FAIL;
 		}
-		// �ő�ŏ��̒��_�ʒu�̎擾
+		else
+		{
+#ifdef CSTONE_LAOD_DEBUG_DRAW
+			cout << "[" << nCntModelType << "]個目読みこみました\n";
+#endif
+
+		}
+		// 最大最小の頂点位置の取得
 		GetMaxMinVertices(nCntModelType);
 #ifdef CSTONE_USE_TEXTURE
-		// X�t�@�C������擾�����e�N�X�`���𐶐�
+		// Xファイルから取得したテクスチャを生成
 		CreateTexturefrom_Xfile(nCntModelType, pFileName[nCntModelType].Get());
 #endif
 	}
 
-	// ������̊J��
+	// 文字列の開放
 	for (int nCntFileName = 0; nCntFileName < m_nNumTypeAll; nCntFileName++)
 	{
 		pFileName[nCntFileName].release();
 	}
-	// �t�@�C�����̊J��
+	// ファイル名の開放
 	delete[] pFileName;
 	pFileName = NULL;
 
+#ifdef CSTONE_LAOD_DEBUG_DRAW
+	DWORD end = timeGetTime();			// 計測スタート時間
+	cout << "CStone::Load ストーンのモデル読み込み終了\n";
+	cout << " CStone::Load ストーンのモデル読み込み 処理速度 = " << (end - start) << "　[" << (end - start) * 0.001f << "sec.]\n";
+	cout << "---------------------------------------------------------------------\n";
+#endif
 	return S_OK;
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// �J��
+// 開放
 //-------------------------------------------------------------------------------------------------------------
 void CStone::Unload(void)
 {
 	if (m_pAllStoneTypeInfo != NULL)
 	{
-		// �X�g�[���̎�ސ����[�v
+		// ストーンの種類数ループ
 		for (int nCntModelType = 0; nCntModelType < m_nNumTypeAll; nCntModelType++)
 		{
 #ifdef CSTONE_USE_TEXTURE
-			// �e�N�X�`��ID���g���Ă���Ƃ�
+			// テクスチャIDが使われているとき
 			if (m_pAllStoneTypeInfo[nCntModelType].pTextureID != NULL)
-			{// �e�N�X�`��ID�̔j��
+			{// テクスチャIDの破棄
 				delete[] m_pAllStoneTypeInfo[nCntModelType].pTextureID;
 				m_pAllStoneTypeInfo[nCntModelType].pTextureID = NULL;
 			}
-			// �e�N�X�`�����g���Ă�����
+			// テクスチャが使われていた時
 			if (m_pAllStoneTypeInfo[nCntModelType].ppTexture != NULL)
 			{
-				// �e�N�X�`���̊J��
+				// テクスチャの開放
 				for (int nCntTex = 0; nCntTex < m_pAllStoneTypeInfo[nCntModelType].nNumTexture; nCntTex++)
 				{
 					m_pAllStoneTypeInfo[nCntModelType].ppTexture[nCntTex]->Release();
@@ -136,153 +160,179 @@ void CStone::Unload(void)
 				}
 			}
 #endif
-			// �}�e���A�����g���Ă���Ƃ�
+			// マテリアルが使われているとき
 			if (m_pAllStoneTypeInfo[nCntModelType].pBuffMat != NULL)
-			{// �}�e���A���̔j��
+			{// マテリアルの破棄
 				m_pAllStoneTypeInfo[nCntModelType].pBuffMat->Release();
 				m_pAllStoneTypeInfo[nCntModelType].pBuffMat = NULL;
 			}
-			// ���b�V�����g���Ă���Ƃ�
+			// メッシュが使われているとき
 			if (m_pAllStoneTypeInfo[nCntModelType].pMesh != NULL)
-			{// ���b�V���̔j��
+			{// メッシュの破棄
 				m_pAllStoneTypeInfo[nCntModelType].pMesh->Release();
 				m_pAllStoneTypeInfo[nCntModelType].pMesh = NULL;
 			}
 
 		}
-		// �S��̃��f�����̔j��
+		// 全種のモデル情報の破棄
 		delete[m_nNumTypeAll] m_pAllStoneTypeInfo;
 		m_pAllStoneTypeInfo = NULL;
 	}
+#ifdef CSTONE_DEBUG_DRAW
+	// 全ての個数の初期化
+	CStone::m_nNumAll = MYLIB_INT_UNSET;
+#endif
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// �����̒��B
+// 資源の調達
 //-------------------------------------------------------------------------------------------------------------
 CString * CStone::GetResource(void)
 {
-	// �ϐ��錾
-	const STRING sOpenFileName = "data/TEXT/StoneInfo/StoneTypeFileName.txt";
-	// �t�@�C�����J��
+#ifdef CSTONE_LAOD_DEBUG_DRAW
+	DWORD start = timeGetTime();			// 計測スタート時間
+#endif
+
+	// 変数宣言
+	CONST_STRING sOpenFileName = CSTONE_SOPENFILENAME;
+	// ファイルを開く
 	FILE *pFile;
-	// ���s������
+	// 失敗した時
 	if ((pFile = fopen(sOpenFileName, "r")) == NULL)
 	{
 		return NULL;
 	}
-	// �ϐ��錾
-	CString * pFileName;		// �t�@�C����
-	char cRead[MYLIB_STRINGSIZE];			// �ǂݍ��ݗp
-	char cComp[MYLIB_STRINGSIZE];			// ��r�p
-	char cEmpty[MYLIB_STRINGSIZE];			// �v��Ȃ����̗p
-	int nCntFileName;			// �t�@�C�����J�E���g
+	// 変数宣言
+	CString * pFileName;			// ファイル名
+	char cRead[MYLIB_STRINGSIZE];	// 読み込み用
+	char cComp[MYLIB_STRINGSIZE];	// 比較用
+	char cEmpty[MYLIB_STRINGSIZE];	// 要らないもの用
+	int nCntFileName;				// ファイル名カウント
 
-	// �ϐ��̏�����
+	// 変数の初期化
 	pFileName = NULL;
 	cRead[0] = MYLIB_CHAR_UNSET;
 	cComp[0] = MYLIB_CHAR_UNSET;
 	cEmpty[0] = MYLIB_CHAR_UNSET;
 	nCntFileName = MYLIB_INT_UNSET;
 
-	// SCRIPT�܂Ŕ�΂�
+	// SCRIPTまで飛ばす
 	while (strcmp(cComp, "SCRIPT") != 0)
 	{
-		// 1�s�ǂݍ���
+		// 1行読み込む
 		fgets(cRead, sizeof(cRead), pFile);
-		// �ǂݍ���Ǖ�������
+		// 読み込んど文字列代入
 		sscanf(cRead, "%s", &cComp);
 	}
 
-	// END_SCRIPT�܂Ń��[�v
+	// END_SCRIPTまでループ
 	while (strcmp(cComp, "END_SCRIPT") != 0)
 	{
-		// 1�s�ǂݍ���
+		// 1行読み込む
 		fgets(cRead, sizeof(cRead), pFile);
-		// �ǂݍ���Ǖ�������
+		// 読み込んど文字列代入
 		sscanf(cRead, "%s", &cComp);
 
 		if (strcmp(cComp, "NUMBER") == 0)
 		{
 			if (pFileName == NULL)
 			{
-				// �����񂩂���𔲂����
+				// 文字列から情報を抜き取る
 				sscanf(cRead, "%s %s %d", &cEmpty, &cEmpty, &m_nNumTypeAll);
-				// �t�@�C�����̐���
+				// ファイル名の生成
 				pFileName = new CString[m_nNumTypeAll];
 			}
-			// ��r�p�̏�����
+			// 比較用の初期化
 			cComp[0] = MYLIB_CHAR_UNSET;
 		}
 		else if (strcmp(cComp, "FILENAME") == 0)
 		{
 			if (pFileName != NULL)
 			{
-				// �ϐ��錾
+				// 変数宣言
 				char aSeting[MYLIB_STRINGSIZE];
 				aSeting[0] = MYLIB_CHAR_UNSET;
-				// �����񂩂���𔲂����
+				// 文字列から情報を抜き取る
 				sscanf(cRead, "%s %s %s", &cEmpty, &cEmpty, &aSeting);
-				// ������̐ݒ�
+				// 文字列の設定
 				pFileName[nCntFileName].Set(aSeting);
-				// �t�@�C���J�E���g���C���N�������g
+				// ファイルカウントをインクリメント
 				nCntFileName++;
 			}
-			// ��r�p�̏�����
+			// 比較用の初期化
 			cComp[0] = MYLIB_CHAR_UNSET;
 		}
 	}
-	// �t�@�C�������
+	// ファイルを閉じる
 	fclose(pFile);
-	// �t�@�C�����|�C���^��Ԃ�
+#ifdef CSTONE_LAOD_DEBUG_DRAW
+	DWORD end = timeGetTime();			// 計測スタート時間
+	cout << "CStone::GetResource 資源調達 処理速度 = " << (end - start) << "　[" << (end - start) * 0.001f << "sec.]\n";
+#endif
+
+	// ファイル名ポインタを返す
 	return pFileName;
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ����
+// 生成
 //-------------------------------------------------------------------------------------------------------------
 CStone * CStone::Create(CONST STONE_ID eumID, CONST D3DXVECTOR3 & pos)
 {
-	// ID���ݒ肳��Ă���
+	// IDが設定されてい時
 	if (eumID == STONE_ID_NONE)
 	{
-#if 0
-		return NULL;
-#else
+#ifdef CSTONE_USE_NULLPTR
 		return nullptr;
+#else
+		return NULL;
 #endif
 	}
-	// �ϐ��錾
-	CStone* pStone;		// �X�g�[���|�C���^
-	// ����
+	// 変数宣言
+	CStone* pStone;		// ストーンポインタ
+	// 生成
 	pStone  = new CStone;
-	// �������s������
+	// 生成失敗した時
 	if (pStone == NULL)
 	{
-#if 0
-		return NULL;
-#else
+#ifdef CSTONE_USE_NULLPTR
 		return nullptr;
+#else
+		return NULL;
 #endif
 	}
 
-	// ������
-	pStone->Init();
-	// �ʒu�̐ݒ�
+	/* --- 初期化処理 --- */
+	// CSceneXの初期化
+	pStone->CSceneX::Init();
+	// 揺れるカウントの初期化
+	pStone->m_fCntShake = MYLIB_INT_UNSET;
+	// ストーンのIDの設定
+	pStone->m_enmStoneID = eumID;
+	// 位置の設定
 	pStone->m_pos = pos;
+	// ボックスコライダーの設定
+	pStone->m_nBoxClliderID = C3DBoxCollider::SetColliderInfo(&pStone->m_pos, C3DBoxCollider::ID_STONE);
 
-	// ���f�����̐ݒ�
+#ifdef CSTONE_DEBUG_DRAW
+	// 全ての個数を増やす
+	CStone::m_nNumAll++;
+	// IDを設定
+	pStone->m_nNumID = CStone::m_nNumAll;
+#endif
+
+	// モデル情報の設定
 	pStone->m_pModelInfo.matBuff = m_pAllStoneTypeInfo[eumID].pBuffMat;
 	pStone->m_pModelInfo.matNum = m_pAllStoneTypeInfo[eumID].nNumMat;
 	pStone->m_pModelInfo.mesh = m_pAllStoneTypeInfo[eumID].pMesh;
 	pStone->m_pModelInfo.pTexture = NULL;
-	// ���f�����̌���
+	// モデル情報の結合
 	pStone->BindModel(pStone->m_pModelInfo);
-
 	return pStone;
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ������
+// 初期化
 //-------------------------------------------------------------------------------------------------------------
 void CStone::Init(void)
 {
@@ -290,7 +340,7 @@ void CStone::Init(void)
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// �I��
+// 終了
 //-------------------------------------------------------------------------------------------------------------
 void CStone::Uninit(void)
 {
@@ -298,101 +348,112 @@ void CStone::Uninit(void)
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// �X�V
+// 更新
 //-------------------------------------------------------------------------------------------------------------
 void CStone::Update(void)
 {
-	// ��]����
-	this->m_rot.y += CSTONE_ROTSPEED;
-	// ��]�𒼂�
-	CMylibrary::SetFixTheRotation(&this->m_rot.y);
-	// �����
+#ifdef CSTONE_UPDATE
+
+	// 回転処理
+	CMylibrary::SetFixTheRotation(&(this->m_rot.y += CSTONE_ROTSPEED));
+	// ゆらゆら
 	this->m_pos.y += sinf((m_fCntShake++) * CSTONE_SHAKECOEFF) * CSTONE_SHAKE_SIZE;
 
+	C3DBoxCollider::ChangePosition(this->m_nBoxClliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
+	if (C3DBoxCollider::Collisionoverlap(this->m_nBoxClliderID))
+	{
+		CDebugProc::Print("[%d]個目のStoneに当たった\n", this->m_nNumID);
+		C3DBoxCollider::unset(this->m_nBoxClliderID);
+		CScene::Release();
+	}
 #ifdef CSTONE_DEBUG_DRAW
-	CDebugProc::Print("Stone�̈ʒuY = [%.4f]\n", this->m_pos.y);
+	CDebugProc::Print("[%d]個目Stoneの位置Y = [%.4f]\n", this->m_nNumID,this->m_pos.y);
+	CDebugProc::Print("[%d]個目Stoneの回転量 = [%.4f]\n", this->m_nNumID,this->m_rot.y);
 #endif // CSTONE_DEBUG_DRAW
+#endif // CSTONE_UPDATE
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// �`��
+// 描画
 //-------------------------------------------------------------------------------------------------------------
 void CStone::Draw(void)
 {
+#ifdef CSTONE_DRAW
 	this->CSceneX::Draw();
+#endif // CSTONE_DRAW
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// �ő�ŏ��̒��_�ʒu�̎擾
+// 最大最小の頂点位置の取得
 //-------------------------------------------------------------------------------------------------------------
 void CStone::GetMaxMinVertices(int nIndex)
 {
-	// �ϐ��錾
-	int	  nNumVertices;			// ���_��
-	DWORD sizeFVF;				// ���_�t�H�[�}�b�g�T�C�Y
-	BYTE  *pVertexBuffer;		// ���_�o�b�t�@�̃|�C���^
+	// 変数宣言
+	int	  nNumVertices;			// 頂点数
+	DWORD sizeFVF;				// 頂点フォーマットサイズ
+	BYTE  *pVertexBuffer;		// 頂点バッファのポインタ
 
 	m_pAllStoneTypeInfo[nIndex].vtxMax = D3DXVECTOR3(CSTONE_INITVTXVALUE_MIN, CSTONE_INITVTXVALUE_MIN, CSTONE_INITVTXVALUE_MIN);
 	m_pAllStoneTypeInfo[nIndex].vtxMin = D3DXVECTOR3(CSTONE_INITVTXVALUE_MAX, CSTONE_INITVTXVALUE_MAX, CSTONE_INITVTXVALUE_MAX);
 
-	// ���_���擾
+	// 頂点数取得
 	nNumVertices = m_pAllStoneTypeInfo[nIndex].pMesh->GetNumVertices();
 
-	// ���_�t�H�[�}�b�g�̃T�C�Y�̎擾
+	// 頂点フォーマットのサイズの取得
 	sizeFVF = D3DXGetFVFVertexSize(m_pAllStoneTypeInfo[nIndex].pMesh->GetFVF());
 
-	// ���_�o�b�t�@�����b�N
+	// 頂点バッファをロック
 	m_pAllStoneTypeInfo[nIndex].pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVertexBuffer);
 
-	// ���_�������[�v
+	// 頂点数分ループ
 	for (int nCntModel = 0; nCntModel < nNumVertices; nCntModel++)
 	{
-		// ���_�ʒu���擾����
+		// 頂点位置を取得する
 		D3DXVECTOR3 vtx = *(D3DXVECTOR3*)pVertexBuffer;
 
-		// �ŏ����傫���Ƃ��ݒ�
+		// 最小が大きいとき設定
 		Mybfunc_WhenBiggerSet(m_pAllStoneTypeInfo[nIndex].vtxMin.x, vtx.x);
 		Mybfunc_WhenBiggerSet(m_pAllStoneTypeInfo[nIndex].vtxMin.y, vtx.y);
 		Mybfunc_WhenBiggerSet(m_pAllStoneTypeInfo[nIndex].vtxMin.z, vtx.z);
-		// �ő傪�������Ƃ��ݒ�
+		// 最大が小さいとき設定
 		Mybfunc_WhenSmallerSet(m_pAllStoneTypeInfo[nIndex].vtxMax.x, vtx.x);
 		Mybfunc_WhenSmallerSet(m_pAllStoneTypeInfo[nIndex].vtxMax.y, vtx.y);
 		Mybfunc_WhenSmallerSet(m_pAllStoneTypeInfo[nIndex].vtxMax.z, vtx.z);
 
-		pVertexBuffer += sizeFVF;		// �T�C�Y���|�C���^��i�߂�
+		pVertexBuffer += sizeFVF;		// サイズ分ポインタを進める
 	}
 
-	// ���_�f�[�^���A�����b�N����
+	// 頂点データをアンロックする
 	m_pAllStoneTypeInfo[nIndex].pMesh->UnlockVertexBuffer();
 }
 
 #ifdef CSTONE_USE_TEXTURE
 //-------------------------------------------------------------------------------------------------------------
-// X�t�@�C������擾�����e�N�X�`������ID�̎擾����
+// Xファイルから取得したテクスチャからIDの取得する
 //-------------------------------------------------------------------------------------------------------------
 void CStone::CreateTexturefrom_Xfile(const int nIndex, CONST STRING sFileName)
 {
-	// �ϐ��錾
-	FILE *pFile;				// �t�@�C���̃|�C���^
-	int nNumTexture;			// �e�N�X�`����
-	// ������
+	// 変数宣言
+	FILE *pFile;				// ファイルのポインタ
+	int nNumTexture;			// テクスチャ数
+	// 初期化
 	nNumTexture = MYLIB_INT_UNSET;
-	// �t�@�C�����J��
+	// ファイルを開く
 	pFile = fopen(sFileName, "r");
 	if (pFile != NULL)
 	{
-		// �ϐ��錾
-		char cRead[MYLIB_STRINGSIZE];		// �ǂݍ��ݗp
-		char cComp[MYLIB_STRINGSIZE];		// ��r�p
-		char cEmpty[MYLIB_STRINGSIZE];		// �v��Ȃ����̗p
-		// ������
+		// 変数宣言
+		char cRead[MYLIB_STRINGSIZE];		// 読み込み用
+		char cComp[MYLIB_STRINGSIZE];		// 比較用
+		char cEmpty[MYLIB_STRINGSIZE];		// 要らないもの用
+		// 初期化
 		cRead[0] = MYLIB_CHAR_UNSET;
 		cComp[0] = MYLIB_CHAR_UNSET;
 		cEmpty[0] = MYLIB_CHAR_UNSET;
 		do
-		{	// 1�s�ǂݍ���
+		{	// 1行読み込む
 			fgets(cRead, sizeof(cRead), pFile);
-			// �ǂݍ���Ǖ�������
+			// 読み込んど文字列代入
 			sscanf(cRead, "%s", &cComp);
 		} while (strcmp(cComp, "Mesh") != 0);
 
@@ -400,18 +461,18 @@ void CStone::CreateTexturefrom_Xfile(const int nIndex, CONST STRING sFileName)
 		{
 			cComp[0] = MYLIB_CHAR_UNSET;
 			do
-			{		// 1�s�ǂݍ���
+			{		// 1行読み込む
 				fgets(cRead, sizeof(cRead), pFile);
-				// �ǂݍ���Ǖ�������
+				// 読み込んど文字列代入
 				sscanf(cRead, "%s", &cComp);
 
 				if (strcmp(cComp, "Material") == 0)
 				{
 					cComp[0] = MYLIB_CHAR_UNSET;
 					do
-					{	// 1�s�ǂݍ���
+					{	// 1行読み込む
 						fgets(cRead, sizeof(cRead), pFile);
-						// �ǂݍ���Ǖ�������
+						// 読み込んど文字列代入
 						sscanf(cRead, "%s", &cComp);
 						if (strcmp(cComp, "TextureFilename") == 0)
 						{
@@ -424,45 +485,45 @@ void CStone::CreateTexturefrom_Xfile(const int nIndex, CONST STRING sFileName)
 			} while (strcmp(cComp, "}") != 0);
 		}
 	}
-	// �e�N�X�`�������݂��Ȃ��������𒆒f
+	// テクスチャが存在しない時処理を中断
 	if (nNumTexture == 0)
 	{
-		// �e�N�X�`�����̏�����
+		// テクスチャ情報の初期化
 		m_pAllStoneTypeInfo[nIndex].nNumTexture = MYLIB_INT_UNSET;
 		m_pAllStoneTypeInfo[nIndex].ppTexture = NULL;
 		m_pAllStoneTypeInfo[nIndex].pTextureID = NULL;
 		return;
 	}
-	// �e�N�X�`�����̐ݒ�
+	// テクスチャ数の設定
 	m_pAllStoneTypeInfo[nIndex].nNumTexture = nNumTexture;
-	// �e�N�X�`��ID�̐���
+	// テクスチャIDの生成
 	m_pAllStoneTypeInfo[nIndex].pTextureID = new int[nNumTexture];
-	// �e�N�X�`�����̐���
+	// テクスチャ情報の生成
 	m_pAllStoneTypeInfo[nIndex].ppTexture = new LPDIRECT3DTEXTURE9[nNumTexture];
 
-	// �f�o�C�X�̎擾
-	LPDIRECT3DDEVICE9	pDevice = CManager::GetRenderer()->GetDevice();		// �f�o�C�X�̎擾
+	// デバイスの取得
+	LPDIRECT3DDEVICE9	pDevice = CManager::GetRenderer()->GetDevice();		// デバイスの取得
 
-	// �o�b�t�@�̐擪�|�C���^��D3DXMATERIAL�ɃL���X�g���Ď擾
+	// バッファの先頭ポインタをD3DXMATERIALにキャストして取得
 	D3DXMATERIAL* materials = (D3DXMATERIAL*)m_pAllStoneTypeInfo[nIndex].pBuffMat->GetBufferPointer();
 
 	int nCntxture = MYLIB_INT_UNSET;
 
-	// �J�E���g�}�e���A��
+	// カウントマテリアル
 	for (int nCntMat = 0; nCntMat < (int)m_pAllStoneTypeInfo[nIndex].nNumMat; nCntMat++)
 	{
 		if (materials[nCntMat].pTextureFilename != NULL)
-		{// �t�@�C�����̎擾
+		{// ファイル名の取得
 			STRING sName = strstr(materials[nCntMat].pTextureFilename, "DATA");
 			if (sName != NULL)
 			{
 				if (D3DXCreateTextureFromFile(pDevice, sName, &m_pAllStoneTypeInfo[nIndex].ppTexture[nCntxture]) != D3D_OK)
 				{
-					// ���s
+					// 失敗
 				}
 				else
 				{
-					// ����
+					// 成功
 				}
 			}
 		}

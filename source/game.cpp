@@ -25,6 +25,7 @@
 #include "player.h"
 #include "modelCharacter.h"
 #include "stone.h"
+#include "3DBoxCollider.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -72,9 +73,10 @@ void CGame::Init(void)
 	CMotionModel::Load();					// モーション用モデルロード
 	CPause::Load();							// ポーズテクスチャロード
 	CMeshSphere::Load();					// メッシュ球のテクスチャロード
-	CStone::Load();
-
-	CStone::Create(CStone::STONE_ID_DEFAULT);
+	CStone::Load();							// ストーンの読み込み
+	C3DBoxCollider::Load();					// 3Dボックスコライダーの読み込み
+	C3DBoxCollider::Create();
+	CStone::Create(CStone::STONE_ID_DEFAULT,D3DXVECTOR3(-100.0f,0.0f,0.0f));
 
 	// カメラの生成処理
 	m_pCamera = CCamera::Create();
@@ -112,7 +114,8 @@ void CGame::Uninit(void)
 	CScene2D::ReleaseAll();				// 2Dのもの全て破棄
 	CScene3D::ReleaseAll();				// 3Dのもの全て破棄
 
-	CStone::Unload();
+	C3DBoxCollider::Unload();			// 3Dボックスコライダーの開放
+	CStone::Unload();					// ストーンの開放
 	CNumber::Unload();					// 数字テクスチャアンロード
 	CMeshField::Unload();				// 床テクスチャアンロード
 	CMotionModel::Unload();				// モーション用モデルアンロード
