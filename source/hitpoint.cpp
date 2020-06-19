@@ -75,20 +75,20 @@ void CHitPoint::Update(void)
 	//CPlayer *pPlayer = CGame::GetPlayer();
 
 	//float NowHP = pPlayer->GetLife();													//ƒvƒŒƒCƒ„[‚Ì‘Ì—ÍŽæ“¾
-	float fWidth = 0;																	//Œ»Ý‚Ì‰æ‘œ‚Ì•
+	float fHeight = 0;																	//Œ»Ý‚Ì‰æ‘œ‚Ì‚‚³
 	float fResidue = 0.0f;																//Žc‚è‚Ì”’l
 
 	//m_fNowHP = NowHP / m_fMaxHP;														//HP‚Ì”ä—¦ŒvŽZ
-	fWidth = m_fNowHP * m_fWidth;														//•`‰æ‚·‚×‚«‰æ‘œ•‚ª‚¢‚­‚ç‚È‚Ì‚©
+	fHeight = m_fNowHP * m_fWidth;														//•`‰æ‚·‚×‚«‰æ‘œ•‚ª‚¢‚­‚ç‚È‚Ì‚©
 	//fResidue = (m_fMaxHP - NowHP) / m_fMaxHP;
 
 	if (m_fNowHP > 0.5f)
 	{
-		m_pBar->SetVertexBar(0, D3DXVECTOR3(50, 650, 0), D3DXCOLOR(0.0f + fResidue * 2, 1.0f, 0.25f - (fResidue / 2), 1.0f), fWidth, MAX_HEIGHT);
+		m_pBar->SetVertexBar(0, D3DXVECTOR3(50, 650, 0), D3DXCOLOR(0.0f + fResidue * 2, 1.0f, 0.25f - (fResidue / 2), 1.0f), MAX_WIDTH, fHeight);
 	}
 	else
 	{
-		m_pBar->SetVertexBar(0, D3DXVECTOR3(50, 650, 0), D3DXCOLOR(1.0f, m_fNowHP * 2, 0.0f, 1.0f), fWidth, MAX_HEIGHT);
+		m_pBar->SetVertexBar(0, D3DXVECTOR3(50, 650, 0), D3DXCOLOR(1.0f, m_fNowHP * 2, 0.0f, 1.0f), MAX_WIDTH, fHeight);
 	}
 }
 
