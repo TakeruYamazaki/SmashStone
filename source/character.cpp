@@ -21,6 +21,7 @@
 // マクロ定義
 //=============================================================================	
 #define SPEED_ROT		(0.1f)	// 回転のスピード
+#define LIFE_DEFAULT	(100)	// ライフの初期値
 
 //=============================================================================
 // 静的メンバ変数の初期化
@@ -43,6 +44,8 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_nCntMove			= 0;
 	m_bJump				= false;
 	m_bWalk				= false;
+	m_nMaxLife			= LIFE_DEFAULT;
+	m_nLife				= m_nMaxLife;
 
 	// 総数を加算
 	m_nNumCharacter++;

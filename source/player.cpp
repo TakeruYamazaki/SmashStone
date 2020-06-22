@@ -349,6 +349,7 @@ void CPlayer::ShowDebugInfo()
 	if (ImGui::CollapsingHeader("Player"))
 	{
 		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
+		ImGui::Text("nLife : %d", m_nLife);
 	}
 }
 #endif

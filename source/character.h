@@ -43,12 +43,17 @@ public:
 	void SetRotDest(const D3DXVECTOR3 & rotDest)	{ m_rotDest = rotDest; }	// 目的の回転の設定
 	void SetbWalk(const bool &bWalk)				{ m_bWalk = bWalk; }		// 歩きの設定
 	void SetbJump(const bool &bJump)				{ m_bJump = bJump; }		// ジャンプの設定
+	void SetLife(const int nLife)					{ m_nLife = nLife; }		// ライフの設定
 	void SetModelType(CHARACTER_TYPE type);			// モデルの設定
 
 	D3DXVECTOR3 GetPos(void)		{ return m_pos; }		// 位置の取得
 	D3DXVECTOR3 GetMove(void)		{ return m_move; }		// 移動値の取得
 	D3DXVECTOR3 GetRot(void)		{ return m_rot; }		// 回転の取得
 	D3DXVECTOR3 GetRotDest(void)	{ return m_rotDest; }	// 回転先の取得
+	int			GetLife(void)		{ return m_nLife; }		// ライフ取得
+	int			GetMaxLife(void)	{ return m_nMaxLife; }	// 最大ライフ取得
+
+	void Damage(const int nDamage)	{ m_nLife -= nDamage; }	// ダメージ処理
 
 protected:
 	CModelCharacter *m_pModelCharacter;				// モデルキャラクターのポインタ
@@ -65,6 +70,8 @@ protected:
 	D3DXVECTOR3 m_rotDif;							// 回転の差
 	D3DXMATRIX	m_mtxWorld;							// ワールドマトリックス
 
+	int			m_nLife;							// ライフ
+	int			m_nMaxLife;							// 最大ライフ
 	int			m_nCntMove;							// どれぐらいの時間動いているか
 	bool		m_bJump;							// ジャンプしたかどうか
 	bool		m_bWalk;							// 歩いてるかどうか
