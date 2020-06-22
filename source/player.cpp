@@ -23,6 +23,7 @@
 #include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
 #include "3DBoxCollider.h"
+#include "stone.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -54,9 +55,15 @@ CPlayer::~CPlayer()
 //==================================================================================================================
 void CPlayer::Init(void)
 {
+	// 要素の初期化
+	m_bTrans = false;
+
+	// 初期化
 	CCharacter::Init();
 	CCharacter::SetModelType(CHARACTER_1);
-	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), C3DBoxCollider::ID_CHARACTER);
+
+	// 当たり判定の設定
+	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), this, C3DBoxCollider::ID_CHARACTER);
 }
 
 //==================================================================================================================
@@ -72,9 +79,16 @@ void CPlayer::Uninit(void)
 //==================================================================================================================
 void CPlayer::Update(void)
 {
+	// 操作
 	Control();
+	// 更新
 	CCharacter::Update();
+	// 当たり判定位置の更新
 	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->GetPos(), MYLIB_3DVECTOR_ZERO);
+
+	// ストーンの取得判定
+	CatchStone();
+	
 #ifdef _DEBUG
 	ShowDebugInfo();
 #endif
@@ -294,6 +308,36 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 
 	// 目的の回転の設定
 	SetRotDest(rotDest);
+}
+
+//==================================================================================================================
+// ストーンの取得判定
+//==================================================================================================================
+void CPlayer::CatchStone(void)
+{
+	// 変数宣言
+	int nHitID = MYLIB_INT_NOELEM;	// 当たったID
+	// 当たったコライダのIDを取得
+	if (C3DBoxCollider::Collisionoverlap(this->m_nBoxColliderID, &nHitID) == false)
+	{
+		return;
+	}
+
+	// scene取得
+	CScene *pScene = C3DBoxCollider::GetScene(nHitID);	// シーンポインタ
+	// 取得に失敗したとき
+	if (pScene == NULL)
+	{
+		return;
+	}
+	// プライオリティがストーンのとき
+	if (pScene->GetPriority() == CScene::PRIORITY_STONE)
+	{
+		// ストーンの取得
+		((CStone *)pScene)->Catch();
+		// 変身
+		this->m_bTrans = true;
+	}
 }
 
 #ifdef _DEBUG

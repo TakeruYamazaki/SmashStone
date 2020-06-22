@@ -39,6 +39,8 @@ public:
 	void SetMotion(CMotion::MOTION_TYPE motiontype);				// モーションを設定
 	void ResetMotion();												// モーションのリセット
 
+	void ModelRebind(CHARACTER_TYPE type);							// モデルの再バインド
+
 	static int GetPartsNum(CHARACTER_TYPE type) { return m_pModelCharacter[type].nNumParts; }	// キャラクターのパーツ数を取得
 	CMotion::MOTION_TYPE GetMotion(void)		{ return m_motion; }							// モーションを取得
 	CModelParts *GetModelParts(void)			{ return m_pModelParts; }						// モデルパーツの取得

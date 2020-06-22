@@ -93,6 +93,9 @@ void CCharacter::Update()
 	// モーション処理
 	Motion();
 
+	// 変身処理
+	Trans();
+
 	// ワールドマトリックスの設定
 	m_pModelCharacter->SetCharacterMtx(&m_mtxWorld);
 
@@ -165,4 +168,15 @@ void CCharacter::Motion(void)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);
 	else
 		m_pModelCharacter->SetMotion(CMotion::MOTION_NONE);
+}
+
+//=============================================================================
+// 変身の処理
+//=============================================================================
+void CCharacter::Trans(void)
+{
+	if (m_bTrans)
+	{
+		m_pModelCharacter->ModelRebind(CHARACTER_1_TRANS);
+	}
 }

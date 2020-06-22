@@ -44,7 +44,7 @@ public:
 	D3DXVECTOR3 *GetPosV(void)	{ return &m_posV; }	// 視点位置設定処理
 	D3DXVECTOR3 *GetPosR(void)	{ return &m_posR; }	// 注視点の取得
 	float		GetRotY(void)	{ return m_rot.y; }	// 回転(Y軸)の取得
-	D3DXVECTOR3 *GetVec(void);						// ベクトルの取得
+	D3DXVECTOR3 *GetVec(void)	{ return &m_vec; }	// ベクトルの取得
 
 protected:
 
@@ -61,6 +61,7 @@ private:
 	D3DXVECTOR3 m_posU;					// 上方向ベクトル
 	D3DXVECTOR3 m_rot;					// 回転
 	D3DXVECTOR3 m_rotDest;				// 回転の目標地点
+	D3DXVECTOR3 m_vec;					// カメラの向いているベクトル
 
 	int nCntRot;						// 回転を始めるカウンタ
 	int m_nCntTitleFade;				// タイトルフェードのカウンタ

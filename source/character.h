@@ -50,11 +50,7 @@ public:
 	D3DXVECTOR3 GetRot(void)		{ return m_rot; }		// 回転の取得
 	D3DXVECTOR3 GetRotDest(void)	{ return m_rotDest; }	// 回転先の取得
 
-private:
-	void Move(void);								// 移動関数
-	void Rot(void);									// 回転関数
-	void Motion(void);								// モーション関数
-
+protected:
 	CModelCharacter *m_pModelCharacter;				// モデルキャラクターのポインタ
 
 	LPD3DXMESH		m_pMesh;						// メッシュ情報
@@ -72,8 +68,15 @@ private:
 	int			m_nCntMove;							// どれぐらいの時間動いているか
 	bool		m_bJump;							// ジャンプしたかどうか
 	bool		m_bWalk;							// 歩いてるかどうか
+	bool		m_bTrans;							// 変身しているか
 
 	static int	m_nNumCharacter;					// キャラクターの総数
+
+private:
+	void Move(void);								// 移動関数
+	void Rot(void);									// 回転関数
+	void Motion(void);								// モーション関数
+	void Trans(void);								// 変身関数
 };
 
 #endif

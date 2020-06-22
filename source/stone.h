@@ -106,6 +106,9 @@ public:
 	// •`‰æ
 	void Draw(void);
 
+	// “üè‚·‚é
+	void Catch(void);
+
 private:
 	/* ƒƒ“ƒoŠÖ” */
 	// Å‘åÅ¬‚Ì’¸“_ˆÊ’u‚Ìæ“¾

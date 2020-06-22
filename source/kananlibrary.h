@@ -111,8 +111,8 @@ typedef enum
 typedef enum
 {	// キャラクターの種類
 	CHARACTER_NONE,			// 何もない
-	CHARACTER_1 = 0,		// プレイヤー
-	//CHARACTER_2,			// プレイヤー
+	CHARACTER_1 = 0,		// フォッカー
+	CHARACTER_1_TRANS,		// フォッカー変身
 	//CHARACTER_3,			// プレイヤー
 	//CHARACTER_4,			// プレイヤー
 	CHARACTER_MAX			// キャラクターの最大数

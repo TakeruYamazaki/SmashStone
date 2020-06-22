@@ -29,6 +29,7 @@ public:
 		PRIORITY_MESH_SPHERE = 0,		// メッシュ球
 		PRIORITY_PLAYER,				// プレイヤー
 		PRIORITY_OBJECT,				// オブジェクト
+		PRIORITY_STONE,					// ストーン
 		PRIORITY_FIELD,					// フィールド
 		PRIORITY_SHADOW,				// 影
 		PRIORITY_EFFECT,				// エフェクト
@@ -51,7 +52,10 @@ public:
 
 	void Deleate(int type);					// 削除する
 
-	CScene *GetScene(PRIORITY nPriority, int nCntScene);	// シーン取得
+	CScene *GetScene(PRIORITY nPriority, int nCntScene);			// シーン取得
+	PRIORITY GetPriority(void)			{ return m_nPriority; }		// プライオリティの取得
+
+	void SetPriority(PRIORITY priority) { m_nPriority = priority; }	// プライオリティの設定
 
 protected:
 	void Release(void);
@@ -63,6 +67,7 @@ private:
 	CScene *m_pPrev[PRIORITY_MAX];							// 前のオブジェクトへのポインタ
 	CScene *m_pNext[PRIORITY_MAX];							// 次のオブジェクトへのポインタ
 
-	bool m_bDeth;											// 死亡フラグ
+	bool		m_bDeth;									// 死亡フラグ
+	PRIORITY	m_nPriority;								// プライオリティ
 };
 #endif

@@ -37,6 +37,7 @@ CScene::CScene(PRIORITY type)
 		}
 	}
 
+	m_nPriority = type;
 	m_bDeth = false;						// €–Sƒtƒ‰ƒO‚Í—§‚Á‚Ä‚¢‚È‚¢ó‘Ô‚É‚·‚é
 }
 

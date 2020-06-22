@@ -110,11 +110,11 @@ public:
 	// ダメージ判定判定
 	static bool CollisionDamage(int n3DBoxColliderID, int nNoneColisitionID = -1);
 	// 衝突したかだけ判定
-	static bool Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionID = -1);
+	static bool Collisionoverlap(int n3DBoxColliderID,int *pHitID, int nNoneColisitionID = -1);
 	// ブロック状の衝突判定
 	static bool CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVECTOR3 &move);
 	// 設定
-	static int Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot ,D3DXVECTOR3 &difference, COLLIDER_TYPE colliType);
+	static int Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot ,D3DXVECTOR3 &difference, COLLIDER_TYPE colliType,CScene * pScene);
 	// シーンのポインタを設定
 	static void SetScene(int n3DBoxColliderID, CScene *pScene = NULL);
 	// シーンのポインタを取得
@@ -140,7 +140,7 @@ public:
 	// コライダー情報の読み込み
 	//static int LoadColliderLoad(TRANSFORM *trans, int nID = -1, D3DXVECTOR3 *vtxMax = NULL, D3DXVECTOR3 *vtxMin = NULL, bool bLoad = true, COLLIDER_TYPE Collidertype = COLLIDER_TYPE::COLLIDER_TYPE_OVERRAP);
 	// コライダー情報を設定する
-	static int SetColliderInfo(D3DXVECTOR3 *pPos, int nID = ID_CHARACTER);
+	static int SetColliderInfo(D3DXVECTOR3 *pPos, CScene *pScene, int nID = ID_CHARACTER);
 	// 任意のIDをコライダーIDに変換
 	static void ConvertColliderID(int *pID);
 private:

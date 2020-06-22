@@ -162,9 +162,7 @@ void CManager::Update(void)
 
 	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 	{
-		// Ú‘±‚³‚ê‚Ä‚¢‚é‚È‚çXV
-		if (m_pInputGamepad[nCnt]->GetbConnect())
-			m_pInputGamepad[nCnt]->Update();
+		m_pInputGamepad[nCnt]->Update();
 	}
 
 	if (m_pMouse)

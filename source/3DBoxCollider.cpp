@@ -546,7 +546,7 @@ bool C3DBoxCollider::CollisionDamage(int n3DBoxColliderID, int nNoneColisitionID
 //-------------------------------------------------------------------------------------------------------------
 // 衝突したかだけ判定
 //-------------------------------------------------------------------------------------------------------------
-bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionID)
+bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID,int* pHitID, int nNoneColisitionID)
 {
 	// 変数宣言
 	_3DBOXCOLLIDER *pOwnerCollider = &m_ColliderInfo[n3DBoxColliderID];	// 持ち主のポインタ
@@ -584,6 +584,7 @@ bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionI
 					{
 						// 頂点データをアンロック
 						m_pVtxBuff->Unlock();
+						*pHitID = nCntCollider;
 						return true;
 					}
 					// 右の当たり判定
@@ -592,6 +593,7 @@ bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionI
 					{
 						// 頂点データをアンロック
 						m_pVtxBuff->Unlock();
+						*pHitID = nCntCollider;
 						return true;
 					}
 				}
@@ -605,6 +607,7 @@ bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionI
 					{
 						// 頂点データをアンロック
 						m_pVtxBuff->Unlock();
+						*pHitID = nCntCollider;
 						return true;
 					}
 					// 右の当たり判定
@@ -613,6 +616,7 @@ bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionI
 					{
 						// 頂点データをアンロック
 						m_pVtxBuff->Unlock();
+						*pHitID = nCntCollider;
 						return true;
 					}
 				}
@@ -628,6 +632,7 @@ bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionI
 					{
 						// 頂点データをアンロック
 						m_pVtxBuff->Unlock();
+						*pHitID = nCntCollider;
 						return true;
 					}
 					else if (pOwnerCollider->pos.y - pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE < pOtherCollider->pos.y + pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE&&
@@ -635,6 +640,7 @@ bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionI
 					{
 						// 頂点データをアンロック
 						m_pVtxBuff->Unlock();
+						*pHitID = nCntCollider;
 						return true;
 					}
 				}
@@ -655,6 +661,7 @@ bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionI
 
 					// 頂点データをアンロック
 					m_pVtxBuff->Unlock();
+					*pHitID = nCntCollider;
 					return true;
 				}
 			}
@@ -673,6 +680,7 @@ bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionI
 			{
 				// 頂点データをアンロック
 				m_pVtxBuff->Unlock();
+				*pHitID = nCntCollider;
 				return true;
 			}
 		}
@@ -681,6 +689,7 @@ bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID, int nNoneColisitionI
 
 	// 頂点データをアンロック
 	m_pVtxBuff->Unlock();
+	*pHitID = -1;
 	return bCollision;
 
 }
@@ -840,7 +849,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 //-------------------------------------------------------------------------------------------------------------
 // 設定
 //-------------------------------------------------------------------------------------------------------------
-int C3DBoxCollider::Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot, D3DXVECTOR3 &difference, COLLIDER_TYPE colliType)
+int C3DBoxCollider::Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot, D3DXVECTOR3 &difference, COLLIDER_TYPE colliType, CScene * pScene)
 {
 	for (int nCntCollider = 0; nCntCollider < _3DBOXCOLLIDER_MAX; nCntCollider++)
 	{
@@ -858,6 +867,7 @@ int C3DBoxCollider::Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot, D
 			m_ColliderInfo[nCntCollider].rot			= rot;				// 回転
 			m_ColliderInfo[nCntCollider].bUse			= true;				// 使用フラグ
 			m_ColliderInfo[nCntCollider].ColliderType	= colliType;		// 衝突種類
+			m_ColliderInfo[nCntCollider].pScene			= pScene;			// sceneの設定
 			// 頂点位置の更新
 			SetVertexPosition(pVtx, nCntCollider);
 			SetVertexPosResult(pVtx, nCntCollider);
@@ -1250,7 +1260,7 @@ void C3DBoxCollider::InitColliderInfo(void)
 //-------------------------------------------------------------------------------------------------------------
 // コライダー情報の設定
 //-------------------------------------------------------------------------------------------------------------
-int C3DBoxCollider::SetColliderInfo(D3DXVECTOR3 *pPos, int nID)
+int C3DBoxCollider::SetColliderInfo(D3DXVECTOR3 *pPos, CScene *pScene, int nID)
 {
 	// コライダーIDに変換する
 	ConvertColliderID(&nID);
@@ -1265,7 +1275,8 @@ int C3DBoxCollider::SetColliderInfo(D3DXVECTOR3 *pPos, int nID)
 				*pPos,
 				MYLIB_3DVECTOR_ZERO,
 				Mybfunc_iifEx(m_ReadInfoFileBuff.pCell[nCntRead].pDifference != NULL, *m_ReadInfoFileBuff.pCell[nCntRead].pDifference, MYLIB_3DVECTOR_ZERO),
-				(COLLIDER_TYPE)m_ReadInfoFileBuff.pCell[nCntRead].nColliderType);
+				(COLLIDER_TYPE)m_ReadInfoFileBuff.pCell[nCntRead].nColliderType,
+				pScene);
 		}
 	}
 	return -1;

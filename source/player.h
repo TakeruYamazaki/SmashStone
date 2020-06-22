@@ -67,9 +67,9 @@ private:
 	void Control(void);								// 操作関数
 	void ControlGamepad(CInputGamepad *pGamepad);	// ゲームパッド操作
 	void ControlKeyboard(CInputKeyboard *pKeyboard);// キーボード操作
+	void CatchStone(void);							// ストーンの取得判定
 
 	int m_nPlayer;			// プレイヤー番号
-
 	int m_nBoxColliderID;	// ボックスコライダーID
 
 #ifdef _DEBUG

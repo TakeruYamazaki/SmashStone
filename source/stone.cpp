@@ -291,7 +291,7 @@ CStone * CStone::Create(CONST STONE_ID eumID, CONST D3DXVECTOR3 & pos)
 	// 変数宣言
 	CStone* pStone;		// ストーンポインタ
 	// 生成
-	pStone  = new CStone;
+	pStone = new CStone(CScene::PRIORITY_STONE);
 	// 生成失敗した時
 	if (pStone == NULL)
 	{
@@ -312,7 +312,7 @@ CStone * CStone::Create(CONST STONE_ID eumID, CONST D3DXVECTOR3 & pos)
 	// 位置の設定
 	pStone->m_pos = pos;
 	// ボックスコライダーの設定
-	pStone->m_nBoxClliderID = C3DBoxCollider::SetColliderInfo(&pStone->m_pos, C3DBoxCollider::ID_STONE);
+	pStone->m_nBoxClliderID = C3DBoxCollider::SetColliderInfo(&pStone->m_pos, pStone, C3DBoxCollider::ID_STONE);
 
 #ifdef CSTONE_DEBUG_DRAW
 	// 全ての個数を増やす
@@ -360,12 +360,12 @@ void CStone::Update(void)
 	this->m_pos.y += sinf((m_fCntShake++) * CSTONE_SHAKECOEFF) * CSTONE_SHAKE_SIZE;
 
 	C3DBoxCollider::ChangePosition(this->m_nBoxClliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
-	if (C3DBoxCollider::Collisionoverlap(this->m_nBoxClliderID))
-	{
-		CDebugProc::Print("[%d]個目のStoneに当たった\n", this->m_nNumID);
-		C3DBoxCollider::unset(this->m_nBoxClliderID);
-		CScene::Release();
-	}
+	//if (C3DBoxCollider::Collisionoverlap(this->m_nBoxClliderID))
+	//{
+	//	CDebugProc::Print("[%d]個目のStoneに当たった\n", this->m_nNumID);
+	//	C3DBoxCollider::unset(this->m_nBoxClliderID);
+	//	CScene::Release();
+	//}
 #ifdef CSTONE_DEBUG_DRAW
 	CDebugProc::Print("[%d]個目Stoneの位置Y = [%.4f]\n", this->m_nNumID,this->m_pos.y);
 	CDebugProc::Print("[%d]個目Stoneの回転量 = [%.4f]\n", this->m_nNumID,this->m_rot.y);
@@ -381,6 +381,15 @@ void CStone::Draw(void)
 #ifdef CSTONE_DRAW
 	this->CSceneX::Draw();
 #endif // CSTONE_DRAW
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// 入手する
+//-------------------------------------------------------------------------------------------------------------
+void CStone::Catch(void)
+{
+	C3DBoxCollider::unset(this->m_nBoxClliderID);
+	CScene::Release();
 }
 
 //-------------------------------------------------------------------------------------------------------------

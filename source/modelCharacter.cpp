@@ -33,6 +33,7 @@ MODELCHARACTER	CModelCharacter::m_pModelCharacter[CHARACTER_MAX] = {};
 char			CModelCharacter::m_aFileName[CHARACTER_MAX][64] =
 {
 	{ "data/OFFSET/offset_fokker.txt" },
+	{ "data/OFFSET/offset_trans_fokker.txt" }
 };
 
 //=============================================================================
@@ -556,6 +557,18 @@ void CModelCharacter::ResetMotion()
 {
 	m_nFrame = 0;
 	m_nKey = 0;
+}
+
+//=============================================================================
+// モデルの再バインド
+//=============================================================================
+void CModelCharacter::ModelRebind(CHARACTER_TYPE type)
+{
+	m_type = type;
+	for (int nCnt = 0; nCnt < m_pModelCharacter[type].nNumParts; nCnt++)
+	{
+		m_pModelParts[nCnt].BindModelInfo(&m_pModelCharacter[type].pModelInfo[nCnt]);
+	}
 }
 
 #ifdef _DEBUG
