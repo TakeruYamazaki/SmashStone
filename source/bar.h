@@ -15,9 +15,9 @@
 //==================================================================================================================
 // マクロ定義
 //==================================================================================================================
-#define TEXTURE_BAR 2												//テクスチャの最大数
-#define MAX_WIDTH 20												//横の最大サイズ
-#define MAX_HEIGHT 60												//縦の最大サイズ
+#define TEXTURE_BAR 10												// テクスチャの最大数
+#define MAX_WIDTH 40												// 横の最大サイズ
+#define MAX_HEIGHT 150												// 縦の最大サイズ
 
 //==================================================================================================================
 // クラスの定義
@@ -25,6 +25,24 @@
 class CBar
 {
 public:
+
+	//=============================================================================
+	// 列挙型定義
+	//=============================================================================
+	typedef enum
+	{
+		BARTYPE_HP0 = 0,		// 0番目の体力バー
+		BARTYPE_FREAME0,		// 0番目のフレーム
+		BARTYPE_HP1,			// 1番目の体力バー
+		BARTYPE_FREAME1,		// 1番目のフレーム
+		BARTYPE_HP2,			// 2番目の体力バー
+		BARTYPE_FREMAE2,		// 2番目のフレーム
+		BARTYPE_HP3,			// 3番目の体力バー
+		BARTYPE_FREAME3,		// 3番目のフレーム
+		BARTYPE_HP4,			// 4番目の体力バー
+		BARTYPE_FREAME4,		// 4番目のフレーム
+		BARTYPE_MAX				// 最大数
+	} BARTYPE;					// Barタイプ
 
 	CBar();								// コンストラクタ
 	~CBar();							// デストラクタ
@@ -42,7 +60,9 @@ public:
 protected:
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture[TEXTURE_BAR];	// テクスチャ情報
+	static LPDIRECT3DTEXTURE9 m_pTexture[BARTYPE_MAX];	// テクスチャ情報
+	static char *m_apFileName[BARTYPE_MAX];				// Barのファイル名
+
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;					// 頂点バッファ
 	D3DXVECTOR3 m_pos;									// 位置
 };

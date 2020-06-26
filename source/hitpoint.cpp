@@ -19,6 +19,7 @@
 #include "bar.h"
 #include "player.h"
 #include "game.h"
+#include "character.h"
 
 //==================================================================================================================
 //	コンストラクタ
@@ -33,21 +34,47 @@ CHitPoint::CHitPoint(PRIORITY type = PRIORITY_UI) : CScene(type)
 //==================================================================================================================
 void CHitPoint::Init(void)
 {
-	//CPlayer *pPlayer = CGame::GetPlayer();
+	// プレイヤーの情報ポインタ
+	CPlayer *pPlayer = CGame::GetPlayer(0);
 
-	//初期化
-	m_pBar = NULL;
-	m_pos = D3DXVECTOR3(0, 0, 0);
-	//m_fMaxHP = pPlayer->GetLife();
-	m_fNowHP = m_fMaxHP;
-	m_fWidth = MAX_WIDTH;
+	// 初期化
+	m_pBar = NULL;						// バーの情報ポインタ
+	m_pos = D3DXVECTOR3(0, 0, 0);		// 位置
+	m_fMaxHP = pPlayer->GetLife();		// 最大HP
+	m_fNowHP = m_fMaxHP;				// 現在のHP
+	m_fHeight = MAX_HEIGHT;				// 高さ
 
-	//Barの生成
+	// Barの生成
 	m_pBar = CBar::Create();
+
+	// Barがあるとき
 	if (m_pBar != NULL)
 	{
-		m_pBar->SetVertexBar(0, D3DXVECTOR3(50, 650, 0), D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
-		m_pBar->SetVertexBar(1, D3DXVECTOR3(39, 650, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH + 22, MAX_HEIGHT);
+		// BarHP
+		m_pBar->SetVertexBar(0, D3DXVECTOR3(250, 350, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+		// Barフレーム
+		m_pBar->SetVertexBar(1, D3DXVECTOR3(250, 354, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT + 5);
+
+		// BarHP
+		m_pBar->SetVertexBar(2, D3DXVECTOR3(200, 350, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+		// Barフレーム
+		m_pBar->SetVertexBar(3, D3DXVECTOR3(200, 354, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT + 5);
+
+		// BarHP
+		m_pBar->SetVertexBar(4, D3DXVECTOR3(150, 350, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+		// Barフレーム
+		m_pBar->SetVertexBar(5, D3DXVECTOR3(150, 354, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT + 5);
+
+		// BarHP
+		m_pBar->SetVertexBar(6, D3DXVECTOR3(100, 350, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+		// Barフレーム
+		m_pBar->SetVertexBar(7, D3DXVECTOR3(100, 354, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT + 5);
+
+		// BarHP
+		m_pBar->SetVertexBar(8, D3DXVECTOR3(50, 350, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+		// Barフレーム
+		m_pBar->SetVertexBar(9, D3DXVECTOR3(50, 354, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT + 5);
+
 	}
 }
 
@@ -69,26 +96,63 @@ void CHitPoint::Uninit(void)
 //==================================================================================================================
 void CHitPoint::Update(void)
 {
-	//Barの更新処理
+	// Barの更新処理
 	m_pBar->Update();
 
-	//CPlayer *pPlayer = CGame::GetPlayer();
+	// プレイヤー情報取得
+	CPlayer *pPlayer = CGame::GetPlayer(0);
 
-	//float NowHP = pPlayer->GetLife();													//プレイヤーの体力取得
-	float fHeight = 0;																	//現在の画像の高さ
-	float fResidue = 0.0f;																//残りの数値
+	float NowHP = pPlayer->GetLife();				// 現在のHP
 
-	//m_fNowHP = NowHP / m_fMaxHP;														//HPの比率計算
-	fHeight = m_fNowHP * m_fWidth;														//描画すべき画像幅がいくらなのか
-	//fResidue = (m_fMaxHP - NowHP) / m_fMaxHP;
-
-	if (m_fNowHP > 0.5f)
+	// HPバーが一本目のとき
+	if (NowHP >= m_fMaxHP / 5 * 4)
 	{
-		m_pBar->SetVertexBar(0, D3DXVECTOR3(50, 650, 0), D3DXCOLOR(0.0f + fResidue * 2, 1.0f, 0.25f - (fResidue / 2), 1.0f), MAX_WIDTH, fHeight);
+		float fHeight = 0.0f;									// 現在の画像の高さ
+		m_fNowHP = (NowHP - m_fMaxHP / 5 * 4) / (m_fMaxHP / 5);	// HPの比率計算
+		fHeight = m_fNowHP * m_fHeight;							// 描画すべき画像幅がいくらなのか
+
+		// BarHPの設定
+		m_pBar->SetVertexBar(0, D3DXVECTOR3(250, 350, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+	}
+	else if (NowHP >= m_fMaxHP / 5 * 3)
+	{// HPバーが二本目のとき
+
+		float fHeight = 0.0f;									// 現在の画像の高さ
+		m_fNowHP = (NowHP - m_fMaxHP / 5 * 3) / (m_fMaxHP / 5);	// HPの比率計算
+		fHeight = m_fNowHP * m_fHeight;							// 描画すべき画像幅がいくらなのか
+
+		// BarHPの設定
+		m_pBar->SetVertexBar(2, D3DXVECTOR3(200, 350, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+	}
+	else if (NowHP >= m_fMaxHP / 5 * 2)
+	{// HPバーが三本目のとき
+
+		float fHeight = 0.0f;									// 現在の画像の高さ
+		m_fNowHP = (NowHP - m_fMaxHP / 5 * 2) / (m_fMaxHP / 5);	// HPの比率計算
+		fHeight = m_fNowHP * m_fHeight;							// 描画すべき画像幅がいくらなのか
+
+		// BarHPの設定
+		m_pBar->SetVertexBar(4, D3DXVECTOR3(150, 350, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+	}
+	else if (NowHP >= m_fMaxHP / 5 * 1)
+	{// HPバーが四本目のとき
+
+		float fHeight = 0.0f;									// 現在の画像の高さ
+		m_fNowHP = (NowHP - m_fMaxHP / 5 * 1) / (m_fMaxHP / 5);	// HPの比率計算
+		fHeight = m_fNowHP * m_fHeight;							// 描画すべき画像幅がいくらなのか
+
+		// BarHPの設定
+		m_pBar->SetVertexBar(6, D3DXVECTOR3(100, 350, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
 	}
 	else
-	{
-		m_pBar->SetVertexBar(0, D3DXVECTOR3(50, 650, 0), D3DXCOLOR(1.0f, m_fNowHP * 2, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+	{// HPバーが五本目のとき
+
+		float fHeight = 0.0f;				// 現在の画像の高さ
+		m_fNowHP = NowHP / (m_fMaxHP / 5);	// HPの比率計算
+		fHeight = m_fNowHP * m_fHeight;		// 描画すべき画像幅がいくらなのか
+
+		// BarHPの設定
+		m_pBar->SetVertexBar(8, D3DXVECTOR3(50, 350, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
 	}
 }
 

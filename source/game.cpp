@@ -26,6 +26,8 @@
 #include "modelCharacter.h"
 #include "stone.h"
 #include "3DBoxCollider.h"
+#include "hitpoint.h"
+#include "bar.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -44,6 +46,7 @@ CLight				*CGame::m_pLight				= NULL;							// ライト情報
 CLogo				*CGame::m_pLogo					= NULL;							// ロゴ情報
 CPause				*CGame::m_pPause				= NULL;							// ポーズ情報
 CMeshSphere			*CGame::m_pMeshSphere			= NULL;							// メッシュ球の情報
+CHitPoint			*CGame::m_pHitPoint				= NULL;							// HPの情報
 CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
 int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 
@@ -74,6 +77,7 @@ void CGame::Init(void)
 	CPause::Load();							// ポーズテクスチャロード
 	CMeshSphere::Load();					// メッシュ球のテクスチャロード
 	CStone::Load();							// ストーンの読み込み
+	CBar::Load();							// Barテクスチャロード
 	C3DBoxCollider::Load();					// 3Dボックスコライダーの読み込み
 	C3DBoxCollider::Create();
 	CStone::Create(CStone::STONE_ID_DEFAULT,D3DXVECTOR3(-100.0f,0.0f,0.0f));
@@ -87,6 +91,7 @@ void CGame::Init(void)
 	// メッシュ球の生成処理
 	m_pMeshSphere = CMeshSphere::Create();
 
+	// プレイヤーの最大数までカウント
 	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 	{
 		// プレイヤー生成
@@ -95,6 +100,9 @@ void CGame::Init(void)
 
 	// メッシュフィールド生成
 	m_pMeshField = CMeshField::Create();
+
+	// HP生成
+	m_pHitPoint = CHitPoint::Create();
 
 	// ポーズの生成処理
 	m_pPause = CPause::Create();
@@ -119,6 +127,7 @@ void CGame::Uninit(void)
 	CNumber::Unload();					// 数字テクスチャアンロード
 	CMeshField::Unload();				// 床テクスチャアンロード
 	CMotionModel::Unload();				// モーション用モデルアンロード
+	CBar::Unload();						// Barテクスチャアンロード
 
 	// ポーズの終了処理
 	m_pPause->Uninit();
