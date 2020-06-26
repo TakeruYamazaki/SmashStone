@@ -24,7 +24,20 @@
 //==================================================================================================================
 //	静的メンバ変数宣言
 //==================================================================================================================
-LPDIRECT3DTEXTURE9 CBar::m_pTexture[TEXTURE_BAR] = {};				// テクスチャ情報
+LPDIRECT3DTEXTURE9 CBar::m_pTexture[BARTYPE_MAX] = {};		// テクスチャ情報
+char *CBar::m_apFileName[BARTYPE_MAX] =						// 読み込むモデルのソース先
+{
+	{ "data/TEXTURE/HPbar.png" },				// 0番目の体力バー
+	{ "data/TEXTURE/HPframe.png" },				// 0番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },				// 1番目の体力バー
+	{ "data/TEXTURE/HPframe.png" },				// 1番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },				// 2番目の体力バー
+	{ "data/TEXTURE/HPframe.png" },				// 2番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },				// 3番目の体力バー
+	{ "data/TEXTURE/HPframe.png" },				// 3番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },				// 4番目の体力バー
+	{ "data/TEXTURE/HPframe.png" },				// 4番目のフレーム
+};
 
 //==================================================================================================================
 //	コンストラクタ
@@ -130,14 +143,13 @@ HRESULT CBar::Load(void)
 	CRenderer *pRenderer = CManager::GetRenderer();						// レンダラーの取得
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();					// デバイスを取得する
 
-	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,									// デバイスへのポインタ
-		"data/TEXTURE/HPframe.png",										// ファイルの名前
-		&m_pTexture[1]);												// 読み込むメモリー
-
-	D3DXCreateTextureFromFile(pDevice,									// デバイスへのポインタ
-		"data/TEXTURE/HPbar.png",										// ファイルの名前
-		&m_pTexture[0]);												// 読み込むメモリー
+	//==============================テクスチャの読み込み==============================//
+	// テクスチャの最大数までカウント
+	for (int nCnt = 0; nCnt < BARTYPE_MAX; nCnt++)
+	{
+		// テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
+	}
 
 	// 値を返す
 	return S_OK;
@@ -174,19 +186,19 @@ void CBar::SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth,
 
 	// 頂点座標の設定(右回りで設定する)
 	pVtx[0].pos.x = pos.x;
-	pVtx[0].pos.y = pos.y;
+	pVtx[0].pos.y = pos.y - fHeight;
 	pVtx[0].pos.z = 0.0f;
 
 	pVtx[1].pos.x = pos.x + fWidth;
-	pVtx[1].pos.y = pos.y;
+	pVtx[1].pos.y = pos.y - fHeight;
 	pVtx[1].pos.z = 0.0f;
 
 	pVtx[2].pos.x = pos.x;
-	pVtx[2].pos.y = pos.y + fHeight;
+	pVtx[2].pos.y = pos.y;
 	pVtx[2].pos.z = 0.0f;
 
 	pVtx[3].pos.x = pos.x + fWidth;
-	pVtx[3].pos.y = pos.y + fHeight;
+	pVtx[3].pos.y = pos.y;
 	pVtx[3].pos.z = 0.0f;
 
 	// 同次座標(1.0で固定)

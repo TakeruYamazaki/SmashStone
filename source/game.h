@@ -27,6 +27,7 @@ class CModel;
 class CPause;
 class CMeshSphere;
 class CPlayer;
+class CHitPoint;
 
 //==================================================================================================================
 //
@@ -76,6 +77,7 @@ private:
 	static CLogo *m_pLogo;						// ロゴの情報ポインタ
 	static CPause *m_pPause;					// ポーズの情報ポインタ
 	static CMeshSphere *m_pMeshSphere;			// メッシュ球の情報ポインタ
+	static CHitPoint *m_pHitPoint;				// HPの情報ポインタ
 	static int m_nCounterGameState;				// ゲームの状態管理カウンター
 
 	D3DXMATRIX  m_mtxWorld;						// マトリックス

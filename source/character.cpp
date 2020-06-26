@@ -107,6 +107,19 @@ void CCharacter::Update()
 
 	// ワールドマトリックスの計算
 	CKananLibrary::CalcMatrix(&m_mtxWorld, m_pos, m_rot);
+
+#ifdef _DEBUG
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();		// キーボードの取得
+
+	// キーボードの[5]を押したとき
+	if (pKeyboard->GetKeyboardTrigger(DIK_5))
+	{
+		// 体力を減らす
+		m_nLife -= 1;
+	}
+
+#endif // _DEBUG
+
 }
 
 //=============================================================================
