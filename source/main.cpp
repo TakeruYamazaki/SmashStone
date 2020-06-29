@@ -235,6 +235,5 @@ void DispConsol()
 
 	// ストリーム先の変更 これがないと文字が表示されない
 	freopen_s(&fp, "CONOUT$", "w", stdout);
-
 }
 #endif
