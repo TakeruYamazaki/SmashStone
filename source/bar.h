@@ -16,8 +16,8 @@
 // マクロ定義
 //==================================================================================================================
 #define TEXTURE_BAR 10												// テクスチャの最大数
-#define MAX_WIDTH 40												// 横の最大サイズ
-#define MAX_HEIGHT 150												// 縦の最大サイズ
+#define MAX_WIDTH 40.0f												// 横の最大サイズ
+#define MAX_HEIGHT 150.0f											// 縦の最大サイズ
 
 //==================================================================================================================
 // クラスの定義
@@ -56,6 +56,8 @@ public:
 	static void Unload(void);			// テクスチャ破棄処理
 
 	void SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight);	// 頂点設定処理
+	void RotBar(int index, D3DXVECTOR3 pos, float fAngle, float fLength);						// バー回転処理
+	void SetColBar(int index, D3DXCOLOR col);													// バー色設定処理
 
 protected:
 
@@ -64,11 +66,12 @@ private:
 	static char *m_apFileName[BARTYPE_MAX];				// Barのファイル名
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;					// 頂点バッファ
+	VERTEX_2D *m_pVtx;									// 頂点格納
+
 	D3DXVECTOR3 m_pos;									// 位置
+	D3DXVECTOR3 m_rot;									// 回転
+
+	float m_fLength;									// 長さ
+	float m_fAngle;										// 角度
 };
-
-//==================================================================================================================
-//プロトタイプ宣言
-//==================================================================================================================
-
 #endif

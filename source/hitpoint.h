@@ -22,7 +22,7 @@ class CScene;
 //==================================================================================================================
 //クラスの定義
 //==================================================================================================================
-class CHitPoint : public CScene	
+class CHitPoint : public CScene
 {
 public:
 
@@ -45,9 +45,21 @@ private:
 
 	CBar *m_pBar;						// バーの情報ポインタ
 	D3DXVECTOR3 m_pos;					// 位置
+	D3DXVECTOR3 m_rot0;					// 回転
+	D3DXVECTOR3 m_rot1;					// 回転
+	D3DXVECTOR3 m_rot2;					// 回転
+	D3DXVECTOR3 m_rot3;					// 回転
+
+	int m_nCntCol0;						// α値減少用カウンタ
+	int m_nCntCol1;						// α値減少用カウンタ
+	int m_nCntCol2;						// α値減少用カウンタ
+	int m_nCntCol3;						// α値減少用カウンタ
+
 	float m_fNowHP;						// 現在のHP
 	float m_fMaxHP;						// 最大HP
 	float m_fHeight;					// 縦の長さ
+
+	bool m_bBar[5];						// バーがあるかどうか
 };
 
 //==================================================================================================================
