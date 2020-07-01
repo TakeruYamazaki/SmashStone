@@ -29,6 +29,7 @@ CMotion::MOTION_INFO *CMotion::m_pMotionInfo = nullptr;
 char * CMotion::m_apFileName[CMotion::MOTION_MAX] =
 {
 	{ "data/MOTION/fokker/motion_neutral.txt" },
+	{ "data/MOTION/fokker/motion_run.txt" }
 };
 
 //=============================================================================

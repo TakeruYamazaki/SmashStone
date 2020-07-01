@@ -20,8 +20,8 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================	
-#define SPEED_ROT		(0.1f)	// 回転のスピード
-#define LIFE_DEFAULT	(100)	// ライフの初期値
+#define SPEED_ROT		(0.1f)		// 回転のスピード
+#define LIFE_DEFAULT	(100.0f)	// ライフの初期値
 
 //=============================================================================
 // 静的メンバ変数の初期化
@@ -183,7 +183,7 @@ void CCharacter::Motion(void)
 	if (!m_bWalk)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);
 	else
-		m_pModelCharacter->SetMotion(CMotion::MOTION_NONE);
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);
 }
 
 //=============================================================================
