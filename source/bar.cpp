@@ -14,6 +14,7 @@
 #include "renderer.h"
 #include "manager.h"
 #include "bar.h"
+#include "debugProc.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -65,6 +66,9 @@ void CBar::Init(void)
 
 	//　初期化
 	m_pos = D3DXVECTOR3(0, 0, 0);		// 位置
+	m_rot = D3DXVECTOR3(0, 0, 0);		// 回転
+	m_fLength = (float)sqrt((MAX_WIDTH / 2) * (MAX_WIDTH / 2) + (MAX_HEIGHT / 2) * (MAX_HEIGHT / 2));	// 長さ
+	m_fAngle = atan2f((MAX_WIDTH / 2), (MAX_HEIGHT / 2));												// 角度
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * TEXTURE_BAR,
@@ -119,6 +123,9 @@ void CBar::Draw(void)
 		// ポリゴン描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTex * 4, 2);
 	}
+
+	// テクスチャの設定
+	pDevice->SetTexture(0, NULL);
 }
 
 //==================================================================================================================
@@ -177,49 +184,104 @@ void CBar::Unload(void)
 //==================================================================================================================
 void CBar::SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight)
 {
-	VERTEX_2D *pVtx; // 頂点情報へのポインタ
-
 	// 頂点データの範囲をロックし、頂点バッファへのポインタ取得
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
 
-	pVtx += index * 4;					// 頂点を4つずつ加算
+	m_pVtx += index * 4;					// 頂点を4つずつ加算
 
 	// 頂点座標の設定(右回りで設定する)
-	pVtx[0].pos.x = pos.x;
-	pVtx[0].pos.y = pos.y - fHeight;
-	pVtx[0].pos.z = 0.0f;
+	m_pVtx[0].pos.x = pos.x - fWidth / 2;
+	m_pVtx[0].pos.y = pos.y - fHeight;
+	m_pVtx[0].pos.z = 0.0f;
 
-	pVtx[1].pos.x = pos.x + fWidth;
-	pVtx[1].pos.y = pos.y - fHeight;
-	pVtx[1].pos.z = 0.0f;
+	m_pVtx[1].pos.x = pos.x + fWidth / 2;
+	m_pVtx[1].pos.y = pos.y - fHeight;
+	m_pVtx[1].pos.z = 0.0f;
 
-	pVtx[2].pos.x = pos.x;
-	pVtx[2].pos.y = pos.y;
-	pVtx[2].pos.z = 0.0f;
+	m_pVtx[2].pos.x = pos.x - fWidth / 2;
+	m_pVtx[2].pos.y = pos.y;
+	m_pVtx[2].pos.z = 0.0f;
 
-	pVtx[3].pos.x = pos.x + fWidth;
-	pVtx[3].pos.y = pos.y;
-	pVtx[3].pos.z = 0.0f;
+	m_pVtx[3].pos.x = pos.x + fWidth / 2;
+	m_pVtx[3].pos.y = pos.y;
+	m_pVtx[3].pos.z = 0.0f;
 
 	// 同次座標(1.0で固定)
-	pVtx[0].rhw = 1.0f;
-	pVtx[1].rhw = 1.0f;
-	pVtx[2].rhw = 1.0f;
-	pVtx[3].rhw = 1.0f;
+	m_pVtx[0].rhw = 1.0f;
+	m_pVtx[1].rhw = 1.0f;
+	m_pVtx[2].rhw = 1.0f;
+	m_pVtx[3].rhw = 1.0f;
 
 	// 色の設定
-	pVtx[0].col = D3DXCOLOR(col.r, col.g, col.b, col.a);
-	pVtx[1].col = D3DXCOLOR(col.r, col.g, col.b, col.a);
-	pVtx[2].col = D3DXCOLOR(col.r, col.g, col.b, col.a);
-	pVtx[3].col = D3DXCOLOR(col.r, col.g, col.b, col.a);
+	m_pVtx[0].col = col;
+	m_pVtx[1].col = col;
+	m_pVtx[2].col = col;
+	m_pVtx[3].col = col;
 
 	// テクスチャ座標の設定
-	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-	pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+	m_pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+	m_pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+	m_pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+	m_pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
 
 	// 頂点データをアンロック
+	m_pVtxBuff->Unlock();
+
+}
+
+//==================================================================================================================
+// バー回転処理
+//==================================================================================================================
+void CBar::RotBar(int index, D3DXVECTOR3 pos, float fAngle, float fLength)
+{
+	// 頂点データの範囲をロックし、頂点バッファへのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
+
+	m_pVtx += index * 4;					// 頂点を4つずつ加算
+
+	D3DXVECTOR3 originPos0 = m_pVtx[0].pos - pos;
+	D3DXVECTOR3 originPos1 = m_pVtx[1].pos - pos;
+	D3DXVECTOR3 originPos2 = m_pVtx[2].pos - pos;
+	D3DXVECTOR3 originPos3 = m_pVtx[3].pos - pos;
+
+	// 移動座標の設定
+	m_pVtx[0].pos.x = originPos0.x * cosf(fAngle) - originPos0.y * sinf(fAngle) + pos.x;
+	m_pVtx[0].pos.y = originPos0.x * sinf(fAngle) + originPos0.y * cosf(fAngle) + pos.y;
+	m_pVtx[0].pos.z = 0.0f;
+
+	m_pVtx[1].pos.x = originPos1.x * cosf(fAngle) - originPos1.y * sinf(fAngle) + pos.x;
+	m_pVtx[1].pos.y = originPos1.x * sinf(fAngle) + originPos1.y * cosf(fAngle) + pos.y;
+	m_pVtx[1].pos.z = 0.0f;
+
+	m_pVtx[2].pos.x = originPos2.x * cosf(fAngle) - originPos2.y * sinf(fAngle) + pos.x;
+	m_pVtx[2].pos.y = originPos2.x * sinf(fAngle) + originPos2.y * cosf(fAngle) + pos.y;
+	m_pVtx[2].pos.z = 0.0f;
+
+	m_pVtx[3].pos.x = originPos3.x * cosf(fAngle) - originPos3.y * sinf(fAngle) + pos.x;
+	m_pVtx[3].pos.y = originPos3.x * sinf(fAngle) + originPos3.y * cosf(fAngle) + pos.y;
+	m_pVtx[3].pos.z = 0.0f;
+
+	// 頂点データをアンロック
+	m_pVtxBuff->Unlock();
+}
+
+//==================================================================================================================
+// バー色設定処理
+//==================================================================================================================
+void CBar::SetColBar(int index, D3DXCOLOR col)
+{
+	// 頂点データの範囲をロックし、頂点バッファへのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
+
+	m_pVtx += index * 4;					// 頂点を4つずつ加算
+
+	// 頂点カラー
+	m_pVtx[0].col = col;
+	m_pVtx[1].col = col;
+	m_pVtx[2].col = col;
+	m_pVtx[3].col = col;
+
+	// 頂点データをアンロックする
 	m_pVtxBuff->Unlock();
 
 }
