@@ -16,11 +16,9 @@
 //==================================================================================================================
 // マクロ定義
 //==================================================================================================================
-#define Depth 570									// 縦のポリゴン数
-#define WIDTH 20									// 横のブロック数
-#define WhileX 10.0f								// イチマスの長さ横
-#define WhileY 6.0f									// イチマスの長さ高さ
-#define WhileZ 10.0f								// イチマスの長さ縦
+#define WhileX 100.0f								// イチマスの長さ横
+#define WhileY 100.0f								// イチマスの長さ高さ
+#define WhileZ 100.0f								// イチマスの長さ縦
 #define FIELD_TEXTUE "data/TEXTURE/water4.png"		// 読み込むテクスチャのソース先
 
 //==================================================================================================================
@@ -50,13 +48,21 @@ public:
 
 	void SetPos(D3DXVECTOR3 pos);							// 位置設定処理
 	void SetMove(D3DXVECTOR3 move);							// 移動量設定処理
+	void SetNor(void);										// 法線の設定
 
 	D3DXVECTOR3 GetPos(void);								// 位置取得処理
 	D3DXVECTOR3 GetMove(void);								// 移動量取得処理
 
+	float GetHeight(D3DXVECTOR3 &pos);						// メッシュの高さ取得
+
 protected:
 
 private:
+	bool GetNor(const D3DXVECTOR3 &pos,
+				const D3DXVECTOR3 &VtxPos0, 
+				const D3DXVECTOR3 &VtxPos1, 
+				const D3DXVECTOR3 &VtxPos2);				// 法線の取得
+
 	static LPDIRECT3DTEXTURE9 m_pTexture;					// テクスチャへのポインタ
 	static CMeshField *m_pMeshField;						// メッシュフィールドのポインタ
 	static CPlayer *m_pPlayer;								// プレイヤーの情報ポインタ
@@ -69,8 +75,8 @@ private:
 	D3DXVECTOR3 m_pos;										// 位置
 	D3DXVECTOR3 m_rot;										// 回転
 	D3DXVECTOR3 m_move;										// 移動
-	D3DXVECTOR3 m_aVecA[Depth * WIDTH];						// 法線ベクトルを面の数分一時的に格納
-	D3DXVECTOR3 m_aVecB[Depth * WIDTH];						// 法線ベクトルを面の数分一時的に格納
+	D3DXVECTOR3 *m_aVecA;									// 法線ベクトルを面の数分一時的に格納
+	D3DXVECTOR3 *m_aVecB;									// 法線ベクトルを面の数分一時的に格納
 	D3DXVECTOR3 m_vectorA;									// Aベクトル
 	D3DXVECTOR3 m_vectorB;									// Bベクトル
 	D3DXVECTOR3 m_vectorC;									// Cベクトル
@@ -80,9 +86,9 @@ private:
 	int m_nNumVertex;										// 総頂点数
 	int m_nNumIndex;										// 総インデックス数
 	int m_nNumPolygon;										// 総ポリゴン数
-	int m_nNumber;											// 三角形の配列の番号
-	int m_nStartBox;										// 始まる箱
-	int m_nEndBox;											// 引かれる箱
+	int nNumber;											// 三角形の配列の番号
+	int StartBox;											// 始まる箱
+	int EndBox;												// 引かれる箱
 
 	float fDivide;											// sinの中身を割る変数
 };

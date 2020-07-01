@@ -29,6 +29,7 @@
 // 静的メンバ変数の初期化
 //==================================================================================================================
 #define VALUE_MOVE_PLAYER	(1.0f)	// プレイヤーの移動値
+#define VALUE_JUMP			(5.0f)	// ジャンプ力の値
 
 //==================================================================================================================
 // マクロ定義
@@ -60,7 +61,7 @@ void CPlayer::Init(void)
 
 	// 初期化
 	CCharacter::Init();
-	CCharacter::SetModelType(CHARACTER_1);
+	CCharacter::SetModelType(m_type);
 
 	// 当たり判定の設定
 	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), this, C3DBoxCollider::ID_CHARACTER);
@@ -105,7 +106,7 @@ void CPlayer::Draw(void)
 //==================================================================================================================
 // 生成処理
 //==================================================================================================================
-CPlayer *CPlayer::Create(int nPlayer)
+CPlayer *CPlayer::Create(int nPlayer, CHARACTER_TYPE type)
 {
 	// シーン動的に確保
 	CPlayer *pPlayer = new CPlayer(CScene::PRIORITY_PLAYER);
@@ -114,6 +115,8 @@ CPlayer *CPlayer::Create(int nPlayer)
 	if (!pPlayer)
 		return nullptr;
 
+	// プレイヤーのキャラタイプを設定
+	pPlayer->m_type = type;
 	// 初期化
 	pPlayer->Init();
 	// プレイヤー番号の保存
@@ -205,18 +208,22 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	// 入力されていなければ処理を終える
 	if (FAILED(CKananLibrary::GetMoveByKeyboard(pKeyboard)))
 	{
-		SetbWalk(false);
+		m_bWalk = false;
 		return;
 	}
-
-	// 歩いている
-	SetbWalk(true);
 
 	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// カメラ取得
 
 	D3DXVECTOR3 move		= GetMove();			// 移動値取得
 	D3DXVECTOR3 rotDest		= GetRotDest();			// 目的の向きを格納する変数
 	float		CameraRotY	= pCamera->GetRotY();	// カメラのY軸回転の取得
+
+	if (!m_bJump && pKeyboard->GetKeyboardTrigger(JUMP))
+	{
+		move.y += VALUE_JUMP;
+		m_bJump = true;
+		m_bWalk = false;
+	}
 
 	// Aキー長押し
 	if (pKeyboard->GetKeyboardPress(LEFT))
@@ -300,6 +307,10 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		rotDest.y = CameraRotY;
 	}
 
+	if (!m_bJump)
+		// 歩いている
+		m_bWalk = true;
+
 	// 回転の補正
 	CKananLibrary::InterpolationRot(&rotDest);
 
@@ -349,7 +360,8 @@ void CPlayer::ShowDebugInfo()
 	if (ImGui::CollapsingHeader("Player"))
 	{
 		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
-		ImGui::Text("nLife : %d", m_nLife);
+		ImGui::Text("nLife : %f", m_nLife);
+		ImGui::Text("bJump : %d", m_bJump);
 	}
 }
 #endif

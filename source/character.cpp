@@ -16,6 +16,8 @@
 #include "modelCharacter.h"
 #include "debugProc.h"
 #include "motion.h"
+#include "game.h"
+#include "meshField.h"
 
 //=============================================================================
 // マクロ定義
@@ -151,10 +153,23 @@ void CCharacter::Move(void)
 	D3DXVECTOR3 difMove;	// 現在の移動値と目的の移動値の差
 
 	// 慣性
-	CKananLibrary::InertiaMove(&m_move);
+	CKananLibrary::InertiaMoveXZ(&m_move);
+
+	// 重力
+	if (m_bJump)
+		CKananLibrary::Gravity(m_move.y);
 
 	//移動量加算
 	m_pos += m_move;
+
+	// 地面との高さを比較し、修正
+	if (CKananLibrary::FloatLowerLimit(&m_pos.y, CManager::GetRenderer()->GetGame()->GetMeshField()->GetHeight(m_pos)))
+	{
+		// 地面に乗っていたら、移動量をなくす
+		m_move.y = 0.0f;
+		// ジャンプ解除
+		m_bJump = false;
+	}
 }
 
 //=============================================================================
@@ -193,6 +208,6 @@ void CCharacter::Trans(void)
 {
 	if (m_bTrans)
 	{
-		m_pModelCharacter->ModelRebind(CHARACTER_1_TRANS);
+		m_pModelCharacter->ModelRebind(CHARACTER_FOKKER_TRANS);
 	}
 }

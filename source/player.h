@@ -59,7 +59,7 @@ public:
 	void Update(void);								// XVˆ—
 	void Draw(void);								// •`‰æˆ—
 
-	static CPlayer *Create(int nPlayer);			// ¶¬ˆ—
+	static CPlayer *Create(int nPlayer, CHARACTER_TYPE type);	// ¶¬ˆ—
 
 protected:
 

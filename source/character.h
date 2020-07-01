@@ -57,6 +57,7 @@ public:
 
 protected:
 	CModelCharacter *m_pModelCharacter;				// モデルキャラクターのポインタ
+	CHARACTER_TYPE	 m_type;						// キャラクターのタイプ
 
 	LPD3DXMESH		m_pMesh;						// メッシュ情報
 	LPD3DXBUFFER	m_pBuffMat;						// マテリアル情報

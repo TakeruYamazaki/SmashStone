@@ -44,6 +44,7 @@
 
 // 物理
 #define INERTIA			(0.2f)									// 慣性
+#define GRAVITY			(0.2f)								// 重力
 
 // ===================================================================
 // 構造体定義
@@ -102,17 +103,18 @@ typedef struct
 
 typedef enum
 {	// 移動用のキー
-	UP = DIK_W,		// 上入力
-	DOWN = DIK_S,	// 下入力
-	LEFT = DIK_A,	// 左入力
-	RIGHT = DIK_D	// 右入力
+	UP = DIK_W,			// 上入力
+	DOWN = DIK_S,		// 下入力
+	LEFT = DIK_A,		// 左入力
+	RIGHT = DIK_D,		// 右入力
+	JUMP = DIK_SPACE	// ジャンプ入力
 } MOVE_KEY;
 
 typedef enum
 {	// キャラクターの種類
 	CHARACTER_NONE,			// 何もない
-	CHARACTER_1 = 0,		// フォッカー
-	CHARACTER_1_TRANS,		// フォッカー変身
+	CHARACTER_FOKKER = 0,	// フォッカー
+	CHARACTER_FOKKER_TRANS,	// フォッカー変身
 	//CHARACTER_3,			// プレイヤー
 	//CHARACTER_4,			// プレイヤー
 	CHARACTER_MAX			// キャラクターの最大数
@@ -140,8 +142,11 @@ public:
 	static void InterpolationRot(D3DXVECTOR3 *rot);														// 回転の補間
 	static void InterpolationFloat(float & Float);														// float型の補間
 	static void InertiaMove(D3DXVECTOR3 *move);															// 慣性の処理
+	static void InertiaMoveXZ(D3DXVECTOR3 *move);															// 慣性の処理
+	static void Gravity(float & fMoveY);																	// 重力の処理
 	static void IntegerUpperLimit(int *nValue, int upperLimit);											// int型の上限
 	static void IntegerLowerLimit(int *nValue, int lowerLimit);											// int型の下限
+	static bool FloatLowerLimit(float *fValue, const float &lowerLimit);								// float型の下限
 	static bool LimitVector3(D3DXVECTOR3 &Value, const D3DXVECTOR3 lowerLimit, const D3DXVECTOR3 upperLimit);		// 上限下限の制限処理
 	static bool LimitVector2(D3DXVECTOR2 &Value, const D3DXVECTOR2 lowerLimit, const D3DXVECTOR2 upperLimit);		// 上限下限の制限処理
 	static void LimitLoopVector3(D3DXVECTOR3 *Value, const D3DXVECTOR3 lowerLimit, const D3DXVECTOR3 upperLimit);	// 上限下限のループ処理

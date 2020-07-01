@@ -65,6 +65,7 @@ public:
 	static CPlayer *GetPlayer(int nPlayer)		{ return m_pPlayer[nPlayer]; }	// キャラクターの情報取得処理
 	static CCamera *GetCamera(void)				{ return m_pCamera; }			// カメラの取得
 	static CLight *GetLight(void)				{ return m_pLight; }			// ライトの取得
+	static CMeshField *GetMeshField(void)		{ return m_pMeshField; }		// メッシュフィールドの取得
 
 protected:
 

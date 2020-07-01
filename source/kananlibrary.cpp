@@ -249,6 +249,20 @@ void CKananLibrary::InertiaMove(D3DXVECTOR3 *move)
 	move->z += (0 - move->z) * 0.3f;
 }
 
+void CKananLibrary::InertiaMoveXZ(D3DXVECTOR3 * move)
+{
+	move->x += (0 - move->x) * 0.3f;
+	move->z += (0 - move->z) * 0.3f;
+}
+
+//=============================================================================
+// èdóÕÇÃèàóù
+//=============================================================================
+void CKananLibrary::Gravity(float & fMoveY)
+{
+	fMoveY -= GRAVITY;
+}
+
 //=============================================================================
 // intå^ÇÃè„å¿ê›íË
 //=============================================================================
@@ -269,6 +283,21 @@ void CKananLibrary::IntegerLowerLimit(int *nValue, int lowerLimit)
 	{
 		*nValue = lowerLimit;
 	}
+}
+
+//=============================================================================
+// floatå^ÇÃâ∫å¿ê›íË
+//=============================================================================
+bool CKananLibrary::FloatLowerLimit(float * fValue, const float & lowerLimit)
+{
+	bool bLimit = false;
+
+	if (*fValue < lowerLimit)
+	{
+		*fValue = lowerLimit;
+		bLimit = true;
+	}
+	return bLimit;
 }
 
 //=============================================================================
@@ -653,7 +682,8 @@ HRESULT CKananLibrary::GetMoveByKeyboard(CInputKeyboard * pKey)
 	if (!pKey->GetKeyboardPress(MOVE_KEY::UP)	 &&
 		!pKey->GetKeyboardPress(MOVE_KEY::DOWN)	 &&
 		!pKey->GetKeyboardPress(MOVE_KEY::RIGHT) &&
-		!pKey->GetKeyboardPress(MOVE_KEY::LEFT))
+		!pKey->GetKeyboardPress(MOVE_KEY::LEFT) &&
+		!pKey->GetKeyboardTrigger(MOVE_KEY::JUMP))
 	{
 		// à⁄ìÆÇµÇƒÇ¢Ç»Ç¢
 		return E_FAIL;

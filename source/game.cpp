@@ -95,7 +95,7 @@ void CGame::Init(void)
 	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 	{
 		// プレイヤー生成
-		m_pPlayer[nCnt] = CPlayer::Create(nCnt);
+		m_pPlayer[nCnt] = CPlayer::Create(nCnt, CHARACTER_FOKKER);
 	}
 
 	// メッシュフィールド生成
