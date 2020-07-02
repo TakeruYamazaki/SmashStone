@@ -64,8 +64,8 @@ private:
 	static CScene *m_pTop[PRIORITY_MAX];					// 先頭オブジェクトへのポインタ
 	static CScene *m_pCur[PRIORITY_MAX];					// 現在(最後尾)へのポインタ
 
-	CScene *m_pPrev[PRIORITY_MAX];							// 前のオブジェクトへのポインタ
-	CScene *m_pNext[PRIORITY_MAX];							// 次のオブジェクトへのポインタ
+	CScene *m_pPrev;										// 前のオブジェクトへのポインタ
+	CScene *m_pNext;										// 次のオブジェクトへのポインタ
 
 	bool		m_bDeth;									// 死亡フラグ
 	PRIORITY	m_nPriority;								// プライオリティ
