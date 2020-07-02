@@ -148,9 +148,6 @@
     <ClCompile Include="source\hitpoint.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\time.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ImGui\imgui.h">
@@ -304,9 +301,6 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\hitpoint.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\time.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>

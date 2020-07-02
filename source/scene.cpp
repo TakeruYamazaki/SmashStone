@@ -21,18 +21,18 @@ CScene::CScene(PRIORITY type)
 	// 先頭オブジェクトが無い時
 	if (m_pTop[type] == NULL)
 	{
-		m_pPrev = NULL;					// 前のオブジェクトのポインタ
+		m_pPrev[type] = NULL;					// 前のオブジェクトのポインタ
 		m_pTop[type] = this;					// 先頭オブジェクトのポインタをこれにする
 		m_pCur[type] = this;
-		m_pNext = NULL;
+		m_pNext[type] = NULL;
 	}
 	else
 	{
 		// 最後尾の要素を設定する
 		if (m_pCur[type] != NULL)
 		{
-			m_pCur[type]->m_pNext = this;
-			this->m_pPrev = m_pCur[type];
+			m_pCur[type]->m_pNext[type] = this;
+			this->m_pPrev[type] = m_pCur[type];
 			m_pCur[type] = this;
 		}
 	}
@@ -62,7 +62,7 @@ void CScene::UpdateAll(void)
 			CScene *pScene = m_pTop[nCnt];
 			while (pScene)
 			{
-				CScene *pNextScene = pScene->m_pNext;
+				CScene *pNextScene = pScene->m_pNext[nCnt];
 				pScene->Update();
 				pScene = pNextScene;
 			}
@@ -74,7 +74,7 @@ void CScene::UpdateAll(void)
 			CScene *pScene = m_pTop[nCnt];
 			while (pScene)
 			{
-				CScene *pNextScene = pScene->m_pNext;
+				CScene *pNextScene = pScene->m_pNext[nCnt];
 				pScene->Deleate(nCnt);
 				pScene = pNextScene;
 			}
@@ -93,7 +93,7 @@ void CScene::DrawAll(void)
 		CScene *pScene = m_pTop[nCnt];				// 変数を作り初期化する
 		while (pScene)								// pSceneがNULLになるまでエンドレス
 		{
-			CScene *pSceneNext = pScene->m_pNext;	// 次の情報格納	
+			CScene *pSceneNext = pScene->m_pNext[nCnt];	// 次の情報格納	
 			pScene->Draw();							// 今の情報の描画処理
 			pScene = pSceneNext;					// pSceneに次の情報代入
 		}
@@ -118,7 +118,7 @@ void CScene::ReleaseAll(void)
 			while (pScene)
 			{
 				// 次のポインタを保存
-				CScene *pSceneNext = pScene->m_pNext;
+				CScene *pSceneNext = pScene->m_pNext[nCnt];
 
 				// 今のポインタをリリース
 				pScene->Release();
@@ -151,7 +151,7 @@ CScene *CScene::GetScene(PRIORITY nPriority, int nCntScene)
 	// 先頭からnCntScene分次のオブジェクトにポインタを渡す
 	for (int nCnt = 0; nCnt < nCntScene; nCnt++)
 	{
-		CScene *pSceneNext = pScene->m_pNext;	// 次の情報格納	
+		CScene *pSceneNext = pScene->m_pNext[nPriority];	// 次の情報格納	
 		pScene = pSceneNext;								// pSceneに次の情報代入
 	}
 
@@ -175,18 +175,18 @@ void CScene::Deleate(int type)
 		}
 		else if (this == m_pTop[type])
 		{
-			m_pTop[type] = m_pTop[type]->m_pNext;
-			m_pTop[type]->m_pPrev = nullptr;
+			m_pTop[type] = m_pTop[type]->m_pNext[type];
+			m_pTop[type]->m_pPrev[type] = nullptr;
 		}
 		else if (this == m_pCur[type])
 		{
-			m_pCur[type] = m_pCur[type]->m_pPrev;
-			m_pCur[type]->m_pNext = nullptr;
+			m_pCur[type] = m_pCur[type]->m_pPrev[type];
+			m_pCur[type]->m_pNext[type] = nullptr;
 		}
 		else
 		{
-			m_pPrev->m_pNext = this->m_pNext;
-			m_pNext->m_pPrev = this->m_pPrev;
+			m_pPrev[type]->m_pNext[type] = this->m_pNext[type];
+			m_pNext[type]->m_pPrev[type] = this->m_pPrev[type];
 		}
 		delete this;
 	}
