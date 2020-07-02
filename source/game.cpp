@@ -47,6 +47,7 @@ CLogo				*CGame::m_pLogo					= NULL;							// ロゴ情報
 CPause				*CGame::m_pPause				= NULL;							// ポーズ情報
 CMeshSphere			*CGame::m_pMeshSphere			= NULL;							// メッシュ球の情報
 CHitPoint			*CGame::m_pHitPoint				= NULL;							// HPの情報
+CTime				*CGame::m_pTime					= NULL;							// タイム情報
 CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
 int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 
@@ -104,6 +105,9 @@ void CGame::Init(void)
 	// HP生成
 	m_pHitPoint = CHitPoint::Create();
 
+	// タイム生成
+	m_pTime = CTime::Create();
+
 	// ポーズの生成処理
 	m_pPause = CPause::Create();
 
@@ -141,7 +145,9 @@ void CGame::Uninit(void)
 	delete m_pLight;					// メモリ削除
 	m_pLight = nullptr;					// ポインタNULL
 
-	m_pHitPoint = nullptr;
+	m_pHitPoint = nullptr;				// ポインタNULL
+
+	m_pTime = nullptr;					// ポインタNULL
 }
 
 //==================================================================================================================

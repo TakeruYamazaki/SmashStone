@@ -39,7 +39,7 @@ public:
 	void Update(void);												// 更新処理
 	void Draw(void);												// 描画処理
 
-	static CNumber *CreateObject(void);								// 生成処理
+	static CNumber *Create(void);									// 生成処理
 	static HRESULT Load(void);										// テクスチャ情報ロード
 	static void Unload(void);										// テクスチャ情報アンロード
 
