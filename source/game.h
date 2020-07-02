@@ -28,7 +28,6 @@ class CPause;
 class CMeshSphere;
 class CPlayer;
 class CHitPoint;
-class CTime;
 
 //==================================================================================================================
 //
@@ -60,13 +59,13 @@ public:
 	void Draw(void);							// 描画処理
 	static CGame *Create(void);					// 生成処理
 
-	static void SetGameState(GAMESTATE state) { m_gameState = state; }	// ゲームの状態設定
+	static void SetGameState(GAMESTATE state)	{ m_gameState = state; }	// ゲームの状態設定
 
-	static GAMESTATE GetGameState(void) { return m_gameState; }			// ゲームの状態取得
-	static CPlayer *GetPlayer(int nPlayer) { return m_pPlayer[nPlayer]; }	// キャラクターの情報取得処理
-	static CCamera *GetCamera(void) { return m_pCamera; }			// カメラの取得
-	static CLight *GetLight(void) { return m_pLight; }			// ライトの取得
-	static CMeshField *GetMeshField(void) { return m_pMeshField; }		// メッシュフィールドの取得
+	static GAMESTATE GetGameState(void)			{ return m_gameState; }			// ゲームの状態取得
+	static CPlayer *GetPlayer(int nPlayer)		{ return m_pPlayer[nPlayer]; }	// キャラクターの情報取得処理
+	static CCamera *GetCamera(void)				{ return m_pCamera; }			// カメラの取得
+	static CLight *GetLight(void)				{ return m_pLight; }			// ライトの取得
+	static CMeshField *GetMeshField(void)		{ return m_pMeshField; }		// メッシュフィールドの取得
 
 protected:
 
@@ -81,7 +80,6 @@ private:
 	static CMeshSphere *m_pMeshSphere;			// メッシュ球の情報ポインタ
 	static CHitPoint *m_pHitPoint;				// HPの情報ポインタ
 	static int m_nCounterGameState;				// ゲームの状態管理カウンター
-	static CTime *m_pTime;
 
 	D3DXMATRIX  m_mtxWorld;						// マトリックス
 };

@@ -32,26 +32,26 @@ class CScene2D;
 class CNumber
 {
 public:
-	CNumber();													// コンストラクタ
-	~CNumber();													// デストラクタ
-	void Init(void);											// 初期化処理
-	void Uninit(void);											// 終了処理
-	void Update(void);											// 更新処理
-	void Draw(void);											// 描画処理
+	CNumber();														// コンストラクタ
+	~CNumber();														// デストラクタ
+	void Init(void);												// 初期化処理
+	void Uninit(void);												// 終了処理
+	void Update(void);												// 更新処理
+	void Draw(void);												// 描画処理
 
-	static CNumber *Create(void);								// 生成処理
-	static HRESULT Load(void);									// テクスチャ情報ロード
-	static void Unload(void);									// テクスチャ情報アンロード
+	static CNumber *CreateObject(void);								// 生成処理
+	static HRESULT Load(void);										// テクスチャ情報ロード
+	static void Unload(void);										// テクスチャ情報アンロード
 
-	void SetNumber(int nNumber);								// 数字設定
-	void SetPos(D3DXVECTOR3 pos, float fSizeX, float fSizeY);	// 位置設定
+	void SetNumber(int nNumber);									// 数字設定
+	void SetPos(D3DXVECTOR3 pos, float fSizeX, float fSizeY);		// 位置設定
 
 protected:
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture;						// テクスチャ情報
-	static D3DXVECTOR3 m_pos;									// 位置
+	static LPDIRECT3DTEXTURE9 m_pTexture;							// テクスチャ情報
+	static D3DXVECTOR3 m_pos;										// 位置
 
-	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;							// 頂点バッファ
+	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;								// 頂点バッファ
 };
 #endif
