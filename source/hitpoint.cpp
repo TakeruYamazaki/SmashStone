@@ -26,7 +26,7 @@
 //	マクロ定義
 //==================================================================================================================
 #define ROT_ANGLE 0.08f			// 回転させる角度
-#define ALPHA_DEGRESS 21.875f		// α値の減少量
+#define ALPHA_DEGRESS 19.0f		// α値の減少量
 #define MAX_HPBAR 5				// HPバーの最大本数
 #define BAR0_POS D3DXVECTOR3(250, 350, 0)	// 0番目BarHP
 #define BAR1_POS D3DXVECTOR3(250, 354, 0)	// 1番目Barフレーム
@@ -117,6 +117,9 @@ void CHitPoint::Uninit(void)
 		//Barの終了処理
 		m_pBar->Uninit();
 	}
+
+	delete m_pBar;					// メモリ削除
+	m_pBar = nullptr;				// ポインタNULL
 }
 
 //==================================================================================================================
