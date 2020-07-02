@@ -49,6 +49,7 @@ CMeshSphere			*CGame::m_pMeshSphere			= NULL;							// メッシュ球の情報
 CHitPoint			*CGame::m_pHitPoint				= NULL;							// HPの情報
 CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
 int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
+CTime				*CGame::m_pTime					= nullptr;
 
 //==================================================================================================================
 //	コンストラクタ
@@ -104,6 +105,9 @@ void CGame::Init(void)
 	// HP生成
 	m_pHitPoint = CHitPoint::Create();
 
+	// タイムの生成
+	m_pTime = CTime::Create();
+
 	// ポーズの生成処理
 	m_pPause = CPause::Create();
 
@@ -140,6 +144,8 @@ void CGame::Uninit(void)
 
 	delete m_pLight;					// メモリ削除
 	m_pLight = nullptr;					// ポインタNULL
+
+	m_pTime = nullptr;
 }
 
 //==================================================================================================================
