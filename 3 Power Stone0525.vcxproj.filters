@@ -1,33 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="source\ImGui\imgui.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ImGui\imgui_demo.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ImGui\imgui_draw.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ImGui\imgui_widgets.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ImGui\imgui_impl_win32.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ImGui\imgui_impl_dx9.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="source\input.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
-    <ClCompile Include="source\inputGamepad.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
-    <ClCompile Include="source\inputKeyboard.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
     <ClCompile Include="source\sceneX.cpp">
       <Filter>scene</Filter>
     </ClCompile>
@@ -40,25 +13,85 @@
     <ClCompile Include="source\scene.cpp">
       <Filter>scene</Filter>
     </ClCompile>
+    <ClCompile Include="source\ImGui\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ImGui\imgui_impl_win32.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ImGui\imgui_impl_dx9.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ImGui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ImGui\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ImGui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\inputGamepad.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="source\inputKeyboard.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="source\input.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="source\character.cpp">
+      <Filter>character</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charaICHIYAS.cpp">
+      <Filter>character</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charaKURURU.cpp">
+      <Filter>character</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charaNYAS.cpp">
+      <Filter>character</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charaZAVAEL.cpp">
+      <Filter>character</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modelCharacter.cpp">
+      <Filter>character</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modelParts.cpp">
+      <Filter>character</Filter>
+    </ClCompile>
+    <ClCompile Include="source\game.cpp">
+      <Filter>mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ranking.cpp">
+      <Filter>mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\title.cpp">
+      <Filter>mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tutorial.cpp">
+      <Filter>mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\meshField.cpp">
+      <Filter>mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="source\meshSphere.cpp">
+      <Filter>mesh</Filter>
+    </ClCompile>
     <ClCompile Include="source\mouse.cpp">
       <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="source\3DBoxCollider.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\bar.cpp">
+      <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\camera.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\character.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\charaICHIYAS.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\charaKURURU.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\charaNYAS.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\charaZAVAEL.cpp">
+    <ClCompile Include="source\CylinderCollider.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\debugProc.cpp">
@@ -67,37 +100,28 @@
     <ClCompile Include="source\fade.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\game.cpp">
+    <ClCompile Include="source\hitpoint.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\kananlibrary.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\main.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\light.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\main.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
     <ClCompile Include="source\manager.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\meshField.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\meshSphere.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modelCharacter.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modelParts.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\motion.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\motionModel.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Mylibrary.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\number.cpp">
@@ -115,7 +139,7 @@
     <ClCompile Include="source\player.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\ranking.cpp">
+    <ClCompile Include="source\Reflection.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\renderer.cpp">
@@ -124,47 +148,31 @@
     <ClCompile Include="source\sound.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\title.cpp">
+    <ClCompile Include="source\stone.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\tutorial.cpp">
+    <ClCompile Include="source\time.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\UI.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\Mylibrary.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\stone.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\3DBoxCollider.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\bar.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\hitpoint.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\CylinderCollider.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Reflection.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\wall.cpp">
-    <ClCompile Include="source\time.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\ImGui\imgui.h">
-      <Filter>ImGui</Filter>
+    <ClInclude Include="source\sceneX.h">
+      <Filter>scene</Filter>
     </ClInclude>
-    <ClInclude Include="source\ImGui\imconfig.h">
-      <Filter>ImGui</Filter>
+    <ClInclude Include="source\scene3D.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\scene2D.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\scene.h">
+      <Filter>scene</Filter>
     </ClInclude>
     <ClInclude Include="source\ImGui\imstb_truetype.h">
       <Filter>ImGui</Filter>
@@ -184,6 +192,12 @@
     <ClInclude Include="source\ImGui\imgui_impl_dx9.h">
       <Filter>ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="source\ImGui\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ImGui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="source\input.h">
       <Filter>input</Filter>
     </ClInclude>
@@ -193,37 +207,58 @@
     <ClInclude Include="source\inputKeyboard.h">
       <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="source\sceneX.h">
-      <Filter>scene</Filter>
+    <ClInclude Include="source\character.h">
+      <Filter>character</Filter>
     </ClInclude>
-    <ClInclude Include="source\scene3D.h">
-      <Filter>scene</Filter>
+    <ClInclude Include="source\charaICHIYAS.h">
+      <Filter>character</Filter>
     </ClInclude>
-    <ClInclude Include="source\scene2D.h">
-      <Filter>scene</Filter>
+    <ClInclude Include="source\charaKURURU.h">
+      <Filter>character</Filter>
     </ClInclude>
-    <ClInclude Include="source\scene.h">
-      <Filter>scene</Filter>
+    <ClInclude Include="source\charaNYAS.h">
+      <Filter>character</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charaZAVAEL.h">
+      <Filter>character</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modelCharacter.h">
+      <Filter>character</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modelParts.h">
+      <Filter>character</Filter>
+    </ClInclude>
+    <ClInclude Include="source\game.h">
+      <Filter>mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ranking.h">
+      <Filter>mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\title.h">
+      <Filter>mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tutorial.h">
+      <Filter>mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\meshField.h">
+      <Filter>mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="source\meshSphere.h">
+      <Filter>mesh</Filter>
     </ClInclude>
     <ClInclude Include="source\mouse.h">
       <Filter>input</Filter>
     </ClInclude>
+    <ClInclude Include="source\3DBoxCollider.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\bar.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
     <ClInclude Include="source\camera.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\character.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charaICHIYAS.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charaKURURU.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charaNYAS.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charaZAVAEL.h">
+    <ClInclude Include="source\CylinderCollider.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\debugProc.h">
@@ -232,7 +267,7 @@
     <ClInclude Include="source\fade.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\game.h">
+    <ClInclude Include="source\hitpoint.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\kananlibrary.h">
@@ -247,22 +282,13 @@
     <ClInclude Include="source\manager.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\meshField.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\meshSphere.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modelCharacter.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modelParts.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\motion.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\motionModel.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Mylibrary.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\number.h">
@@ -280,7 +306,7 @@
     <ClInclude Include="source\player.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\ranking.h">
+    <ClInclude Include="source\Reflection.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\renderer.h">
@@ -289,59 +315,48 @@
     <ClInclude Include="source\sound.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\title.h">
+    <ClInclude Include="source\stone.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\tutorial.h">
+    <ClInclude Include="source\time.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\UI.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\stone.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Mylibrary.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\3DBoxCollider.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\bar.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\hitpoint.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\CylinderCollider.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Reflection.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\wall.h">
-    <ClInclude Include="source\time.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <Filter Include="scene">
+      <UniqueIdentifier>{2ca2483c-5e2c-407c-99a1-0e4eaded91ca}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ImGui">
-      <UniqueIdentifier>{a7794e7d-a9ef-4348-a3ae-74d33e154335}</UniqueIdentifier>
+      <UniqueIdentifier>{84e841fe-e29c-4453-b8b9-9ae8fa4e5228}</UniqueIdentifier>
     </Filter>
     <Filter Include="input">
-      <UniqueIdentifier>{66cba57f-7bbe-4aeb-9f43-c81e286c4ac4}</UniqueIdentifier>
+      <UniqueIdentifier>{64aeaf39-1e0d-450f-be05-98389d8cc4fd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="scene">
-      <UniqueIdentifier>{fae1eb8d-ce69-446b-b049-699ffb3f0635}</UniqueIdentifier>
+    <Filter Include="character">
+      <UniqueIdentifier>{7f818ef5-9383-44cf-bca7-4a52f377b2db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mode">
+      <UniqueIdentifier>{ee07f509-a109-4c0a-93e6-0f8db4635c03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mesh">
+      <UniqueIdentifier>{7d9e29cc-cee4-45e7-8d99-499b743ac2a8}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソースファイル">
-      <UniqueIdentifier>{6759c4d6-805f-40ce-85b6-da1002ebb30d}</UniqueIdentifier>
+      <UniqueIdentifier>{0f1a2a5f-f718-4dab-b6b3-ae04e6a78475}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダーファイル">
-      <UniqueIdentifier>{5f1fc8d3-9b4b-48ec-a030-91f37bc4df42}</UniqueIdentifier>
+      <UniqueIdentifier>{24163b61-51e0-4214-8d77-e3dbf8b1b361}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="source\mylibrary.inl" />
+    <None Include="source\mylibrary.inl">
+      <Filter>ヘッダーファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>
