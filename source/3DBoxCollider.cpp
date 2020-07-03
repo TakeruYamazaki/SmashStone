@@ -15,14 +15,14 @@
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
 //-------------------------------------------------------------------------------------------------------------
-#define _3DBOXCOLLIDER_HALF_SIZE	0.5f
-
-/*　マクロ関数 */
-// [b] bool型の略
-
+#define _3DBOXCOLLIDER_HALF_SIZE	0.5f								// サイズの半分
+#define _3DBOXCOLLIDER_FILENAME		"data/TEXT/ColliInfo/3DBox.csv"		// ファイル名
+#define _3DBOXCOLLIDER_OPENMODE		"r"									// ファイルの開くモード
 // ファイル読み込を実行する
 #define _3DBOXCOLLIDER_LOADFLAG_
 #undef _3DBOXCOLLIDER_LOADFLAG_
+
+#define _3DBOXCOLLI_WORDSIZE					16		// ワードサイズ
 
 //-------------------------------------------------------------------------------------------------------------
 // 静的メンバ変数の初期化
@@ -55,7 +55,7 @@ HRESULT C3DBoxCollider::Load(void)
 	DWORD start = timeGetTime();			// 計測スタート時間
 #endif
 	// 変数宣言
-	FILE *pFile = fopen("data/TEXT/ColliInfo/test.csv", "r");
+	FILE *pFile = fopen(_3DBOXCOLLIDER_FILENAME, _3DBOXCOLLIDER_OPENMODE);
 	// 開けなかった
 	if (pFile == NULL)
 	{
@@ -135,11 +135,14 @@ HRESULT C3DBoxCollider::Load(void)
 			if (strcmp(aComp, "SET") == 0)
 			{
 				// 変数宣言
-				char aSizeWord[MYLIB_STRINGSIZE];	// 大きさのフラグ文字
-				char aDiffWord[MYLIB_STRINGSIZE];	// 差分のフラグ文字
+				char aSizeWord[_3DBOXCOLLI_WORDSIZE];	// 大きさのフラグ文字
+				char aDiffWord[_3DBOXCOLLI_WORDSIZE];	// 差分のフラグ文字
+				READINFOFILE_CELL *pCell;					// セルポインタ
+
 				// 初期化
 				aSizeWord[0] = MYLIB_CHAR_UNSET;
 				aDiffWord[0] = MYLIB_CHAR_UNSET;
+				pCell = &m_ReadInfoFileBuff.pCell[nCntInfo];
 				/* 一行分の情報を解析する */
 				//			   SET     メモ   ID   大きさX 大きさY 大きさX 差分X   差分Y   差分Z   タイプ
 				sscanf(aRead, "%[^, ], %[^, ], %d, %[^, ], %[^, ], %[^, ], %[^, ], %[^, ], %[^, ], %d",
@@ -149,43 +152,40 @@ HRESULT C3DBoxCollider::Load(void)
 					&aEmpty, &aEmpty,
 					&aDiffWord,
 					&aEmpty, &aEmpty, 
-					&m_ReadInfoFileBuff.pCell[nCntInfo].nColliderType);
+					&pCell->nColliderType);
 
-				// 大きさのフラグ文字とUNSET比較し (真) true : (偽) false を代入
-				m_ReadInfoFileBuff.pCell[nCntInfo].bSizeSet =
-					Mybfunc_iif(strcmp(aSizeWord, "UNSET") != 0);
-				// 差分のフラグ文字とUNSET比較し (真) true : (偽) false を代入
-				m_ReadInfoFileBuff.pCell[nCntInfo].bDiffSet =
-					Mybfunc_iif(strcmp(aDiffWord, "UNSET") != 0);
-
-				// bSizeSetが真んとき (真) 生成 : (偽) NULL を代入
-				m_ReadInfoFileBuff.pCell[nCntInfo].pSize =
-					(m_ReadInfoFileBuff.pCell[nCntInfo].bSizeSet == true) ?
-					new D3DXVECTOR3 : NULL;
-				// pDifferenceが真んとき (真) 生成 : (偽) NULL を代入
-				m_ReadInfoFileBuff.pCell[nCntInfo].pDifference =
-					(m_ReadInfoFileBuff.pCell[nCntInfo].bDiffSet == true) ?
-					new D3DXVECTOR3 : NULL;
-
-				if (m_ReadInfoFileBuff.pCell[nCntInfo].bSizeSet == true)
+				// サイズを設定しない時
+				if (strcmp(aSizeWord, "UNSET") != 0)
 				{
-					//             SET     メモ    ID      大きさXYZ
+					// サイズの生成
+					pCell->pSize = new D3DXVECTOR3;
+					// 大きさを読み込む
 					sscanf(aRead, "%[^, ], %[^, ], %[^, ], %f, %f, %f, ",
 						&aEmpty, &aEmpty, &aEmpty,
-						&m_ReadInfoFileBuff.pCell[nCntInfo].pSize->x,
-						&m_ReadInfoFileBuff.pCell[nCntInfo].pSize->y,
-						&m_ReadInfoFileBuff.pCell[nCntInfo].pSize->z);
+						&pCell->pSize->x,
+						&pCell->pSize->y,
+						&pCell->pSize->z);
 				}
-				if (m_ReadInfoFileBuff.pCell[nCntInfo].bDiffSet == true)
+				else
+				{// それ以外の時
+					pCell->pSize = NULL;
+				}
+				// 差分を設定しない時
+				if (strcmp(aDiffWord, "UNSET") != 0)
 				{
-					//             SET     メモ    ID      大きさXYZ
+					// 差分の生成
+					pCell->pDifference = new D3DXVECTOR3;
+					// 差分を読み込む
 					sscanf(aRead, "%[^, ], %[^, ], %[^, ], %[^, ], %[^, ], %[^, ], %f, %f, %f, ",
 						&aEmpty, &aEmpty, &aEmpty, &aEmpty, &aEmpty, &aEmpty,
-						&m_ReadInfoFileBuff.pCell[nCntInfo].pDifference->x,
-						&m_ReadInfoFileBuff.pCell[nCntInfo].pDifference->y,
-						&m_ReadInfoFileBuff.pCell[nCntInfo].pDifference->z);
+						&pCell->pDifference->x,
+						&pCell->pDifference->y,
+						&pCell->pDifference->z);
 				}
-				//             SET     メモ    ID  大きさXYZ   差分XYZ     タイプ
+				else
+				{// それ以外の時1
+					pCell->pDifference = NULL;
+				}
 				// 情報カウントインクリメント
 				nCntInfo++;
 				// 文字列の初期化
@@ -200,7 +200,7 @@ HRESULT C3DBoxCollider::Load(void)
 #ifdef _DEBUG
 	DWORD end = timeGetTime();			// 計測スタート時間
 	cout << "C3DBoxCollider::Load ボックスコライダーの読み込み終了\n";
-	cout << " C3DBoxCollider::Load ボックスコライダーの読み込み 処理速度 = " << (end - start) << "　[" << (end - start) * 0.001f << "sec.]\n";
+	cout << "C3DBoxCollider::Load ボックスコライダーの読み込み 処理速度 = " << (end - start) << "　[" << (end - start) * 0.001f << "sec.]\n";
 #endif
 	cout << "---------------------------------------------------------------------\n";
 	return S_OK;
