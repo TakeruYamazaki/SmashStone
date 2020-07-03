@@ -76,8 +76,6 @@ public:
 	{
 		D3DXVECTOR3	*pSize;			// 大きさのポインタ
 		D3DXVECTOR3	*pDifference;	// 差分のポインタ
-		bool		bSizeSet;		// 大きさ設定フラグ
-		bool		bDiffSet;		// 差分設定フラグ
 		int			nColliderType;	// 衝突種類
 	} READINFOFILE_CELL;
 

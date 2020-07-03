@@ -126,7 +126,7 @@ HRESULT CStone::Load(void)
 #ifdef CSTONE_LAOD_DEBUG_DRAW
 	DWORD end = timeGetTime();			// 計測スタート時間
 	cout << "CStone::Load ストーンのモデル読み込み終了\n";
-	cout << " CStone::Load ストーンのモデル読み込み 処理速度 = " << (end - start) << "　[" << (end - start) * 0.001f << "sec.]\n";
+	cout << "CStone::Load ストーンのモデル読み込み 処理速度 = " << (end - start) << "　[" << (end - start) * 0.001f << "sec.]\n";
 	cout << "---------------------------------------------------------------------\n";
 #endif
 	return S_OK;
