@@ -155,6 +155,7 @@
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\wall.cpp">
+    <ClCompile Include="source\time.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -319,6 +320,7 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\wall.h">
+    <ClInclude Include="source\time.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
