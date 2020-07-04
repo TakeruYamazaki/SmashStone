@@ -31,6 +31,9 @@
 #define VALUE_MOVE_PLAYER	(1.0f)	// プレイヤーの移動値
 #define VALUE_JUMP			(5.0f)	// ジャンプ力の値
 
+#define POS_1P	(D3DXVECTOR3(0.0f, 0.0f, 100.0f))	// 1Pプレイヤーの初期座標
+#define POS_2P	(D3DXVECTOR3(0.0f, 0.0f, -100.0f))	// 2Pプレイヤーの初期座標
+
 //==================================================================================================================
 // マクロ定義
 //==================================================================================================================
@@ -122,6 +125,12 @@ CPlayer *CPlayer::Create(int nPlayer, CHARACTER_TYPE type)
 	// プレイヤー番号の保存
 	pPlayer->m_nPlayer = nPlayer;
 
+	// プレイヤー番号によって座標を再設定
+	if (nPlayer == 0)
+		pPlayer->SetPos(POS_1P);
+	if (nPlayer == 1)
+		pPlayer->SetPos(POS_2P);
+
 	// 値を返す
 	return pPlayer;
 }
@@ -133,6 +142,11 @@ void CPlayer::Control(void)
 {
 	CInputGamepad *pGamepad = CManager::GetInputGamepad(m_nPlayer);	// ゲームパッド取得
 	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();		// キーボードの取得
+
+	if (m_nPlayer == 0)
+		CDebugProc::Print("プレイヤー1操作 : WASD, SPACEキー\n");
+	if (m_nPlayer == 1)
+		CDebugProc::Print("プレイヤー2操作 : 矢印, 0(テンキー)\n");
 
 	// ゲームパッド有効時
 	if (pGamepad->GetbConnect())
@@ -206,7 +220,7 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 {
 	// 入力されていなければ処理を終える
-	if (FAILED(CKananLibrary::GetMoveByKeyboard(pKeyboard)))
+	if (FAILED(CKananLibrary::GetMoveByKeyboard(pKeyboard, m_nPlayer)))
 	{
 		m_bWalk = false;
 		return;
@@ -218,7 +232,9 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	D3DXVECTOR3 rotDest		= GetRotDest();			// 目的の向きを格納する変数
 	float		CameraRotY	= pCamera->GetRotY();	// カメラのY軸回転の取得
 
-	if (!m_bJump && pKeyboard->GetKeyboardTrigger(JUMP))
+	if (!m_bJump && 
+		(m_nPlayer == 0 && (pKeyboard->GetKeyboardTrigger(ONE_JUMP)) || 
+		m_nPlayer == 1 && (pKeyboard->GetKeyboardTrigger(TWO_JUMP))))
 	{
 		move.y += VALUE_JUMP;
 		m_bJump = true;
@@ -226,10 +242,12 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	}
 
 	// Aキー長押し
-	if (pKeyboard->GetKeyboardPress(LEFT))
+	if ((m_nPlayer == 0 && pKeyboard->GetKeyboardPress(ONE_LEFT)) ||
+		m_nPlayer == 1 && pKeyboard->GetKeyboardPress(TWO_LEFT))
 	{
 		// Wキー長押し
-		if (pKeyboard->GetKeyboardPress(UP))
+		if ((m_nPlayer == 0 && pKeyboard->GetKeyboardPress(ONE_UP)) ||
+			m_nPlayer == 1 && pKeyboard->GetKeyboardPress(TWO_UP))
 		{
 			// 左上移動
 			move.x += sinf(-D3DX_PI * 0.75f - CameraRotY) * VALUE_MOVE_PLAYER;
@@ -238,7 +256,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			rotDest.y = D3DX_PI * 0.75f + CameraRotY;
 		}
 		// Sキー長押し
-		else if (pKeyboard->GetKeyboardPress(DOWN))
+		else if ((m_nPlayer == 0 && pKeyboard->GetKeyboardPress(ONE_DOWN)) ||
+			m_nPlayer == 1 && pKeyboard->GetKeyboardPress(TWO_DOWN))
 		{
 			// 左下移動
 			move.x += sinf(-D3DX_PI * 0.25f - CameraRotY) * VALUE_MOVE_PLAYER;
@@ -258,10 +277,12 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		}
 	}
 	// Dキー長押し
-	else if (pKeyboard->GetKeyboardPress(RIGHT))
+	else if ((m_nPlayer == 0 && pKeyboard->GetKeyboardPress(ONE_RIGHT)) ||
+		m_nPlayer == 1 && pKeyboard->GetKeyboardPress(TWO_RIGHT))
 	{
 		// Wキー長押し
-		if (pKeyboard->GetKeyboardPress(UP))
+		if ((m_nPlayer == 0 && pKeyboard->GetKeyboardPress(ONE_UP)) ||
+			m_nPlayer == 1 && pKeyboard->GetKeyboardPress(TWO_UP))
 		{
 			// 右上移動
 			move.x += sinf(D3DX_PI * 0.75f - CameraRotY) * VALUE_MOVE_PLAYER;
@@ -270,7 +291,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			rotDest.y = -D3DX_PI * 0.75f + CameraRotY;
 		}
 		// Sキー長押し
-		else if (pKeyboard->GetKeyboardPress(DOWN))
+		else if ((m_nPlayer == 0 && pKeyboard->GetKeyboardPress(ONE_DOWN)) ||
+			m_nPlayer == 1 && pKeyboard->GetKeyboardPress(TWO_DOWN))
 		{
 			// 右下移動
 			move.x += sinf(D3DX_PI * 0.25f - CameraRotY) * VALUE_MOVE_PLAYER;
@@ -289,7 +311,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		}
 	}
 	// Wキー長押し
-	else if (pKeyboard->GetKeyboardPress(UP))
+	else if ((m_nPlayer == 0 && pKeyboard->GetKeyboardPress(ONE_UP)) ||
+		m_nPlayer == 1 && pKeyboard->GetKeyboardPress(TWO_UP))
 	{
 		// 上移動
 		move.x += sinf(D3DX_PI * 1.0f - CameraRotY) * VALUE_MOVE_PLAYER;
@@ -298,7 +321,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		rotDest.y = -D3DX_PI * 1.0f + CameraRotY;
 	}
 	// Sキー長押し
-	else if (pKeyboard->GetKeyboardPress(DOWN))
+	else if ((m_nPlayer == 0 && pKeyboard->GetKeyboardPress(ONE_DOWN)) ||
+		m_nPlayer == 1 && pKeyboard->GetKeyboardPress(TWO_DOWN))
 	{
 		// 下移動
 		move.x += sinf(D3DX_PI * 0.0f - CameraRotY) * VALUE_MOVE_PLAYER;

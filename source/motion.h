@@ -57,10 +57,16 @@ public:
 	static HRESULT Load();						// モーションのロード
 	static void UnLoad();						// モーションのアンロード
 
-	static D3DXVECTOR3 GetRotDest(MOTION_TYPE motiontype, int nKey, int nIndex);			// モーションの回転のゴール取得
-	static int GetFrame(MOTION_TYPE motiontype, int nKey);
-	static int GetNumKey(MOTION_TYPE motiontype);
-	static bool GetLoop(MOTION_TYPE motiontype);
+	static D3DXVECTOR3 GetRotDest(MOTION_TYPE motiontype, int nKey, int nIndex)
+		{ return m_pMotionInfo[motiontype].pKeyInfo[nKey].pKey[nIndex].rotDest; }	// モーションの回転のゴール取得
+	static D3DXVECTOR3 GetPosDest(MOTION_TYPE motiontype, int nKey, int nIndex)
+		{ return m_pMotionInfo[motiontype].pKeyInfo[nKey].pKey[nIndex].posDest; }	// モーションの回転のゴール取得
+	static int GetFrame(MOTION_TYPE motiontype, int nKey) 
+		{ return m_pMotionInfo[motiontype].pKeyInfo[nKey].nFrame; }					// モーションの総フレーム数の朱徳
+	static int GetNumKey(MOTION_TYPE motiontype) 
+		{ return m_pMotionInfo[motiontype].nNumKey; }								// モーションの総キー数の取得
+	static bool GetLoop(MOTION_TYPE motiontype) 
+		{ return m_pMotionInfo[motiontype].bLoop; }									// モーションがループするかどうか取得
 
 private:
 	static MOTION_INFO *m_pMotionInfo;					// モーション情報のポインタ

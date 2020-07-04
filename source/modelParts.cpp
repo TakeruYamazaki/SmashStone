@@ -30,7 +30,12 @@ CModelParts::CModelParts()
 	//èâä˙âª
 	m_nIndex = 0;
 	m_nParent = 0;
-	m_rot1F = ZeroVector3;
+	m_pos = ZeroVector3;
+	m_rot = ZeroVector3;
+	m_OffsetPos = ZeroVector3;
+	m_OffsetRot = ZeroVector3;
+	m_UpdatePos = ZeroVector3;
+	m_UpdateRot = ZeroVector3;
 }
 
 //=============================================================================
@@ -62,8 +67,7 @@ void CModelParts::Uninit(void)
 //=============================================================================
 void CModelParts::Update(void)
 {
-	// âÒì]Ç…â¡éZ
-	m_rot += m_rot1F;
+	
 }
 
 //=============================================================================
@@ -170,6 +174,8 @@ void CModelParts::DrawShadow(void)
 //=============================================================================
 void CModelParts::SetPartsTexInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot, LPDIRECT3DTEXTURE9 pTexture)
 {
+	m_OffsetPos = pos;
+	m_OffsetRot = rot;
 	m_pos = pos;
 	m_rot = rot;
 	m_nParent = nParent;
@@ -182,21 +188,10 @@ void CModelParts::SetPartsTexInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DX
 //=============================================================================
 void CModelParts::SetPartsInfo(int nIndex, int nParent, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
+	m_OffsetPos = pos;
+	m_OffsetRot = rot;
 	m_pos = pos;
 	m_rot = rot;
 	m_nParent = nParent;
 	m_nIndex = nIndex;
-}
-
-//=============================================================================
-// ñ⁄ìIÇÃâÒì]ÇÃê›íË
-//=============================================================================
-void CModelParts::SetMotionRotDest(CMotion::MOTION_TYPE motiontype, int nKey)
-{
-	D3DXVECTOR3 rotDest = CMotion::GetRotDest(motiontype, nKey, m_nIndex);		// ñ⁄ìIÇÃâÒì]
-	D3DXVECTOR3 rot = m_rot;													// åªç›ÇÃâÒì]
-	int nFrame = CMotion::GetFrame(motiontype, nKey);							// Ç©Ç©ÇÈÉtÉåÅ[ÉÄêî
-
-	// 1FÇ†ÇΩÇËÇÃâÒì]ó ÇéÊìæ
-	m_rot1F = (rotDest - rot) / (float)nFrame;
 }

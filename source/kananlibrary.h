@@ -103,12 +103,21 @@ typedef struct
 
 typedef enum
 {	// 移動用のキー
-	UP = DIK_W,			// 上入力
-	DOWN = DIK_S,		// 下入力
-	LEFT = DIK_A,		// 左入力
-	RIGHT = DIK_D,		// 右入力
-	JUMP = DIK_SPACE	// ジャンプ入力
-} MOVE_KEY;
+	ONE_UP = DIK_W,			// 上入力
+	ONE_DOWN = DIK_S,		// 下入力
+	ONE_LEFT = DIK_A,		// 左入力
+	ONE_RIGHT = DIK_D,		// 右入力
+	ONE_JUMP = DIK_SPACE	// ジャンプ入力
+} PLAYER_MOVE_KEY_ONE;
+
+typedef enum
+{	// 移動用のキー
+	TWO_UP	= DIK_UPARROW,			// 上入力
+	TWO_DOWN = DIK_DOWNARROW,		// 下入力
+	TWO_LEFT = DIK_LEFTARROW,		// 左入力
+	TWO_RIGHT = DIK_RIGHTARROW,		// 右入力
+	TWO_JUMP = DIK_NUMPAD0			// ジャンプ入力
+} PLAYER_MOVE_KEY_TWO;
 
 typedef enum
 {	// キャラクターの種類
@@ -166,7 +175,7 @@ public:
 	static HRESULT Decide(CInputKeyboard *Key,	CInputGamepad *pGamepad);	// 決定入力
 	static HRESULT Return(CInputKeyboard *Key,	CInputGamepad *pGamepad);	// 戻り入力
 	static HRESULT Pause(CInputKeyboard *Key,	CInputGamepad *pGamepad);	// ポーズ入力
-	static HRESULT GetMoveByKeyboard(CInputKeyboard *pKey);		// キーボードで移動入力しているか取得
+	static HRESULT GetMoveByKeyboard(CInputKeyboard *pKey, int nPlayer);		// キーボードで移動入力しているか取得
 
 	static float OutputSqrt(D3DXVECTOR3 difpos);				// 平方根計算
 	static float OutputDistance(D3DXVECTOR3 difpos);			// 距離計算

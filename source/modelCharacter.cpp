@@ -96,6 +96,67 @@ void CModelCharacter::Uninit()
 //=============================================================================
 void CModelCharacter::Update()
 {
+	// モデル数分繰り返す
+	for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)
+	{
+		D3DXVECTOR3 *pPos = m_pModelParts[nCnt].GetPos();
+		D3DXVECTOR3 *pRot = m_pModelParts[nCnt].GetRot();
+		// モーション用フレームが0のとき
+		if (m_nFrame == 0)
+		{
+			// モデルのインデックスを取得
+			int nIndex = m_pModelParts[nCnt].GetIndex();
+			// モーションのフレーム数の取得
+			float fFrame = (float)(CMotion::GetFrame(m_motion, m_nKey));
+
+			// 作業用の変数
+			D3DXVECTOR3 WorkPos = ZeroVector3;
+			D3DXVECTOR3 WorkRot = ZeroVector3;
+
+			// 次の位置との差分を算出
+			/*if ((m_State == CMotionCharacter::MOTION_DEADLY ||
+			m_State == CMotionCharacter::MOTION_ATTACK_SP ||
+			m_State == CMotionCharacter::MOTION_ATTACK_4 ||
+			m_State == CMotionCharacter::MOTION_ATTACK_3 ||
+			m_State == CMotionCharacter::MOTION_ATTACK_2 ||
+			m_State == CMotionCharacter::MOTION_ATTACK_1) &&
+			CMotion::m_nCntKey != 0)
+			{// 移動するモーションかつキーが0以外の時
+			WorkPos =
+			((CMotionCharacter::m_MotionInfo[m_MotionWeapon][CMotionCharacter::m_State].MotionKey[CMotion::m_nCntKey].pos[nCntParts] -
+			CMotionCharacter::m_MotionInfo[m_MotionWeapon][CMotionCharacter::m_State].MotionKey[CMotion::m_nCntKey - 1].pos[nCntParts])
+			+ CMotion::m_pOffsetPos[nCntParts])
+			- *pModel[nCntParts].GetPosition();
+			}*/
+			{
+				// 目的地までの移動量を計算
+				WorkPos = (CMotion::GetPosDest(m_motion, m_nKey, nIndex) + *m_pModelParts[nCnt].GetOffsetPos()) - *pPos;
+				// 移動量をフレーム数で割る
+				m_pModelParts[nCnt].SetUpdatePos(WorkPos / fFrame);
+			}
+
+			// 目的地までの回転量を計算
+			WorkRot = (CMotion::GetRotDest(m_motion, m_nKey, nIndex) + *m_pModelParts[nCnt].GetOffsetRot()) - *pRot;
+			// 回転量をフレーム数で割る
+			m_pModelParts[nCnt].SetUpdateRot(WorkRot / fFrame);
+		}
+
+		// ひとまず、決定した回転量を設定
+		m_pModelParts[nCnt].SetRot(*pRot + *m_pModelParts[nCnt].GetUpdateRot());
+		// 回転量を再取得
+		D3DXVECTOR3 *fRot = m_pModelParts[nCnt].GetRot();
+		// 回転を補間
+		CKananLibrary::InterpolationRot(fRot);
+
+		m_pModelParts[nCnt].SetRot(*fRot);
+		m_pModelParts[nCnt].SetPos(*pPos + *m_pModelParts[nCnt].GetUpdatePos());
+
+		// nullcheck
+		if (m_pModelParts)
+			// 更新
+			m_pModelParts[nCnt].Update();
+	}
+
 	// フレーム加算
 	m_nFrame++;
 
@@ -124,15 +185,6 @@ void CModelCharacter::Update()
 
 		// 次のモーション情報をセット
 		SetMotion(m_motion);
-	}
-
-	// モデル数分繰り返す
-	for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)
-	{
-		// nullcheck
-		if (m_pModelParts)
-			// 更新
-			m_pModelParts[nCnt].Update();
 	}
 
 #ifdef _DEBUG
@@ -293,14 +345,6 @@ void CModelCharacter::SetCharacterMtx(D3DXMATRIX *mtx)
 void CModelCharacter::SetMotion(CMotion::MOTION_TYPE motiontype)
 {
 	m_motion = motiontype;
-
-	// モデル数分繰り返す
-	for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)
-	{
-		// nullcheck
-		if (&m_pModelParts[nCnt])
-			m_pModelParts[nCnt].SetMotionRotDest(motiontype, m_nKey);
-	}
 }
 
 //=============================================================================
