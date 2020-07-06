@@ -24,6 +24,7 @@
 //=============================================================================	
 #define SPEED_ROT		(0.1f)		// 回転のスピード
 #define LIFE_DEFAULT	(100.0f)	// ライフの初期値
+#define TIME_TRANS		(15 * ONE_SECOND_FPS)	// 変身の時間
 
 //=============================================================================
 // 静的メンバ変数の初期化
@@ -43,6 +44,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_rotDest			= ZeroVector3;
 	m_rotDif			= ZeroVector3;
 	m_move				= ZeroVector3;
+	m_nCntTrans			= 0;
 	m_nCntMove			= 0;
 	m_bJump				= false;
 	m_bWalk				= false;
@@ -214,6 +216,15 @@ void CCharacter::Trans(void)
 {
 	if (m_bTrans)
 	{
+		// 変身時間を加算
+		m_nCntTrans++;
+		// モデルの再バインド
 		m_pModelCharacter->ModelRebind(CHARACTER_1YASU_TRANS);
+	}
+	else
+	{
+		m_nCntTrans = 0;
+		// モデルの再バインド
+		m_pModelCharacter->ModelRebind(CHARACTER_1YASU);
 	}
 }

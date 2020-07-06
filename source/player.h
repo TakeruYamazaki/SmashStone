@@ -61,6 +61,8 @@ public:
 
 	static CPlayer *Create(int nPlayer, CHARACTER_TYPE type);	// 生成処理
 
+	int GetNumStone(void)	{ return m_nNumStone; }	// 取得したストーンの数を取得
+
 protected:
 
 private:
@@ -71,6 +73,7 @@ private:
 
 	int m_nPlayer;			// プレイヤー番号
 	int m_nBoxColliderID;	// ボックスコライダーID
+	int m_nNumStone;		// 取得したストーンの数
 
 #ifdef _DEBUG
 	void ShowDebugInfo(void);									// ImGuiの更新

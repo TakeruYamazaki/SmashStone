@@ -56,6 +56,15 @@ int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 int					CGame::m_nNumStone				= 0;							// 生成したストーンの数
 int					CGame::m_nCntDecide				= 0;							// ストーン生成のタイミングを決めるカウンタ
 
+D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
+{
+	ZeroVector3,
+	D3DXVECTOR3(100.0f, 0.0f, 100.0f),
+	D3DXVECTOR3(100.0f, 0.0f, -100.0f),
+	D3DXVECTOR3(-100.0f, 0.0f, 100.0f),
+	D3DXVECTOR3(-100.0f, 0.0f, -100.0f)
+};
+
 //==================================================================================================================
 //	コンストラクタ
 //==================================================================================================================
@@ -283,16 +292,29 @@ void CGame::DecideCreateStone(void)
 {
 	// カウンタを加算
 	m_nCntDecide++;
-	// 一秒毎
-	if (m_nCntDecide > ONE_SECOND_FPS)
-	{
-		// 乱数化
-		srand((unsigned int)time(NULL));
 
-		// 確率でストーン生成
-		if (rand() % PROBABILITY_CREATE_STONE + 1 == PROBABILITY_CREATE_STONE)
-			CStone::Create(CStone::STONE_ID_DEFAULT, D3DXVECTOR3(-100.0f, 0.0f, 0.0f));
-		// カウンタを初期化
-		m_nCntDecide = 0;
+	// 一秒以内
+	if (m_nCntDecide <= ONE_SECOND_FPS)
+	{
+		// 処理を終える
+		return;
 	}
+
+	// 乱数化
+	srand((unsigned int)time(NULL));
+
+	if (m_nNumStone + GetPlayer(0)->GetNumStone() + GetPlayer(1)->GetNumStone() < 3)
+	{
+		// 取得 + 出現 のストーン数が3未満のとき、確率でストーン生成
+		if (rand() % PROBABILITY_CREATE_STONE + 1 == PROBABILITY_CREATE_STONE)
+		{
+			// 決められた位置からランダムで生成
+			CStone::Create(CStone::STONE_ID_DEFAULT, m_stonePos[rand() % STONE_POS + 1]);
+			// 出現数を加算
+			m_nNumStone++;
+		}
+	}
+
+	// カウンタを初期化
+	m_nCntDecide = 0;
 }

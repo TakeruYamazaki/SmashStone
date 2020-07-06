@@ -58,6 +58,7 @@ public:
 protected:
 	CModelCharacter *m_pModelCharacter;				// モデルキャラクターのポインタ
 	CHARACTER_TYPE	 m_type;						// キャラクターのタイプ
+	CHARACTER_TYPE	 m_typeTrans;					// 変身時のタイプ
 
 	LPD3DXMESH		m_pMesh;						// メッシュ情報
 	LPD3DXBUFFER	m_pBuffMat;						// マテリアル情報
@@ -72,6 +73,7 @@ protected:
 	D3DXMATRIX	m_mtxWorld;							// ワールドマトリックス
 
 	int			m_nCntMove;							// どれぐらいの時間動いているか
+	int			m_nCntTrans;						// どれぐらいの時間変身しているか
 	float		m_nLife;							// ライフ
 	float		m_nMaxLife;							// 最大ライフ
 	bool		m_bJump;							// ジャンプしたかどうか

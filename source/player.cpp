@@ -370,8 +370,13 @@ void CPlayer::CatchStone(void)
 	{
 		// ストーンの取得
 		((CStone *)pScene)->Catch();
-		// 変身
-		this->m_bTrans = true;
+
+		// ストーンの取得数を加算
+		m_nNumStone++;
+		// 3つ取得している
+		if (m_nNumStone >= 3)
+			// 変身
+			this->m_bTrans = true;
 	}
 }
 
@@ -381,7 +386,10 @@ void CPlayer::CatchStone(void)
 //==================================================================================================================
 void CPlayer::ShowDebugInfo()
 {
-	if (ImGui::CollapsingHeader("Player"))
+	char cHead[8];
+	sprintf(cHead, "Player%d", m_nPlayer);			// プレイヤー番号を文字列に追加
+
+	if (ImGui::CollapsingHeader(cHead))
 	{
 		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
 		ImGui::Text("nLife : %f", m_nLife);
