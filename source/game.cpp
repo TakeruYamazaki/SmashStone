@@ -36,6 +36,8 @@
 #define PLAYER_START_POS_Z -585.0f									// プレイヤーの初期位置Z
 #define RESPAWN_SIZE 0.000001f										// リスポーンモデルの大きさ
 
+#define PROBABILITY_CREATE_STONE (10)								// 1 / this の確率でストーンを生成
+
 //==================================================================================================================
 //	静的メンバ変数宣言
 //==================================================================================================================
@@ -50,6 +52,8 @@ CHitPoint			*CGame::m_pHitPoint				= NULL;							// HPの情報
 CTime				*CGame::m_pTime					= NULL;							// タイム情報
 CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
 int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
+int					CGame::m_nNumStone				= 0;							// 生成したストーンの数
+int					CGame::m_nCntDecide				= 0;							// ストーン生成のタイミングを決めるカウンタ
 
 //==================================================================================================================
 //	コンストラクタ
@@ -81,7 +85,6 @@ void CGame::Init(void)
 	CBar::Load();							// Barテクスチャロード
 	C3DBoxCollider::Load();					// 3Dボックスコライダーの読み込み
 	C3DBoxCollider::Create();
-	CStone::Create(CStone::STONE_ID_DEFAULT,D3DXVECTOR3(-100.0f,0.0f,0.0f));
 
 	// カメラの生成処理
 	m_pCamera = CCamera::Create();
@@ -96,7 +99,7 @@ void CGame::Init(void)
 	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 	{
 		// プレイヤー生成
-		m_pPlayer[nCnt] = CPlayer::Create(nCnt, CHARACTER_FOKKER);
+		m_pPlayer[nCnt] = CPlayer::Create(nCnt, CHARACTER_1YASU);
 	}
 
 	// メッシュフィールド生成
@@ -113,6 +116,8 @@ void CGame::Init(void)
 
 	SetGameState(GAMESTATE_NORMAL);			// 通常状態に設定
 	m_nCounterGameState = 0;				// ゲームの状態管理カウンターを0にする
+	m_nNumStone			= 0;				// 値を初期化
+	m_nCntDecide		= 0;				// 値を初期化
 }
 
 //==================================================================================================================
@@ -189,6 +194,9 @@ void CGame::Update(void)
 
 		// ライトの更新処理
 		m_pLight->Update();
+
+		// ストーンを生成するか決める
+		DecideCreateStone();
 	}
 
 	// キーボードの[P] 又は コントローラーの[START]ボタンが押されたとき
@@ -258,4 +266,25 @@ CGame * CGame::Create(void)
 //	CModelCharacter::Load();
 
 	return pGame;				// 値を返す
+}
+
+//==================================================================================================================
+//	ストーンを生成するか決める
+//==================================================================================================================
+void CGame::DecideCreateStone(void)
+{
+	// カウンタを加算
+	m_nCntDecide++;
+	// 一秒毎
+	if (m_nCntDecide > ONE_SECOND_FPS)
+	{
+		// 乱数化
+		srand((unsigned int)time(NULL));
+
+		// 確率でストーン生成
+		if (rand() % PROBABILITY_CREATE_STONE + 1 == PROBABILITY_CREATE_STONE)
+			CStone::Create(CStone::STONE_ID_DEFAULT, D3DXVECTOR3(-100.0f, 0.0f, 0.0f));
+		// カウンタを初期化
+		m_nCntDecide = 0;
+	}
 }

@@ -43,8 +43,11 @@
 #define COMMENT_AUTHOR		("# Author : KANAN NAGANAWA\n")			// 著者名
 
 // 物理
-#define INERTIA			(0.2f)									// 慣性
-#define GRAVITY			(0.2f)								// 重力
+#define INERTIA				(0.2f)								// 慣性
+#define GRAVITY				(0.2f)								// 重力
+
+// 時間
+#define ONE_SECOND_FPS		(60)								// 一秒毎のフレーム数
 
 // ===================================================================
 // 構造体定義
@@ -122,10 +125,10 @@ typedef enum
 typedef enum
 {	// キャラクターの種類
 	CHARACTER_NONE,			// 何もない
-	CHARACTER_FOKKER = 0,	// フォッカー
-	CHARACTER_FOKKER_TRANS,	// フォッカー変身
-	//CHARACTER_3,			// プレイヤー
-	//CHARACTER_4,			// プレイヤー
+	CHARACTER_1YASU = 0,	// 1ヤス
+	CHARACTER_1YASU_TRANS,	// 1ヤス変身
+	CHARACTER_2YASU,		// 2ヤス
+	CHARACTER_2YASU_TRANS,	// 2ヤス変身
 	CHARACTER_MAX			// キャラクターの最大数
 } CHARACTER_TYPE;
 
