@@ -24,7 +24,6 @@
 //=============================================================================	
 #define SPEED_ROT		(0.1f)		// 回転のスピード
 #define LIFE_DEFAULT	(100.0f)	// ライフの初期値
-#define TIME_TRANS		(15 * ONE_SECOND_FPS)	// 変身の時間
 
 //=============================================================================
 // 静的メンバ変数の初期化
@@ -218,17 +217,29 @@ void CCharacter::Motion(void)
 //=============================================================================
 void CCharacter::Trans(void)
 {
-	if (m_bTrans)
+	if (!m_bTrans)
 	{
-		// 変身時間を加算
-		m_nCntTrans++;
-		// モデルの再バインド
-		m_pModelCharacter->ModelRebind(CHARACTER_1YASU_TRANS);
-	}
-	else
-	{
+		// 変身時間を初期化
 		m_nCntTrans = 0;
-		// モデルの再バインド
-		m_pModelCharacter->ModelRebind(CHARACTER_1YASU);
+		return;
 	}
+
+	// 変身時間を加算
+	m_nCntTrans++;
+	if (m_nCntTrans < TIME_TRANS)
+	{
+		// モデルを変身用にバインド
+		m_pModelCharacter->ModelRebind(CHARACTER_1YASU_TRANS);
+		return;
+	}
+	// ストーンの取得数を初期化
+	m_nNumStone = 0;
+	// ストーンの出現数を初期化
+	CGame::SetNumStone(0);
+	// 変身時間を初期化
+	m_nCntTrans = 0;
+	// 変身を解除
+	m_bTrans = false;
+	// モデルの再バインド
+	m_pModelCharacter->ModelRebind(CHARACTER_1YASU);
 }

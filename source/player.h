@@ -75,7 +75,6 @@ private:
 
 	int m_nPlayer;			// プレイヤー番号
 	int m_nBoxColliderID;	// ボックスコライダーID
-	int m_nNumStone;		// 取得したストーンの数
 
 #ifdef _DEBUG
 	void ShowDebugInfo(void);									// ImGuiの更新

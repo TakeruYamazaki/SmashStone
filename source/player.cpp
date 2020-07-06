@@ -399,6 +399,8 @@ void CPlayer::CatchStone(void)
 
 		// ストーンの取得数を加算
 		m_nNumStone++;
+		// 出現ストーン数を減算
+		CGame::RemoveNumStone();
 		// 3つ取得している
 		if (m_nNumStone >= 3)
 			// 変身
@@ -417,9 +419,13 @@ void CPlayer::ShowDebugInfo()
 
 	if (ImGui::CollapsingHeader(cHead))
 	{
+		// 情報の表示
 		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
-		ImGui::Text("nLife : %f", m_nLife);
-		ImGui::Text("bJump : %d", m_bJump);
+		ImGui::Text("nLife       : %f", m_nLife);
+		ImGui::Text("bJump       : %d", m_bJump);
+		ImGui::Text("GetNumStone : %d", m_nNumStone);
+		if (m_bTrans)
+			ImGui::Text("TransTime   : %d", TIME_TRANS - m_nCntTrans);
 	}
 }
 #endif

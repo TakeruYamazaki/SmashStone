@@ -29,6 +29,7 @@
 #include "hitpoint.h"
 #include "bar.h"
 #include "wall.h"
+#include "debugProc.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -37,7 +38,7 @@
 #define PLAYER_START_POS_Z -585.0f									// プレイヤーの初期位置Z
 #define RESPAWN_SIZE 0.000001f										// リスポーンモデルの大きさ
 
-#define PROBABILITY_CREATE_STONE (10)								// 1 / this の確率でストーンを生成
+#define TIME_CREATE_STONE (5 * ONE_SECOND_FPS)						// ストーンを生成する時間
 
 //==================================================================================================================
 //	静的メンバ変数宣言
@@ -294,8 +295,8 @@ void CGame::DecideCreateStone(void)
 	// カウンタを加算
 	m_nCntDecide++;
 
-	// 一秒以内
-	if (m_nCntDecide <= ONE_SECOND_FPS)
+	// 時間以内
+	if (m_nCntDecide <= TIME_CREATE_STONE)
 	{
 		// 処理を終える
 		return;
@@ -306,14 +307,10 @@ void CGame::DecideCreateStone(void)
 
 	if (m_nNumStone + GetPlayer(0)->GetNumStone() + GetPlayer(1)->GetNumStone() < 3)
 	{
-		// 取得 + 出現 のストーン数が3未満のとき、確率でストーン生成
-		if (rand() % PROBABILITY_CREATE_STONE + 1 == PROBABILITY_CREATE_STONE)
-		{
-			// 決められた位置からランダムで生成
-			CStone::Create(CStone::STONE_ID_DEFAULT, m_stonePos[rand() % STONE_POS + 1]);
-			// 出現数を加算
-			m_nNumStone++;
-		}
+		// 決められた位置からランダムで生成
+		CStone::Create(CStone::STONE_ID_DEFAULT, m_stonePos[rand() % STONE_POS + 1]);
+		// 出現数を加算
+		m_nNumStone++;
 	}
 
 	// カウンタを初期化

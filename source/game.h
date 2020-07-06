@@ -63,8 +63,8 @@ public:
 	static CGame *Create(void);					// 生成処理
 
 	static void SetGameState(GAMESTATE state)	{ m_gameState = state; }	// ゲームの状態設定
-	static void AddNumStone(void)				{ m_nNumStone++; }			// ストーンの数を加算
 	static void RemoveNumStone(void)			{ m_nNumStone--; }			// ストーンの数を減算
+	static void SetNumStone(const int &nStone)	{ m_nNumStone = nStone; }	// ストーンの数の設定
 
 	static GAMESTATE GetGameState(void)			{ return m_gameState; }			// ゲームの状態取得
 	static CPlayer *GetPlayer(int nPlayer)		{ return m_pPlayer[nPlayer]; }	// キャラクターの情報取得処理
