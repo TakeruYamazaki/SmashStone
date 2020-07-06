@@ -32,7 +32,7 @@ public:
 	enum WALLTEX
 	{
 		WALLTEX_NONE = -1,	// 無し
-		WALLTEX_FIELD,		// フィールド
+		WALLTEX_FIELD,		// 広場
 		WALLTEX_MAX			// 最大数
 	};
 
@@ -52,6 +52,7 @@ public:
 	{
 		TRANSFORM   trans;	// トランス情報
 		D3DXVECTOR3 nor;	// 面の法線情報
+		D3DXVECTOR3 size;	// 大きさ
 	} SINGLEINFO;
 
 	/* メンバ関数 */
@@ -89,7 +90,6 @@ private:
 	LPDIRECT3DTEXTURE9        m_pTexture;					// テクスチャ情報のポインタ
 	LPDIRECT3DVERTEXBUFFER9   m_pVtexBuff;					// 頂点バッファのポインタ
 	SINGLEINFO                m_SingleInfo[WALL_MAX];		// 壁単体の情報
-
 };
 
 
