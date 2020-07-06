@@ -51,6 +51,7 @@ CPause				*CGame::m_pPause				= NULL;							// ポーズ情報
 CMeshSphere			*CGame::m_pMeshSphere			= NULL;							// メッシュ球の情報
 CHitPoint			*CGame::m_pHitPoint				= NULL;							// HPの情報
 CTime				*CGame::m_pTime					= NULL;							// タイム情報
+CWall				*CGame::m_pWall					= NULL;							// 壁のポインタ
 CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
 int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 int					CGame::m_nNumStone				= 0;							// 生成したストーンの数
@@ -100,7 +101,7 @@ void CGame::Init(void)
 	C3DBoxCollider::Create();
 
 	// 壁の生成
-	CWall::Create(CWall::WALLTEX_FIELD);
+	m_pWall = CWall::Create(CWall::WALLTEX_FIELD);
 
 	// カメラの生成処理
 	m_pCamera = CCamera::Create();

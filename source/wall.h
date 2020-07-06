@@ -57,6 +57,7 @@ public:
 		TRANSFORM   trans;	// トランス情報
 		D3DXVECTOR3 nor;	// 面の法線情報
 		D3DXVECTOR3 size;	// 大きさ
+		D3DXPLANE   plane;	// 平面
 	} SINGLEINFO;
 
 	/* メンバ関数 */
@@ -73,7 +74,10 @@ public:
 	static CWall* Create(WALLTEX enmWallTex);
 
 	// 衝突判定
-	bool collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pOut_Intersect,bool bReflection);
+	bool Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut_Intersect,bool bReflection);
+
+	// 交点を求める
+	bool GetIntersection(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut_Intersect, SINGLEINFO *pSingleInfo);
 
 	// 初期化
 	void Init(void);

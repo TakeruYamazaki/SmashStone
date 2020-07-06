@@ -175,16 +175,115 @@ CWall * CWall::Create(WALLTEX enmWallTex)
 //-------------------------------------------------------------------------------------------------------------
 // 衝突判定
 //-------------------------------------------------------------------------------------------------------------
-bool CWall::collision(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pOut_Intersect, bool bReflection)
+bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut_Intersect, bool bReflection)
 {
-	// 単体情報のポインタ
-	SINGLEINFO *pSingleInfo = &m_SingleInfo[0];
-	bool bTest = false;
-	for (int nCntWall = 0; nCntWall < WALL_MAX; nCntWall++, pSingleInfo++)
-	{
+	// 変数宣言
+	SINGLEINFO *pSingleInfo = &m_SingleInfo[0];	// 単体情報のポインタ
+	bool bColli = false;						// 衝突フラグ
 
+	// +Xの位置の時
+	if (pSingleInfo[CWall::SETINGPOS_POSIX].trans.pos.x >= pPos->x)
+	{
+		bColli = true;
+		if (bReflection == true)
+		{
+			GetIntersection(pPos, pPosOld, pOut_Intersect, pSingleInfo);
+		}
 	}
-	return false;
+	// -Xの位置の時
+	else if (pSingleInfo[CWall::SETINGPOS_NEGX].trans.pos.x <= pPos->x)
+	{
+		bColli = true;
+		if (bReflection == true)
+		{
+			GetIntersection(pPos, pPosOld, pOut_Intersect, pSingleInfo);
+		}
+	}
+	// +Yの位置の時
+	if (pSingleInfo[CWall::SETINGPOS_POSIZ].trans.pos.z >= pPos->z)
+	{
+		bColli = true;
+		if (bReflection == true)
+		{
+			GetIntersection(pPos, pPosOld, pOut_Intersect, pSingleInfo);
+		}
+	}
+	// -Y位置の時
+	else if (pSingleInfo[CWall::SETINGPOS_NEGZ].trans.pos.z >= pPos->z)
+	{
+		bColli = true;
+		if (bReflection == true)
+		{
+			GetIntersection(pPos, pPosOld, pOut_Intersect, pSingleInfo);
+		}
+	}
+
+	return bColli;
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// 交点を求める
+//-------------------------------------------------------------------------------------------------------------
+bool CWall::GetIntersection(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pPosOld, D3DXVECTOR3 * pOut_Intersect, SINGLEINFO * pSingleInfo)
+{
+	// 変数宣言
+	D3DXVECTOR3 PlanePoint;			// 平面上の点
+	D3DXVECTOR3 VecPlane_pos;		// 平面上の点から位置のベクトル
+	D3DXVECTOR3 VecPlane_posOld;	// 平面上の点から前回の位置のベクトル
+	float DotPlane_pos;				// 位置のベクトル平面法線内積
+	float DotPlane_posOld;			// 前回の位置のベクトル平面法線内積
+
+	// 平面上の点を算出
+	PlanePoint = D3DXVECTOR3(
+		pSingleInfo->plane.a * pSingleInfo->plane.d,
+		pSingleInfo->plane.b * pSingleInfo->plane.d,
+		pSingleInfo->plane.c * pSingleInfo->plane.d);
+	// ベクトルの生成
+	CMylibrary::CreateVector3(&VecPlane_pos, pPos, &PlanePoint);
+	CMylibrary::CreateVector3(&VecPlane_posOld, pPosOld, &PlanePoint);
+
+	// 内積計算
+	DotPlane_pos =
+		VecPlane_pos.x * pSingleInfo->plane.a +
+		VecPlane_pos.y * pSingleInfo->plane.b +
+		VecPlane_pos.z * pSingleInfo->plane.c;
+	DotPlane_posOld =
+		VecPlane_posOld.x * pSingleInfo->plane.a +
+		VecPlane_posOld.y * pSingleInfo->plane.b +
+		VecPlane_posOld.z * pSingleInfo->plane.c;
+
+	if (abs(DotPlane_pos) < 0.0000001f) { DotPlane_pos = 0.0f; }
+	if (abs(DotPlane_posOld) < 0.0000001f) { DotPlane_posOld = 0.0f; }
+
+	// 交差判定
+	if (DotPlane_pos == 0.0f &&
+		DotPlane_posOld == 0.0f)
+	{
+		//両端が平面上にあり、交点を計算できない。
+		return false;
+	}
+
+	// 交差判定
+	if ((DotPlane_pos >= 0.0f && DotPlane_posOld <= 0.0f) ||
+		(DotPlane_pos <= 0.0f && DotPlane_posOld >= 0.0f))
+	{
+		// 交点を求める 
+		D3DXVECTOR3 Pos_posOld = D3DXVECTOR3(pPosOld->x - pPos->x, pPosOld->y - pPos->y, pPosOld->z - pPos->z);
+
+		//交点とAの距離 : 交点とBの距離 = dot_PA : dot_PB
+		float fLength = abs(DotPlane_pos) / (abs(DotPlane_pos) + abs(DotPlane_posOld));
+
+		pOut_Intersect->x = pPos->x + (Pos_posOld.x * fLength);
+		pOut_Intersect->y = pPos->y + (Pos_posOld.y * fLength);
+		pOut_Intersect->z = pPos->z + (Pos_posOld.z * fLength);
+		return true;
+	}
+	else
+	{
+		//交差していない
+		return false;
+	}
+	return true;
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -210,11 +309,15 @@ void CWall::Init(void)
 	m_SingleInfo[SETINGPOS_POSIZ].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	m_SingleInfo[SETINGPOS_NEGZ].nor = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 
-	// 回転の設定
-	m_SingleInfo[SETINGPOS_POSIX].trans.rot = MYLIB_VEC3_UNSET;
-	m_SingleInfo[SETINGPOS_NEGX].trans.rot = MYLIB_VEC3_UNSET;
-	m_SingleInfo[SETINGPOS_POSIZ].trans.rot = MYLIB_VEC3_UNSET;
-	m_SingleInfo[SETINGPOS_NEGZ].trans.rot = MYLIB_VEC3_UNSET;
+
+	for (int nCntSingle = 0; nCntSingle < WALL_MAX; nCntSingle++)
+	{
+		// 回転の設定
+		m_SingleInfo[nCntSingle].trans.rot = MYLIB_VEC3_UNSET;
+		// 平面の生成
+		D3DXPlaneFromPointNormal(&m_SingleInfo[nCntSingle].plane, &m_SingleInfo[nCntSingle].trans.pos, &m_SingleInfo[nCntSingle].nor);
+	}
+
 
 	// 頂点情報の作成
 	MakeVertex();
@@ -371,6 +474,7 @@ HRESULT CWall::MakeVertex(void)
 		pVtx[1].pos = D3DXVECTOR3(pSingleInfo->trans.pos.x + pSingleInfo->size.x, pSingleInfo->trans.pos.y - pSingleInfo->size.y, pSingleInfo->trans.pos.z + pSingleInfo->size.z);
 		pVtx[2].pos = D3DXVECTOR3(pSingleInfo->trans.pos.x - pSingleInfo->size.x, pSingleInfo->trans.pos.y + pSingleInfo->size.y, pSingleInfo->trans.pos.z - pSingleInfo->size.z);
 		pVtx[3].pos = D3DXVECTOR3(pSingleInfo->trans.pos.x + pSingleInfo->size.x, pSingleInfo->trans.pos.y + pSingleInfo->size.y, pSingleInfo->trans.pos.z + pSingleInfo->size.z);
+
 
 		// 法線ベクトル
 		pVtx[0].nor = pSingleInfo->nor;
