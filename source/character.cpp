@@ -119,6 +119,12 @@ void CCharacter::Update()
 		// 体力を減らす
 		m_nLife -= 1;
 	}
+	// キーボードの[6]を押したとき
+	if (pKeyboard->GetKeyboardTrigger(DIK_6))
+	{
+		// 体力を増やす
+		m_nLife += 1;
+	}
 
 #endif // _DEBUG
 
