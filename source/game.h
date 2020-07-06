@@ -29,7 +29,7 @@ class CMeshSphere;
 class CPlayer;
 class CHitPoint;
 class CTime;
-
+class CWall;
 //==================================================================================================================
 //
 // ゲームクラスの定義
@@ -70,12 +70,12 @@ public:
 	static CLight *GetLight(void)				{ return m_pLight; }			// ライトの取得
 	static CMeshField *GetMeshField(void)		{ return m_pMeshField; }		// メッシュフィールドの取得
 	static int GetNumStone(void)				{ return m_nNumStone; }			// ストーンの数を取得
+	static CWall *GetWall(void)					{ return m_pWall; }				// 壁の取得
 
 protected:
 
 private:
 	void DecideCreateStone(void);				// ストーンを生成するか決める
-
 	static GAMESTATE m_gameState;				// ゲーム状態
 	static CPlayer *m_pPlayer[MAX_PLAYER];		// プレイヤーの配列ポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドの情報ポインタ
@@ -86,10 +86,10 @@ private:
 	static CMeshSphere *m_pMeshSphere;			// メッシュ球の情報ポインタ
 	static CHitPoint *m_pHitPoint;				// HPの情報ポインタ
 	static CTime *m_pTime;						// タイムの情報ポインタ
+	static CWall *m_pWall;						// 壁のポインタ
 	static int m_nCounterGameState;				// ゲームの状態管理カウンター
 	static int m_nNumStone;						// 生成したストーンの数
 	static int m_nCntDecide;					// ストーン生成のタイミングを決めるカウンタ
-
 	D3DXMATRIX  m_mtxWorld;						// マトリックス
 };
 #endif
