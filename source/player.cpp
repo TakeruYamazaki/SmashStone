@@ -24,6 +24,7 @@
 #include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
 #include "3DBoxCollider.h"
 #include "stone.h"
+#include "wall.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -89,6 +90,8 @@ void CPlayer::Update(void)
 	CCharacter::Update();
 	// 当たり判定位置の更新
 	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->GetPos(), MYLIB_3DVECTOR_ZERO);
+	// 当たり判定
+	Collision();
 
 	// ストーンの取得判定
 	CatchStone();
@@ -156,6 +159,23 @@ void CPlayer::Control(void)
 	else
 		// キーボード操作
 		ControlKeyboard(pKeyboard);
+}
+
+//==================================================================================================================
+// 当たり判定処理
+//==================================================================================================================
+void CPlayer::Collision(void)
+{
+	// 壁の取得
+	CWall *pWall = CGame::GetWall();
+
+	// 出力される交点
+	D3DXVECTOR3 out_intersect = ZeroVector3;
+	// スマッシュによる跳ね返りを受けているか
+	bool bReflection = false;
+
+	// 壁との当たり判定
+	pWall->Collision(&m_pos, &m_posOld, &out_intersect, bReflection);
 }
 
 //==================================================================================================================

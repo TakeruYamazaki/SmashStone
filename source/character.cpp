@@ -39,6 +39,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	// 要素の初期化
 	m_pModelCharacter	= nullptr;
 	m_pos				= ZeroVector3;
+	m_posOld			= ZeroVector3;
 	m_posBegin			= ZeroVector3;
 	m_rot				= ZeroVector3;
 	m_rotDest			= ZeroVector3;
@@ -158,6 +159,9 @@ void CCharacter::SetModelType(CHARACTER_TYPE type)
 //=============================================================================
 void CCharacter::Move(void)
 {
+	// 前回の位置を保存
+	m_posOld = m_pos;
+
 	D3DXVECTOR3 difMove;	// 現在の移動値と目的の移動値の差
 
 	// 慣性

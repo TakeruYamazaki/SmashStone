@@ -182,30 +182,42 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 	bool bColli = false;						// 衝突フラグ
 
 	// +Xの位置の時
-	if (pSingleInfo[CWall::SETINGPOS_POSIX].trans.pos.x >= pPos->x)
+	if (pSingleInfo[CWall::SETINGPOS_POSIX].trans.pos.x <= pPos->x)
 	{
 		bColli = true;
 		if (bReflection == true)
 		{
 			GetIntersection(pPos, pPosOld, pOut_Intersect, pSingleInfo);
+		}
+		else
+		{
+			pPos->x = pSingleInfo[CWall::SETINGPOS_POSIX].trans.pos.x;
 		}
 	}
 	// -Xの位置の時
-	else if (pSingleInfo[CWall::SETINGPOS_NEGX].trans.pos.x <= pPos->x)
+	else if (pSingleInfo[CWall::SETINGPOS_NEGX].trans.pos.x >= pPos->x)
 	{
 		bColli = true;
 		if (bReflection == true)
 		{
 			GetIntersection(pPos, pPosOld, pOut_Intersect, pSingleInfo);
 		}
+		else
+		{
+			pPos->x = pSingleInfo[CWall::SETINGPOS_NEGX].trans.pos.x;
+		}
 	}
 	// +Yの位置の時
-	if (pSingleInfo[CWall::SETINGPOS_POSIZ].trans.pos.z >= pPos->z)
+	if (pSingleInfo[CWall::SETINGPOS_POSIZ].trans.pos.z <= pPos->z)
 	{
 		bColli = true;
 		if (bReflection == true)
 		{
 			GetIntersection(pPos, pPosOld, pOut_Intersect, pSingleInfo);
+		}
+		else
+		{
+			pPos->z = pSingleInfo[CWall::SETINGPOS_POSIZ].trans.pos.z;
 		}
 	}
 	// -Y位置の時
@@ -215,6 +227,10 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 		if (bReflection == true)
 		{
 			GetIntersection(pPos, pPosOld, pOut_Intersect, pSingleInfo);
+		}
+		else
+		{
+			 pPos->z = pSingleInfo[CWall::SETINGPOS_NEGZ].trans.pos.z;
 		}
 	}
 
@@ -381,30 +397,6 @@ void CWall::Draw(void)
 	{
 		// ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&pSingleInfo[nCntWall].trans.mtxWorld);
-
-		// 回転を反映
-		D3DXMatrixRotationYawPitchRoll(
-			&mtxRot,
-			pSingleInfo[nCntWall].trans.rot.y,
-			pSingleInfo[nCntWall].trans.rot.x,
-			pSingleInfo[nCntWall].trans.rot.z);
-		// かけ合わせる
-		D3DXMatrixMultiply(
-			&pSingleInfo[nCntWall].trans.mtxWorld,
-			&pSingleInfo[nCntWall].trans.mtxWorld,
-			&mtxRot);
-
-		// 位置を反映
-		D3DXMatrixTranslation(
-			&mtxTrans,
-			pSingleInfo[nCntWall].trans.pos.x,
-			pSingleInfo[nCntWall].trans.pos.y,
-			pSingleInfo[nCntWall].trans.pos.z);
-		// かけ合わせる
-		D3DXMatrixMultiply(
-			&pSingleInfo[nCntWall].trans.mtxWorld,
-			&pSingleInfo[nCntWall].trans.mtxWorld,
-			&mtxTrans);
 
 		// ワールドマトリックスの設定
 		pDevice->SetTransform(D3DTS_WORLD, &pSingleInfo[nCntWall].trans.mtxWorld);

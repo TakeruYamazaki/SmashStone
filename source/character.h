@@ -65,6 +65,7 @@ protected:
 	DWORD			m_nNumMat;						// マテリアル情報の数
 
 	D3DXVECTOR3 m_pos;								// 位置
+	D3DXVECTOR3 m_posOld;							// 前回の位置
 	D3DXVECTOR3 m_posBegin;							// 初期位置
 	D3DXVECTOR3 m_move;								// 移動値
 	D3DXVECTOR3 m_rot;								// 回転
