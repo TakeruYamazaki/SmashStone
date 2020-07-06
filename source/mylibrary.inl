@@ -360,7 +360,7 @@ CString::Set(STRING string)
 	// ¶¬
 	if (this->m_string == NULL)
 	{
-		this->m_nStringLength = strlen(string) + 1;
+		this->m_nStringLength = (int)strlen(string) + 1;
 		this->m_string = new char[this->m_nStringLength];
 		strcpy(this->m_string, string);
 	}

@@ -1398,7 +1398,7 @@ bool CMylibrary::CheckforScript(FILE *pFile)
 STRING CMylibrary::SetStringAlloc(CONST_STRING source)
 {
 	// 文字列の長さを取得
-	int nLength = strlen(source);
+	int nLength = (int)strlen(source);
 	// メモリ確保[長さ + NULL文字]
 	STRING work = new char[nLength + 1];
 	// 文字の代入
