@@ -185,8 +185,8 @@ void CWall::Init(void)
 	// 大きさの設定
 	m_SingleInfo[SETINGPOS_POSIX].size = D3DXVECTOR3(0.0f, m_fHeight, m_Length.y);
 	m_SingleInfo[SETINGPOS_NEGX].size = D3DXVECTOR3(0.0f, m_fHeight, m_Length.y);
-	m_SingleInfo[SETINGPOS_POSIZ].size = D3DXVECTOR3(0.0f, m_fHeight, m_Length.x);
-	m_SingleInfo[SETINGPOS_NEGZ].size = D3DXVECTOR3(0.0f, m_fHeight, m_Length.x);
+	m_SingleInfo[SETINGPOS_POSIZ].size = D3DXVECTOR3(m_Length.x, m_fHeight, m_Length.x);
+	m_SingleInfo[SETINGPOS_NEGZ].size = D3DXVECTOR3(m_Length.x, m_fHeight,);
 
 	// 法線ベクトルの設定
 	m_SingleInfo[SETINGPOS_POSIX].size = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
