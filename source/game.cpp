@@ -28,6 +28,7 @@
 #include "3DBoxCollider.h"
 #include "hitpoint.h"
 #include "bar.h"
+#include "wall.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -84,7 +85,13 @@ void CGame::Init(void)
 	CStone::Load();							// ストーンの読み込み
 	CBar::Load();							// Barテクスチャロード
 	C3DBoxCollider::Load();					// 3Dボックスコライダーの読み込み
+	CWall::Load();							// 壁のロード
+
+	// ボックスコライダーの生成
 	C3DBoxCollider::Create();
+
+	// 壁の生成
+	CWall::Create(CWall::WALLTEX_FIELD);
 
 	// カメラの生成処理
 	m_pCamera = CCamera::Create();
@@ -131,6 +138,7 @@ void CGame::Uninit(void)
 	CScene2D::ReleaseAll();				// 2Dのもの全て破棄
 	CScene3D::ReleaseAll();				// 3Dのもの全て破棄
 
+	CWall::Unload();					// 壁の開放
 	C3DBoxCollider::Unload();			// 3Dボックスコライダーの開放
 	CStone::Unload();					// ストーンの開放
 	CNumber::Unload();					// 数字テクスチャアンロード

@@ -10,6 +10,7 @@
 #include "wall.h"
 #include "renderer.h"
 #include "manager.h"
+#include "debugProc.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -72,7 +73,7 @@ HRESULT CWall::Load(void)
 		// 1行読み込む
 		fgets(aRead, sizeof(aRead), pFile);
 		// 読み込んど文字列代入
-		sscanf(aRead, "%[^,]s", &aComp);
+		sscanf(aRead, "%s", &aComp);
 #ifdef _DEBUG
 		// エラーカウントをインクリメント
 		if (++nCntError > 1048576)
@@ -89,7 +90,7 @@ HRESULT CWall::Load(void)
 		// 1行読み込む
 		fgets(aRead, sizeof(aRead), pFile);
 		// 読み込んど文字列代入
-		sscanf(aRead, "%[^,]s", &aComp);
+		sscanf(aRead, "%s", &aComp);
 #ifdef _DEBUG
 		// エラーカウントをインクリメント
 		if (++nCntError > 1048576)
@@ -125,7 +126,7 @@ HRESULT CWall::Load(void)
 			CWall::m_Length = Length;
 		}
 		// 高さの読み込み
-		else if (sscanf(aRead, "HEIGHT = %f,", &fHeight) == 2)
+		else if (sscanf(aRead, "HEIGHT = %f", &fHeight) == 1)
 		{
 			CWall::m_fHeight = fHeight;
 		}
@@ -172,6 +173,21 @@ CWall * CWall::Create(WALLTEX enmWallTex)
 }
 
 //-------------------------------------------------------------------------------------------------------------
+// 衝突判定
+//-------------------------------------------------------------------------------------------------------------
+bool CWall::collision(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pOut_Intersect, bool bReflection)
+{
+	// 単体情報のポインタ
+	SINGLEINFO *pSingleInfo = &m_SingleInfo[0];
+	bool bTest = false;
+	for (int nCntWall = 0; nCntWall < WALL_MAX; nCntWall++, pSingleInfo++)
+	{
+
+	}
+	return false;
+}
+
+//-------------------------------------------------------------------------------------------------------------
 // 初期化
 //-------------------------------------------------------------------------------------------------------------
 void CWall::Init(void)
@@ -179,20 +195,20 @@ void CWall::Init(void)
 	// 位置の設定
 	m_SingleInfo[SETINGPOS_POSIX].trans.pos = D3DXVECTOR3(m_CenterPos.x + m_Length.x, m_CenterPos.y, m_CenterPos.z);	// +Xの位置
 	m_SingleInfo[SETINGPOS_NEGX].trans.pos  = D3DXVECTOR3(m_CenterPos.x - m_Length.x, m_CenterPos.y, m_CenterPos.z);	// -Xの位置
-	m_SingleInfo[SETINGPOS_POSIZ].trans.pos = D3DXVECTOR3(m_CenterPos.x, m_CenterPos.y, m_CenterPos.z+ m_Length.y);		// +Zの位置
-	m_SingleInfo[SETINGPOS_NEGZ].trans.pos  = D3DXVECTOR3(m_CenterPos.x, m_CenterPos.y, m_CenterPos.z + m_Length.y);	// -Zの地位
+	m_SingleInfo[SETINGPOS_POSIZ].trans.pos = D3DXVECTOR3(m_CenterPos.x, m_CenterPos.y, m_CenterPos.z + m_Length.y);		// +Zの位置
+	m_SingleInfo[SETINGPOS_NEGZ].trans.pos  = D3DXVECTOR3(m_CenterPos.x, m_CenterPos.y, m_CenterPos.z - m_Length.y);	// -Zの地位
 
 	// 大きさの設定
-	m_SingleInfo[SETINGPOS_POSIX].size = D3DXVECTOR3(0.0f, m_fHeight, m_Length.y);
-	m_SingleInfo[SETINGPOS_NEGX].size = D3DXVECTOR3(0.0f, m_fHeight, m_Length.y);
-	m_SingleInfo[SETINGPOS_POSIZ].size = D3DXVECTOR3(m_Length.x, m_fHeight, m_Length.x);
-	m_SingleInfo[SETINGPOS_NEGZ].size = D3DXVECTOR3(m_Length.x, m_fHeight,);
+	m_SingleInfo[SETINGPOS_POSIX].size = D3DXVECTOR3(0.0f, m_fHeight, m_Length.y*2.0f);
+	m_SingleInfo[SETINGPOS_NEGX].size = D3DXVECTOR3(0.0f, m_fHeight, m_Length.y*2.0f);
+	m_SingleInfo[SETINGPOS_POSIZ].size = D3DXVECTOR3(m_Length.x*2.0f, m_fHeight, 0.0f);
+	m_SingleInfo[SETINGPOS_NEGZ].size = D3DXVECTOR3(m_Length.x*2.0f, m_fHeight,0.0f);
 
 	// 法線ベクトルの設定
-	m_SingleInfo[SETINGPOS_POSIX].size = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
-	m_SingleInfo[SETINGPOS_NEGX].size = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
-	m_SingleInfo[SETINGPOS_POSIZ].size = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-	m_SingleInfo[SETINGPOS_NEGZ].size = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	m_SingleInfo[SETINGPOS_POSIX].nor = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+	m_SingleInfo[SETINGPOS_NEGX].nor = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+	m_SingleInfo[SETINGPOS_POSIZ].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	m_SingleInfo[SETINGPOS_NEGZ].nor = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 
 	// 回転の設定
 	m_SingleInfo[SETINGPOS_POSIX].trans.rot = MYLIB_VEC3_UNSET;
@@ -222,6 +238,19 @@ void CWall::Uninit(void)
 //-------------------------------------------------------------------------------------------------------------
 void CWall::Update(void)
 {
+#ifdef WALL_DEBUG
+	for (int nCntWall = 0; nCntWall < WALL_MAX; nCntWall++)
+	{
+		CDebugProc::Print("壁の位置 %.3f,%.3f,%.3f\n",
+			m_SingleInfo[nCntWall].trans.pos.x,
+			m_SingleInfo[nCntWall].trans.pos.y,
+			m_SingleInfo[nCntWall].trans.pos.z);
+		CDebugProc::Print("壁の大きさ %.3f,%.3f,%.3f\n",
+			m_SingleInfo[nCntWall].size.x,
+			m_SingleInfo[nCntWall].size.y,
+			m_SingleInfo[nCntWall].size.z);
+	}
+#endif
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -236,6 +265,9 @@ void CWall::Draw(void)
 
 	pDevice = CManager::GetRenderer()->GetDevice();		// デバイスの取得
 	pSingleInfo = &m_SingleInfo[0];						// ポインタの初期化
+
+	// Fill Mode の設定
+//	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
 	// ライティングモード無効
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -290,6 +322,9 @@ void CWall::Draw(void)
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 	// 裏面(左回り)をカリングする
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+	// Fill Mode を塗りつぶしに戻す
+	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -336,16 +371,17 @@ HRESULT CWall::MakeVertex(void)
 		pVtx[1].pos = D3DXVECTOR3(pSingleInfo->trans.pos.x + pSingleInfo->size.x, pSingleInfo->trans.pos.y - pSingleInfo->size.y, pSingleInfo->trans.pos.z + pSingleInfo->size.z);
 		pVtx[2].pos = D3DXVECTOR3(pSingleInfo->trans.pos.x - pSingleInfo->size.x, pSingleInfo->trans.pos.y + pSingleInfo->size.y, pSingleInfo->trans.pos.z - pSingleInfo->size.z);
 		pVtx[3].pos = D3DXVECTOR3(pSingleInfo->trans.pos.x + pSingleInfo->size.x, pSingleInfo->trans.pos.y + pSingleInfo->size.y, pSingleInfo->trans.pos.z + pSingleInfo->size.z);
+
 		// 法線ベクトル
 		pVtx[0].nor = pSingleInfo->nor;
 		pVtx[1].nor = pSingleInfo->nor;
 		pVtx[2].nor = pSingleInfo->nor;
 		pVtx[3].nor = pSingleInfo->nor;
 		// 頂点カラー
-		pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[0].col = D3DXCOLOR(0.5f, 0.0f, 0.0f, 1.0f);
+		pVtx[1].col = D3DXCOLOR(0.5f, 0.0f, 0.0f, 1.0f);
+		pVtx[2].col = D3DXCOLOR(0.5f, 0.0f, 0.0f, 1.0f);
+		pVtx[3].col = D3DXCOLOR(0.5f, 0.0f, 0.0f, 1.0f);
 		// texture座標の設定
 		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
 		pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
