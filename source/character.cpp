@@ -214,6 +214,6 @@ void CCharacter::Trans(void)
 {
 	if (m_bTrans)
 	{
-		m_pModelCharacter->ModelRebind(CHARACTER_FOKKER_TRANS);
+		m_pModelCharacter->ModelRebind(CHARACTER_1YASU_TRANS);
 	}
 }

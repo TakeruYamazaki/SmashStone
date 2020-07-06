@@ -48,6 +48,17 @@ public:
 		MOTION_NONE,
 		PLAYER_NEUTRAL = 0,		// プレイヤー ニュートラル
 		PLAYER_RUN,				// プレイヤー 走る
+		PLAYER_JUMP,			// プレイヤー ジャンプ
+		PLAYER_LIFT,			// プレイヤー もの持ち上げる
+		PLAYER_THROW,			// プレイヤー もの投げ
+		PLAYER_ATTACK_0,		// プレイヤー 攻撃1
+		PLAYER_ATTACK_1,		// プレイヤー 攻撃2
+		PLAYER_ATTACK_2,		// プレイヤー 攻撃3
+		PLAYER_ATTACK_3,		// プレイヤー 攻撃4
+		//PLAYER_SMASH,			// プレイヤー スマッシュ
+		//PLAYER_DAMAGE,			// プレイヤー ダメージ
+		//PLAYER_DOWN,			// プレイヤー ダウン
+		//PLAYER_WALLDOWN,		// プレイヤー 壁は貼り付き
 		MOTION_MAX				// 最大値
 	} MOTION_TYPE;
 

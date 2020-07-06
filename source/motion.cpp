@@ -29,7 +29,14 @@ CMotion::MOTION_INFO *CMotion::m_pMotionInfo = nullptr;
 char * CMotion::m_apFileName[CMotion::MOTION_MAX] =
 {
 	{ "data/MOTION/fokker/motion_neutral.txt" },
-	{ "data/MOTION/fokker/motion_run.txt" }
+	{ "data/MOTION/fokker/motion_run.txt" },
+	{ "data/MOTION/fokker/motion_jump.txt" },
+	{ "data/MOTION/fokker/motion_lift.txt" },
+	{ "data/MOTION/fokker/motion_throw.txt" },
+	{ "data/MOTION/fokker/motion_attack_0.txt" },
+	{ "data/MOTION/fokker/motion_attack_1.txt" },
+	{ "data/MOTION/fokker/motion_attack_2.txt" },
+	{ "data/MOTION/fokker/motion_attack_3.txt" }
 };
 
 //=============================================================================
@@ -56,6 +63,9 @@ HRESULT CMotion::Load()
 	// メモリ確保
 	m_pMotionInfo = new CMotion::MOTION_INFO[MOTION_MAX];
 
+	// ブロックコメント
+	CKananLibrary::StartBlockComment("モーションファイルの読み込み開始");
+
 	for (int nCnt = 0; nCnt < MOTION_MAX; nCnt++)
 	{
 		// モデル読み込み
@@ -63,6 +73,9 @@ HRESULT CMotion::Load()
 			// 失敗
 			return E_FAIL;
 	}
+
+	// ブロックコメント
+	CKananLibrary::EndBlockComment("モーションファイルの読み込み終了");
 
 	// 成功
 	return S_OK;
@@ -124,13 +137,11 @@ HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
 						// ファイルを開く
 	pFile = fopen(m_apFileName[motiontype], "r");
 
-	CKananLibrary::StartBlockComment("モーションファイルの読み込み開始");
-
 	// nullcheck
 	if (!pFile)
 	{
 		// ファイル読み込み失敗
-		CKananLibrary::EndBlockComment("モーションファイルを開けませんでした");
+		std::cout << m_apFileName[motiontype] << " の読み込み失敗" << std::endl;
 		return E_FAIL;
 	}
 
@@ -252,7 +263,8 @@ HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
 	// ファイルを閉じる
 	fclose(pFile);
 
-	CKananLibrary::EndBlockComment("モーションファイルの読み込み終了");
+	// デバッグコメント表示
+	std::cout << m_apFileName[motiontype] << " の読み込み完了" << std::endl;
 
 	return S_OK;
 }

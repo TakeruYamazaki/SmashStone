@@ -61,16 +61,21 @@ public:
 	static CGame *Create(void);					// 生成処理
 
 	static void SetGameState(GAMESTATE state)	{ m_gameState = state; }	// ゲームの状態設定
+	static void AddNumStone(void)				{ m_nNumStone++; }			// ストーンの数を加算
+	static void RemoveNumStone(void)			{ m_nNumStone--; }			// ストーンの数を減算
 
 	static GAMESTATE GetGameState(void)			{ return m_gameState; }			// ゲームの状態取得
 	static CPlayer *GetPlayer(int nPlayer)		{ return m_pPlayer[nPlayer]; }	// キャラクターの情報取得処理
 	static CCamera *GetCamera(void)				{ return m_pCamera; }			// カメラの取得
 	static CLight *GetLight(void)				{ return m_pLight; }			// ライトの取得
 	static CMeshField *GetMeshField(void)		{ return m_pMeshField; }		// メッシュフィールドの取得
+	static int GetNumStone(void)				{ return m_nNumStone; }			// ストーンの数を取得
 
 protected:
 
 private:
+	void DecideCreateStone(void);				// ストーンを生成するか決める
+
 	static GAMESTATE m_gameState;				// ゲーム状態
 	static CPlayer *m_pPlayer[MAX_PLAYER];		// プレイヤーの配列ポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドの情報ポインタ
@@ -82,6 +87,8 @@ private:
 	static CHitPoint *m_pHitPoint;				// HPの情報ポインタ
 	static CTime *m_pTime;						// タイムの情報ポインタ
 	static int m_nCounterGameState;				// ゲームの状態管理カウンター
+	static int m_nNumStone;						// 生成したストーンの数
+	static int m_nCntDecide;					// ストーン生成のタイミングを決めるカウンタ
 
 	D3DXMATRIX  m_mtxWorld;						// マトリックス
 };
