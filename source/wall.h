@@ -20,6 +20,10 @@
 //-------------------------------------------------------------------------------------------------------------
 #define WALL_MAX	(4)		// 壁の最大数
 
+#ifdef _DEBUG
+//#define WALL_DEBUG
+#endif
+
 //-------------------------------------------------------------------------------------------------------------
 // クラス定義
 //-------------------------------------------------------------------------------------------------------------
@@ -57,7 +61,7 @@ public:
 
 	/* メンバ関数 */
 	// コンストラクタ
-	inline CWall() : CScene() {}
+	inline CWall() : CScene(CScene::PRIORITY_COLLISION) {}
 	// デストラクタ
 	inline ~CWall() {}
 
@@ -67,6 +71,9 @@ public:
 	static void Unload(void);
 	// 生成
 	static CWall* Create(WALLTEX enmWallTex);
+
+	// 衝突判定
+	bool collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pOut_Intersect,bool bReflection);
 
 	// 初期化
 	void Init(void);
