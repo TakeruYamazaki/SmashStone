@@ -68,7 +68,7 @@ void CPlayer::Init(void)
 	CCharacter::SetModelType(m_type);
 
 	// 当たり判定の設定
-	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), this, C3DBoxCollider::ID_CHARACTER);
+	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), this, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::ID_CHARACTER);
 }
 
 //==================================================================================================================
@@ -86,10 +86,10 @@ void CPlayer::Update(void)
 {
 	// 操作
 	Control();
+
 	// 更新
 	CCharacter::Update();
-	// 当たり判定位置の更新
-	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->GetPos(), MYLIB_3DVECTOR_ZERO);
+
 	// 当たり判定
 	Collision();
 
@@ -166,6 +166,12 @@ void CPlayer::Control(void)
 //==================================================================================================================
 void CPlayer::Collision(void)
 {
+	// 当たり判定位置の更新
+	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
+	// 当たり判定
+	C3DBoxCollider::CollisionBox(this->m_nBoxColliderID, this->m_pos, m_move);
+
+
 	// 壁の取得
 	CWall *pWall = CGame::GetWall();
 

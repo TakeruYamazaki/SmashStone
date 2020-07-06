@@ -52,23 +52,30 @@ public:
 		COLLIDER_TYPE_NORMAL = 0,	// 通常
 		COLLIDER_TYPE_CYLINDER,		// 円柱
 		COLLIDER_TYPE_SPHERE,		// 球体
-		COLLIDER_TYPE_OVERRAP,		// 重なっているかだけ
 		COLLIDER_TYPE_MAX			// 最大
 	} COLLIDER_TYPE;
 
+	typedef enum
+	{
+		COLLIDER_SUB_NORMAL = 0,	// 通常
+		COLLIDER_SUB_OVERRAP,		// 重なっているかだけ
+		COLLIDER_SUB_MAX			// 最大
+	} COLLIDER_SUBTYPE;
+
 	typedef struct
 	{
-		D3DXVECTOR3		difference;		// 差分
-		D3DXVECTOR3		size;			// 大きさ
-		D3DXVECTOR3		pos;			// 位置
-		D3DXVECTOR3		posOld;			// 前回の位置
-		D3DXVECTOR3		Vertex[_3DBOXCOLLIDER_USE_VERTEX];	// 頂点位置
-		D3DXVECTOR3		rot;			// 回転
-		D3DXMATRIX		mtxWorld;		// ワールドマトリックス
-		D3DXVECTOR3		surfaceNom[_3DBOXCOLLIDER_NUM_SURFACE];	// 面の法線
-		bool			bUse;			// 使用フラグ
-		COLLIDER_TYPE	ColliderType;	// 衝突種類
-		CScene			*pScene;		// なにものか判別するため
+		D3DXVECTOR3			difference;		// 差分
+		D3DXVECTOR3			size;			// 大きさ
+		D3DXVECTOR3			pos;			// 位置
+		D3DXVECTOR3			posOld;			// 前回の位置
+		D3DXVECTOR3			Vertex[_3DBOXCOLLIDER_USE_VERTEX];	// 頂点位置
+		D3DXVECTOR3			rot;			// 回転
+		D3DXMATRIX			mtxWorld;		// ワールドマトリックス
+		D3DXVECTOR3			surfaceNom[_3DBOXCOLLIDER_NUM_SURFACE];	// 面の法線
+		bool				bUse;			// 使用フラグ
+		COLLIDER_TYPE		ColliderType;	// 衝突種類
+		COLLIDER_SUBTYPE	ColliderSubType;// 衝突サブタイプ
+		CScene				*pScene;		// なにものか判別するため
 	} _3DBOXCOLLIDER;
 
 	// 読みこんだファイルの単体の情報
@@ -112,7 +119,7 @@ public:
 	// ブロック状の衝突判定
 	static bool CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVECTOR3 &move);
 	// 設定
-	static int Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot ,D3DXVECTOR3 &difference, COLLIDER_TYPE colliType,CScene * pScene);
+	static int Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot, D3DXVECTOR3 &difference, COLLIDER_TYPE colliType, COLLIDER_SUBTYPE ColliderSubType, CScene * pScene);
 	// シーンのポインタを設定
 	static void SetScene(int n3DBoxColliderID, CScene *pScene = NULL);
 	// シーンのポインタを取得
@@ -138,7 +145,7 @@ public:
 	// コライダー情報の読み込み
 	//static int LoadColliderLoad(TRANSFORM *trans, int nID = -1, D3DXVECTOR3 *vtxMax = NULL, D3DXVECTOR3 *vtxMin = NULL, bool bLoad = true, COLLIDER_TYPE Collidertype = COLLIDER_TYPE::COLLIDER_TYPE_OVERRAP);
 	// コライダー情報を設定する
-	static int SetColliderInfo(D3DXVECTOR3 *pPos, CScene *pScene, int nID = ID_CHARACTER);
+	static int SetColliderInfo(D3DXVECTOR3 *pPos, CScene *pScene, COLLIDER_SUBTYPE ColliderSubType = COLLIDER_SUB_NORMAL, int nID = ID_CHARACTER);
 	// 任意のIDをコライダーIDに変換
 	static void ConvertColliderID(int *pID);
 private:

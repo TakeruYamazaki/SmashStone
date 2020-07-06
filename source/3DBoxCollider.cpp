@@ -249,7 +249,7 @@ C3DBoxCollider * C3DBoxCollider::Create(void)
 	// 変数宣言
 	C3DBoxCollider *p3DCollider = new C3DBoxCollider(CScene::PRIORITY_COLLISION);	// 3Dボックスコライダーポインタ
 	// オブジェクトタイプの設定
-	//p3DCollider->SetObjectTyoe(CScene::TYPE_COLLIDER);
+	
 	// 初期化
 	p3DCollider->Init();
 	return p3DCollider;
@@ -718,7 +718,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 		{// 使用していないものは除外
 			continue;
 		}
-		if (pOtherCollider->ColliderType == C3DBoxCollider::COLLIDER_TYPE_OVERRAP)
+		if (pOtherCollider->ColliderSubType == C3DBoxCollider::COLLIDER_SUB_OVERRAP)
 		{// 衝突しているか判別する種類は除く
 			continue;
 		}
@@ -849,7 +849,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 //-------------------------------------------------------------------------------------------------------------
 // 設定
 //-------------------------------------------------------------------------------------------------------------
-int C3DBoxCollider::Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot, D3DXVECTOR3 &difference, COLLIDER_TYPE colliType, CScene * pScene)
+int C3DBoxCollider::Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot, D3DXVECTOR3 &difference, COLLIDER_TYPE colliType, COLLIDER_SUBTYPE ColliderSubType,CScene * pScene)
 {
 	for (int nCntCollider = 0; nCntCollider < _3DBOXCOLLIDER_MAX; nCntCollider++)
 	{
@@ -868,6 +868,7 @@ int C3DBoxCollider::Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot, D
 			m_ColliderInfo[nCntCollider].bUse			= true;				// 使用フラグ
 			m_ColliderInfo[nCntCollider].ColliderType	= colliType;		// 衝突種類
 			m_ColliderInfo[nCntCollider].pScene			= pScene;			// sceneの設定
+			m_ColliderInfo[nCntCollider].ColliderSubType = ColliderSubType;	// サブタイプの設定
 			// 頂点位置の更新
 			SetVertexPosition(pVtx, nCntCollider);
 			SetVertexPosResult(pVtx, nCntCollider);
@@ -1260,7 +1261,7 @@ void C3DBoxCollider::InitColliderInfo(void)
 //-------------------------------------------------------------------------------------------------------------
 // コライダー情報の設定
 //-------------------------------------------------------------------------------------------------------------
-int C3DBoxCollider::SetColliderInfo(D3DXVECTOR3 *pPos, CScene *pScene, int nID)
+int C3DBoxCollider::SetColliderInfo(D3DXVECTOR3 *pPos, CScene *pScene, COLLIDER_SUBTYPE ColliderSubType, int nID)
 {
 	// コライダーIDに変換する
 	ConvertColliderID(&nID);
@@ -1275,7 +1276,7 @@ int C3DBoxCollider::SetColliderInfo(D3DXVECTOR3 *pPos, CScene *pScene, int nID)
 				*pPos,
 				MYLIB_3DVECTOR_ZERO,
 				Mybfunc_iifEx(m_ReadInfoFileBuff.pCell[nCntRead].pDifference != NULL, *m_ReadInfoFileBuff.pCell[nCntRead].pDifference, MYLIB_3DVECTOR_ZERO),
-				(COLLIDER_TYPE)m_ReadInfoFileBuff.pCell[nCntRead].nColliderType,
+				(COLLIDER_TYPE)m_ReadInfoFileBuff.pCell[nCntRead].nColliderType, ColliderSubType,
 				pScene);
 		}
 	}

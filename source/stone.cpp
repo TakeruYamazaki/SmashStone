@@ -312,7 +312,7 @@ CStone * CStone::Create(CONST STONE_ID eumID, CONST D3DXVECTOR3 & pos)
 	// 位置の設定
 	pStone->m_pos = pos;
 	// ボックスコライダーの設定
-	pStone->m_nBoxClliderID = C3DBoxCollider::SetColliderInfo(&pStone->m_pos, pStone, C3DBoxCollider::ID_STONE);
+	pStone->m_nBoxClliderID = C3DBoxCollider::SetColliderInfo(&pStone->m_pos, pStone, C3DBoxCollider::COLLIDER_SUB_OVERRAP , C3DBoxCollider::ID_STONE);
 
 #ifdef CSTONE_DEBUG_DRAW
 	// 全ての個数を増やす
