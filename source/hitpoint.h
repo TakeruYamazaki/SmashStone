@@ -18,6 +18,7 @@
 //==================================================================================================================
 class CBar;
 class CScene;
+class CPlayer;
 
 //==================================================================================================================
 //クラスの定義
@@ -42,24 +43,37 @@ public:
 protected:
 
 private:
+	
+	void Bar0Update(float NowHP);		// バー0の更新処理
+	void Bar1Update(float NowHP);		// バー1の更新処理
+	void Bar2Update(float NowHP);		// バー2の更新処理
+	void Bar3Update(float NowHP);		// バー3の更新処理
+	void Bar4Update(float NowHP);		// バー4の更新処理
 
-	CBar *m_pBar;						// バーの情報ポインタ
-	D3DXVECTOR3 m_pos;					// 位置
-	D3DXVECTOR3 m_rot0;					// 回転
-	D3DXVECTOR3 m_rot1;					// 回転
-	D3DXVECTOR3 m_rot2;					// 回転
-	D3DXVECTOR3 m_rot3;					// 回転
+	static CPlayer *m_pPlayer;// プレイヤーの情報ポインタ
 
-	int m_nCntCol0;						// α値減少用カウンタ
-	int m_nCntCol1;						// α値減少用カウンタ
-	int m_nCntCol2;						// α値減少用カウンタ
-	int m_nCntCol3;						// α値減少用カウンタ
+	CBar *m_pBar;			// バーの情報ポインタ
 
-	float m_fNowHP;						// 現在のHP
-	float m_fMaxHP;						// 最大HP
-	float m_fHeight;					// 縦の長さ
+	D3DXVECTOR3 m_pos;		// 位置
+	D3DXVECTOR3 m_rot0;		// 回転
+	D3DXVECTOR3 m_rot1;		// 回転
+	D3DXVECTOR3 m_rot2;		// 回転
+	D3DXVECTOR3 m_rot3;		// 回転
 
-	bool m_bBar[5];						// バーがあるかどうか
+	int m_nCntCol0;			// α値減少用カウンタ
+	int m_nCntCol1;			// α値減少用カウンタ
+	int m_nCntCol2;			// α値減少用カウンタ
+	int m_nCntCol3;			// α値減少用カウンタ
+	int m_nCntPos0;			// 位置変更用カウンタ
+	int m_nCntPos1;			// 位置変更用カウンタ
+	int m_nCntPos2;			// 位置変更用カウンタ
+	int m_nCntPos3;			// 位置変更用カウンタ
+
+	float m_fNowHP;			// 現在のHP
+	float m_fMaxHP;			// 最大HP
+	float m_fHeight;		// 縦の長さ
+
+	bool m_bBar[5];			// バーがあるかどうか
 };
 
 //==================================================================================================================
