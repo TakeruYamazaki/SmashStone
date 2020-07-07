@@ -11,6 +11,7 @@
 // インクルードファイル
 //==================================================================================================================
 #include "main.h"
+#include <memory>	// スマートポインタの使用に必要
 
 //==================================================================================================================
 // マクロ定義
@@ -31,6 +32,7 @@ class CPlayer;
 class CHitPoint;
 class CTime;
 class CWall;
+class CObjectManager;
 
 //==================================================================================================================
 //
@@ -73,6 +75,7 @@ public:
 	static CMeshField *GetMeshField(void)		{ return m_pMeshField; }		// メッシュフィールドの取得
 	static int GetNumStone(void)				{ return m_nNumStone; }			// ストーンの数を取得
 	static CWall *GetWall(void)					{ return m_pWall; }				// 壁の取得
+	static CObjectManager *GetObjMana(void)		{ return m_pObjMana.get(); }			// オブジェクトマネージャーを取得
 
 protected:
 
@@ -93,6 +96,7 @@ private:
 	static int m_nNumStone;						// 生成したストーンの数
 	static int m_nCntDecide;					// ストーン生成のタイミングを決めるカウンタ
 	static D3DXVECTOR3 m_stonePos[STONE_POS];	// ストーンの生成場所
+	static std::unique_ptr<CObjectManager> m_pObjMana;	// オブジェクトマネージャーのポインタ
 
 	D3DXMATRIX  m_mtxWorld;						// マトリックス
 };
