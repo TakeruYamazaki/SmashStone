@@ -19,11 +19,11 @@ MODEL_FILENAME = data/OBJECT/Fountain.x
 MODEL_FILENAME = data/OBJECT/Roof.x
 MODEL_FILENAME = data/OBJECT/Stairs.x
 MODEL_FILENAME = data/OBJECT/WoodenBox.x
+MODEL_FILENAME = data/OBJECT/LoooseStairs.x
 MODEL_FILENAME = data/OBJECT/flower.x
 MODEL_FILENAME = data/OBJECT/Fountain.x
 MODEL_FILENAME = data/OBJECT/Roof.x
 MODEL_FILENAME = data/OBJECT/Stairs.x
-MODEL_FILENAME = data/OBJECT/WoodenBox.x
 
 #============================================================
 # オブジェクトテクスチャ数
@@ -37,21 +37,51 @@ NUM_TEXTURE = 0
 #============================================================
 # オブジェクト総数
 #============================================================
-NUM_OBJECT = 2
+NUM_OBJECT = 7
 
 #============================================================
 # オブジェクト情報
 #============================================================
 OBJECTSET
 	TYPE = 0
-	POS = -7.0 16.5 7.5
+	POS = 120.0 0.0 190.5
 	ROT = 0.0 0.0 0.0
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 0
-	POS = 0.0 10.0 0.0
+	POS = 120.0 0.0 72.0
 	ROT = 0.0 0.0 0.0
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 1
+	POS = -60.0 0.0 20.0
+	ROT = 0.0 0.0 0.0
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 5
+	POS = 2.5 0.0 -158.0
+	ROT = 0.0 0.0 0.0
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 3
+	POS = 155.5 0.0 -76.0
+	ROT = 0.0 1.6 0.0
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 3
+	POS = 228.0 27.0 -76.0
+	ROT = 0.0 1.6 0.0
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 8
+	POS = 184.0 49.0 142.0
+	ROT = 0.0 1.6 0.0
 END_OBJECTSET
 
 

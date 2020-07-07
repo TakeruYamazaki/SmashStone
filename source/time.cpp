@@ -103,8 +103,8 @@ void CTime::Update(void)
 		}
 	}
 
-	// タイム減少
-	m_dStartTime--;
+	//// タイム減少
+	//m_dStartTime--;
 
 	// タイムが[0]以上とき
 	if (m_dStartTime >= 0)
