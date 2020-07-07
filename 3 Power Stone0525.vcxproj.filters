@@ -127,12 +127,6 @@
     <ClCompile Include="source\number.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\object.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\objManager.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\pause.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
@@ -159,6 +153,12 @@
     </ClCompile>
     <ClCompile Include="source\wall.cpp">
       <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\objManager.cpp">
+      <Filter>object</Filter>
+    </ClCompile>
+    <ClCompile Include="source\object.cpp">
+      <Filter>object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -294,12 +294,6 @@
     <ClInclude Include="source\number.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\object.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\objManager.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\pause.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
@@ -327,6 +321,12 @@
     <ClInclude Include="source\wall.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\objManager.h">
+      <Filter>object</Filter>
+    </ClInclude>
+    <ClInclude Include="source\object.h">
+      <Filter>object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="scene">
@@ -352,6 +352,9 @@
     </Filter>
     <Filter Include="ヘッダーファイル">
       <UniqueIdentifier>{24163b61-51e0-4214-8d77-e3dbf8b1b361}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object">
+      <UniqueIdentifier>{fb8f93b0-20e5-4ed3-a2c3-80fd99b7871e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -110,6 +110,9 @@ void CObjectManager::Update()
 		m_pFakeObject->Update();
 	}
 #endif
+
+	// ImGuiの更新
+	ShowObjectManagerInfo();
 }
 
 //=============================================================================
@@ -128,7 +131,7 @@ void CObjectManager::Draw()
 #ifdef _DEBUG
 	if (m_pFakeObject)
 	{
-		//m_pFakeObject->DrawTransparentObjects();
+		m_pFakeObject->DrawAlpha();
 	}
 #endif
 }
@@ -284,10 +287,8 @@ HRESULT CObjectManager::LoadOffset(void)
 						bCollision = true;
 				}
 
-				// モデル情報をバインド
-				m_pObject[nModel]->BindModel(m_objInfo[nType].modelInfo);
-				// テクスチャ付きのパーツ情報格納
-				m_pObject[nModel]->SetObjInfo(pos, rot, m_objInfo[nType].modelInfo.pTexture, nType, bCollision);
+				// モデル情報格納
+				m_pObject[nModel]->SetObjInfo(pos, rot, &m_objInfo[nType].modelInfo, nType, bCollision);
 
 				// モデル数を加算
 				nModel++;
@@ -357,9 +358,8 @@ HRESULT CObjectManager::LoadFileName(void)
 				printf("読み込んだオブジェクトタイプ数 %d\n", nNumType);
 
 				OBJINFO objInfo;
-
-				// モデル数分繰り返す
-				for (int nCntModel = 0; nCntModel < nNumType; nCntModel++)
+				int nCntModel = 0;
+				while (nCntModel != nNumType)
 				{
 					// 一行読み込み
 					fgets(cReadText, sizeof(cReadText), pFile);
@@ -376,8 +376,12 @@ HRESULT CObjectManager::LoadFileName(void)
 						{
 							// 読み込んだファイル名を表示
 							printf("モデル %s を読み込み\n", &objInfo.modelInfo.cModelName[0]);
+							// テクスチャ無し
+							objInfo.modelInfo.bTex = false;
 							// オブジェクト情報を保存
 							m_objInfo.push_back(objInfo);
+							// モデル数を加算
+							nCntModel++;
 						}
 					}
 				}
@@ -389,7 +393,8 @@ HRESULT CObjectManager::LoadFileName(void)
 				sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_nNumTexture);
 				printf("読み込んだテクスチャ数 %d\n", m_nNumTexture);
 
-				m_pModelIndex = new int[m_nNumTexture];	// テクスチャを割り当てるモデル番号
+				if (m_nNumTexture > 0)
+					m_pModelIndex = new int[m_nNumTexture];	// テクスチャを割り当てるモデル番号
 
 				int nCntTex = 0;
 				// 読み込んだテクスチャ数が設定数になるまで繰り返す
@@ -503,7 +508,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 		if (!m_bObjUse)
 		{
 			// 生成して使用
-			m_pFakeObject = new CObject(CScene::PRIORITY_OBJECT);
+			m_pFakeObject = new CObject();
 			m_bObjUse = true;
 		}
 
@@ -513,10 +518,8 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			// デフォルトタイプとして初期化
 			m_pFakeObject->Init();
 
-			// モデル情報をバインド
-			m_pFakeObject->BindModel(m_objInfo[0].modelInfo);
 			// 初期モデルを設定
-			m_pFakeObject->SetObjInfo(*pCamera->GetPosR(), ZeroVector3, m_objInfo[0].modelInfo.pTexture, 0, false);
+			m_pFakeObject->SetObjInfo(*pCamera->GetPosR(), ZeroVector3, &m_objInfo[0].modelInfo, 0, false);
 		}
 	}
 
@@ -546,10 +549,8 @@ void CObjectManager::ShowObjectManagerInfo(void)
 				m_nFakeType = (int)m_objInfo.size() - 1;
 			}
 
-			// タイプが変わったらモデル変更
-			m_pFakeObject->BindModel(m_objInfo[m_nFakeType].modelInfo);
 			// モデル情報格納
-			m_pFakeObject->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), m_objInfo[m_nFakeType].modelInfo.pTexture, m_nFakeType, false);
+			m_pFakeObject->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), &m_objInfo[m_nFakeType].modelInfo, m_nFakeType, false);
 		}
 
 		// オブジェクトの生成
@@ -559,9 +560,8 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			m_pObject.push_back(CObject::Create());
 			// 初期化・情報設定
 			m_pObject[(int)m_pObject.size() - 1]->Init();
-			m_pObject[(int)m_pObject.size() - 1]->BindModel(m_objInfo[m_nFakeType].modelInfo);
 			// モデル情報格納
-			m_pFakeObject->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), m_objInfo[m_nFakeType].modelInfo.pTexture, m_nFakeType, false);
+			m_pObject[(int)(m_pObject.size() - 1)]->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), &m_objInfo[m_nFakeType].modelInfo, m_nFakeType, false);
 		}
 	}
 
@@ -577,11 +577,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			// ImGuiの更新
 			m_pObject[nCnt]->ShowObjectInfo(cText);
 		}
-	}
 
-	// モデル数分繰り返す
-	for (int nCnt = (int)m_pObject.size() - 1; nCnt > -1; nCnt--)
-	{
 		// リリースが有効
 		if (m_pObject[nCnt]->GetRelease())
 		{
@@ -759,13 +755,15 @@ HRESULT CObjectManager::SaveObject(void)
 					m_pObject[nCnt]->GetRot()->z);
 				fputs(cWriteText, pFile);											//	ROT = GetRot()
 				fputs(COMMENT_NEW_LINE, pFile);											//	\n
-
-				strcpy(cHeadText, "COLLISION_ON");
-				sprintf(cWriteText, "	%s",
-					&cHeadText);
-				fputs(cWriteText, pFile);											//	COLLISION_ON
-				fputs(COMMENT_NEW_LINE, pFile);											//	\n
-
+				
+				if (m_pObject[nCnt]->GetbColl())
+				{
+					strcpy(cHeadText, "COLLISION_ON");
+					sprintf(cWriteText, "	%s",
+						&cHeadText);
+					fputs(cWriteText, pFile);											//	COLLISION_ON
+					fputs(COMMENT_NEW_LINE, pFile);											//	\n
+				}
 
 				strcpy(cWriteText, "END_OBJECTSET\n");
 				fputs(cWriteText, pFile);													// END_OBJECTSET

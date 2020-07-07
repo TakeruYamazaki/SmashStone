@@ -9,56 +9,50 @@ SCRIPT
 #============================================================
 # オブジェクトタイプ数
 #============================================================
-NUM_TYPE = 22
+NUM_TYPE = 10
 
 #============================================================
 # モデルファイル名
 #============================================================
-MODEL_FILENAME = data/OBJECT/model/stone_normal.x
-MODEL_FILENAME = data/OBJECT/model/rock_large.x
-MODEL_FILENAME = data/OBJECT/model/coral.x
-MODEL_FILENAME = data/OBJECT/model/coral_yellow.x
-MODEL_FILENAME = data/OBJECT/model/coral_sky.x
-MODEL_FILENAME = data/OBJECT/model/coral2.x
-MODEL_FILENAME = data/OBJECT/model/coral2_purple.x
-MODEL_FILENAME = data/OBJECT/model/coral3.x
-MODEL_FILENAME = data/OBJECT/model/coral3_gray.x
-MODEL_FILENAME = data/OBJECT/model/coral3_green.x
-MODEL_FILENAME = data/OBJECT/model/mountain.x
-MODEL_FILENAME = data/OBJECT/model/coral_pink.x
-MODEL_FILENAME = data/OBJECT/model/cave_right.x
-MODEL_FILENAME = data/OBJECT/model/cave_center.x
-MODEL_FILENAME = data/OBJECT/model/cave_left.x
-MODEL_FILENAME = data/OBJECT/model/sand.x
-MODEL_FILENAME = data/OBJECT/model/cave_wide.x
-MODEL_FILENAME = data/OBJECT/model/coral_vertical.x
-MODEL_FILENAME = data/OBJECT/model/coral_yellow_vertical.x
-MODEL_FILENAME = data/OBJECT/model/coral_purple_vertical.x
-MODEL_FILENAME = data/OBJECT/model/cave_wall.x
-MODEL_FILENAME = data/OBJECT/model/cave_wall2.x
+MODEL_FILENAME = data/OBJECT/flower.x
+MODEL_FILENAME = data/OBJECT/Fountain.x
+MODEL_FILENAME = data/OBJECT/Roof.x
+MODEL_FILENAME = data/OBJECT/Stairs.x
+MODEL_FILENAME = data/OBJECT/WoodenBox.x
+MODEL_FILENAME = data/OBJECT/flower.x
+MODEL_FILENAME = data/OBJECT/Fountain.x
+MODEL_FILENAME = data/OBJECT/Roof.x
+MODEL_FILENAME = data/OBJECT/Stairs.x
+MODEL_FILENAME = data/OBJECT/WoodenBox.x
 
 #============================================================
 # オブジェクトテクスチャ数
 #============================================================
-NUM_TEXTURE = 1
+NUM_TEXTURE = 0
 
 #============================================================
 # テクスチャファイル名
 #============================================================
-TEXTURE_FILENAME = data/TEXTURE/Ground.jpg : MODEL = 10
 
 #============================================================
 # オブジェクト総数
 #============================================================
-NUM_OBJECT = 1
+NUM_OBJECT = 2
 
 #============================================================
 # オブジェクト情報
 #============================================================
 OBJECTSET
-	TYPE = 5
-	POS = -664.3 33.6 301.4
+	TYPE = 0
+	POS = -7.0 16.5 7.5
 	ROT = 0.0 0.0 0.0
 END_OBJECTSET
+
+OBJECTSET
+	TYPE = 0
+	POS = 0.0 10.0 0.0
+	ROT = 0.0 0.0 0.0
+END_OBJECTSET
+
 
 END_SCRIPT
