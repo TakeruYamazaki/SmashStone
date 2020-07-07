@@ -16,8 +16,9 @@
 // マクロ定義
 //==================================================================================================================
 #define TEXTURE_BAR 10												// テクスチャの最大数
-#define MAX_WIDTH 40.0f												// 横の最大サイズ
-#define MAX_HEIGHT 150.0f											// 縦の最大サイズ
+#define MAX_WIDTH 35.0f												// 横の最大サイズ
+#define MAX_HEIGHT 120.0f											// 縦の最大サイズ
+#define MAX_HEIGHT_FREAME 125.0f									// フレームの縦サイズ
 
 //==================================================================================================================
 // クラスの定義
@@ -67,11 +68,5 @@ private:
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;					// 頂点バッファ
 	VERTEX_2D *m_pVtx;									// 頂点格納
-
-	D3DXVECTOR3 m_pos;									// 位置
-	D3DXVECTOR3 m_rot;									// 回転
-
-	float m_fLength;									// 長さ
-	float m_fAngle;										// 角度
 };
 #endif

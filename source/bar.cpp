@@ -64,12 +64,6 @@ void CBar::Init(void)
 	CRenderer *pRenderer = CManager::GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();					// デバイスを取得する
 
-	//　初期化
-	m_pos = D3DXVECTOR3(0, 0, 0);		// 位置
-	m_rot = D3DXVECTOR3(0, 0, 0);		// 回転
-	m_fLength = (float)sqrt((MAX_WIDTH / 2) * (MAX_WIDTH / 2) + (MAX_HEIGHT / 2) * (MAX_HEIGHT / 2));	// 長さ
-	m_fAngle = atan2f((MAX_WIDTH / 2), (MAX_HEIGHT / 2));												// 角度
-
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * TEXTURE_BAR,
 		D3DUSAGE_WRITEONLY,
@@ -187,7 +181,7 @@ void CBar::SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth,
 	// 頂点データの範囲をロックし、頂点バッファへのポインタ取得
 	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
 
-	m_pVtx += index * 4;					// 頂点を4つずつ加算
+	m_pVtx += index * 4;	// 頂点を4つずつ加算
 
 	// 頂点座標の設定(右回りで設定する)
 	m_pVtx[0].pos.x = pos.x - fWidth / 2;
