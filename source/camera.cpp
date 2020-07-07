@@ -64,8 +64,8 @@ CCamera::~CCamera()
 void CCamera::Init(void)
 {
 	// 変数の初期化
-	m_posV = D3DXVECTOR3(0.0f, 100.0f, -200.0f);		// 視点
-	m_posVDest = D3DXVECTOR3(0.0f, 100.0f, -200.0f);	// 視点の目標地点
+	m_posV = D3DXVECTOR3(0.0f, 150.0f, -500.0f);		// 視点
+	m_posVDest = D3DXVECTOR3(0.0f, 150.0f, -500.0f);	// 視点の目標地点
 	m_posR = D3DXVECTOR3(0.0f, 10.0f, 0.0f);			// 注視点
 	m_posRDest = D3DXVECTOR3(0.0f, 10.0f, 0.0f);		// 注視点の目標地点
 	m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				// 上方向ベクトル
