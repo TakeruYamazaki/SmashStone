@@ -48,7 +48,7 @@ public:
 	CInputGamepad();										// コンストラクタ
 	~CInputGamepad();										// デストラクタ
 
-	HRESULT Init(HINSTANCE hInstance, HWND hWnd);			// 初期化
+	HRESULT Init(HINSTANCE hInstance, HWND hWnd, int nIndex); // 初期化
 	void Uninit(void);										// 終了
 	void Update(void);										// 更新
 
@@ -69,6 +69,7 @@ private:
 
 	XINPUT_STATE		m_state;							// コントローラーの状態
 	XINPUT_STATE		m_stateOld;							// コントローラーの前回の状態
+	int					m_nIndexPlayer;						// プレイヤーの番号
 	bool				m_bConnect;							// 接続されているか
 	bool				m_bVibration;						// 振動するか
 	static bool			m_bAllVib;							// ゲーム内の振動するかの設定

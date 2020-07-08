@@ -679,24 +679,45 @@ HRESULT CKananLibrary::Pause(CInputKeyboard * Key, CInputGamepad * pGamepad)
 HRESULT CKananLibrary::GetMoveByKeyboard(CInputKeyboard * pKey, int nPlayer)
 {
 	// 入力されていない
-	if (	(nPlayer == 0 && 
+	if (	(nPlayer == PLAYER_ONE && 
 		(!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_ONE::ONE_UP)	 &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_ONE::ONE_DOWN)	 &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_ONE::ONE_RIGHT) &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_ONE::ONE_LEFT) &&
-		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_ONE::ONE_JUMP))) ||
-			(nPlayer == 1 &&
+		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_ONE::ONE_JUMP) && 
+		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_ONE::ONE_ATTACK) )) ||
+			(nPlayer == PLAYER_TWO &&
 		(!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_UP) &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_DOWN) &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_RIGHT) &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_LEFT) &&
-		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_TWO::TWO_JUMP))))
+		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_TWO::TWO_JUMP) && 
+		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_TWO::TWO_ATTACK))))
 	{
 		// 移動していない
 		return E_FAIL;
 	}
 
 	// 移動している
+	return S_OK;
+}
+
+//=============================================================================
+// ゲームパッドで移動入力しているかの確認
+//=============================================================================
+HRESULT CKananLibrary::GetMoveByGamepad(CInputGamepad * pGamepad)
+{
+	// 入力されていない
+	if ((!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A) &&
+		!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_B) &&
+		!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X) &&
+		!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_Y)))
+	{
+		// 操作していない
+		return E_FAIL;
+	}
+
+	// 操作している
 	return S_OK;
 }
 

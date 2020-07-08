@@ -82,7 +82,7 @@ protected:
 	bool		m_bJump;							// ジャンプしたかどうか
 	bool		m_bWalk;							// 歩いてるかどうか
 	bool		m_bTrans;							// 変身しているか
-
+	bool		m_bAttack;							// 攻撃しているか
 	static int	m_nNumCharacter;					// キャラクターの総数
 
 private:
@@ -90,6 +90,10 @@ private:
 	void Rot(void);									// 回転関数
 	void Motion(void);								// モーション関数
 	void Trans(void);								// 変身関数
+	void IchiyasuMotion(void);						// 1ヤスのモーション
+
+	int m_nAttackFrame;								// 攻撃モーション切り替えのカウンタ
+	int m_nAttackFlow;								// 攻撃の流れ
 };
 
 #endif

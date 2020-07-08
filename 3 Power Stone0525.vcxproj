@@ -215,7 +215,7 @@
     <ClInclude Include="source\bar.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\character.h" />
-    <ClInclude Include="source\charaICHIYAS.h" />
+    <ClInclude Include="source\ichiyasu.h" />
     <ClInclude Include="source\charaKURURU.h" />
     <ClInclude Include="source\charaNYAS.h" />
     <ClInclude Include="source\charaZAVAEL.h" />

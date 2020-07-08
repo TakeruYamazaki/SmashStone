@@ -110,7 +110,8 @@ typedef enum
 	ONE_DOWN = DIK_S,		// 下入力
 	ONE_LEFT = DIK_A,		// 左入力
 	ONE_RIGHT = DIK_D,		// 右入力
-	ONE_JUMP = DIK_SPACE	// ジャンプ入力
+	ONE_JUMP = DIK_SPACE,	// ジャンプ入力
+	ONE_ATTACK = DIK_N		// 攻撃入力
 } PLAYER_MOVE_KEY_ONE;
 
 typedef enum
@@ -119,7 +120,8 @@ typedef enum
 	TWO_DOWN = DIK_DOWNARROW,		// 下入力
 	TWO_LEFT = DIK_LEFTARROW,		// 左入力
 	TWO_RIGHT = DIK_RIGHTARROW,		// 右入力
-	TWO_JUMP = DIK_NUMPAD0			// ジャンプ入力
+	TWO_JUMP = DIK_NUMPAD0,			// ジャンプ入力
+	TWO_ATTACK = DIK_NUMPAD2		// 攻撃入力
 } PLAYER_MOVE_KEY_TWO;
 
 typedef enum
@@ -131,6 +133,13 @@ typedef enum
 	CHARACTER_2YASU_TRANS,	// 2ヤス変身
 	CHARACTER_MAX			// キャラクターの最大数
 } CHARACTER_TYPE;
+
+typedef enum
+{	// プレイヤー数
+	PLAYER_ONE = 0,	// 1P
+	PLAYER_TWO,		// 2P
+	PLAYER_MAX		// 最大数
+} NUM_PLAYER;
 
 // ===================================================================
 // クラス定義
@@ -178,7 +187,8 @@ public:
 	static HRESULT Decide(CInputKeyboard *Key,	CInputGamepad *pGamepad);	// 決定入力
 	static HRESULT Return(CInputKeyboard *Key,	CInputGamepad *pGamepad);	// 戻り入力
 	static HRESULT Pause(CInputKeyboard *Key,	CInputGamepad *pGamepad);	// ポーズ入力
-	static HRESULT GetMoveByKeyboard(CInputKeyboard *pKey, int nPlayer);		// キーボードで移動入力しているか取得
+	static HRESULT GetMoveByKeyboard(CInputKeyboard *pKey, int nPlayer);	// キーボードで移動入力しているか取得
+	static HRESULT GetMoveByGamepad(CInputGamepad *pGamepad);					// ゲームパッドで相殺しているか取得
 
 	static float OutputSqrt(D3DXVECTOR3 difpos);				// 平方根計算
 	static float OutputDistance(D3DXVECTOR3 difpos);			// 距離計算

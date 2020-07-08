@@ -210,9 +210,6 @@
     <ClInclude Include="source\character.h">
       <Filter>character</Filter>
     </ClInclude>
-    <ClInclude Include="source\charaICHIYAS.h">
-      <Filter>character</Filter>
-    </ClInclude>
     <ClInclude Include="source\charaKURURU.h">
       <Filter>character</Filter>
     </ClInclude>
@@ -326,6 +323,9 @@
     </ClInclude>
     <ClInclude Include="source\object.h">
       <Filter>object</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ichiyasu.h">
+      <Filter>character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -63,11 +63,11 @@ std::unique_ptr<CObjectManager>	CGame::m_pObjMana	= nullptr;						// ƒIƒuƒWƒFƒNƒ
 
 D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ƒXƒg[ƒ“‚Ì¶¬êŠ
 {
-	ZeroVector3,
-	D3DXVECTOR3(100.0f, 0.0f, 100.0f),
-	D3DXVECTOR3(100.0f, 0.0f, -100.0f),
-	D3DXVECTOR3(-100.0f, 0.0f, 100.0f),
-	D3DXVECTOR3(-100.0f, 0.0f, -100.0f)
+	D3DXVECTOR3(0.0f, 20.0f, 0.0f),
+	D3DXVECTOR3(100.0f, 20.0f, 100.0f),
+	D3DXVECTOR3(100.0f, 20.0f, -100.0f),
+	D3DXVECTOR3(-100.0f, 20.0f, 100.0f),
+	D3DXVECTOR3(-100.0f, 20.0f, -100.0f)
 };
 
 //==================================================================================================================
@@ -309,8 +309,21 @@ CGame * CGame::Create(void)
 //==================================================================================================================
 void CGame::DecideCreateStone(void)
 {
+	// —”‰»
+	srand((unsigned int)time(NULL));
+
 	// ƒJƒEƒ“ƒ^‚ð‰ÁŽZ
 	m_nCntDecide++;
+
+#ifdef _DEBUG
+	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_1) && 
+		m_nNumStone + GetPlayer(0)->GetNumStone() + GetPlayer(1)->GetNumStone() < 3)
+	{
+		// Œˆ‚ß‚ç‚ê‚½ˆÊ’u‚©‚çƒ‰ƒ“ƒ_ƒ€‚Å¶¬
+		CStone::Create(CStone::STONE_ID_DEFAULT, m_stonePos[rand() % STONE_POS + 1]);
+		m_nNumStone++;
+	}
+#endif
 
 	// ŽžŠÔˆÈ“à
 	if (m_nCntDecide <= TIME_CREATE_STONE)
@@ -318,9 +331,6 @@ void CGame::DecideCreateStone(void)
 		// ˆ—‚ðI‚¦‚é
 		return;
 	}
-
-	// —”‰»
-	srand((unsigned int)time(NULL));
 
 	if (m_nNumStone + GetPlayer(0)->GetNumStone() + GetPlayer(1)->GetNumStone() < 3)
 	{

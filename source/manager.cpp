@@ -67,11 +67,10 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 	{
 		// コントローラー初期化
-		if (FAILED(m_pInputGamepad[nCnt]->Init(hInstance, hWnd)))
+		m_pInputGamepad[nCnt]->Init(hInstance, hWnd, nCnt);
+		if (!m_pInputGamepad[nCnt]->GetbConnect())
 		{
 			printf("ゲームパッド[%d]が読み込まれていません\n", nCnt);
-			m_pInputGamepad[nCnt]->Uninit();
-			m_pInputGamepad[nCnt] = nullptr;
 		}
 	}
 

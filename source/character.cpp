@@ -46,6 +46,9 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_move				= ZeroVector3;
 	m_nCntTrans			= 0;
 	m_nCntMove			= 0;
+	m_nAttackFlow		= 0;
+	m_nAttackFrame		= 0;
+	m_bAttack			= false;
 	m_bJump				= false;
 	m_bWalk				= false;
 	m_nMaxLife			= LIFE_DEFAULT;
@@ -149,6 +152,9 @@ void CCharacter::SetModelType(CHARACTER_TYPE type)
 	// モデルの生成
 	m_pModelCharacter = CModelCharacter::Create(type);
 
+	m_type = type;
+	m_typeTrans = (CHARACTER_TYPE)(type + 1);
+
 	// ワールドマトリックスの設定
 	m_pModelCharacter->SetCharacterMtx(&m_mtxWorld);
 }
@@ -206,10 +212,23 @@ void CCharacter::Rot(void)
 //=============================================================================
 void CCharacter::Motion(void)
 {
-	if (!m_bWalk)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);
+	/*if (!m_bWalk)
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// 移動してない
 	else
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);		// 移動してる*/
+	
+	// 攻撃中であれば、攻撃フレーム加算
+	if (m_bAttack)
+		m_nAttackFrame--;
+
+	// タイプごとの処理分け
+	switch (m_type)
+	{
+		// 1ヤス
+	case CHARACTER_1YASU:
+		IchiyasuMotion();
+		break;
+	}
 }
 
 //=============================================================================
@@ -229,7 +248,7 @@ void CCharacter::Trans(void)
 	if (m_nCntTrans < TIME_TRANS)
 	{
 		// モデルを変身用にバインド
-		m_pModelCharacter->ModelRebind(CHARACTER_1YASU_TRANS);
+		m_pModelCharacter->ModelRebind(m_typeTrans);
 		return;
 	}
 	// ストーンの取得数を初期化
@@ -241,5 +260,70 @@ void CCharacter::Trans(void)
 	// 変身を解除
 	m_bTrans = false;
 	// モデルの再バインド
-	m_pModelCharacter->ModelRebind(CHARACTER_1YASU);
+	m_pModelCharacter->ModelRebind(m_type);
+}
+
+//=============================================================================
+// 1ヤスのモーション
+//=============================================================================
+void CCharacter::IchiyasuMotion(void)
+{
+	// 攻撃フレームが総フレームを超える
+	/*if (!m_nAttackFrame >= m_pModelCharacter->GetAllFrame())
+	{
+		return;
+	}*/
+
+	/*if (!m_bAttack)
+	{
+		if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_M))
+		{
+			m_pModelCharacter->SetMotion(CMotion::PLAYER_ATTACK_0);
+			m_nAttackFlow++;
+			m_nAttackFrame = 60;
+			m_bAttack = true;
+			m_bWalk = false;
+		}
+	}
+	else
+	{
+		// SPACEキー
+		if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_M))
+		{
+			// モーション切り替え
+			switch (m_nAttackFlow)
+			{
+			case 1:
+				if (m_nAttackFrame < 15)
+				{
+					m_pModelCharacter->SetMotion(CMotion::PLAYER_ATTACK_1);
+					m_nAttackFrame = 40;
+					m_nAttackFlow++;
+				}
+				break;
+			case 2:
+				if (m_nAttackFrame < 10)
+				{
+					m_pModelCharacter->SetMotion(CMotion::PLAYER_ATTACK_2);
+					m_nAttackFrame = 40;
+					m_nAttackFlow++;
+				}
+				break;
+			case 3:
+				if (m_nAttackFrame < 10)
+				{
+					m_pModelCharacter->SetMotion(CMotion::PLAYER_ATTACK_3);
+					m_nAttackFrame = 150;
+					m_nAttackFlow = 0;
+				}
+				break;
+			}
+		}
+	}*/
+
+	/*if (m_bAttack)
+	{
+		m_nAttackFrame = 0;
+		m_nAttackFlow++;
+	}*/
 }

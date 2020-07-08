@@ -44,6 +44,7 @@ public:
 	static int GetPartsNum(CHARACTER_TYPE type) { return m_pModelCharacter[type].nNumParts; }	// キャラクターのパーツ数を取得
 	CMotion::MOTION_TYPE GetMotion(void)		{ return m_motion; }							// モーションを取得
 	CModelParts *GetModelParts(void)			{ return m_pModelParts; }						// モデルパーツの取得
+	int GetAllFrame(void)						{ return m_nAllFrame; }							// 現在のモーションの総フレーム数を取得
 
 private:
 	static MODELCHARACTER m_pModelCharacter[CHARACTER_MAX];			// 全てのモデルキャラクタの情報格納
@@ -53,6 +54,7 @@ private:
 	CMotion::MOTION_TYPE m_motion;									// モーション情報
 	int m_nFrame;													// 現在のフレーム
 	int m_nKey;														// 現在のキー
+	int m_nAllFrame;												// 現在のモーションの総フレーム
 
 	HRESULT LoadOffset(CHARACTER_TYPE type);						// オフセット読み込み
 	static HRESULT LoadFileName(CHARACTER_TYPE type);				// モデル名読み込み

@@ -32,9 +32,26 @@ CInputGamepad::~CInputGamepad()
 // ===================================================================
 // 初期化
 // ===================================================================
-HRESULT CInputGamepad::Init(HINSTANCE hInstance, HWND hWnd)
+HRESULT CInputGamepad::Init(HINSTANCE hInstance, HWND hWnd, int nIndex)
 {
 	m_bVibration = false;
+
+	// プレイヤー番号の保存
+	m_nIndexPlayer = nIndex;
+
+	// 初期化
+	ZeroMemory(&m_state, sizeof(XINPUT_STATE));
+
+	// コントローラーステートの取得
+	DWORD dwResult = XInputGetState(m_nIndexPlayer, &m_state);
+
+	// 取得できた
+	if (dwResult == ERROR_SUCCESS)
+		m_bConnect = true;
+	// できなかった
+	else
+		m_bConnect = false;
+
 	return S_OK;
 }
 
@@ -94,7 +111,7 @@ HRESULT CInputGamepad::UpdateControlState(void)
 	ZeroMemory(&m_state, sizeof(XINPUT_STATE));
 
 	// コントローラーステートの取得
-	DWORD dwResult = XInputGetState(0, &m_state);
+	DWORD dwResult = XInputGetState(m_nIndexPlayer, &m_state);
 
 	// 取得できた
 	if (dwResult == ERROR_SUCCESS)

@@ -43,6 +43,7 @@ CModelCharacter::CModelCharacter()
 {
 	// 初期化
 	m_pModelParts = nullptr;
+	m_nAllFrame = 0;
 }
 
 //=============================================================================
@@ -345,6 +346,16 @@ void CModelCharacter::SetCharacterMtx(D3DXMATRIX *mtx)
 void CModelCharacter::SetMotion(CMotion::MOTION_TYPE motiontype)
 {
 	m_motion = motiontype;
+
+	// モーションの総フレームを格納する
+	m_nAllFrame = 0;
+
+	// キー数分繰り返す
+	for (int nCnt = 0; nCnt < CMotion::GetNumKey(m_motion); nCnt++)
+	{
+		// フレーム数を加算する
+		m_nAllFrame += CMotion::GetFrame(m_motion, nCnt);
+	}
 }
 
 //=============================================================================

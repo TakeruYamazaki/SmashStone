@@ -55,7 +55,8 @@ public:
 		PLAYER_ATTACK_1,		// プレイヤー 攻撃2
 		PLAYER_ATTACK_2,		// プレイヤー 攻撃3
 		PLAYER_ATTACK_3,		// プレイヤー 攻撃4
-		//PLAYER_SMASH,			// プレイヤー スマッシュ
+		PLAYER_SMASH_CHARGE,	// プレイヤー スマッシュチャージ
+		PLAYER_SMASH,			// プレイヤー スマッシュ
 		//PLAYER_DAMAGE,			// プレイヤー ダメージ
 		//PLAYER_DOWN,			// プレイヤー ダウン
 		//PLAYER_WALLDOWN,		// プレイヤー 壁は貼り付き
@@ -73,7 +74,7 @@ public:
 	static D3DXVECTOR3 GetPosDest(MOTION_TYPE motiontype, int nKey, int nIndex)
 		{ return m_pMotionInfo[motiontype].pKeyInfo[nKey].pKey[nIndex].posDest; }	// モーションの回転のゴール取得
 	static int GetFrame(MOTION_TYPE motiontype, int nKey) 
-		{ return m_pMotionInfo[motiontype].pKeyInfo[nKey].nFrame; }					// モーションの総フレーム数の朱徳
+		{ return m_pMotionInfo[motiontype].pKeyInfo[nKey].nFrame; }					// モーションの総フレーム数の取得
 	static int GetNumKey(MOTION_TYPE motiontype) 
 		{ return m_pMotionInfo[motiontype].nNumKey; }								// モーションの総キー数の取得
 	static bool GetLoop(MOTION_TYPE motiontype) 

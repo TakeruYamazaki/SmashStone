@@ -68,6 +68,7 @@ protected:
 private:
 	void Control(void);								// 操作関数
 	void Collision(void);							// 当たり判定関数
+	void Attack(void);								// 攻撃関数
 
 	void ControlGamepad(CInputGamepad *pGamepad);	// ゲームパッド操作
 	void ControlKeyboard(CInputKeyboard *pKeyboard);// キーボード操作
