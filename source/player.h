@@ -31,7 +31,6 @@ class CMeshField;
 class CInputKeyboard;
 class CInputGamepad;
 class CFade;
-
 //==================================================================================================================
 //
 // プレイヤークラスの定義
@@ -62,7 +61,7 @@ public:
 	static CPlayer *Create(int nPlayer, CHARACTER_TYPE type);	// 生成処理
 
 	int GetNumStone(void)	{ return m_nNumStone; }	// 取得したストーンの数を取得
-
+	inline int GetBoxColliderID(void) { return m_nBoxColliderID; }
 protected:
 
 private:
@@ -70,9 +69,13 @@ private:
 	void Collision(void);							// 当たり判定関数
 	void Attack(void);								// 攻撃関数
 
+	CPlayer*GetAnotherPlayer(void);					// 違うプレイヤーの取得
+
 	void ControlGamepad(CInputGamepad *pGamepad);	// ゲームパッド操作
 	void ControlKeyboard(CInputKeyboard *pKeyboard);// キーボード操作
 	void CatchStone(void);							// ストーンの取得判定
+
+	inline bool BlowAway(CPlayer *pAnother);		// 吹き飛ぶ
 
 	int m_nPlayer;			// プレイヤー番号
 	int m_nBoxColliderID;	// ボックスコライダーID

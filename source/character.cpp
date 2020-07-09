@@ -18,6 +18,8 @@
 #include "motion.h"
 #include "game.h"
 #include "meshField.h"
+#include "modelParts.h"
+#include "CylinderCollider.h"
 
 //=============================================================================
 // マクロ定義
@@ -51,6 +53,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_bAttack			= false;
 	m_bJump				= false;
 	m_bWalk				= false;
+	m_bBlowAway			= false;
 	m_nMaxLife			= LIFE_DEFAULT;
 	m_nLife				= m_nMaxLife;
 
@@ -77,7 +80,6 @@ CCharacter::~CCharacter()
 //=============================================================================
 void CCharacter::Init()
 {
-
 }
 
 //=============================================================================
@@ -157,6 +159,33 @@ void CCharacter::SetModelType(CHARACTER_TYPE type)
 
 	// ワールドマトリックスの設定
 	m_pModelCharacter->SetCharacterMtx(&m_mtxWorld);
+
+	// シリンダーコライダーの設定
+	SetCylinderCoillider();
+
+}
+
+//=============================================================================
+// シリンダーコライダーの設定
+//=============================================================================
+void CCharacter::SetCylinderCoillider(void)
+{
+	// パーツのポインタ
+	CModelParts *pParts = m_pModelCharacter->GetModelParts();
+
+	// 右前腕の設定
+	m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R] =
+		CCylinderCoillider::Create(CCylinderCoillider::TYPEID_FOREARM_R, pParts[CModelParts::PARTSNAME_LOWARM_R].GetMtx());
+	// 右上腕の設定
+	m_pCyliColi[CCylinderCoillider::TYPEID_UPPERARM_R] =
+		CCylinderCoillider::Create(CCylinderCoillider::TYPEID_UPPERARM_R, pParts[CModelParts::PARTSNAME_UPARM_R].GetMtx());
+	// 左前腕の設定
+	m_pCyliColi[CCylinderCoillider::TYPEID_FOREARM_L] =
+		CCylinderCoillider::Create(CCylinderCoillider::TYPEID_FOREARM_L, pParts[CModelParts::PARTSNAME_LOWARM_L].GetMtx());
+	// 左上腕の設定
+	m_pCyliColi[CCylinderCoillider::TYPEID_UPPERARM_L] =
+		CCylinderCoillider::Create(CCylinderCoillider::TYPEID_UPPERARM_L, pParts[CModelParts::PARTSNAME_UPARM_L].GetMtx());
+
 }
 
 //=============================================================================
@@ -170,7 +199,20 @@ void CCharacter::Move(void)
 	D3DXVECTOR3 difMove;	// 現在の移動値と目的の移動値の差
 
 	// 慣性
-	CKananLibrary::InertiaMoveXZ(&m_move);
+	if (m_bBlowAway == true)
+	{
+		if (abs(m_move.x) <= 5.0f &&
+			abs(m_move.z) <= 5.0f)
+		{
+			m_bBlowAway = false;
+		}
+		CMylibrary::SlowingMove(&m_move.x,0.005f);
+		CMylibrary::SlowingMove(&m_move.z,0.005f);
+	}
+	else
+	{
+		CKananLibrary::InertiaMoveXZ(&m_move);
+	}
 
 	// 重力
 	if (m_bJump)
