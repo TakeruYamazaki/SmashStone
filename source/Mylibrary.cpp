@@ -568,7 +568,7 @@ float CMylibrary::GetFlatVecLength(D3DXVECTOR3 * vec)
 	return sqrtf(vec->x*vec->x + vec->z*vec->z) *0.5f;
 }
 
-//* [contents] 3Dの2D上のベクトルの長さを求める
+//* [contents] 3Dのベクトルの長さを求める
 //* [in] 3Dvec
 //* [out] 生成したベクトルの長さ
 float CMylibrary::Get3DVecLength(D3DXVECTOR3 * vec)
@@ -648,6 +648,27 @@ float CMylibrary::Get3DToDiffDistance(D3DXVECTOR3 *diffPos)
 void CMylibrary::Get3DToPointDistance(float *Length, D3DXVECTOR3 *diffPos)
 {
 	*Length = sqrtf(diffPos->x*diffPos->x + diffPos->y*diffPos->y + diffPos->z*diffPos->z);
+}
+
+//* [contents] ポリゴンの裏にいるかテスト
+//* [in] 頂点位置A, 頂点位置B, 頂点位置C , 位置P(点P)
+//* [return] bool （範囲内 == true 範囲外 == false）
+bool CMylibrary::TestIfPolygonBack(CONST D3DXVECTOR3 & posA, CONST D3DXVECTOR3 & posP, CONST D3DXVECTOR3 & nom)
+{
+	// 変数宣言
+	float fDotResult;						// 内積の結果
+	D3DXVECTOR3 vecAP = posP - posA;		// BP辺
+											// 内積計算
+	fDotResult = D3DXVec3Dot(&nom, &vecAP);
+	// 内積結果で表裏判定
+	if (fDotResult <= 0.0f)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 //* [contents] ポリゴンの範囲にいるかテスト

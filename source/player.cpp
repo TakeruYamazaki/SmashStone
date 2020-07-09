@@ -27,6 +27,9 @@
 #include "3DBoxCollider.h"
 #include "stone.h"
 #include "wall.h"
+#include "CylinderCollider.h"
+#include "motion.h"
+#include "Reflection.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -36,6 +39,8 @@
 
 #define POS_1P	(D3DXVECTOR3(0.0f, 0.0f, 100.0f))	// 1Pプレイヤーの初期座標
 #define POS_2P	(D3DXVECTOR3(0.0f, 0.0f, -100.0f))	// 2Pプレイヤーの初期座標
+
+#define BLOWAWAYFORCE		(100.0f)
 
 //==================================================================================================================
 // マクロ定義
@@ -86,8 +91,11 @@ void CPlayer::Uninit(void)
 //==================================================================================================================
 void CPlayer::Update(void)
 {
-	// 操作
-	Control();
+	if (m_bBlowAway == false)
+	{
+		// 操作
+		Control();
+	}
 
 	// 更新
 	CCharacter::Update();
@@ -97,6 +105,8 @@ void CPlayer::Update(void)
 
 	// ストーンの取得判定
 	CatchStone();
+
+	CDebugProc::Print("プレイヤーの位置 [%.4f][%.4f][%.4f]\n", m_pos.x, m_pos.y, m_pos.z);
 	
 #ifdef _DEBUG
 	ShowDebugInfo();
@@ -173,6 +183,37 @@ void CPlayer::Control(void)
 //==================================================================================================================
 void CPlayer::Collision(void)
 {
+	// 違うプレイヤーの取得
+	CPlayer *pAnother = GetAnotherPlayer();
+	// 違うプレイヤーがスマッシュを使っていた時
+	if (pAnother->m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH)
+	{
+		// 違うプレイヤーの3Dボックスコライダーの取得
+		int nAnothertBoxColliderID = pAnother->GetBoxColliderID();
+		
+		// シリンダーコライダーの衝突判定
+		if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true)
+		{
+			// 吹っ飛ぶ
+			BlowAway(pAnother);
+		}
+		else
+		{
+		}
+		// シリンダーコライダーの衝突判定
+		if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
+		{
+			// ダメージ
+			this->Damage(0);
+			// 吹っ飛ぶ
+			BlowAway(pAnother);
+		}
+		else
+		{
+		}
+	}
+
+
 	// 当たり判定位置の更新
 	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
 	// 当たり判定
@@ -185,10 +226,21 @@ void CPlayer::Collision(void)
 	// 出力される交点
 	D3DXVECTOR3 out_intersect = ZeroVector3;
 	// スマッシュによる跳ね返りを受けているか
-	bool bReflection = false;
-
+	bool bReflection = true;
+	// 出力される法線
+	D3DXVECTOR3 out_nor = ZeroVector3;
 	// 壁との当たり判定
-	pWall->Collision(&m_pos, &m_posOld, &out_intersect, bReflection);
+	if (pWall->Collision(&m_pos, &m_posOld, &out_intersect,&out_nor, bReflection) == true)
+	{
+		if (bReflection == true &&
+			out_nor != ZeroVector3 &&
+			out_intersect != ZeroVector3)
+		{
+			// ダメージ
+			this->Damage(2);
+			CReflection::GetPlaneReflectingAfterPosAndVec(&this->m_pos,&this->m_move, &out_intersect, &this->m_move, &out_nor);
+		}
+	}
 }
 
 //==================================================================================================================
@@ -198,6 +250,14 @@ void CPlayer::Attack(void)
 {
 	if (!m_bAttack)
 		return;
+}
+
+//==================================================================================================================
+// 違うプレイヤーの取得
+//==================================================================================================================
+CPlayer * CPlayer::GetAnotherPlayer(void)
+{
+	return (this->m_nPlayer == PLAYER_ONE) ? CGame::GetPlayer(PLAYER_TWO) : CGame::GetPlayer(PLAYER_ONE);
 }
 
 //==================================================================================================================
@@ -466,6 +526,32 @@ void CPlayer::CatchStone(void)
 			// 変身
 			this->m_bTrans = true;
 	}
+}
+
+//==================================================================================================================
+// 吹き飛ぶ
+//==================================================================================================================
+inline bool CPlayer::BlowAway(CPlayer * pAnother)
+{
+	// NULLだった時処理しない
+	if (pAnother == NULL)
+	{
+		return false;
+	}
+	// 変数宣言
+	D3DXVECTOR3 MoveVec;	// 移動ベクトル
+
+	MoveVec.x = sinf(pAnother->m_rot.y + D3DX_PI);
+	MoveVec.y = 0.0f;
+	MoveVec.z = cosf(pAnother->m_rot.y + D3DX_PI);
+
+	// 移動値に加算
+	this->m_move.x = MoveVec.x * BLOWAWAYFORCE;
+	this->m_move.z = MoveVec.z * BLOWAWAYFORCE;
+
+	m_bBlowAway = true;
+
+	return true;
 }
 
 #ifdef _DEBUG

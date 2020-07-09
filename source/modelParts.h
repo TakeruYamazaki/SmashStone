@@ -20,6 +20,22 @@
 class CModelParts
 {
 public:
+	enum
+	{
+		PARTSNAME_NOEN = -1,		// 無し
+		PARTSNAME_BODY,				// 体
+		PARTSNAME_HEAD,				// 頭
+		PARTSNAME_UPARM_R,			// 上腕右
+		PARTSNAME_LOWARM_R,			// 前腕右
+		PARTSNAME_UPARM_L,			// 上腕左
+		PARTSNAME_LOWARM_L,			// 前腕左
+		PARTSNAME_THIGH_R,			// 太腿右
+		PARTSNAME_LEG_R,			// 足右
+		PARTSNAME_THIGH_L,			// 太腿左
+		PARTSNAME_LEG_L,			// 足左
+		PARTSNAME_MAX				// 最大数
+	};
+
 	CModelParts();
 	virtual ~CModelParts();
 

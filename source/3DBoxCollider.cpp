@@ -972,6 +972,8 @@ void C3DBoxCollider::ChangePosition(int nID,D3DXVECTOR3 & pos, D3DXVECTOR3 & rot
 
 		// 頂点位置の更新
 		SetVertexPosition(pVtx, nID);
+		SetVertexPosResult(pVtx, nID);
+		SetSurfaceNom(pVtx, nID);
 		// 頂点データをアンロック
 		m_pVtxBuff->Unlock();
 	}
@@ -1176,16 +1178,6 @@ void C3DBoxCollider::SetVertexPosResult(VERTEX_3D * pVtx, int nIndex)
 	{
 		// ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&mtwWorld);
-		// 回転を反映
-		D3DXMatrixRotationYawPitchRoll(
-			&mtxRot,
-			0.0f,
-			0.0f,
-			0.0f);
-		D3DXMatrixMultiply(
-			&mtwWorld,
-			&mtwWorld,
-			&mtxRot);
 
 		// 位置を反映
 		D3DXMatrixTranslation(

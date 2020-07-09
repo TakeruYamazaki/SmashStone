@@ -37,7 +37,7 @@
 #ifdef _DEBUG
 
 #ifndef CSTONE_DEBUG_DRAW
-#define CSTONE_DEBUG_DRAW
+//#define CSTONE_DEBUG_DRAW
 #endif // !CSTONE_DEBUG_DRAW
 
 #ifndef CSTONE_LAOD_DEBUG_DRAW

@@ -16,6 +16,7 @@
 //-------------------------------------------------------------------------------------------------------------
 // クラス定義
 //-------------------------------------------------------------------------------------------------------------
+class C3DBoxCollider;
 class CModel;
 class CCylinderCoillider :public CScene
 {
@@ -60,11 +61,11 @@ public:
 	~CCylinderCoillider();
 
 	// 読み込み
-	HRESULT Load(void);
+	static HRESULT Load(void);
 	// 開放
-	void Unload(void);
+	static void Unload(void);
 	// 生成
-	static CCylinderCoillider *Create(TYPEID enmTypeId, D3DXMATRIX *pMtxWorld, D3DXVECTOR3 *vtxMax, D3DXVECTOR3 *vtxMin);
+	static CCylinderCoillider *Create(TYPEID enmTypeId, D3DXMATRIX *pMtxWorld);
 	// 初期化
 	void Init(void);
 	// 終了
@@ -91,6 +92,12 @@ public:
 	D3DXVECTOR3 *GetBottomNormal(void);
 	// タイプIDの設定
 	void SetTypeID(TYPEID enmTypeID);
+
+	// 衝突
+	bool Collision(int n3DBoxColliderID);
+	// ボックス内にいるかテスト
+	bool InsideBoxTest(int n3DBoxColliderID , D3DXVECTOR3 *pPos);
+
 private:
 	/* メンバ関数 */
 	// 頂点の作成

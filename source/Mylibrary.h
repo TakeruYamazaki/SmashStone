@@ -1062,6 +1062,11 @@ public:
 	//* [out] 計算した距離
 	static void Get3DToPointDistance(float *Length, D3DXVECTOR3 *diffPos);
 
+	//* [contents] ポリゴンの裏にいるかテスト
+	//* [in] 頂点位置A, 頂点位置B, 頂点位置C , 位置P(点P)
+	//* [return] bool （範囲内 == true 範囲外 == false）
+	static bool TestIfPolygonBack(CONST D3DXVECTOR3 & posA, CONST D3DXVECTOR3 & posP, CONST D3DXVECTOR3 & nom);
+
 	//* [contents] ポリゴンの範囲にいるかテスト
 	//* [in] 頂点位置A, 頂点位置B, 頂点位置C , 位置P(点P)
 	//* [return] bool （範囲内 == true 範囲外 == false）

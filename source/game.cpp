@@ -31,7 +31,7 @@
 #include "wall.h"
 #include "debugProc.h"
 #include "objManager.h"
-
+#include "CylinderCollider.h"
 //==================================================================================================================
 //	マクロ定義
 //==================================================================================================================
@@ -59,7 +59,6 @@ int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 int					CGame::m_nNumStone				= 0;							// 生成したストーンの数
 int					CGame::m_nCntDecide				= 0;							// ストーン生成のタイミングを決めるカウンタ
 std::unique_ptr<CObjectManager>	CGame::m_pObjMana	= nullptr;						// オブジェクトマネージャーのポインタ
-
 
 D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
 {
@@ -91,6 +90,7 @@ CGame::~CGame()
 //==================================================================================================================
 void CGame::Init(void)
 {
+	/* ロード */
 	CNumber::Load();						// 数字テクスチャロード
 	CMeshField::Load();						// 床テクスチャロード
 	CMotionModel::Load();					// モーション用モデルロード
@@ -101,43 +101,26 @@ void CGame::Init(void)
 	C3DBoxCollider::Load();					// 3Dボックスコライダーの読み込み
 	CWall::Load();							// 壁のロード
 	CObjectManager::Load();					// オブジェクトマネージャーのロード
+	CCylinderCoillider::Load();				// シリンダーコライダーのロード
 
-	// ボックスコライダーの生成
-	C3DBoxCollider::Create();
-	
-	m_pObjMana = CObjectManager::Create();
-
-	// 壁の生成
-	m_pWall = CWall::Create(CWall::WALLTEX_FIELD);
-
-	// カメラの生成処理
-	m_pCamera = CCamera::Create();
-
-	// ライトの生成処理
-	m_pLight = CLight::Create();
-
-	// メッシュ球の生成処理
-	m_pMeshSphere = CMeshSphere::Create();
-
+	/* 生成 */
+	C3DBoxCollider::Create();										// ボックスコライダーの生成
+	m_pObjMana    = CObjectManager::Create();						// オブジェクトマネージャーの生成
+	m_pWall       = CWall::Create(CWall::WALLTEX_FIELD);			// 壁の生成
+	m_pCamera     = CCamera::Create();								// カメラの生成処理
+	m_pLight      = CLight::Create();								// ライトの生成処理
+	m_pMeshSphere = CMeshSphere::Create();							// メッシュ球の生成処理
 	// プレイヤーの最大数までカウント
 	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 	{
-		// プレイヤー生成
-		m_pPlayer[nCnt] = CPlayer::Create(nCnt, CHARACTER_1YASU);
+		m_pPlayer[nCnt] = CPlayer::Create(nCnt, CHARACTER_1YASU);	// プレイヤー生成
 	}
+	m_pMeshField = CMeshField::Create();							// メッシュフィールド生成
+	m_pHitPoint  = CHitPoint::Create();								// HP生
+	m_pTime      = CTime::Create();									// タイム生成
+	m_pPause     = CPause::Create();								// ポーズの生成処理
 
-	// メッシュフィールド生成
-	m_pMeshField = CMeshField::Create();
-
-	// HP生成
-	m_pHitPoint = CHitPoint::Create();
-
-	// タイム生成
-	m_pTime = CTime::Create();
-
-	// ポーズの生成処理
-	m_pPause = CPause::Create();
-
+	/* ゲームの初期化 */
 	SetGameState(GAMESTATE_NORMAL);			// 通常状態に設定
 	m_nCounterGameState = 0;				// ゲームの状態管理カウンターを0にする
 	m_nNumStone			= 0;				// 値を初期化
@@ -152,9 +135,12 @@ void CGame::Uninit(void)
 	// ゲーム状態を通常にする
 	m_gameState = GAMESTATE_NORMAL;
 
+	// 全ての開放
 	CScene2D::ReleaseAll();				// 2Dのもの全て破棄
 	CScene3D::ReleaseAll();				// 3Dのもの全て破棄
 
+	/* アンロード */
+	CCylinderCoillider::Unload();
 	CWall::Unload();					// 壁の開放
 	C3DBoxCollider::Unload();			// 3Dボックスコライダーの開放
 	CStone::Unload();					// ストーンの開放
@@ -294,13 +280,10 @@ void CGame::Draw(void)
 //==================================================================================================================
 CGame * CGame::Create(void)
 {
+	// 変数宣言
 	CGame *pGame = NULL;		// ゲーム変数NULL
-
 	pGame = new CGame;			// 動的に確保
 	pGame->Init();				// 初期化処理
-
-//	CModelCharacter::Load();
-
 	return pGame;				// 値を返す
 }
 
