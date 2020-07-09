@@ -366,7 +366,9 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		m_bWalk = false;
 	}
 
-	if (m_bTrans && m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_ATTACK))
+	if (m_bTrans && 
+		((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) || 
+			(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_ATTACK))))
 	{
 		m_bWalk = false;
 

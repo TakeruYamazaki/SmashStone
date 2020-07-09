@@ -14,16 +14,16 @@ NUM_MODEL = 10
 #============================================================
 # モデルファイル名
 #============================================================
-MODEL_FILENAME = data/MODEL/trans_fokker/00_body.x
-MODEL_FILENAME = data/MODEL/trans_fokker/01_head.x
-MODEL_FILENAME = data/MODEL/trans_fokker/02_UpArm_R.x
-MODEL_FILENAME = data/MODEL/trans_fokker/03_LowArm_R.x
-MODEL_FILENAME = data/MODEL/trans_fokker/04_UpArm_L.x
-MODEL_FILENAME = data/MODEL/trans_fokker/05_LowArm_L.x
-MODEL_FILENAME = data/MODEL/trans_fokker/06_thigh_R.x
-MODEL_FILENAME = data/MODEL/trans_fokker/07_leg_R.x
-MODEL_FILENAME = data/MODEL/trans_fokker/08_thigh_L.x
-MODEL_FILENAME = data/MODEL/trans_fokker/09_leg_L.x
+MODEL_FILENAME = data/MODEL/niyasu/00_body.x
+MODEL_FILENAME = data/MODEL/niyasu/01_head.x
+MODEL_FILENAME = data/MODEL/niyasu/02_UpArm_R.x
+MODEL_FILENAME = data/MODEL/niyasu/03_LowArm_R.x
+MODEL_FILENAME = data/MODEL/niyasu/04_UpArm_L.x
+MODEL_FILENAME = data/MODEL/niyasu/05_LowArm_L.x
+MODEL_FILENAME = data/MODEL/niyasu/06_thigh_R.x
+MODEL_FILENAME = data/MODEL/niyasu/07_leg_R.x
+MODEL_FILENAME = data/MODEL/niyasu/08_thigh_L.x
+MODEL_FILENAME = data/MODEL/niyasu/09_leg_L.x
 
 #============================================================
 # テクスチャ数
@@ -43,70 +43,70 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 0
 		PARENT = -1
-		POS = 0.0 40.0 0.0
+		POS = 0.0 30.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 1
 		PARENT = 0
-		POS = 0.0 19.0 1.8
+		POS = 0.0 18.0 1.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 2
 		PARENT = 0
-		POS = -6.0 13.4 2.0
+		POS = -5.7 12.9 1.8
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 3
 		PARENT = 2
-		POS = -3.6 -9.3 1.0
+		POS = -1.4 -5.4 0.4
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 4
 		PARENT = 0
-		POS = 6.0 13.4 2.0
+		POS = 5.7 12.8 1.9
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 5
 		PARENT = 4
-		POS = 3.6 -9.3 1.0
+		POS = 1.4 -5.4 0.3
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 6
 		PARENT = 0
-		POS = -2.5 -2.3 0.9
+		POS = -2.8 -1.4 0.1
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 7
 		PARENT = 6
-		POS = -3.8 -14.8 0.3
+		POS = -0.3 -12.9 1.6
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 8
 		PARENT = 0
-		POS = 2.5 -2.4 0.9
+		POS = 2.8 -1.4 0.1
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 9
 		PARENT = 8
-		POS = 3.8 -14.7 0.3
+		POS = 0.3 -12.8 1.6
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 

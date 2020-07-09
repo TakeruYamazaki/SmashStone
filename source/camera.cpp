@@ -51,7 +51,7 @@
 
 #define MOUSE_SPEED		(0.20f)						// マウスカーソルが早すぎるので調整
 
-#define ROT_X_LIMIT_LOW	(-3.13f)						// カメラX軸の下限
+#define ROT_X_LIMIT_LOW	(-1.51f)						// カメラX軸の下限
 #define ROT_X_LIMIT_UP	(1.51f)						// カメラX軸の上限
 
 //==================================================================================================================
@@ -206,7 +206,7 @@ void CCamera::SetCameraPos(const D3DXVECTOR3 posV, const D3DXVECTOR3 posR)
 	m_posRDest = posR;
 	m_posDebug = ZeroVector3;
 	m_posU = AboveNormal;
-	m_rot = ZeroVector3;
+	m_rot = D3DXVECTOR3(0.6f, -0.8f, 0.0f);
 	m_fDistance = 0.0f;
 
 	// 位置の差を求め、距離を測る
@@ -489,7 +489,7 @@ CCamera * CCamera::Create(void)
 	// カメラの初期化
 	m_pCamera->Init();
 
-	m_pCamera->SetCameraPos(D3DXVECTOR3(0.0f, 150.0f, -450.0f),
+	m_pCamera->SetCameraPos(D3DXVECTOR3(280.0f, 280.0f, -280.0f),
 							D3DXVECTOR3(0.0f, 10.0f, 0.0f));
 
 	//m_posV = D3DXVECTOR3(0.0f, 150.0f, -500.0f);		// 視点

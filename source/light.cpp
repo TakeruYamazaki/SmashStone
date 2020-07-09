@@ -60,6 +60,15 @@ void CLight::Init(void)
 	m_alight[1].Diffuse = D3DXCOLOR(0.7f, 0.7f, 0.7f, 0.0f);
 	m_alight[2].Diffuse = D3DXCOLOR(0.2f, 0.2f, 0.2f, 0.0f);
 
+	for (int nCnt = 0; nCnt < 3; nCnt++)
+	{
+		// ライトの反射光を設定
+		m_alight[nCnt].Specular = D3DXCOLOR(1.0f - nCnt * 0.3f
+			, 1.0f - nCnt * 0.3f
+			, 1.0f - nCnt * 0.3f
+			, 1.0f);
+	}
+
 	// ライトの方向の設定
 	m_avecDir[0] = D3DXVECTOR3(0.22f, -0.87f, 0.44f);				// 位置
 	D3DXVec3Normalize(&m_avecDir[0], &m_avecDir[0]);				// 正規化する

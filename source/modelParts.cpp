@@ -93,6 +93,9 @@ void CModelParts::Draw(void)
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	
+	// 頂点バッファの型をストリームに伝える
+	pDevice->SetFVF(FVF_VERTEX_3D);
 
 	// 現在のマテリアルを取得
 	pDevice->GetMaterial(&matDef);

@@ -110,11 +110,8 @@ void CGame::Init(void)
 	m_pCamera     = CCamera::Create();								// カメラの生成処理
 	m_pLight      = CLight::Create();								// ライトの生成処理
 	m_pMeshSphere = CMeshSphere::Create();							// メッシュ球の生成処理
-	// プレイヤーの最大数までカウント
-	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
-	{
-		m_pPlayer[nCnt] = CPlayer::Create(nCnt, CHARACTER_1YASU);	// プレイヤー生成
-	}
+	m_pPlayer[0] = CPlayer::Create(0, CHARACTER_1YASU);				// プレイヤー生成
+	m_pPlayer[1] = CPlayer::Create(1, CHARACTER_2YASU);				// プレイヤー生成
 	m_pMeshField = CMeshField::Create();							// メッシュフィールド生成
 	m_pHitPoint  = CHitPoint::Create();								// HP生
 	m_pTime      = CTime::Create();									// タイム生成
@@ -310,10 +307,8 @@ void CGame::DecideCreateStone(void)
 
 	// 時間以内
 	if (m_nCntDecide <= TIME_CREATE_STONE)
-	{
 		// 処理を終える
 		return;
-	}
 
 	if (m_nNumStone + GetPlayer(0)->GetNumStone() + GetPlayer(1)->GetNumStone() < 3)
 	{

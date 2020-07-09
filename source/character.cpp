@@ -254,12 +254,14 @@ void CCharacter::Rot(void)
 //=============================================================================
 void CCharacter::Motion(void)
 {
-	/*if (!m_bWalk)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// 移動してない
-	else
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);		// 移動してる*/
-	
-	// 攻撃中であれば、攻撃フレーム加算
+	if (!m_bWalk && !m_bAttack && !m_bJump)
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// ニュートラルモーション
+	if (m_bWalk && !m_bAttack && !m_bJump)
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);	// 移動モーション
+	if (m_bJump)
+		//m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);	// ジャンプモーション
+
+// 攻撃中であれば、攻撃フレーム加算
 	if (m_bAttack)
 		m_nAttackFrame--;
 
