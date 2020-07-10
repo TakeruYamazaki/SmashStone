@@ -308,22 +308,12 @@ bool CWall::GetIntersection(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pPosOld, D3DXVECTO
 		VecPlane_posOld.y * pSingleInfo->plane.b +
 		VecPlane_posOld.z * pSingleInfo->plane.c;
 
-	// 細かい誤差を吸収
-	//if (abs(DotPlane_pos) < 0.0000001f)
-	//{
-	//	DotPlane_pos = 0.0f;
-	//}
-	//if (abs(DotPlane_posOld) < 0.0000001f)
-	//{
-	//	DotPlane_posOld = 0.0f;
-	//}
-
 	// 交差判定
 	if (DotPlane_pos == 0.0f &&
 		DotPlane_posOld == 0.0f)
 	{
 		// 両端が平面上にあり、交点を計算できない。
-		cout << "両端が平面上 計算できない\n";
+
 		return false;
 	}
 
@@ -336,31 +326,6 @@ bool CWall::GetIntersection(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pPosOld, D3DXVECTO
 	pOut_Intersect->x = pPos->x + (Pos_posOld.x * fLength);
 	pOut_Intersect->y = pPos->y + (Pos_posOld.y * fLength);
 	pOut_Intersect->z = pPos->z + (Pos_posOld.z * fLength);
-	cout << "計算でけた\n";
-	return true;
-
-	// 交差判定
-	if ((DotPlane_pos > 0.0f && DotPlane_posOld < 0.0f) ||
-		(DotPlane_pos < 0.0f && DotPlane_posOld > 0.0f))
-	{
-		// 交点を求める 
-		D3DXVECTOR3 Pos_posOld = D3DXVECTOR3(pPosOld->x - pPos->x, pPosOld->y - pPos->y, pPosOld->z - pPos->z);
-
-		//交点とAの距離 : 交点とBの距離 = dot_PA : dot_PB
-		float fLength = abs(DotPlane_pos) / (abs(DotPlane_pos) + abs(DotPlane_posOld));
-
-		pOut_Intersect->x = pPos->x + (Pos_posOld.x * fLength);
-		pOut_Intersect->y = pPos->y + (Pos_posOld.y * fLength);
-		pOut_Intersect->z = pPos->z + (Pos_posOld.z * fLength);
-		cout << "計算でけた\n";
-		return true;
-	}
-	else
-	{
-		//交差していない
-		cout << "計算できない\n";
-		return false;
-	}
 	return true;
 }
 

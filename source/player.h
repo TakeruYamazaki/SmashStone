@@ -74,6 +74,8 @@ private:
 	void Collision(void);							// 当たり判定関数
 	void Attack(void);								// 攻撃関数
 
+	void CollisionAttack(void);						// 攻撃判定
+
 	CPlayer*GetAnotherPlayer(void);					// 違うプレイヤーの取得
 	static CPlayer *m_pPlayer[MAX_PLAYER];			// プレイヤー情報
 	static CHitPoint *m_pHitPoint;					// HP情報

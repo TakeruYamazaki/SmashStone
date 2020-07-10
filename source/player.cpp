@@ -194,54 +194,27 @@ void CPlayer::Control(void)
 //==================================================================================================================
 void CPlayer::Collision(void)
 {
-	// 違うプレイヤーの取得
-	CPlayer *pAnother = GetAnotherPlayer();
-
-	// 別のプレイヤーのモーションを比較
-	switch (pAnother->m_pModelCharacter->GetMotion())
-	{
-	case CMotion::PLAYER_ATTACK_0:
-		// 別のプレイヤーが攻撃0をしている時
-		this->AnotherPlayerAttack0(pAnother);
-		break;
-	case CMotion::PLAYER_ATTACK_1:
-		// 別のプレイヤーが攻撃1をしている時
-		this->AnotherPlayerAttack1(pAnother);
-		break;
-	case CMotion::PLAYER_ATTACK_2:
-		// 別のプレイヤーが攻撃2をしている時
-		this->AnotherPlayerAttack2(pAnother);
-		break;
-	case CMotion::PLAYER_ATTACK_3:
-		// 別のプレイヤーが攻撃3をしている時
-		this->AnotherPlayerAttack3(pAnother);
-		break;
-	case CMotion::PLAYER_SMASH:
-		// 別のプレイヤーがスマッシュ攻撃しているとき
-		this->AnotherPlayerSmash(pAnother);
-		break;
-	}
-
+	// 攻撃判定
+	CollisionAttack();
 
 	// 当たり判定位置の更新
 	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
 	// 当たり判定
 	C3DBoxCollider::CollisionBox(this->m_nBoxColliderID, this->m_pos, m_move);
 
-
 	// 壁の取得
 	CWall *pWall = CGame::GetWall();
-
 	// 出力される交点
 	D3DXVECTOR3 out_intersect = ZeroVector3;
-	// スマッシュによる跳ね返りを受けているか
-	bool bReflection = true;
 	// 出力される法線
 	D3DXVECTOR3 out_nor = ZeroVector3;
 	// 壁との当たり判定
-	if (pWall->Collision(&m_pos, &m_posOld, &out_intersect,&out_nor, bReflection) == true)
+	if (pWall->Collision(&m_pos, &m_posOld, &out_intersect,&out_nor, m_bBlowAway) == true)
 	{
-		if (bReflection == true &&
+		// 反射フラグが立っているときかつ
+		// 出力された法線がゼロじゃない時かつ
+		// 出力された交点がゼロじゃない時
+		if (m_bBlowAway == true &&
 			out_nor != ZeroVector3 &&
 			out_intersect != ZeroVector3)
 		{
@@ -259,6 +232,44 @@ void CPlayer::Attack(void)
 {
 	if (!m_bAttack)
 		return;
+}
+
+//==================================================================================================================
+// 攻撃判定
+//==================================================================================================================
+void CPlayer::CollisionAttack(void)
+{
+	// 違うプレイヤーの取得
+	CPlayer *pAnother = GetAnotherPlayer();
+
+	// 違うプレイヤーが攻撃を当てたフラグが立ってない時
+	if (pAnother->m_bAttakHit == false)
+	{
+		// 別のプレイヤーのモーションを比較
+		switch (pAnother->m_pModelCharacter->GetMotion())
+		{
+		case CMotion::PLAYER_ATTACK_0:
+			// 別のプレイヤーが攻撃0をしている時
+			this->AnotherPlayerAttack0(pAnother);
+			break;
+		case CMotion::PLAYER_ATTACK_1:
+			// 別のプレイヤーが攻撃1をしている時
+			this->AnotherPlayerAttack1(pAnother);
+			break;
+		case CMotion::PLAYER_ATTACK_2:
+			// 別のプレイヤーが攻撃2をしている時
+			this->AnotherPlayerAttack2(pAnother);
+			break;
+		case CMotion::PLAYER_ATTACK_3:
+			// 別のプレイヤーが攻撃3をしている時
+			this->AnotherPlayerAttack3(pAnother);
+			break;
+		case CMotion::PLAYER_SMASH:
+			// 別のプレイヤーがスマッシュ攻撃しているとき
+			this->AnotherPlayerSmash(pAnother);
+			break;
+		}
+	}
 }
 
 //==================================================================================================================
@@ -353,11 +364,11 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		return;
 	}
 
-	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// カメラ取得
-
-	D3DXVECTOR3 move		= GetMove();			// 移動値取得
-	D3DXVECTOR3 rotDest		= GetRotDest();			// 目的の向きを格納する変数
-	float		CameraRotY	= pCamera->GetRotY();	// カメラのY軸回転の取得
+	// 変数宣言
+	CCamera *pCamera		= CManager::GetRenderer()->GetGame()->GetCamera();	// カメラ取得
+	D3DXVECTOR3 move		= GetMove();										// 移動値取得
+	D3DXVECTOR3 rotDest		= GetRotDest();										// 目的の向きを格納する変数
+	float		CameraRotY	= pCamera->GetRotY();								// カメラのY軸回転の取得
 
 	if (((m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
 		m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_ATTACK))) &&
@@ -394,6 +405,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 
 		// モーションの切り替え
 		m_pModelCharacter->ResetMotion();
+		// 攻撃が当たったフラグをオフにする
+		m_bAttakHit = false;
 		m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
 		// 攻撃フレームを設定
 		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
@@ -585,6 +598,14 @@ void CPlayer::CatchStone(void)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 {
+	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
+		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
+	{
+		// ダメージ
+		this->Damage(2);
+		// 当てたフラグを立てる
+		pAnother->m_bAttakHit = true;
+	}
 }
 
 //==================================================================================================================
@@ -592,6 +613,14 @@ void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 {
+	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
+		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
+	{
+		// ダメージ
+		this->Damage(2);
+		// 当てたフラグを立てる
+		pAnother->m_bAttakHit = true;
+	}
 }
 
 //==================================================================================================================
@@ -599,6 +628,14 @@ void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 {
+	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
+		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
+	{
+		// ダメージ
+		this->Damage(2);
+		// 当てたフラグを立てる
+		pAnother->m_bAttakHit = true;
+	}
 }
 
 //==================================================================================================================
@@ -606,6 +643,14 @@ void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 {
+	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
+		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
+	{
+		// ダメージ
+		this->Damage(2);
+		// 当てたフラグを立てる
+		pAnother->m_bAttakHit = true;
+	}
 }
 
 //==================================================================================================================
@@ -613,17 +658,16 @@ void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 {
-	// 違うプレイヤーの3Dボックスコライダーの取得
-	int nAnothertBoxColliderID = pAnother->GetBoxColliderID();
-
 	// シリンダーコライダーの衝突判定
 	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
 		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
 	{
 		// ダメージ
-		this->Damage(0);
+		this->Damage(2);
 		// 吹っ飛ぶ
 		BlowAway(pAnother);
+		// 当てたフラグを立てる
+		pAnother->m_bAttakHit = true;
 	}
 }
 //==================================================================================================================
