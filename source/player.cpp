@@ -350,8 +350,10 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	D3DXVECTOR3 rotDest		= GetRotDest();			// –Ú“I‚ÌŒü‚«‚ðŠi”[‚·‚é•Ï”
 	float		CameraRotY	= pCamera->GetRotY();	// ƒJƒƒ‰‚ÌYŽ²‰ñ“]‚ÌŽæ“¾
 
-	if ((m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
-		m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_ATTACK))))
+	if (((m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
+		m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_ATTACK))) &&
+		m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE && 
+		m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH))
 	{
 		if (!m_bAttack && !m_bJump)
 		{
@@ -363,16 +365,19 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		{
 			switch (m_nAttackFlow)
 			{
+			case 0:
+				return;
+				break;
 			case 1:
 				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 15)
 					return;
 				break;
 			case 2:
-				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 15)
+				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 10)
 					return;
 				break;
 			case 3:
-				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 10)
+				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 25)
 					return;
 				break;
 			}
@@ -401,7 +406,7 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		move.y += VALUE_JUMP;
 	}
 
-	if (m_bTrans && !m_bAttack &&
+	if (m_bTrans &&
 		((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_SMASH)) || 
 		(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_SMASH))))
 	{
@@ -603,6 +608,7 @@ void CPlayer::ShowDebugInfo()
 
 	if (ImGui::CollapsingHeader(cHead))
 	{
+		int nAllFrame = m_pModelCharacter->GetAllFrame();
 		// î•ñ‚Ì•\Ž¦
 		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
 		ImGui::Text("nLife       : %f", m_nLife);
@@ -610,7 +616,7 @@ void CPlayer::ShowDebugInfo()
 		ImGui::Text("bWalk       : %d", m_bWalk);
 		ImGui::Text("bAttack     : %d", m_bAttack);
 		ImGui::Text("AttackFlow  : %d", m_nAttackFlow);
-		ImGui::Text("AttackFrame : %d / %d", m_nAttackFrame, m_pModelCharacter->GetAllFrame());
+		ImGui::Text("AttackFrame : %d / %d", nAllFrame - m_nAttackFrame, nAllFrame);
 		ImGui::Text("GetNumStone : %d", m_nNumStone);
 		if (m_bTrans)
 			ImGui::Text("TransTime   : %d", TIME_TRANS - m_nCntTrans);
