@@ -109,11 +109,11 @@ void CGame::Init(void)
 	m_pCamera     = CCamera::Create();								// カメラの生成処理
 	m_pLight      = CLight::Create();								// ライトの生成処理
 	m_pMeshSphere = CMeshSphere::Create();							// メッシュ球の生成処理
-	m_pPlayer[0] = CPlayer::Create(0, CHARACTER_1YASU);				// プレイヤー生成
-	m_pPlayer[1] = CPlayer::Create(1, CHARACTER_2YASU);				// プレイヤー生成
-	m_pMeshField = CMeshField::Create();							// メッシュフィールド生成
-	m_pTime      = CTime::Create();									// タイム生成
-	m_pPause     = CPause::Create();								// ポーズの生成処理
+	m_pPlayer[0]  = CPlayer::Create(0, CHARACTER_1YASU);			// プレイヤー生成
+	m_pPlayer[1]  = CPlayer::Create(1, CHARACTER_2YASU);			// プレイヤー生成
+	m_pMeshField  = CMeshField::Create();							// メッシュフィールド生成
+	m_pTime       = CTime::Create();								// タイム生成
+	m_pPause      = CPause::Create();								// ポーズの生成処理
 
 	/* ゲームの初期化 */
 	SetGameState(GAMESTATE_NORMAL);			// 通常状態に設定

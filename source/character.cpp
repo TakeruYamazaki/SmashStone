@@ -121,16 +121,22 @@ void CCharacter::Update()
 	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();		// キーボードの取得
 
 	// キーボードの[5]を押したとき
-	if (pKeyboard->GetKeyboardTrigger(DIK_5))
+	if (pKeyboard->GetKeyboardPress(DIK_5))
 	{
 		// 体力を減らす
 		m_nLife -= 1;
 	}
 	// キーボードの[6]を押したとき
-	if (pKeyboard->GetKeyboardTrigger(DIK_6))
+	if (pKeyboard->GetKeyboardPress(DIK_6))
 	{
 		// 体力を増やす
 		m_nLife += 1;
+	}
+	// キーボードの[6]を押したとき
+	if (pKeyboard->GetKeyboardPress(DIK_7))
+	{
+		// 体力を増やす
+		m_nLife = m_nMaxLife;
 	}
 
 #endif // _DEBUG

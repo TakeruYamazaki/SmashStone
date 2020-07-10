@@ -102,6 +102,8 @@ protected:
 	int			m_nAttackFrame;							// 攻撃モーション切り替えのカウンタ
 	int			m_nAttackFlow;							// 攻撃の流れ
 
+	bool		m_bAttakHit;							// 攻撃を当てたフラグ
+
 private:
 	void Move(void);									// 移動関数
 	void Rot(void);										// 回転関数

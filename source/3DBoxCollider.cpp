@@ -248,10 +248,10 @@ C3DBoxCollider * C3DBoxCollider::Create(void)
 {
 	// 変数宣言
 	C3DBoxCollider *p3DCollider = new C3DBoxCollider(CScene::PRIORITY_COLLISION);	// 3Dボックスコライダーポインタ
-	// オブジェクトタイプの設定
-	
+
 	// 初期化
 	p3DCollider->Init();
+
 	return p3DCollider;
 }
 
@@ -262,8 +262,10 @@ void C3DBoxCollider::Init(void)
 {
 	// 値情報の初期化
 	InitColliderInfo();
+
 	// 頂点の作成
 	MakeVertex();
+
 	// インデックスの作成
 	MakeIndex();
 }
@@ -289,14 +291,14 @@ void C3DBoxCollider::Draw(void)
 {
 	// 変数宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	// 頂点バッファを生成
-	D3DXMATRIX mtxRot, mtxTrans,mtwWorld;
+	D3DXMATRIX mtxTrans, mtwWorld;
 
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);						// ライティングモード無効
 
 	int nCntVertexIndex = 0;
 	for (int nCntCollider = 0; nCntCollider < _3DBOXCOLLIDER_MAX; nCntCollider++)
 	{
-		if (m_ColliderInfo[nCntCollider].bUse)
+		if (m_ColliderInfo[nCntCollider].bUse == true)
 		{
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&m_ColliderInfo[nCntCollider].mtxWorld);
