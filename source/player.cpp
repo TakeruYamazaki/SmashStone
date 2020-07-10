@@ -350,41 +350,74 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	D3DXVECTOR3 rotDest		= GetRotDest();			// –Ú“I‚ÌŒü‚«‚ðŠi”[‚·‚é•Ï”
 	float		CameraRotY	= pCamera->GetRotY();	// ƒJƒƒ‰‚ÌYŽ²‰ñ“]‚ÌŽæ“¾
 
-	/*if (!m_bAttack &&
-		(m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
+	if ((m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
 		m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_ATTACK))))
 	{
-		m_bAttack = true;
-	}*/
+		if (!m_bAttack && !m_bJump)
+		{
+			// ðŒ‚ðÝ’è
+			m_bWalk = false;
+			m_bAttack = true;
+		}
+		else if (m_bAttack)
+		{
+			switch (m_nAttackFlow)
+			{
+			case 1:
+				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 15)
+					return;
+				break;
+			case 2:
+				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 15)
+					return;
+				break;
+			case 3:
+				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 10)
+					return;
+				break;
+			}
+		}
+
+		// ƒ‚[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦
+		m_pModelCharacter->ResetMotion();
+		m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
+		// UŒ‚ƒtƒŒ[ƒ€‚ðÝ’è
+		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
+		// UŒ‚‚Ì‡”Ô‚ðÝ’è
+		m_nAttackFlow++;
+		if (m_nAttackFlow >= 4)
+			m_nAttackFlow = 0;
+	}
 
 	if (!m_bJump && 
 		(m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_JUMP)) || 
 		m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_JUMP))))
 	{
-		move.y += VALUE_JUMP;
+		// ðŒ‚ðÝ’è
 		m_bJump = true;
 		m_bWalk = false;
+
+		// ˆÚ“®’l‚ðÝ’è
+		move.y += VALUE_JUMP;
 	}
 
-	if (m_bTrans && 
-		((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) || 
-			(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_ATTACK))))
+	if (m_bTrans && !m_bAttack &&
+		((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_SMASH)) || 
+		(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_SMASH))))
 	{
+		// ðŒ‚ðÝ’è
 		m_bWalk = false;
 		m_bAttack = true;
 
+		// ƒ‚[ƒVƒ‡ƒ“‚ðÝ’è
+		m_pModelCharacter->ResetMotion();
 		if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE)
-		{
-			m_pModelCharacter->ResetMotion();
 			m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH);
-			m_nAttackFrame = m_pModelCharacter->GetAllFrame();
-		}
 		else if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE)
-		{
-			m_pModelCharacter->ResetMotion();
 			m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
-			m_nAttackFrame = m_pModelCharacter->GetAllFrame();
-		}
+		// UŒ‚ƒtƒŒ[ƒ€‚ðÝ’è
+		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
+
 	}
 
 	// AƒL[’·‰Ÿ‚µ
@@ -576,7 +609,8 @@ void CPlayer::ShowDebugInfo()
 		ImGui::Text("bJump       : %d", m_bJump);
 		ImGui::Text("bWalk       : %d", m_bWalk);
 		ImGui::Text("bAttack     : %d", m_bAttack);
-		ImGui::Text("AttackFrame : %d", m_nAttackFrame);
+		ImGui::Text("AttackFlow  : %d", m_nAttackFlow);
+		ImGui::Text("AttackFrame : %d / %d", m_nAttackFrame, m_pModelCharacter->GetAllFrame());
 		ImGui::Text("GetNumStone : %d", m_nNumStone);
 		if (m_bTrans)
 			ImGui::Text("TransTime   : %d", TIME_TRANS - m_nCntTrans);

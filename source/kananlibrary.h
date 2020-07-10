@@ -111,7 +111,8 @@ typedef enum
 	ONE_LEFT = DIK_A,		// 左入力
 	ONE_RIGHT = DIK_D,		// 右入力
 	ONE_JUMP = DIK_SPACE,	// ジャンプ入力
-	ONE_ATTACK = DIK_N		// 攻撃入力
+	ONE_ATTACK = DIK_N,		// 攻撃入力
+	ONE_SMASH = DIK_M		// スマッシュ入力
 } PLAYER_MOVE_KEY_ONE;
 
 typedef enum
@@ -121,7 +122,8 @@ typedef enum
 	TWO_LEFT = DIK_LEFTARROW,		// 左入力
 	TWO_RIGHT = DIK_RIGHTARROW,		// 右入力
 	TWO_JUMP = DIK_NUMPAD0,			// ジャンプ入力
-	TWO_ATTACK = DIK_NUMPAD2		// 攻撃入力
+	TWO_ATTACK = DIK_NUMPAD2,		// 攻撃入力
+	TWO_SMASH = DIK_NUMPAD3			// スマッシュ入力
 } PLAYER_MOVE_KEY_TWO;
 
 typedef enum

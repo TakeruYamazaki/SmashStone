@@ -266,7 +266,11 @@ void CCharacter::Motion(void)
 		m_nAttackFrame--;
 
 	if (m_nAttackFrame <= 0)
+	{
+		// 攻撃終了後、攻撃の状態を初期化
 		m_bAttack = false;
+		m_nAttackFlow = 0;
+	}
 
 	// タイプごとの処理分け
 	switch (m_type)
