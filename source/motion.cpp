@@ -30,7 +30,7 @@ char * CMotion::m_apFileName[CMotion::MOTION_MAX] =
 {
 	{ "data/MOTION/fokker/motion_neutral.txt" },
 	{ "data/MOTION/fokker/motion_run.txt" },
-	{ "data/MOTION/fokker/motion_jump.txt" },
+	//{ "data/MOTION/fokker/motion_jump.txt" },
 	{ "data/MOTION/fokker/motion_lift.txt" },
 	{ "data/MOTION/fokker/motion_throw.txt" },
 	{ "data/MOTION/fokker/motion_attack_0.txt" },
@@ -136,7 +136,7 @@ HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
 	int nCntKey = 0;
 	bool bInfo = false;	// なぜかキー数が二回入るので、この変数で一回にする
 
-						// ファイルを開く
+	// ファイルを開く
 	pFile = fopen(m_apFileName[motiontype], "r");
 
 	// nullcheck

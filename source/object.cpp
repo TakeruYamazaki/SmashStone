@@ -214,7 +214,6 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 			pos->z = m_pos.z + Vtx.VtxMin.z - modelVtx.VtxMax.z;
 			move->z = 0.0f;
 			bLand = true;
-			CDebugProc::Print("前\n");
 		}
 		// ブロック後部の判定
 		if (pos->z + modelVtx.VtxMin.z <= m_pos.z + Vtx.VtxMax.z && posOld.z + modelVtx.VtxMin.z >= m_posOld.z + Vtx.VtxMax.z)
@@ -222,7 +221,6 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 			pos->z = m_pos.z + Vtx.VtxMax.z - modelVtx.VtxMin.z;
 			move->z = 0.0f;
 			bLand = true;
-			CDebugProc::Print("後\n");
 		}
 	}
 
@@ -235,7 +233,6 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 			pos->x = m_pos.x + Vtx.VtxMin.x - modelVtx.VtxMax.x;
 			move->x = 0.0f;
 			bLand = true;
-			CDebugProc::Print("左\n");
 		}
 		// ブロック右部の判定
 		if (pos->x + modelVtx.VtxMin.x <= m_pos.x + Vtx.VtxMax.x && posOld.x + modelVtx.VtxMin.x >= m_posOld.x + Vtx.VtxMax.x)
@@ -243,7 +240,6 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 			pos->x = m_pos.x + Vtx.VtxMax.x - modelVtx.VtxMin.x;
 			move->x = 0.0f;
 			bLand = true;
-			CDebugProc::Print("右\n");
 		}
 	}
 
@@ -256,7 +252,6 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 			pos->y = m_pos.y + Vtx.VtxMax.y - modelVtx.VtxMin.y;
 			move->y = 0.0f;
 			bLand = true;
-			CDebugProc::Print("上\n");
 		}
 		// ブロック下部の判定
 		if (pos->y + modelVtx.VtxMax.y >= m_pos.y + Vtx.VtxMin.y && posOld.y + modelVtx.VtxMax.y <= m_posOld.y + Vtx.VtxMin.y)
@@ -264,7 +259,6 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 			pos->y = m_pos.y + Vtx.VtxMin.y - modelVtx.VtxMax.y;
 			move->y = 0.0f;
 			bLand = true;
-			CDebugProc::Print("下\n");
 		}
 	}
 

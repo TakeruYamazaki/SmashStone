@@ -99,11 +99,17 @@ void CModelCharacter::Uninit()
 //=============================================================================
 void CModelCharacter::Update()
 {
+	if (m_pModelParts == nullptr)
+	{
+		return;
+	}
+
 	// モデル数分繰り返す
 	for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)
 	{
 		D3DXVECTOR3 *pPos = m_pModelParts[nCnt].GetPos();
 		D3DXVECTOR3 *pRot = m_pModelParts[nCnt].GetRot();
+
 		// モーション用フレームが0のとき
 		if (m_nFrame == 0)
 		{
@@ -367,15 +373,15 @@ HRESULT CModelCharacter::LoadOffset(CHARACTER_TYPE type)
 {
 	// 変数宣言
 	FILE *pFile;
-	char cReadText[MAX_TEXT];
-	char cHeadText[MAX_TEXT];
-	char cDieText[MAX_TEXT];
+	char cReadText[MAX_TEXT] = "";
+	char cHeadText[MAX_TEXT] = "";
+	char cDieText[MAX_TEXT] = "";
 	int nCntParts = 0;
 
 	// 格納用
-	D3DXVECTOR3 pos;
-	D3DXVECTOR3 rot;
-	int nParent;
+	D3DXVECTOR3 pos = ZeroVector3;
+	D3DXVECTOR3 rot = ZeroVector3;
+	int nParent = 0;
 
 	// ファイルを開く
 	pFile = fopen(&m_aFileName[type][0], "r");
@@ -498,9 +504,9 @@ HRESULT CModelCharacter::LoadFileName(CHARACTER_TYPE type)
 {
 	// 変数宣言
 	FILE *pFile;
-	char cReadText[MAX_TEXT];
-	char cHeadText[MAX_TEXT];
-	char cDieText[MAX_TEXT];
+	char cReadText[MAX_TEXT] = "";
+	char cHeadText[MAX_TEXT] = "";
+	char cDieText[MAX_TEXT] = "";
 	int nNumModel = 0;
 	int nNumTexture = 0;
 
