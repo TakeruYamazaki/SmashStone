@@ -243,3 +243,6 @@ ModelManifest.xml
 
 #.exeをコミットさせないようにする
 *.exe
+
+#特定のファイルを除外する
+imgui.ini
