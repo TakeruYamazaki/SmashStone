@@ -685,14 +685,16 @@ HRESULT CKananLibrary::GetMoveByKeyboard(CInputKeyboard * pKey, int nPlayer)
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_ONE::ONE_RIGHT) &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_ONE::ONE_LEFT) &&
 		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_ONE::ONE_JUMP) && 
-		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_ONE::ONE_ATTACK) )) ||
+		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_ONE::ONE_ATTACK) &&
+		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_ONE::ONE_SMASH))) ||
 			(nPlayer == PLAYER_TWO &&
 		(!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_UP) &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_DOWN) &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_RIGHT) &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_LEFT) &&
 		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_TWO::TWO_JUMP) && 
-		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_TWO::TWO_ATTACK))))
+		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_TWO::TWO_ATTACK) &&
+		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_TWO::TWO_SMASH))))
 	{
 		// ˆÚ“®‚µ‚Ä‚¢‚È‚¢
 		return E_FAIL;
