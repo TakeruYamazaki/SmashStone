@@ -405,9 +405,9 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 
 		// モーションの切り替え
 		m_pModelCharacter->ResetMotion();
+		m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
 		// 攻撃が当たったフラグをオフにする
 		m_bAttakHit = false;
-		m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
 		// 攻撃フレームを設定
 		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
 		// 攻撃の順番を設定
@@ -442,6 +442,9 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH);
 		else if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE)
 			m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
+
+		// 攻撃が当たったフラグをオフにする
+		m_bAttakHit = false;
 		// 攻撃フレームを設定
 		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
 

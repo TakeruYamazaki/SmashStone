@@ -48,7 +48,7 @@ public:
 		MOTION_NONE,
 		PLAYER_NEUTRAL = 0,		// プレイヤー ニュートラル
 		PLAYER_RUN,				// プレイヤー 走る
-		PLAYER_JUMP,			// プレイヤー ジャンプ
+		//PLAYER_JUMP,			// プレイヤー ジャンプ
 		PLAYER_LIFT,			// プレイヤー もの持ち上げる
 		PLAYER_THROW,			// プレイヤー もの投げ
 		PLAYER_ATTACK_0,		// プレイヤー 攻撃1
