@@ -258,12 +258,15 @@ void CCharacter::Motion(void)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// ニュートラルモーション
 	if (m_bWalk && !m_bAttack && !m_bJump)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);	// 移動モーション
-	if (m_bJump)
+	//if (m_bJump)
 		//m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);	// ジャンプモーション
 
-// 攻撃中であれば、攻撃フレーム加算
+	// 攻撃中であれば、攻撃フレーム減算
 	if (m_bAttack)
 		m_nAttackFrame--;
+
+	if (m_nAttackFrame <= 0)
+		m_bAttack = false;
 
 	// タイプごとの処理分け
 	switch (m_type)

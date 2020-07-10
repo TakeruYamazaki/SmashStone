@@ -146,9 +146,9 @@ CPlayer *CPlayer::Create(int nPlayer, CHARACTER_TYPE type)
 	pPlayer->m_nPlayer = nPlayer;
 
 	// プレイヤー番号によって座標を再設定
-	if (nPlayer == 0)
+	if (nPlayer == PLAYER_ONE)
 		pPlayer->SetPos(POS_1P);
-	if (nPlayer == 1)
+	if (nPlayer == PLAYER_TWO)
 		pPlayer->SetPos(POS_2P);
 
 	// 値を返す
@@ -350,12 +350,12 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	D3DXVECTOR3 rotDest		= GetRotDest();			// 目的の向きを格納する変数
 	float		CameraRotY	= pCamera->GetRotY();	// カメラのY軸回転の取得
 
-	if (!m_bAttack &&
+	/*if (!m_bAttack &&
 		(m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
 		m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_ATTACK))))
 	{
 		m_bAttack = true;
-	}
+	}*/
 
 	if (!m_bJump && 
 		(m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_JUMP)) || 
@@ -371,16 +371,19 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_ATTACK))))
 	{
 		m_bWalk = false;
+		m_bAttack = true;
 
 		if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE)
 		{
 			m_pModelCharacter->ResetMotion();
 			m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH);
+			m_nAttackFrame = m_pModelCharacter->GetAllFrame();
 		}
 		else if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE)
 		{
 			m_pModelCharacter->ResetMotion();
 			m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
+			m_nAttackFrame = m_pModelCharacter->GetAllFrame();
 		}
 	}
 
@@ -571,6 +574,9 @@ void CPlayer::ShowDebugInfo()
 		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
 		ImGui::Text("nLife       : %f", m_nLife);
 		ImGui::Text("bJump       : %d", m_bJump);
+		ImGui::Text("bWalk       : %d", m_bWalk);
+		ImGui::Text("bAttack     : %d", m_bAttack);
+		ImGui::Text("AttackFrame : %d", m_nAttackFrame);
 		ImGui::Text("GetNumStone : %d", m_nNumStone);
 		if (m_bTrans)
 			ImGui::Text("TransTime   : %d", TIME_TRANS - m_nCntTrans);

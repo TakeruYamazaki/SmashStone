@@ -99,6 +99,8 @@ protected:
 	bool		m_bAttack;								// 攻撃しているか
 	bool		m_bBlowAway;							// 吹き飛んでいるか
 	static int	m_nNumCharacter;						// キャラクターの総数
+	int			m_nAttackFrame;							// 攻撃モーション切り替えのカウンタ
+	int			m_nAttackFlow;							// 攻撃の流れ
 
 private:
 	void Move(void);									// 移動関数
@@ -106,9 +108,6 @@ private:
 	void Motion(void);									// モーション関数
 	void Trans(void);									// 変身関数
 	void IchiyasuMotion(void);							// 1ヤスのモーション
-
-	int m_nAttackFrame;									// 攻撃モーション切り替えのカウンタ
-	int m_nAttackFlow;									// 攻撃の流れ
 };
 
 #endif
