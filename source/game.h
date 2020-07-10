@@ -29,7 +29,6 @@ class CModel;
 class CPause;
 class CMeshSphere;
 class CPlayer;
-class CHitPoint;
 class CTime;
 class CWall;
 class CObjectManager;
@@ -89,7 +88,6 @@ private:
 	static CLogo *m_pLogo;						// ロゴの情報ポインタ
 	static CPause *m_pPause;					// ポーズの情報ポインタ
 	static CMeshSphere *m_pMeshSphere;			// メッシュ球の情報ポインタ
-	static CHitPoint *m_pHitPoint;				// HPの情報ポインタ
 	static CTime *m_pTime;						// タイムの情報ポインタ
 	static CWall *m_pWall;						// 壁のポインタ
 	static int m_nCounterGameState;				// ゲームの状態管理カウンター
