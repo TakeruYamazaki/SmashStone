@@ -185,32 +185,30 @@ void CPlayer::Collision(void)
 {
 	// 違うプレイヤーの取得
 	CPlayer *pAnother = GetAnotherPlayer();
-	// 違うプレイヤーがスマッシュを使っていた時
-	if (pAnother->m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH)
+
+	// 別のプレイヤーのモーションを比較
+	switch (pAnother->m_pModelCharacter->GetMotion())
 	{
-		// 違うプレイヤーの3Dボックスコライダーの取得
-		int nAnothertBoxColliderID = pAnother->GetBoxColliderID();
-		
-		// シリンダーコライダーの衝突判定
-		if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true)
-		{
-			// 吹っ飛ぶ
-			BlowAway(pAnother);
-		}
-		else
-		{
-		}
-		// シリンダーコライダーの衝突判定
-		if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
-		{
-			// ダメージ
-			this->Damage(0);
-			// 吹っ飛ぶ
-			BlowAway(pAnother);
-		}
-		else
-		{
-		}
+	case CMotion::PLAYER_ATTACK_0:
+		// 別のプレイヤーが攻撃0をしている時
+		this->AnotherPlayerAttack0(pAnother);
+		break;
+	case CMotion::PLAYER_ATTACK_1:
+		// 別のプレイヤーが攻撃1をしている時
+		this->AnotherPlayerAttack1(pAnother);
+		break;
+	case CMotion::PLAYER_ATTACK_2:
+		// 別のプレイヤーが攻撃2をしている時
+		this->AnotherPlayerAttack2(pAnother);
+		break;
+	case CMotion::PLAYER_ATTACK_3:
+		// 別のプレイヤーが攻撃3をしている時
+		this->AnotherPlayerAttack3(pAnother);
+		break;
+	case CMotion::PLAYER_SMASH:
+		// 別のプレイヤーがスマッシュ攻撃しているとき
+		this->AnotherPlayerSmash(pAnother);
+		break;
 	}
 
 
@@ -563,6 +561,53 @@ void CPlayer::CatchStone(void)
 		if (m_nNumStone >= 3)
 			// 変身
 			this->m_bTrans = true;
+	}
+}
+
+//==================================================================================================================
+// 別のプレイヤーが攻撃0している時
+//==================================================================================================================
+void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
+{
+}
+
+//==================================================================================================================
+// 別のプレイヤーが攻撃1している時
+//==================================================================================================================
+void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
+{
+}
+
+//==================================================================================================================
+// 別のプレイヤーが攻撃2している時
+//==================================================================================================================
+void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
+{
+}
+
+//==================================================================================================================
+// 別のプレイヤーが攻撃3している時
+//==================================================================================================================
+void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
+{
+}
+
+//==================================================================================================================
+// 別のプレイヤーがスマッシュ攻撃している時
+//==================================================================================================================
+void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
+{
+	// 違うプレイヤーの3Dボックスコライダーの取得
+	int nAnothertBoxColliderID = pAnother->GetBoxColliderID();
+
+	// シリンダーコライダーの衝突判定
+	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
+		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
+	{
+		// ダメージ
+		this->Damage(0);
+		// 吹っ飛ぶ
+		BlowAway(pAnother);
 	}
 }
 

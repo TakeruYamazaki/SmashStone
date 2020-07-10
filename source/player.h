@@ -75,7 +75,12 @@ private:
 	void ControlKeyboard(CInputKeyboard *pKeyboard);// キーボード操作
 	void CatchStone(void);							// ストーンの取得判定
 
-	inline bool BlowAway(CPlayer *pAnother);		// 吹き飛ぶ
+	void AnotherPlayerAttack0(CPlayer *pAnother);	// 別のプレイヤーが攻撃0している時
+	void AnotherPlayerAttack1(CPlayer *pAnother);	// 別のプレイヤーが攻撃1している時
+	void AnotherPlayerAttack2(CPlayer *pAnother);	// 別のプレイヤーが攻撃2している時
+	void AnotherPlayerAttack3(CPlayer *pAnother);	// 別のプレイヤーが攻撃3している時
+	void AnotherPlayerSmash(CPlayer *pAnother);		// 別のプレイヤーがスマッシュ攻撃している時
+	bool BlowAway(CPlayer *pAnother);		// 吹き飛ぶ
 
 	int m_nPlayer;			// プレイヤー番号
 	int m_nBoxColliderID;	// ボックスコライダーID
