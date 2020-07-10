@@ -30,9 +30,10 @@
 #include "CylinderCollider.h"
 #include "motion.h"
 #include "Reflection.h"
+#include "hitpoint.h"
 
 //==================================================================================================================
-// 静的メンバ変数の初期化
+// マクロ定義
 //==================================================================================================================
 #define VALUE_MOVE_PLAYER	(1.0f)	// プレイヤーの移動値
 #define VALUE_JUMP			(5.0f)	// ジャンプ力の値
@@ -43,8 +44,10 @@
 #define BLOWAWAYFORCE		(100.0f)
 
 //==================================================================================================================
-// マクロ定義
+// 静的メンバ変数の初期化
 //==================================================================================================================
+CPlayer *CPlayer::m_pPlayer[MAX_PLAYER] = {};		// プレイヤー情報
+CHitPoint *CPlayer::m_pHitPoint = NULL;				// HP情報
 
 //==================================================================================================================
 // コンストラクタ
@@ -76,6 +79,9 @@ void CPlayer::Init(void)
 
 	// 当たり判定の設定
 	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), this, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::ID_CHARACTER);
+
+	m_pHitPoint = CHitPoint::Create(m_nPlayer);		// プレイヤーの生成処理
+	m_pHitPoint->SetnPlayerNum(m_nPlayer);			// プレイヤー番号設定
 }
 
 //==================================================================================================================
@@ -84,6 +90,8 @@ void CPlayer::Init(void)
 void CPlayer::Uninit(void)
 {
 	CCharacter::Uninit();
+
+	m_pHitPoint = nullptr;	// 変数NULL
 }
 
 //==================================================================================================================
@@ -106,9 +114,12 @@ void CPlayer::Update(void)
 	// ストーンの取得判定
 	CatchStone();
 
-	CDebugProc::Print("プレイヤーの位置 [%.4f][%.4f][%.4f]\n", m_pos.x, m_pos.y, m_pos.z);
-	
+	// プレイヤーの番号設定
+	SetnPlayer(m_nPlayer);
+
 #ifdef _DEBUG
+	CDebugProc::Print("プレイヤーの位置 [%.4f][%.4f][%.4f]\n", m_pos.x, m_pos.y, m_pos.z);
+
 	ShowDebugInfo();
 
 	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_2))
@@ -132,27 +143,27 @@ void CPlayer::Draw(void)
 CPlayer *CPlayer::Create(int nPlayer, CHARACTER_TYPE type)
 {
 	// シーン動的に確保
-	CPlayer *pPlayer = new CPlayer(CScene::PRIORITY_PLAYER);
+	m_pPlayer[nPlayer] = new CPlayer(CScene::PRIORITY_PLAYER);
 
 	// 失敗
-	if (!pPlayer)
+	if (!m_pPlayer[nPlayer])
 		return nullptr;
 
 	// プレイヤーのキャラタイプを設定
-	pPlayer->m_type = type;
-	// 初期化
-	pPlayer->Init();
+	m_pPlayer[nPlayer]->m_type = type;
 	// プレイヤー番号の保存
-	pPlayer->m_nPlayer = nPlayer;
+	m_pPlayer[nPlayer]->m_nPlayer = nPlayer;
+	// 初期化
+	m_pPlayer[nPlayer]->Init();
 
 	// プレイヤー番号によって座標を再設定
 	if (nPlayer == PLAYER_ONE)
-		pPlayer->SetPos(POS_1P);
+		m_pPlayer[nPlayer]->SetPos(POS_1P);
 	if (nPlayer == PLAYER_TWO)
-		pPlayer->SetPos(POS_2P);
+		m_pPlayer[nPlayer]->SetPos(POS_2P);
 
 	// 値を返す
-	return pPlayer;
+	return m_pPlayer[nPlayer];
 }
 
 //==================================================================================================================
@@ -569,6 +580,14 @@ void CPlayer::CatchStone(void)
 			// 変身
 			this->m_bTrans = true;
 	}
+}
+
+//==================================================================================================================
+// プレイヤー番号設定処理
+//==================================================================================================================
+void CPlayer::SetnPlayer(int nPlayerNum)
+{
+	m_nPlayer = nPlayerNum;
 }
 
 //==================================================================================================================

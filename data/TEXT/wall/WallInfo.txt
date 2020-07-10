@@ -1,6 +1,8 @@
 
 SCRIPT
 
+FILENAME = data/TEXTURE/wall/publicdomainq-0013684agf.jpg
+
 CENTER = 0.0 0.0 0.0
 
 LENGTH = 300.0 300.0
