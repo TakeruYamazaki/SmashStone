@@ -109,7 +109,6 @@ void CObjectManager::Update()
 	{
 		m_pFakeObject->Update();
 	}
-
 	// ImGui‚ÌXV
 	ShowObjectManagerInfo();
 #endif
