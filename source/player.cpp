@@ -46,7 +46,6 @@
 //==================================================================================================================
 // 静的メンバ変数の初期化
 //==================================================================================================================
-CPlayer *CPlayer::m_pPlayer[MAX_PLAYER] = {};		// プレイヤー情報
 CHitPoint *CPlayer::m_pHitPoint = NULL;				// HP情報
 
 //==================================================================================================================
@@ -116,7 +115,7 @@ void CPlayer::Update(void)
 
 	// プレイヤーの番号設定
 	SetnPlayer(m_nPlayer);
-
+	 
 #ifdef _DEBUG
 	CDebugProc::Print("プレイヤーの位置 [%.4f][%.4f][%.4f]\n", m_pos.x, m_pos.y, m_pos.z);
 
@@ -143,27 +142,27 @@ void CPlayer::Draw(void)
 CPlayer *CPlayer::Create(int nPlayer, CHARACTER_TYPE type)
 {
 	// シーン動的に確保
-	m_pPlayer[nPlayer] = new CPlayer(CScene::PRIORITY_PLAYER);
+	CPlayer *pPlayer = new CPlayer(CScene::PRIORITY_PLAYER);
 
 	// 失敗
-	if (!m_pPlayer[nPlayer])
+	if (!pPlayer)
 		return nullptr;
 
 	// プレイヤーのキャラタイプを設定
-	m_pPlayer[nPlayer]->m_type = type;
+	pPlayer->m_type = type;
 	// プレイヤー番号の保存
-	m_pPlayer[nPlayer]->m_nPlayer = nPlayer;
+	pPlayer->m_nPlayer = nPlayer;
 	// 初期化
-	m_pPlayer[nPlayer]->Init();
+	pPlayer->Init();
 
 	// プレイヤー番号によって座標を再設定
 	if (nPlayer == PLAYER_ONE)
-		m_pPlayer[nPlayer]->SetPos(POS_1P);
+		pPlayer->SetPos(POS_1P);
 	if (nPlayer == PLAYER_TWO)
-		m_pPlayer[nPlayer]->SetPos(POS_2P);
+		pPlayer->SetPos(POS_2P);
 
 	// 値を返す
-	return m_pPlayer[nPlayer];
+	return pPlayer;
 }
 
 //==================================================================================================================
@@ -174,10 +173,10 @@ void CPlayer::Control(void)
 	CInputGamepad *pGamepad = CManager::GetInputGamepad(m_nPlayer);	// ゲームパッド取得
 	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();		// キーボードの取得
 
-	if (m_nPlayer == 0)
-		CDebugProc::Print("プレイヤー1操作 : WASD, SPACEキー\n");
-	if (m_nPlayer == 1)
-		CDebugProc::Print("プレイヤー2操作 : 矢印, 0(テンキー)\n");
+	//if (m_nPlayer == 0)
+	//	CDebugProc::Print("プレイヤー1操作 : WASD, SPACEキー\n");
+	//if (m_nPlayer == 1)
+	//	CDebugProc::Print("プレイヤー2操作 : 矢印, 0(テンキー)\n");
 
 	// ゲームパッド有効時
 	if (pGamepad->GetbConnect())

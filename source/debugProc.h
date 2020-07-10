@@ -7,6 +7,8 @@
 #ifndef _DEBUGPROC_H_
 #define _DEBUGPROC_H_
 
+#ifdef _DEBUG
+
 //==================================================================================================================
 // インクルードファイル
 //==================================================================================================================
@@ -25,6 +27,7 @@
 class CDebugProc
 {
 public:
+
 	CDebugProc();									// コンストラクタ
 	~CDebugProc();									// デストラクタ
 	void Init(void);								// 初期化処理
@@ -32,7 +35,6 @@ public:
 
 	static void Print(char* fmt, ...);				// デバッグログ表示処理
 	static void Draw(void);							// 描画処理
-
 protected:
 
 private:
@@ -40,4 +42,6 @@ private:
 	static char m_aStr[MAX_CHARACTER];				// 文字数
 
 };
+#endif
+
 #endif

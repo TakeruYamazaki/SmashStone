@@ -308,8 +308,10 @@ void CGame::DecideCreateStone(void)
 
 	if (m_nNumStone + GetPlayer(0)->GetNumStone() + GetPlayer(1)->GetNumStone() < 3)
 	{
+		// ランダムでポイントを決める
+		int nRandPos = rand() % STONE_POS;
 		// 決められた位置からランダムで生成
-		CStone::Create(CStone::STONE_ID_DEFAULT, m_stonePos[rand() % STONE_POS + 1]);
+		CStone::Create(CStone::STONE_ID_DEFAULT, m_stonePos[nRandPos]);
 		// 出現数を加算
 		m_nNumStone++;
 	}

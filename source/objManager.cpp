@@ -109,10 +109,10 @@ void CObjectManager::Update()
 	{
 		m_pFakeObject->Update();
 	}
-#endif
 
 	// ImGuiÇÃçXêV
 	ShowObjectManagerInfo();
+#endif
 }
 
 //=============================================================================
@@ -220,13 +220,13 @@ void CObjectManager::Unload(void)
 HRESULT CObjectManager::LoadOffset(void)
 {
 	// ïœêîêÈåæ
-	FILE *pFile;
-	char cReadText[MAX_TEXT];
-	char cHeadText[MAX_TEXT];
-	char cDieText[MAX_TEXT];
+	FILE *pFile = nullptr;
+	char cReadText[MAX_TEXT] = "";
+	char cHeadText[MAX_TEXT] = "";
+	char cDieText[MAX_TEXT] = "";
 
-	D3DXVECTOR3 pos;
-	D3DXVECTOR3 rot;
+	D3DXVECTOR3 pos = ZeroVector3;
+	D3DXVECTOR3 rot = ZeroVector3;
 	bool		bCollision = false;
 	int			nUseTex = 99;
 	int			nType = 0;
@@ -312,10 +312,10 @@ HRESULT CObjectManager::LoadOffset(void)
 HRESULT CObjectManager::LoadFileName(void)
 {
 	// ïœêîêÈåæ
-	FILE *pFile;
-	char cReadText[MAX_TEXT];
-	char cHeadText[MAX_TEXT];
-	char cDieText[MAX_TEXT];
+	FILE *pFile = nullptr;
+	char cReadText[MAX_TEXT] = "";
+	char cHeadText[MAX_TEXT] = "";
+	char cDieText[MAX_TEXT] = "";
 	int nNumType = 0;
 	int nNumObj = 0;
 
