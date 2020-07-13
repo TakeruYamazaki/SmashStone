@@ -17,27 +17,21 @@
 #include "debugProc.h"
 
 //==================================================================================================================
-//	マクロ定義
-//==================================================================================================================
-#define SizeX 500			// 横のサイズ
-#define SizeY 60			// 縦のサイズ
-
-//==================================================================================================================
 //	静的メンバ変数宣言
 //==================================================================================================================
 LPDIRECT3DTEXTURE9 CBar::m_pTexture[BARTYPE_MAX] = {};		// テクスチャ情報
 char *CBar::m_apFileName[BARTYPE_MAX] =						// 読み込むモデルのソース先
 {
-	{ "data/TEXTURE/HPbar.png" },				// 0番目の体力バー
-	{ "data/TEXTURE/HPframe.png" },				// 0番目のフレーム
-	{ "data/TEXTURE/HPbar.png" },				// 1番目の体力バー
-	{ "data/TEXTURE/HPframe.png" },				// 1番目のフレーム
-	{ "data/TEXTURE/HPbar.png" },				// 2番目の体力バー
-	{ "data/TEXTURE/HPframe.png" },				// 2番目のフレーム
-	{ "data/TEXTURE/HPbar.png" },				// 3番目の体力バー
-	{ "data/TEXTURE/HPframe.png" },				// 3番目のフレーム
-	{ "data/TEXTURE/HPbar.png" },				// 4番目の体力バー
-	{ "data/TEXTURE/HPframe.png" },				// 4番目のフレーム
+	{ "data/TEXTURE/図1.png" },			// 0番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 0番目の体力バー
+	{ "data/TEXTURE/図1.png" },			// 1番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 1番目の体力バー
+	{ "data/TEXTURE/図1.png" },			// 2番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 2番目の体力バー
+	{ "data/TEXTURE/図1.png" },			// 3番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 3番目の体力バー
+	{ "data/TEXTURE/図1.png" },			// 4番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 4番目の体力バー
 };
 
 //==================================================================================================================
@@ -226,7 +220,7 @@ void CBar::SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth,
 //==================================================================================================================
 // バー回転処理
 //==================================================================================================================
-void CBar::RotBar(int index, D3DXVECTOR3 pos, float fAngle, float fLength)
+void CBar::RotBar(int index, D3DXVECTOR3 pos, float fAngle, float fLength, float fDiff)
 {
 	// 頂点データの範囲をロックし、頂点バッファへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
@@ -240,19 +234,19 @@ void CBar::RotBar(int index, D3DXVECTOR3 pos, float fAngle, float fLength)
 
 	// 移動座標の設定
 	m_pVtx[0].pos.x = originPos0.x * cosf(fAngle) - originPos0.y * sinf(fAngle) + pos.x;
-	m_pVtx[0].pos.y = originPos0.x * sinf(fAngle) + originPos0.y * cosf(fAngle) + pos.y;
+	m_pVtx[0].pos.y = originPos0.x * sinf(fAngle) + originPos0.y * cosf(fAngle) + pos.y + fDiff;
 	m_pVtx[0].pos.z = 0.0f;
 
 	m_pVtx[1].pos.x = originPos1.x * cosf(fAngle) - originPos1.y * sinf(fAngle) + pos.x;
-	m_pVtx[1].pos.y = originPos1.x * sinf(fAngle) + originPos1.y * cosf(fAngle) + pos.y;
+	m_pVtx[1].pos.y = originPos1.x * sinf(fAngle) + originPos1.y * cosf(fAngle) + pos.y + fDiff;
 	m_pVtx[1].pos.z = 0.0f;
 
 	m_pVtx[2].pos.x = originPos2.x * cosf(fAngle) - originPos2.y * sinf(fAngle) + pos.x;
-	m_pVtx[2].pos.y = originPos2.x * sinf(fAngle) + originPos2.y * cosf(fAngle) + pos.y;
+	m_pVtx[2].pos.y = originPos2.x * sinf(fAngle) + originPos2.y * cosf(fAngle) + pos.y + fDiff;
 	m_pVtx[2].pos.z = 0.0f;
 
 	m_pVtx[3].pos.x = originPos3.x * cosf(fAngle) - originPos3.y * sinf(fAngle) + pos.x;
-	m_pVtx[3].pos.y = originPos3.x * sinf(fAngle) + originPos3.y * cosf(fAngle) + pos.y;
+	m_pVtx[3].pos.y = originPos3.x * sinf(fAngle) + originPos3.y * cosf(fAngle) + pos.y + fDiff;
 	m_pVtx[3].pos.z = 0.0f;
 
 	// 頂点データをアンロック
