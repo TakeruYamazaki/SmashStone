@@ -32,6 +32,7 @@ class CPlayer;
 class CTime;
 class CWall;
 class CObjectManager;
+class CPolygonCollider;
 
 //==================================================================================================================
 //
@@ -55,6 +56,13 @@ public:
 		GAMESTATE_MAX			// 最大
 	} GAMESTATE;				// ゲームの状態
 
+	enum
+	{
+		POLYCOLLI_STAIRS = 0,
+		POLYCOLLI_LONGSTAIRS,
+		POLYCOLLI_MAX
+	};
+
 	CGame();									// コンストラクタ
 	~CGame();									// デストラクタ
 	void Init(void);							// 初期化処理
@@ -76,6 +84,7 @@ public:
 	static CWall *GetWall(void)					{ return m_pWall; }				// 壁の取得
 	static CObjectManager *GetObjMana(void)		{ return m_pObjMana.get(); }			// オブジェクトマネージャーを取得
 
+	static CPolygonCollider* GetpolyColly(int nIndex) { return m_pPolyColli[nIndex]; }
 protected:
 
 private:
@@ -95,7 +104,7 @@ private:
 	static int m_nCntDecide;					// ストーン生成のタイミングを決めるカウンタ
 	static D3DXVECTOR3 m_stonePos[STONE_POS];	// ストーンの生成場所
 	static std::unique_ptr<CObjectManager> m_pObjMana;	// オブジェクトマネージャーのポインタ
-
+	static CPolygonCollider* m_pPolyColli[POLYCOLLI_MAX];		// ポリゴンコライダーのポインタ
 	D3DXMATRIX  m_mtxWorld;						// マトリックス
 };
 #endif

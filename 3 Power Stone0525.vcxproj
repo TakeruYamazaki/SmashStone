@@ -196,6 +196,7 @@
     <ClCompile Include="source\objManager.cpp" />
     <ClCompile Include="source\pause.cpp" />
     <ClCompile Include="source\player.cpp" />
+    <ClCompile Include="source\PolygonCollider.cpp" />
     <ClCompile Include="source\ranking.cpp" />
     <ClCompile Include="source\Reflection.cpp" />
     <ClCompile Include="source\renderer.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="source\objManager.h" />
     <ClInclude Include="source\pause.h" />
     <ClInclude Include="source\player.h" />
+    <ClInclude Include="source\PolygonCollider.h" />
     <ClInclude Include="source\ranking.h" />
     <ClInclude Include="source\Reflection.h" />
     <ClInclude Include="source\renderer.h" />

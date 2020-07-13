@@ -32,6 +32,8 @@
 #include "debugProc.h"
 #include "objManager.h"
 #include "CylinderCollider.h"
+#include "PolygonCollider.h"
+
 //==================================================================================================================
 //	マクロ定義
 //==================================================================================================================
@@ -67,6 +69,8 @@ D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
 	D3DXVECTOR3(-100.0f, 20.0f, 100.0f),
 	D3DXVECTOR3(-100.0f, 20.0f, -100.0f)
 };
+
+CPolygonCollider* CGame::m_pPolyColli[POLYCOLLI_MAX] = { NULL };							// ポリゴンコライダーのポインタ
 
 //==================================================================================================================
 //	コンストラクタ
@@ -114,6 +118,26 @@ void CGame::Init(void)
 	m_pMeshField  = CMeshField::Create();							// メッシュフィールド生成
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
+
+	// 横に長い階段
+	D3DXVECTOR3 LongStairsVtxPos[POLYCOLLI_USE_VTX] =
+	{
+		{ -250.0f,14.0f,-175.0f },
+		{ 250.0f,14.0f,-175.0f },
+		{ -250.0f,0.0f, -202.0f },
+		{ 250.0f,0.0f,-202.0f },
+	};
+	m_pPolyColli[POLYCOLLI_LONGSTAIRS] = CPolygonCollider::Create(&LongStairsVtxPos[0]);
+
+	// 階段
+	D3DXVECTOR3 StairsVtxPos[POLYCOLLI_USE_VTX] = 
+	{
+		{ 70.0f,0.0f,5.0f },
+		{ 163.0f,55.0f,5.0f },
+		{ 70.0f,0.0f, -155.0f },
+		{ 163.0f,55.0f,-155.0f },
+	};
+	m_pPolyColli[POLYCOLLI_STAIRS] = CPolygonCollider::Create(&StairsVtxPos[0]);
 
 	/* ゲームの初期化 */
 	SetGameState(GAMESTATE_NORMAL);			// 通常状態に設定

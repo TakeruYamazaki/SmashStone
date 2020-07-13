@@ -194,10 +194,6 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 			{
 				*SurfaceNor = pSingleInfo[CWall::SETINGPOS_POSIX].nor;
 			}
-			else
-			{
-				//pPos->x = pSingleInfo[CWall::SETINGPOS_POSIX].trans.pos.x;
-			}
 		}
 		else
 		{// 位置を戻す
@@ -216,10 +212,6 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 			if (GetIntersection(pPos, pPosOld, pOut_Intersect, &m_SingleInfo[SETINGPOS_NEGX]) == true)
 			{
 				*SurfaceNor = pSingleInfo[CWall::SETINGPOS_NEGX].nor;
-			}
-			else
-			{
-				//pPos->x = pSingleInfo[CWall::SETINGPOS_NEGX].trans.pos.x;
 			}
 		}
 		else
@@ -240,10 +232,6 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 			{
 				*SurfaceNor = pSingleInfo[CWall::SETINGPOS_POSIZ].nor;
 			}
-			else
-			{
-				//pPos->z = pSingleInfo[CWall::SETINGPOS_POSIZ].trans.pos.z;
-			}
 		}
 		else
 		{// 位置を戻す
@@ -263,10 +251,6 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 			{
 				*SurfaceNor = pSingleInfo[CWall::SETINGPOS_NEGZ].nor;
 			}
-			else
-			{
-				//pPos->z = pSingleInfo[CWall::SETINGPOS_NEGZ].trans.pos.z;
-			}
 			
 		}
 		else
@@ -274,7 +258,6 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 			 pPos->z = pSingleInfo[CWall::SETINGPOS_NEGZ].trans.pos.z;
 		}
 	}
-
 	// 衝突フラグを返す
 	return bColli;
 }
@@ -337,11 +320,9 @@ void CWall::Init(void)
 	// 位置の設定
 	m_SingleInfo[SETINGPOS_POSIX].trans.pos = D3DXVECTOR3(m_CenterPos.x + m_Length.x, m_CenterPos.y, m_CenterPos.z);	// +Xの位置
 	m_SingleInfo[SETINGPOS_NEGX].trans.pos  = D3DXVECTOR3(m_CenterPos.x - m_Length.x, m_CenterPos.y, m_CenterPos.z);	// -Xの位置
-	m_SingleInfo[SETINGPOS_POSIZ].trans.pos = D3DXVECTOR3(m_CenterPos.x, m_CenterPos.y, m_CenterPos.z + m_Length.y);		// +Zの位置
+	m_SingleInfo[SETINGPOS_POSIZ].trans.pos = D3DXVECTOR3(m_CenterPos.x, m_CenterPos.y, m_CenterPos.z + m_Length.y);	// +Zの位置
 	m_SingleInfo[SETINGPOS_NEGZ].trans.pos  = D3DXVECTOR3(m_CenterPos.x, m_CenterPos.y, m_CenterPos.z - m_Length.y);	// -Zの地位
 
-	m_Length.x += 10.0f;
-	m_Length.y += 10.0f;
 	// 大きさの設定
 	m_SingleInfo[SETINGPOS_POSIX].size = D3DXVECTOR3(0.0f, m_fHeight, m_Length.y);
 	m_SingleInfo[SETINGPOS_NEGX].size = D3DXVECTOR3(0.0f, m_fHeight, m_Length.y);
