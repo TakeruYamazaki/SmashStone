@@ -160,6 +160,9 @@
     <ClCompile Include="source\object.cpp">
       <Filter>object</Filter>
     </ClCompile>
+    <ClCompile Include="source\PolygonCollider.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\sceneX.h">
@@ -326,6 +329,9 @@
     </ClInclude>
     <ClInclude Include="source\ichiyasu.h">
       <Filter>character</Filter>
+    </ClInclude>
+    <ClInclude Include="source\PolygonCollider.h">
+      <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

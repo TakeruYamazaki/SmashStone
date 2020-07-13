@@ -208,11 +208,13 @@ void CCharacter::Move(void)
 	if (m_bBlowAway == true)
 	{
 		if (abs(m_move.x) <= 5.0f &&
-			abs(m_move.z) <= 5.0f)
+			abs(m_move.z) <= 5.0f &&
+			abs(m_move.y) <= 5.0f)
 		{
 			m_bBlowAway = false;
 		}
 		CMylibrary::SlowingMove(&m_move.x,0.005f);
+		CMylibrary::SlowingMove(&m_move.y, 0.005f);
 		CMylibrary::SlowingMove(&m_move.z,0.005f);
 	}
 	else
@@ -221,8 +223,7 @@ void CCharacter::Move(void)
 	}
 
 	// 重力
-	if (m_bJump)
-		CKananLibrary::Gravity(m_move.y);
+	CKananLibrary::Gravity(m_move.y);
 
 	//移動量加算
 	m_pos += m_move;
@@ -230,10 +231,20 @@ void CCharacter::Move(void)
 	// 地面との高さを比較し、修正
 	if (CKananLibrary::FloatLowerLimit(&m_pos.y, CManager::GetRenderer()->GetGame()->GetMeshField()->GetHeight(m_pos)))
 	{
-		// 地面に乗っていたら、移動量をなくす
-		m_move.y = 0.0f;
-		// ジャンプ解除
-		m_bJump = false;
+		if (m_bBlowAway == false)
+		{
+			// 地面に乗っていたら、移動量をなくす
+			if (m_move.y <= -10.0f)
+			{
+				m_move.y = -10.0f;
+			}
+			// ジャンプ解除
+			m_bJump = false;
+		}
+		else
+		{
+			m_move.y *= -1;
+		}
 	}
 }
 
