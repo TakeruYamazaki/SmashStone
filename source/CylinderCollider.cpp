@@ -535,42 +535,36 @@ bool CCylinderCoillider::InsideBoxTest(int n3DBoxColliderID, D3DXVECTOR3 *pPos)
 	// 上側の裏にいるとき
 	if (CMylibrary::TestIfPolygonBack(p3DBoxInfo->Vertex[0], *pPos, p3DBoxInfo->surfaceNom[C3DBoxCollider::SURFACE_TYPE_TOP]) == false)
 	{
-		CDebugProc::Print("上\n");
 		return false;
 
 	}
 	// 右側の裏にいるとき
 	if (CMylibrary::TestIfPolygonBack(p3DBoxInfo->Vertex[1], *pPos, p3DBoxInfo->surfaceNom[C3DBoxCollider::SURFACE_TYPE_RIGHT]) == false)
 	{
-		CDebugProc::Print("右\n");
 		return false;
 
 	}
 	// 左側の裏にいるとき
 	if (CMylibrary::TestIfPolygonBack(p3DBoxInfo->Vertex[0], *pPos, p3DBoxInfo->surfaceNom[C3DBoxCollider::SURFACE_TYPE_LEFT]) == false)
 	{
-		CDebugProc::Print("左\n");
 		return false;
 
 	}
 	// 前側の裏にいるとき
 	if (CMylibrary::TestIfPolygonBack(p3DBoxInfo->Vertex[0], *pPos, p3DBoxInfo->surfaceNom[C3DBoxCollider::SURFACE_TYPE_FRONT]) == false)
 	{
-		CDebugProc::Print("前\n");
 		return false;
 
 	}
 	// 後ろ側の裏にいるとき
 	if (CMylibrary::TestIfPolygonBack(p3DBoxInfo->Vertex[3], *pPos, p3DBoxInfo->surfaceNom[C3DBoxCollider::SURFACE_TYPE_REAR]) == false)
 	{
-		CDebugProc::Print("後ろ\n");
 		return false;
 
 	}
 	// 下側の裏にいるとき
 	if (CMylibrary::TestIfPolygonBack(p3DBoxInfo->Vertex[4], *pPos, p3DBoxInfo->surfaceNom[C3DBoxCollider::SURFACE_TYPE_BOTTOM]) == false)
 	{
-		CDebugProc::Print("下\n");
 		return false;
 
 	}

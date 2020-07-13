@@ -197,7 +197,7 @@ void CHitPoint::Update(void)
 	m_pBar->Update();
 
 	// プレイヤーの情報ポインタ取得
-	m_pPlayer = CPlayer::GetPlayer(m_nPlayerNum);
+	m_pPlayer = CGame::GetPlayer(m_nPlayerNum);
 
 	float NowHP = m_pPlayer->GetLife();		// 現在のHP
 
