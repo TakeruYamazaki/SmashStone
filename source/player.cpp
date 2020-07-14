@@ -31,6 +31,7 @@
 #include "motion.h"
 #include "Reflection.h"
 #include "hitpoint.h"
+#include "PolygonCollider.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -221,6 +222,38 @@ void CPlayer::Collision(void)
 			this->Damage(2);
 			CReflection::GetPlaneReflectingAfterPosAndVec(&this->m_pos,&this->m_move, &out_intersect, &this->m_move, &out_nor);
 		}
+	}
+
+	for (int nCntPolyColli = 0; nCntPolyColli < CGame::POLYCOLLI_MAX; nCntPolyColli++)
+	{
+		// ポリゴンコライダーの取得
+		CPolygonCollider*pPolyColli = CGame::GetpolyColly(nCntPolyColli);
+		// ポリゴンコライダーの衝突判定
+		if (pPolyColli[0].Collision(&m_pos, &m_posOld, &m_move, &out_intersect, &out_nor, m_bBlowAway) == true)
+		{
+			if (m_bBlowAway == false)
+			{
+				CDebugProc::Print("乗っている\n");
+				// 地面に乗っていたら、移動量をなくす
+				if (m_move.y <= -5.0f)
+				{
+					m_move.y = -5.0f;
+				}
+				// ジャンプ解除
+				m_bJump = false;
+			}
+			else
+			{
+				CReflection::GetPlaneReflectingAfterPosAndVec(&this->m_pos, &this->m_move, &out_intersect, &this->m_move, &out_nor);
+			}
+		}
+	}
+
+	// 高さ制限
+	if (m_pos.y > 200.0f)
+	{
+		m_pos.y = 200.0f;
+		m_move.y *= -1;
 	}
 }
 
@@ -424,7 +457,7 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		m_bWalk = false;
 
 		// 移動値を設定
-		move.y += VALUE_JUMP;
+		move.y = VALUE_JUMP;
 	}
 
 	if (m_bTrans &&
@@ -694,13 +727,13 @@ inline bool CPlayer::BlowAway(CPlayer * pAnother)
 	D3DXVECTOR3 MoveVec;	// 移動ベクトル
 
 	MoveVec.x = sinf(pAnother->m_rot.y + D3DX_PI);
-	MoveVec.y = 0.0f;
+	MoveVec.y = 0.5f;
 	MoveVec.z = cosf(pAnother->m_rot.y + D3DX_PI);
 
 	// 移動値に加算
 	this->m_move.x = MoveVec.x * BLOWAWAYFORCE;
 	this->m_move.z = MoveVec.z * BLOWAWAYFORCE;
-
+	this->m_move.y = MoveVec.y * BLOWAWAYFORCE;
 	m_bBlowAway = true;
 
 	return true;
