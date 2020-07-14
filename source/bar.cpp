@@ -220,33 +220,40 @@ void CBar::SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth,
 //==================================================================================================================
 // バー回転処理
 //==================================================================================================================
-void CBar::RotBar(int index, D3DXVECTOR3 pos, float fAngle, float fLength, float fDiff)
+void CBar::RotBar(int index, D3DXVECTOR3 pos, float fAngle, D3DXVECTOR3 diff)
 {
 	// 頂点データの範囲をロックし、頂点バッファへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
 
 	m_pVtx += index * 4;					// 頂点を4つずつ加算
 
+	// 中心点からの位置
 	D3DXVECTOR3 originPos0 = m_pVtx[0].pos - pos;
 	D3DXVECTOR3 originPos1 = m_pVtx[1].pos - pos;
 	D3DXVECTOR3 originPos2 = m_pVtx[2].pos - pos;
 	D3DXVECTOR3 originPos3 = m_pVtx[3].pos - pos;
 
+	// 回転の中心点の差
+	D3DXVECTOR3 diffPos0 = originPos0 - diff;
+	D3DXVECTOR3 diffPos1 = originPos1 - diff;
+	D3DXVECTOR3 diffPos2 = originPos2 - diff;
+	D3DXVECTOR3 diffPos3 = originPos3 - diff;
+
 	// 移動座標の設定
-	m_pVtx[0].pos.x = originPos0.x * cosf(fAngle) - originPos0.y * sinf(fAngle) + pos.x;
-	m_pVtx[0].pos.y = originPos0.x * sinf(fAngle) + originPos0.y * cosf(fAngle) + pos.y + fDiff;
+	m_pVtx[0].pos.x = diffPos0.x * cosf(fAngle) - diffPos0.y * sinf(fAngle) + pos.x + diff.x;
+	m_pVtx[0].pos.y = diffPos0.x * sinf(fAngle) + diffPos0.y * cosf(fAngle) + pos.y + diff.y;
 	m_pVtx[0].pos.z = 0.0f;
 
-	m_pVtx[1].pos.x = originPos1.x * cosf(fAngle) - originPos1.y * sinf(fAngle) + pos.x;
-	m_pVtx[1].pos.y = originPos1.x * sinf(fAngle) + originPos1.y * cosf(fAngle) + pos.y + fDiff;
+	m_pVtx[1].pos.x = diffPos1.x * cosf(fAngle) - diffPos1.y * sinf(fAngle) + pos.x + diff.x;
+	m_pVtx[1].pos.y = diffPos1.x * sinf(fAngle) + diffPos1.y * cosf(fAngle) + pos.y + diff.y;
 	m_pVtx[1].pos.z = 0.0f;
 
-	m_pVtx[2].pos.x = originPos2.x * cosf(fAngle) - originPos2.y * sinf(fAngle) + pos.x;
-	m_pVtx[2].pos.y = originPos2.x * sinf(fAngle) + originPos2.y * cosf(fAngle) + pos.y + fDiff;
+	m_pVtx[2].pos.x = diffPos2.x * cosf(fAngle) - diffPos2.y * sinf(fAngle) + pos.x + diff.x;
+	m_pVtx[2].pos.y = diffPos2.x * sinf(fAngle) + diffPos2.y * cosf(fAngle) + pos.y + diff.y;
 	m_pVtx[2].pos.z = 0.0f;
 
-	m_pVtx[3].pos.x = originPos3.x * cosf(fAngle) - originPos3.y * sinf(fAngle) + pos.x;
-	m_pVtx[3].pos.y = originPos3.x * sinf(fAngle) + originPos3.y * cosf(fAngle) + pos.y + fDiff;
+	m_pVtx[3].pos.x = diffPos3.x * cosf(fAngle) - diffPos3.y * sinf(fAngle) + pos.x + diff.x;
+	m_pVtx[3].pos.y = diffPos3.x * sinf(fAngle) + diffPos3.y * cosf(fAngle) + pos.y + diff.y;
 	m_pVtx[3].pos.z = 0.0f;
 
 	// 頂点データをアンロック

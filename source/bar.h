@@ -58,7 +58,7 @@ public:
 	static void Unload(void);			// テクスチャ破棄処理
 
 	void SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight);	// 頂点設定処理
-	void RotBar(int index, D3DXVECTOR3 pos, float fAngle, float fLength, float fDiff);			// バー回転処理
+	void RotBar(int index, D3DXVECTOR3 pos, float fAngle, D3DXVECTOR3 diff);					// バー回転処理
 	void SetColBar(int index, D3DXCOLOR col);													// バー色設定処理
 
 protected:

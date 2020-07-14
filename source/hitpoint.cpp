@@ -29,29 +29,30 @@
 #define ALPHA_DEGRESS 19.0f		// α値の減少量
 #define MAX_HPBAR 5				// HPバーの最大本数
 #define BAR_HP_HEIGHT 110		// HPバーの高さ
-#define BAR_HPFREAM_HEIGHT 163	// HPフレームの高さ
+#define BAR_HPFRAME_HEIGHT 163	// HPフレームの高さ
 #define DROP_SPEED 8.0f			// バーの落ちるスピード
 #define DROP_DIFFRENCE 7.0f		// 落ちるときのずれ修正
+#define ROT_DIFF 53.0f			// 回転の差
 #define BAR0_LEFT_POS D3DXVECTOR3(250, BAR_HP_HEIGHT, 0)		// 0番目BarHP
-#define BAR1_LEFT_POS D3DXVECTOR3(250, BAR_HPFREAM_HEIGHT, 0)	// 1番目Barフレーム
+#define BAR1_LEFT_POS D3DXVECTOR3(250, BAR_HPFRAME_HEIGHT, 0)	// 1番目Barフレーム
 #define BAR2_LEFT_POS D3DXVECTOR3(210, BAR_HP_HEIGHT, 0)		// 2番目BarHP
-#define BAR3_LEFT_POS D3DXVECTOR3(210, BAR_HPFREAM_HEIGHT, 0)	// 3番目Barフレーム
+#define BAR3_LEFT_POS D3DXVECTOR3(210, BAR_HPFRAME_HEIGHT, 0)	// 3番目Barフレーム
 #define BAR4_LEFT_POS D3DXVECTOR3(170, BAR_HP_HEIGHT, 0)		// 4番目BarHP
-#define BAR5_LEFT_POS D3DXVECTOR3(170, BAR_HPFREAM_HEIGHT, 0)	// 5番目Barフレーム
+#define BAR5_LEFT_POS D3DXVECTOR3(170, BAR_HPFRAME_HEIGHT, 0)	// 5番目Barフレーム
 #define BAR6_LEFT_POS D3DXVECTOR3(130, BAR_HP_HEIGHT, 0)		// 6番目BarHP
-#define BAR7_LEFT_POS D3DXVECTOR3(130, BAR_HPFREAM_HEIGHT, 0)	// 7番目Barフレーム
+#define BAR7_LEFT_POS D3DXVECTOR3(130, BAR_HPFRAME_HEIGHT, 0)	// 7番目Barフレーム
 #define BAR8_LEFT_POS D3DXVECTOR3(90, BAR_HP_HEIGHT, 0)			// 8番目BarHP
-#define BAR9_LEFT_POS D3DXVECTOR3(90, BAR_HPFREAM_HEIGHT, 0)	// 9番目Barフレーム
+#define BAR9_LEFT_POS D3DXVECTOR3(90, BAR_HPFRAME_HEIGHT, 0)	// 9番目Barフレーム
 #define BAR0_RIGHT_POS D3DXVECTOR3(1010, BAR_HP_HEIGHT, 0)		// 0番目BarHP
-#define BAR1_RIGHT_POS D3DXVECTOR3(1010, BAR_HPFREAM_HEIGHT, 0)	// 1番目Barフレーム
+#define BAR1_RIGHT_POS D3DXVECTOR3(1010, BAR_HPFRAME_HEIGHT, 0)	// 1番目Barフレーム
 #define BAR2_RIGHT_POS D3DXVECTOR3(1050, BAR_HP_HEIGHT, 0)		// 2番目BarHP
-#define BAR3_RIGHT_POS D3DXVECTOR3(1050, BAR_HPFREAM_HEIGHT, 0)	// 3番目Barフレーム
+#define BAR3_RIGHT_POS D3DXVECTOR3(1050, BAR_HPFRAME_HEIGHT, 0)	// 3番目Barフレーム
 #define BAR4_RIGHT_POS D3DXVECTOR3(1090, BAR_HP_HEIGHT, 0)		// 4番目BarHP
-#define BAR5_RIGHT_POS D3DXVECTOR3(1090, BAR_HPFREAM_HEIGHT, 0)	// 5番目Barフレーム
+#define BAR5_RIGHT_POS D3DXVECTOR3(1090, BAR_HPFRAME_HEIGHT, 0)	// 5番目Barフレーム
 #define BAR6_RIGHT_POS D3DXVECTOR3(1130, BAR_HP_HEIGHT, 0)		// 6番目BarHP
-#define BAR7_RIGHT_POS D3DXVECTOR3(1130, BAR_HPFREAM_HEIGHT, 0)	// 7番目Barフレーム
+#define BAR7_RIGHT_POS D3DXVECTOR3(1130, BAR_HPFRAME_HEIGHT, 0)	// 7番目Barフレーム
 #define BAR8_RIGHT_POS D3DXVECTOR3(1170, BAR_HP_HEIGHT, 0)		// 8番目BarHP
-#define BAR9_RIGHT_POS D3DXVECTOR3(1170, BAR_HPFREAM_HEIGHT, 0)	// 9番目Barフレーム
+#define BAR9_RIGHT_POS D3DXVECTOR3(1170, BAR_HPFRAME_HEIGHT, 0)	// 9番目Barフレーム
 #define NORMAL_COLOR D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)	// 普通の色
 
 //==================================================================================================================
@@ -303,12 +304,12 @@ void CHitPoint::Bar0Update(float NowHP)
 		}
 		else
 		{// バー0番目がfalseのとき
-		 // バーの位置Yが規定値より以下のとき
-			if (DROP_SPEED * m_nCntPos0 <= BAR_HP_HEIGHT)
+			// バーの位置Yが規定値より以下のとき
+			if (DROP_SPEED * m_nCntPos0 <= BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(1, D3DXVECTOR3(250, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos0, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(0, D3DXVECTOR3(250, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos0, 0), NORMAL_COLOR, MAX_WIDTH, MAX_HEIGHT_FREAME);
+				m_pBar->SetVertexBar(1, D3DXVECTOR3(250, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos0, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+				m_pBar->SetVertexBar(0, D3DXVECTOR3(250, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos0, 0), NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 			}
 
 			// 位置加算
@@ -326,11 +327,11 @@ void CHitPoint::Bar0Update(float NowHP)
 		else
 		{// バー0番目がfalseのとき
 		 // バーの位置Yが規定値より以下のとき
-			if (DROP_SPEED * m_nCntPos0 <= BAR_HP_HEIGHT)
+			if (DROP_SPEED * m_nCntPos0 <= BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(1, D3DXVECTOR3(1010, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos0, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(0, D3DXVECTOR3(1010, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos0, 0), NORMAL_COLOR, MAX_WIDTH, MAX_HEIGHT_FREAME);
+				m_pBar->SetVertexBar(1, D3DXVECTOR3(1010, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos0, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+				m_pBar->SetVertexBar(0, D3DXVECTOR3(1010, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos0, 0), NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 			}
 
 			// 位置加算
@@ -339,7 +340,7 @@ void CHitPoint::Bar0Update(float NowHP)
 	}
 
 	// バーの位置Yが規定値より
-	if (DROP_SPEED * m_nCntPos0 >= BAR_HP_HEIGHT)
+	if (DROP_SPEED * m_nCntPos0 >= BAR_HPFRAME_HEIGHT)
 	{
 		// 最大本数までカウント
 		for (int nCnt = 0; nCnt < MAX_HPBAR; nCnt++)
@@ -360,7 +361,6 @@ void CHitPoint::Bar1Update(float NowHP)
 	m_rot1.z = 0.0f;										// 回転Z初期化
 	m_nCntCol1 = 0;											// α値減少カウンタ初期化
 	m_nCntPos0 = 0;											// 位置変更用カウンタ初期化
-	//m_nPlayerNum = m_pPlayer->GetnPlayer();					// プレイヤー番号取得
 
 	// プレイヤーの番号が0番目のとき
 	if (m_nPlayerNum == 0)
@@ -374,11 +374,11 @@ void CHitPoint::Bar1Update(float NowHP)
 		else
 		{// バーの1番目がfalseのとき
 		 // バーの位置Yが規定値より以下のとき
-			if (DROP_SPEED * m_nCntPos1 <= BAR_HP_HEIGHT)
+			if (DROP_SPEED * m_nCntPos1 <= BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(3, D3DXVECTOR3(210, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos1, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(2, D3DXVECTOR3(210, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos1, 0), NORMAL_COLOR, MAX_WIDTH, MAX_HEIGHT_FREAME);
+				m_pBar->SetVertexBar(3, D3DXVECTOR3(210, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos1, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+				m_pBar->SetVertexBar(2, D3DXVECTOR3(210, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos1, 0), NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 			}
 
 			// 位置加算
@@ -396,11 +396,11 @@ void CHitPoint::Bar1Update(float NowHP)
 		else
 		{// バーの1番目がfalseのとき
 		 // バーの位置Yが規定値より以下のとき
-			if (DROP_SPEED * m_nCntPos1 <= BAR_HP_HEIGHT)
+			if (DROP_SPEED * m_nCntPos1 <= BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(3, D3DXVECTOR3(1050, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos1, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(2, D3DXVECTOR3(1050, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos1, 0), NORMAL_COLOR, MAX_WIDTH, MAX_HEIGHT_FREAME);
+				m_pBar->SetVertexBar(3, D3DXVECTOR3(1050, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos1, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+				m_pBar->SetVertexBar(2, D3DXVECTOR3(1050, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos1, 0), NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 			}
 
 			// 位置加算
@@ -410,7 +410,7 @@ void CHitPoint::Bar1Update(float NowHP)
 	}
 
 	// バーの位置Yが規定値以上のとき
-	if (DROP_SPEED * m_nCntPos1 >= BAR_HP_HEIGHT)
+	if (DROP_SPEED * m_nCntPos1 >= BAR_HPFRAME_HEIGHT)
 	{
 		// 最大本数までカウント
 		for (int nCnt = 1; nCnt < MAX_HPBAR; nCnt++)
@@ -431,8 +431,8 @@ void CHitPoint::Bar1Update(float NowHP)
 			if (m_rot0.z <= D3DX_PI / 2)
 			{
 				// バー回転設定
-				m_pBar->RotBar(1, BAR0_LEFT_POS, ROT_ANGLE, MAX_HEIGHT / 2, -40);
-				m_pBar->RotBar(0, BAR1_LEFT_POS, ROT_ANGLE, MAX_HEIGHT / 2 , 0);
+				m_pBar->RotBar(1, BAR0_LEFT_POS, ROT_ANGLE, D3DXVECTOR3(0, ROT_DIFF, 0));
+				m_pBar->RotBar(0, BAR1_LEFT_POS, ROT_ANGLE, D3DXVECTOR3(0, 0, 0));
 
 				// バー色設定
 				m_pBar->SetColBar(1, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f - m_nCntCol0 * (1.0f / ALPHA_DEGRESS)));
@@ -455,8 +455,8 @@ void CHitPoint::Bar1Update(float NowHP)
 			if (m_rot0.z >= -D3DX_PI / 2)
 			{
 				// バー回転設定
-				m_pBar->RotBar(1, BAR0_RIGHT_POS, -ROT_ANGLE, MAX_HEIGHT / 2, -40);
-				m_pBar->RotBar(0, BAR1_RIGHT_POS, -ROT_ANGLE, MAX_HEIGHT / 2, 0);
+				m_pBar->RotBar(1, BAR0_RIGHT_POS, -ROT_ANGLE, D3DXVECTOR3(0, ROT_DIFF, 0));
+				m_pBar->RotBar(0, BAR1_RIGHT_POS, -ROT_ANGLE, D3DXVECTOR3(0, 0, 0));
 
 				// バー色設定
 				m_pBar->SetColBar(1, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f - m_nCntCol0 * (1.0f / ALPHA_DEGRESS)));
@@ -496,11 +496,11 @@ void CHitPoint::Bar2Update(float NowHP)
 		else
 		{// バー1がfalseのとき
 		 // バーの位置Yが規定値より以下のとき
-			if (DROP_SPEED * m_nCntPos2 <= BAR_HP_HEIGHT)
+			if (DROP_SPEED * m_nCntPos2 <= BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(5, D3DXVECTOR3(170, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos2, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(4, D3DXVECTOR3(170, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos2, 0), NORMAL_COLOR, MAX_WIDTH, MAX_HEIGHT_FREAME);
+				m_pBar->SetVertexBar(5, D3DXVECTOR3(170, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos2, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+				m_pBar->SetVertexBar(4, D3DXVECTOR3(170, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos2, 0), NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 			}
 
 			// 位置加算
@@ -518,11 +518,11 @@ void CHitPoint::Bar2Update(float NowHP)
 		else
 		{// バー1がfalseのとき
 		 // バーの位置Yが規定値より以下のとき
-			if (DROP_SPEED * m_nCntPos2 <= BAR_HP_HEIGHT)
+			if (DROP_SPEED * m_nCntPos2 <= BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(5, D3DXVECTOR3(1090, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos2, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(4, D3DXVECTOR3(1090, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos2, 0), NORMAL_COLOR, MAX_WIDTH, MAX_HEIGHT_FREAME);
+				m_pBar->SetVertexBar(5, D3DXVECTOR3(1090, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos2, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+				m_pBar->SetVertexBar(4, D3DXVECTOR3(1090, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos2, 0), NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 			}
 
 			// 位置加算
@@ -531,7 +531,7 @@ void CHitPoint::Bar2Update(float NowHP)
 	}
 
 	// バーの位置Yが規定値以上のとき
-	if (DROP_SPEED * m_nCntPos2 >= BAR_HP_HEIGHT)
+	if (DROP_SPEED * m_nCntPos2 >= BAR_HPFRAME_HEIGHT)
 	{
 		// 最大本数までカウント
 		for (int nCnt = 2; nCnt < MAX_HPBAR; nCnt++)
@@ -553,8 +553,8 @@ void CHitPoint::Bar2Update(float NowHP)
 			if (m_rot1.z <= D3DX_PI / 2)
 			{
 				// バー回転設定
-				m_pBar->RotBar(3, BAR2_LEFT_POS, ROT_ANGLE, MAX_HEIGHT / 2, -40);
-				m_pBar->RotBar(2, BAR3_LEFT_POS, ROT_ANGLE, MAX_HEIGHT / 2, 0);
+				m_pBar->RotBar(3, BAR2_LEFT_POS, ROT_ANGLE, D3DXVECTOR3(0, ROT_DIFF, 0));
+				m_pBar->RotBar(2, BAR3_LEFT_POS, ROT_ANGLE, D3DXVECTOR3(0, 0, 0));
 
 				// バー色設定
 				m_pBar->SetColBar(3, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f - m_nCntCol1 * (1.0f / ALPHA_DEGRESS)));
@@ -577,8 +577,8 @@ void CHitPoint::Bar2Update(float NowHP)
 			if (m_rot1.z >= -D3DX_PI / 2)
 			{
 				// バー回転設定
-				m_pBar->RotBar(3, BAR2_RIGHT_POS, -ROT_ANGLE, MAX_HEIGHT / 2, -40);
-				m_pBar->RotBar(2, BAR3_RIGHT_POS, -ROT_ANGLE, MAX_HEIGHT / 2, 0);
+				m_pBar->RotBar(3, BAR2_RIGHT_POS, -ROT_ANGLE, D3DXVECTOR3(0, ROT_DIFF, 0));
+				m_pBar->RotBar(2, BAR3_RIGHT_POS, -ROT_ANGLE, D3DXVECTOR3(0, 0, 0));
 
 				// バー色設定
 				m_pBar->SetColBar(3, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f - m_nCntCol1 * (1.0f / ALPHA_DEGRESS)));
@@ -618,11 +618,11 @@ void CHitPoint::Bar3Update(float NowHP)
 		else
 		{// バー3がfalseのとき
 		 // バーの位置Yが規定値より以下のとき
-			if (DROP_SPEED * m_nCntPos3 <= BAR_HP_HEIGHT)
+			if (DROP_SPEED * m_nCntPos3 <= BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(7, D3DXVECTOR3(130, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos3, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(6, D3DXVECTOR3(130, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos3, 0), NORMAL_COLOR, MAX_WIDTH, MAX_HEIGHT_FREAME);
+				m_pBar->SetVertexBar(7, D3DXVECTOR3(130, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos3, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+				m_pBar->SetVertexBar(6, D3DXVECTOR3(130, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos3, 0), NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 			}
 
 			// 位置加算
@@ -640,11 +640,11 @@ void CHitPoint::Bar3Update(float NowHP)
 		else
 		{// バー3がfalseのとき
 		 // バーの位置Yが規定値より以下のとき
-			if (DROP_SPEED * m_nCntPos3 <= BAR_HP_HEIGHT)
+			if (DROP_SPEED * m_nCntPos3 <= BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(7, D3DXVECTOR3(1130, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos3, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(6, D3DXVECTOR3(1130, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos3, 0), NORMAL_COLOR, MAX_WIDTH, MAX_HEIGHT_FREAME);
+				m_pBar->SetVertexBar(7, D3DXVECTOR3(1130, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos3, 0), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+				m_pBar->SetVertexBar(6, D3DXVECTOR3(1130, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos3, 0), NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 			}
 
 			// 位置加算
@@ -653,7 +653,7 @@ void CHitPoint::Bar3Update(float NowHP)
 	}
 
 	// バーの位置Yが規定値以上のとき
-	if (DROP_SPEED * m_nCntPos3 >= BAR_HP_HEIGHT)
+	if (DROP_SPEED * m_nCntPos3 >= BAR_HPFRAME_HEIGHT)
 	{
 		// 最大本数までカウント
 		for (int nCnt = 3; nCnt < MAX_HPBAR; nCnt++)
@@ -676,8 +676,8 @@ void CHitPoint::Bar3Update(float NowHP)
 			if (m_rot3.z <= D3DX_PI / 2)
 			{
 				// バー回転設定
-				m_pBar->RotBar(5, BAR4_LEFT_POS, ROT_ANGLE, MAX_HEIGHT / 2, -40);
-				m_pBar->RotBar(4, BAR5_LEFT_POS, ROT_ANGLE, MAX_HEIGHT / 2, 0);
+				m_pBar->RotBar(5, BAR4_LEFT_POS, ROT_ANGLE, D3DXVECTOR3(0, ROT_DIFF, 0));
+				m_pBar->RotBar(4, BAR5_LEFT_POS, ROT_ANGLE, D3DXVECTOR3(0, 0, 0));
 
 				// バー色設定
 				m_pBar->SetColBar(5, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f - m_nCntCol2 * (1.0f / ALPHA_DEGRESS)));
@@ -700,8 +700,8 @@ void CHitPoint::Bar3Update(float NowHP)
 			if (m_rot3.z >= -D3DX_PI / 2)
 			{
 				// バー回転設定
-				m_pBar->RotBar(5, BAR4_RIGHT_POS, -ROT_ANGLE, MAX_HEIGHT / 2, -40);
-				m_pBar->RotBar(4, BAR5_RIGHT_POS, -ROT_ANGLE, MAX_HEIGHT / 2, 0);
+				m_pBar->RotBar(5, BAR4_RIGHT_POS, -ROT_ANGLE, D3DXVECTOR3(0, ROT_DIFF, 0));
+				m_pBar->RotBar(4, BAR5_RIGHT_POS, -ROT_ANGLE, D3DXVECTOR3(0, 0, 0));
 
 				// バー色設定
 				m_pBar->SetColBar(5, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f - m_nCntCol2 * (1.0f / ALPHA_DEGRESS)));
@@ -769,8 +769,8 @@ void CHitPoint::Bar4Update(float NowHP)
 			if (m_rot3.z <= D3DX_PI / 2)
 			{
 				// バー回転設定
-				m_pBar->RotBar(7, BAR6_LEFT_POS, ROT_ANGLE, MAX_HEIGHT / 2, -40);
-				m_pBar->RotBar(6, BAR7_LEFT_POS, ROT_ANGLE, MAX_HEIGHT / 2, 0);
+				m_pBar->RotBar(7, BAR6_LEFT_POS, ROT_ANGLE, D3DXVECTOR3(0, ROT_DIFF, 0));
+				m_pBar->RotBar(6, BAR7_LEFT_POS, ROT_ANGLE, D3DXVECTOR3(0, 0, 0));
 
 				// バー色設定
 				m_pBar->SetColBar(7, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f - m_nCntCol3 * (1.0f / ALPHA_DEGRESS)));
@@ -793,8 +793,8 @@ void CHitPoint::Bar4Update(float NowHP)
 			if (m_rot3.z >= -D3DX_PI / 2)
 			{
 				// バー回転設定
-				m_pBar->RotBar(7, BAR6_RIGHT_POS, -ROT_ANGLE, MAX_HEIGHT / 2, -40);
-				m_pBar->RotBar(6, BAR7_RIGHT_POS, -ROT_ANGLE, MAX_HEIGHT / 2, 0);
+				m_pBar->RotBar(7, BAR6_RIGHT_POS, -ROT_ANGLE, D3DXVECTOR3(0, ROT_DIFF, 0));
+				m_pBar->RotBar(6, BAR7_RIGHT_POS, -ROT_ANGLE, D3DXVECTOR3(0, 0, 0));
 
 				// バー色設定
 				m_pBar->SetColBar(7, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f - m_nCntCol3 * (1.0f / ALPHA_DEGRESS)));
