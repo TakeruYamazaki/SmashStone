@@ -16,9 +16,10 @@
 // マクロ定義
 //==================================================================================================================
 #define TEXTURE_BAR 10												// テクスチャの最大数
-#define MAX_WIDTH 35.0f												// 横の最大サイズ
-#define MAX_HEIGHT 120.0f											// 縦の最大サイズ
-#define MAX_HEIGHT_FREAME 125.0f									// フレームの縦サイズ
+#define MAX_WIDTH 20.0f												// 横の最大サイズ
+#define MAX_WIDTH_FREAM 35.0f										// フレームの横サイズ
+#define MAX_HEIGHT 80.0f											// 縦の最大サイズ
+#define MAX_HEIGHT_FREAME 160.0f									// フレームの縦サイズ
 
 //==================================================================================================================
 // クラスの定義
@@ -32,16 +33,16 @@ public:
 	//=============================================================================
 	typedef enum
 	{
-		BARTYPE_HP0 = 0,		// 0番目の体力バー
-		BARTYPE_FREAME0,		// 0番目のフレーム
-		BARTYPE_HP1,			// 1番目の体力バー
+		BARTYPE_FREAME0 = 0,	// 0番目のフレーム
+		BARTYPE_HP0,			// 0番目の体力バー
 		BARTYPE_FREAME1,		// 1番目のフレーム
-		BARTYPE_HP2,			// 2番目の体力バー
+		BARTYPE_HP1,			// 1番目の体力バー
 		BARTYPE_FREMAE2,		// 2番目のフレーム
-		BARTYPE_HP3,			// 3番目の体力バー
+		BARTYPE_HP2,			// 2番目の体力バー
 		BARTYPE_FREAME3,		// 3番目のフレーム
-		BARTYPE_HP4,			// 4番目の体力バー
+		BARTYPE_HP3,			// 3番目の体力バー
 		BARTYPE_FREAME4,		// 4番目のフレーム
+		BARTYPE_HP4,			// 4番目の体力バー
 		BARTYPE_MAX				// 最大数
 	} BARTYPE;					// Barタイプ
 
@@ -57,7 +58,7 @@ public:
 	static void Unload(void);			// テクスチャ破棄処理
 
 	void SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight);	// 頂点設定処理
-	void RotBar(int index, D3DXVECTOR3 pos, float fAngle, float fLength);						// バー回転処理
+	void RotBar(int index, D3DXVECTOR3 pos, float fAngle, D3DXVECTOR3 diff);					// バー回転処理
 	void SetColBar(int index, D3DXCOLOR col);													// バー色設定処理
 
 protected:

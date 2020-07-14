@@ -17,27 +17,21 @@
 #include "debugProc.h"
 
 //==================================================================================================================
-//	マクロ定義
-//==================================================================================================================
-#define SizeX 500			// 横のサイズ
-#define SizeY 60			// 縦のサイズ
-
-//==================================================================================================================
 //	静的メンバ変数宣言
 //==================================================================================================================
 LPDIRECT3DTEXTURE9 CBar::m_pTexture[BARTYPE_MAX] = {};		// テクスチャ情報
 char *CBar::m_apFileName[BARTYPE_MAX] =						// 読み込むモデルのソース先
 {
-	{ "data/TEXTURE/HPbar.png" },				// 0番目の体力バー
-	{ "data/TEXTURE/HPframe.png" },				// 0番目のフレーム
-	{ "data/TEXTURE/HPbar.png" },				// 1番目の体力バー
-	{ "data/TEXTURE/HPframe.png" },				// 1番目のフレーム
-	{ "data/TEXTURE/HPbar.png" },				// 2番目の体力バー
-	{ "data/TEXTURE/HPframe.png" },				// 2番目のフレーム
-	{ "data/TEXTURE/HPbar.png" },				// 3番目の体力バー
-	{ "data/TEXTURE/HPframe.png" },				// 3番目のフレーム
-	{ "data/TEXTURE/HPbar.png" },				// 4番目の体力バー
-	{ "data/TEXTURE/HPframe.png" },				// 4番目のフレーム
+	{ "data/TEXTURE/図1.png" },			// 0番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 0番目の体力バー
+	{ "data/TEXTURE/図1.png" },			// 1番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 1番目の体力バー
+	{ "data/TEXTURE/図1.png" },			// 2番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 2番目の体力バー
+	{ "data/TEXTURE/図1.png" },			// 3番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 3番目の体力バー
+	{ "data/TEXTURE/図1.png" },			// 4番目のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 4番目の体力バー
 };
 
 //==================================================================================================================
@@ -226,33 +220,40 @@ void CBar::SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth,
 //==================================================================================================================
 // バー回転処理
 //==================================================================================================================
-void CBar::RotBar(int index, D3DXVECTOR3 pos, float fAngle, float fLength)
+void CBar::RotBar(int index, D3DXVECTOR3 pos, float fAngle, D3DXVECTOR3 diff)
 {
 	// 頂点データの範囲をロックし、頂点バッファへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
 
 	m_pVtx += index * 4;					// 頂点を4つずつ加算
 
+	// 中心点からの位置
 	D3DXVECTOR3 originPos0 = m_pVtx[0].pos - pos;
 	D3DXVECTOR3 originPos1 = m_pVtx[1].pos - pos;
 	D3DXVECTOR3 originPos2 = m_pVtx[2].pos - pos;
 	D3DXVECTOR3 originPos3 = m_pVtx[3].pos - pos;
 
+	// 回転の中心点の差
+	D3DXVECTOR3 diffPos0 = originPos0 - diff;
+	D3DXVECTOR3 diffPos1 = originPos1 - diff;
+	D3DXVECTOR3 diffPos2 = originPos2 - diff;
+	D3DXVECTOR3 diffPos3 = originPos3 - diff;
+
 	// 移動座標の設定
-	m_pVtx[0].pos.x = originPos0.x * cosf(fAngle) - originPos0.y * sinf(fAngle) + pos.x;
-	m_pVtx[0].pos.y = originPos0.x * sinf(fAngle) + originPos0.y * cosf(fAngle) + pos.y;
+	m_pVtx[0].pos.x = diffPos0.x * cosf(fAngle) - diffPos0.y * sinf(fAngle) + pos.x + diff.x;
+	m_pVtx[0].pos.y = diffPos0.x * sinf(fAngle) + diffPos0.y * cosf(fAngle) + pos.y + diff.y;
 	m_pVtx[0].pos.z = 0.0f;
 
-	m_pVtx[1].pos.x = originPos1.x * cosf(fAngle) - originPos1.y * sinf(fAngle) + pos.x;
-	m_pVtx[1].pos.y = originPos1.x * sinf(fAngle) + originPos1.y * cosf(fAngle) + pos.y;
+	m_pVtx[1].pos.x = diffPos1.x * cosf(fAngle) - diffPos1.y * sinf(fAngle) + pos.x + diff.x;
+	m_pVtx[1].pos.y = diffPos1.x * sinf(fAngle) + diffPos1.y * cosf(fAngle) + pos.y + diff.y;
 	m_pVtx[1].pos.z = 0.0f;
 
-	m_pVtx[2].pos.x = originPos2.x * cosf(fAngle) - originPos2.y * sinf(fAngle) + pos.x;
-	m_pVtx[2].pos.y = originPos2.x * sinf(fAngle) + originPos2.y * cosf(fAngle) + pos.y;
+	m_pVtx[2].pos.x = diffPos2.x * cosf(fAngle) - diffPos2.y * sinf(fAngle) + pos.x + diff.x;
+	m_pVtx[2].pos.y = diffPos2.x * sinf(fAngle) + diffPos2.y * cosf(fAngle) + pos.y + diff.y;
 	m_pVtx[2].pos.z = 0.0f;
 
-	m_pVtx[3].pos.x = originPos3.x * cosf(fAngle) - originPos3.y * sinf(fAngle) + pos.x;
-	m_pVtx[3].pos.y = originPos3.x * sinf(fAngle) + originPos3.y * cosf(fAngle) + pos.y;
+	m_pVtx[3].pos.x = diffPos3.x * cosf(fAngle) - diffPos3.y * sinf(fAngle) + pos.x + diff.x;
+	m_pVtx[3].pos.y = diffPos3.x * sinf(fAngle) + diffPos3.y * cosf(fAngle) + pos.y + diff.y;
 	m_pVtx[3].pos.z = 0.0f;
 
 	// 頂点データをアンロック
