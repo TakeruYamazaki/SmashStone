@@ -22,7 +22,8 @@
 // マクロ定義
 //==================================================================================================================
 #define camera_move 3.1f							// カメラの移動スピード
-#define CAMERA_ROT_SPEED 0.05f						// カメラの回転スピード
+#define CAMERA_ROT_SPEED_Y 0.05f					// カメラの回転スピード
+#define CAMERA_ROT_SPEED_X 0.025f					// カメラの回転スピード
 #define cameraLength 100.0f							// カメラからの距離
 #define posR_Length 3.0f							// モデルと注視点の位置
 #define posR_distance 80.0f							// モデルと注視点の距離
@@ -419,61 +420,60 @@ void CCamera::ControlKeyboard(CInputKeyboard *pKeyboard)
 		m_posR.y += cosf(D3DX_PI * 0.0f + m_rot.y) * camera_move;
 	}
 
-	// キーボードの[Q]が押されたとき
-	if (pKeyboard->GetKeyboardPress(DIK_Q))
+	if (!pKeyboard->GetKeyboardPress(DIK_LSHIFT))
 	{
-		// 視点を中心に回転する(左回り)
-		m_rot.y -= CAMERA_ROT_SPEED;
-
-		// 回転情報が-D3DX_PIより小さくなったとき
-		if (m_rot.y < -D3DX_PI)
+		// キーボードの[Q]が押されたとき
+		if (pKeyboard->GetKeyboardPress(DIK_Q))
 		{
-			// 一周回転させる
-			m_rot.y += D3DX_PI * 2;
+			// 視点を中心に回転する(左回り)
+			m_rot.y -= CAMERA_ROT_SPEED_Y;
+
+			// 回転情報が-D3DX_PIより小さくなったとき
+			if (m_rot.y < -D3DX_PI)
+				m_rot.y += D3DX_PI * 2;
+		}
+
+		// キーボードの[E]が押されたとき
+		if (pKeyboard->GetKeyboardPress(DIK_E))
+		{
+			// 視点を中心に回転する(右回り)
+			m_rot.y += CAMERA_ROT_SPEED_Y;
+
+			// 回転情報がD3DX_PIより大きくなったとき
+			if (m_rot.y > D3DX_PI)
+				m_rot.y -= D3DX_PI * 2;
+		}
+	}
+	else
+	{
+		// キーボードの[Q]が押されたとき
+		if (pKeyboard->GetKeyboardPress(DIK_Q))
+		{
+			// 視点を中心に回転する(左回り)
+			m_rot.x -= CAMERA_ROT_SPEED_X;
+
+			// 回転情報が-D3DX_PIより小さくなったとき
+			if (m_rot.x < -D3DX_PI)
+				m_rot.x += D3DX_PI * 2;
+		}
+
+		// キーボードの[E]が押されたとき
+		if (pKeyboard->GetKeyboardPress(DIK_E))
+		{
+			// 視点を中心に回転する(右回り)
+			m_rot.x += CAMERA_ROT_SPEED_X;
+
+			// 回転情報がD3DX_PIより大きくなったとき
+			if (m_rot.x > D3DX_PI)
+				m_rot.x -= D3DX_PI * 2;
 		}
 	}
 
-	// キーボードの[E]が押されたとき
-	if (pKeyboard->GetKeyboardPress(DIK_E))
-	{
-		// 視点を中心に回転する(右回り)
-		m_rot.y += CAMERA_ROT_SPEED;
-
-		// 回転情報がD3DX_PIより大きくなったとき
-		if (m_rot.y > D3DX_PI)
-		{
-			// 一周戻す
-			m_rot.y -= D3DX_PI * 2;
-		}
-	}
-
-	// キーボードの[C]が押されたとき
+	// カメラの遠近調整
 	if (pKeyboard->GetKeyboardPress(DIK_C))
-	{
-		// 注視点を中心に回転する(右回り)
-		m_rot.y -= CAMERA_ROT_SPEED;
-
-		// 回転情報が-D3DX_PIより小さくなったとき
-		if (m_rot.y < -D3DX_PI)
-		{
-			// 一周回転させる
-			m_rot.y += D3DX_PI * 2;
-		}
-	}
-
-	// キーボードの[Z]が押されたとき
+		m_fDisScale += 0.005f;
 	if (pKeyboard->GetKeyboardPress(DIK_Z))
-	{
-		// 注視点を中心に回転する(左回り)
-		m_rot.y += CAMERA_ROT_SPEED;
-
-		// 回転情報がD3DX_PIより大きくなったとき
-		if (m_rot.y > D3DX_PI)
-		{
-			// 一周戻す
-			m_rot.y -= D3DX_PI * 2;
-		}
-	}
+		m_fDisScale -= 0.005f;
 
 	CKananLibrary::InterpolationRot(&m_rot);
 }

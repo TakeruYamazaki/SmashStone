@@ -37,8 +37,10 @@ char * CMotion::m_apFileName[CMotion::MOTION_MAX] =
 	{ "data/MOTION/fokker/motion_attack_1.txt" },
 	{ "data/MOTION/fokker/motion_attack_2.txt" },
 	{ "data/MOTION/fokker/motion_attack_3.txt" },
-	{ "data/MOTION/fokker/motion_charge.txt" },
-	{ "data/MOTION/fokker/motion_smash.txt" }
+	{ "data/MOTION/fokker/motion_smashCharge.txt" },
+	{ "data/MOTION/fokker/motion_smash.txt" },
+	{ "data/MOTION/fokker/motion_daunted.txt" },
+	{ "data/MOTION/fokker/motion_blowAway.txt" }
 };
 
 //=============================================================================

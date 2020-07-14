@@ -57,7 +57,8 @@ public:
 		PLAYER_ATTACK_3,		// プレイヤー 攻撃4
 		PLAYER_SMASH_CHARGE,	// プレイヤー スマッシュチャージ
 		PLAYER_SMASH,			// プレイヤー スマッシュ
-		//PLAYER_DAMAGE,			// プレイヤー ダメージ
+		PLAYER_DAUNTED,			// プレイヤー 怯みダメージ
+		PLAYER_BLOWAWAY,		// プレイヤー 吹っ飛びダメージ
 		//PLAYER_DOWN,			// プレイヤー ダウン
 		//PLAYER_WALLDOWN,		// プレイヤー 壁は貼り付き
 		MOTION_MAX				// 最大値

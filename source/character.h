@@ -66,7 +66,8 @@ public:
 	inline float       GetMaxLife(void)	{ return m_nMaxLife; }		// 最大ライフ取得
 	inline float       GetLife(void)	{ return m_nLife; }			// ライフ取得
 
-	inline void        Damage(const int nDamage) { m_nLife -= nDamage; }	// ダメージ処理
+	inline void        Damage(const int nDamage)	{ m_nLife -= nDamage; }	// ダメージ処理
+	void			   Daunted(const int nGap);		// 怯み処理
 
 protected:
 	CModelCharacter *m_pModelCharacter;					// モデルキャラクターのポインタ
@@ -98,9 +99,12 @@ protected:
 	bool		m_bTrans;								// 変身しているか
 	bool		m_bAttack;								// 攻撃しているか
 	bool		m_bBlowAway;							// 吹き飛んでいるか
+	bool		m_bSmashBlowAway;						// スマッシュで吹き飛んでいるか
+	bool		m_bDaunted;								// ひるんでいるか
 	static int	m_nNumCharacter;						// キャラクターの総数
 	int			m_nAttackFrame;							// 攻撃モーション切り替えのカウンタ
 	int			m_nAttackFlow;							// 攻撃の流れ
+	int			m_nCntGap;								// 隙のカウンタ
 
 	bool		m_bAttakHit;							// 攻撃を当てたフラグ
 

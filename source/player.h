@@ -42,17 +42,12 @@ class CPlayer;
 class CPlayer : public CCharacter
 {
 public:
-	// モーションのタイプ
 	typedef enum
 	{
-		PLAYER_MOTION_NORMAL = 0,			// ニュートラル
-		PLAYER_MOTION_WALK,					// 歩き
-		PLAYER_MOTION_ACTION,				// アクション
-		PLAYER_MOTION_JUMP,					// ジャンプ
-		PLAYER_MOTION_LANDING,				// 着地
-		PLAYER_MOTION_DAMAGE,				// ダメージ
-		PLAYER_MOTION_MAX					// モーションの最大数
-	}PLAYER_MOTION_STATE;
+		BLOWAYAY_NORMAL = 0,	// 吹き飛び
+		BLOWAWAY_SMASH,
+		BLOWAWAY_MAX
+	} BLOWAWAY_TYPE;
 
 	CPlayer(PRIORITY type);							// コンストラクタ
 	~CPlayer();										// デストラクタ
@@ -88,7 +83,7 @@ private:
 	void AnotherPlayerAttack2(CPlayer *pAnother);	// 別のプレイヤーが攻撃2している時
 	void AnotherPlayerAttack3(CPlayer *pAnother);	// 別のプレイヤーが攻撃3している時
 	void AnotherPlayerSmash(CPlayer *pAnother);		// 別のプレイヤーがスマッシュ攻撃している時
-	bool BlowAway(CPlayer *pAnother);		// 吹き飛ぶ
+	bool BlowAway(CPlayer *pAnother, const float MoveVecY, const float fBlowAwayForce);		// 吹き飛ぶ
 
 	int m_nPlayer;			// プレイヤー番号
 	int m_nBoxColliderID;	// ボックスコライダーID

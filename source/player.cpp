@@ -42,7 +42,8 @@
 #define POS_1P	(D3DXVECTOR3(0.0f, 0.0f, 100.0f))	// 1Pプレイヤーの初期座標
 #define POS_2P	(D3DXVECTOR3(0.0f, 0.0f, -100.0f))	// 2Pプレイヤーの初期座標
 
-#define BLOWAWAYFORCE		(100.0f)
+#define BLOWAWAYFORCE_SMASH		(100.0f)	// 吹き飛ばし力(スマッシュ攻撃)
+#define BLOWAWAYFORCE_NORMAL	(8.0f)		// 吹き飛ばし力(通常攻撃)
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -99,7 +100,7 @@ void CPlayer::Uninit(void)
 //==================================================================================================================
 void CPlayer::Update(void)
 {
-	if (m_bBlowAway == false)
+	if (m_bBlowAway == false && m_bDaunted == false)
 	{
 		// 操作
 		Control();
@@ -171,13 +172,10 @@ CPlayer *CPlayer::Create(int nPlayer, CHARACTER_TYPE type)
 //==================================================================================================================
 void CPlayer::Control(void)
 {
-	CInputGamepad *pGamepad = CManager::GetInputGamepad(m_nPlayer);	// ゲームパッド取得
-	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();		// キーボードの取得
-
-	//if (m_nPlayer == 0)
-	//	CDebugProc::Print("プレイヤー1操作 : WASD, SPACEキー\n");
-	//if (m_nPlayer == 1)
-	//	CDebugProc::Print("プレイヤー2操作 : 矢印, 0(テンキー)\n");
+	// ゲームパッド取得
+	CInputGamepad *pGamepad = CManager::GetInputGamepad(m_nPlayer);
+	// キーボードの取得
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
 
 	// ゲームパッド有効時
 	if (pGamepad->GetbConnect())
@@ -214,12 +212,18 @@ void CPlayer::Collision(void)
 		// 反射フラグが立っているときかつ
 		// 出力された法線がゼロじゃない時かつ
 		// 出力された交点がゼロじゃない時
-		if (m_bBlowAway == true &&
+		if (m_bSmashBlowAway == true &&
 			out_nor != ZeroVector3 &&
 			out_intersect != ZeroVector3)
 		{
 			// ダメージ
 			this->Damage(2);
+			// 向きを決定
+			this->m_rotDest.y =  atan2f(out_nor.x, out_nor.z);
+			// 回転を補間
+			CKananLibrary::InterpolationFloat(m_rotDest.y);
+			// 一瞬で向きを変える
+			this->m_rot.y = this->m_rotDest.y;
 			CReflection::GetPlaneReflectingAfterPosAndVec(&this->m_pos,&this->m_move, &out_intersect, &this->m_move, &out_nor);
 		}
 	}
@@ -584,8 +588,10 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	// 回転の補正
 	CKananLibrary::InterpolationRot(&rotDest);
 
-	// 移動値の設定
-	SetMove(move);
+	// 攻撃中以外は移動
+	if (!m_bAttack)
+		// 移動値の設定
+		SetMove(move);
 
 	// 目的の回転の設定
 	SetRotDest(rotDest);
@@ -638,6 +644,8 @@ void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 	{
 		// ダメージ
 		this->Damage(2);
+		// 怯み
+		this->Daunted(20);
 		// 当てたフラグを立てる
 		pAnother->m_bAttakHit = true;
 	}
@@ -653,6 +661,8 @@ void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 	{
 		// ダメージ
 		this->Damage(2);
+		// 怯み
+		this->Daunted(20);
 		// 当てたフラグを立てる
 		pAnother->m_bAttakHit = true;
 	}
@@ -668,6 +678,8 @@ void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 	{
 		// ダメージ
 		this->Damage(2);
+		// 怯み
+		this->Daunted(20);
 		// 当てたフラグを立てる
 		pAnother->m_bAttakHit = true;
 	}
@@ -683,6 +695,9 @@ void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 	{
 		// ダメージ
 		this->Damage(2);
+		// 変身中以外は吹き飛ぶ
+		if (!m_bTrans)
+			BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
 		// 当てたフラグを立てる
 		pAnother->m_bAttakHit = true;
 	}
@@ -699,8 +714,10 @@ void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 	{
 		// ダメージ
 		this->Damage(2);
-		// 吹っ飛ぶ
-		BlowAway(pAnother);
+		// 変身中以外は吹き飛ぶ
+		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
+		// スマッシュによる吹き飛びを実行
+		m_bSmashBlowAway = true;
 		// 当てたフラグを立てる
 		pAnother->m_bAttakHit = true;
 	}
@@ -716,7 +733,7 @@ void CPlayer::SetnPlayer(int nPlayerNum)
 //==================================================================================================================
 // 吹き飛ぶ
 //==================================================================================================================
-inline bool CPlayer::BlowAway(CPlayer * pAnother)
+inline bool CPlayer::BlowAway(CPlayer *pAnother, const float MoveVecY, const float fBlowAwayForce)
 {
 	// NULLだった時処理しない
 	if (pAnother == NULL)
@@ -727,13 +744,23 @@ inline bool CPlayer::BlowAway(CPlayer * pAnother)
 	D3DXVECTOR3 MoveVec;	// 移動ベクトル
 
 	MoveVec.x = sinf(pAnother->m_rot.y + D3DX_PI);
-	MoveVec.y = 0.5f;
+	MoveVec.y = MoveVecY;
 	MoveVec.z = cosf(pAnother->m_rot.y + D3DX_PI);
 
+	// ぶっ飛びモーション
+	m_pModelCharacter->ResetMotion();
+	m_pModelCharacter->SetMotion(CMotion::PLAYER_BLOWAWAY);
+	// 向きを決定
+	m_rotDest.y = pAnother->m_rot.y + D3DX_PI;
+	// 回転の補間
+	CKananLibrary::InterpolationFloat(m_rotDest.y);
+	// 一瞬で向きを変える
+	m_rot.y = m_rotDest.y;
+
 	// 移動値に加算
-	this->m_move.x = MoveVec.x * BLOWAWAYFORCE;
-	this->m_move.z = MoveVec.z * BLOWAWAYFORCE;
-	this->m_move.y = MoveVec.y * BLOWAWAYFORCE;
+	this->m_move.x = MoveVec.x * fBlowAwayForce;
+	this->m_move.z = MoveVec.z * fBlowAwayForce;
+	this->m_move.y = MoveVec.y * fBlowAwayForce;
 	m_bBlowAway = true;
 
 	return true;

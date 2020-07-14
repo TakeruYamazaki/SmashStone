@@ -50,10 +50,13 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_nCntMove			= 0;
 	m_nAttackFlow		= 0;
 	m_nAttackFrame		= 0;
+	m_nCntGap			= 0;
 	m_bAttack			= false;
 	m_bJump				= false;
 	m_bWalk				= false;
 	m_bBlowAway			= false;
+	m_bSmashBlowAway	= false;
+	m_bDaunted			= false;
 	m_nMaxLife			= LIFE_DEFAULT;
 	m_nLife				= m_nMaxLife;
 
@@ -141,6 +144,10 @@ void CCharacter::Update()
 
 #endif // _DEBUG
 
+	if (m_nLife <= 0)
+		m_nLife = 0;
+	if (m_nLife >= m_nMaxLife)
+		m_nLife = m_nMaxLife;
 }
 
 //=============================================================================
@@ -192,6 +199,18 @@ void CCharacter::SetCylinderCoillider(void)
 	m_pCyliColi[CCylinderCoillider::TYPEID_UPPERARM_L] =
 		CCylinderCoillider::Create(CCylinderCoillider::TYPEID_UPPERARM_L, pParts[CModelParts::PARTSNAME_UPARM_L].GetMtx());
 
+}
+
+//=============================================================================
+// ひるみ処理
+//=============================================================================
+void CCharacter::Daunted(const int nGap)
+{
+	// カウントを設定し、怯み状態に移行
+	m_pModelCharacter->ResetMotion();
+	m_nCntGap = nGap;
+	m_bDaunted = true;
+	m_pModelCharacter->SetMotion(CMotion::PLAYER_DAUNTED);
 }
 
 //=============================================================================
@@ -271,9 +290,9 @@ void CCharacter::Rot(void)
 //=============================================================================
 void CCharacter::Motion(void)
 {
-	if (!m_bWalk && !m_bAttack && !m_bJump)
+	if (!m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// ニュートラルモーション
-	if (m_bWalk && !m_bAttack && !m_bJump)
+	if (m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);	// 移動モーション
 	//if (m_bJump)
 		//m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);	// ジャンプモーション
@@ -287,6 +306,28 @@ void CCharacter::Motion(void)
 		// 攻撃終了後、攻撃の状態を初期化
 		m_bAttack = false;
 		m_nAttackFlow = 0;
+	}
+
+	// 怯み中は、後隙フレーム減算
+	if (m_bDaunted)
+		m_nCntGap--;
+
+	if (m_nCntGap <= 0)
+	{
+		// 怯み終了後、怯みの状態を初期化
+		m_bDaunted = false;
+		m_nCntGap = 0;
+	}
+
+	if (m_bBlowAway)
+	{
+		if (m_move.x == 0.0f &&
+			m_move.y <= -5.0f &&
+			m_move.z == 0.0f)
+		{
+			m_bSmashBlowAway = false;
+			m_bBlowAway = false;
+		}
 	}
 
 	// タイプごとの処理分け
