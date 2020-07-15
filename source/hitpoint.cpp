@@ -31,7 +31,7 @@
 #define BAR_HP_HEIGHT 110		// HPバーの高さ
 #define BAR_HPFRAME_HEIGHT 163	// HPフレームの高さ
 #define DROP_SPEED 8.0f			// バーの落ちるスピード
-#define DROP_DIFFRENCE 7.0f		// 落ちるときのずれ修正
+#define DROP_DIFFRENCE 2.0f		// 落ちるときのずれ修正
 #define ROT_DIFF 53.0f			// 回転の差
 #define BAR0_LEFT_POS D3DXVECTOR3(250, BAR_HP_HEIGHT, 0)		// 0番目BarHP
 #define BAR1_LEFT_POS D3DXVECTOR3(250, BAR_HPFRAME_HEIGHT, 0)	// 1番目Barフレーム
