@@ -102,6 +102,7 @@ protected:
 	bool		m_bSmashBlowAway;						// スマッシュで吹き飛んでいるか
 	bool		m_bDaunted;								// ひるんでいるか
 	static int	m_nNumCharacter;						// キャラクターの総数
+	int			m_nCntJump;								// ジャンプモーション切り替えのカウンタ
 	int			m_nAttackFrame;							// 攻撃モーション切り替えのカウンタ
 	int			m_nAttackFlow;							// 攻撃の流れ
 	int			m_nCntGap;								// 隙のカウンタ
