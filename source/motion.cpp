@@ -30,7 +30,8 @@ char * CMotion::m_apFileName[CMotion::MOTION_MAX] =
 {
 	{ "data/MOTION/fokker/motion_neutral.txt" },
 	{ "data/MOTION/fokker/motion_run.txt" },
-	//{ "data/MOTION/fokker/motion_jump.txt" },
+	{ "data/MOTION/fokker/motion_jump.txt" },
+	{ "data/MOTION/fokker/motion_fall.txt" },
 	{ "data/MOTION/fokker/motion_lift.txt" },
 	{ "data/MOTION/fokker/motion_throw.txt" },
 	{ "data/MOTION/fokker/motion_attack_0.txt" },

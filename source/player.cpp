@@ -237,14 +237,16 @@ void CPlayer::Collision(void)
 		{
 			if (m_bBlowAway == false)
 			{
+#ifdef _DEBUG
 				CDebugProc::Print("乗っている\n");
+#endif
 				// 地面に乗っていたら、移動量をなくす
 				if (m_move.y <= -5.0f)
-				{
 					m_move.y = -5.0f;
-				}
 				// ジャンプ解除
 				m_bJump = false;
+				// ジャンプカウンタを初期化
+				m_nCntJump = 0;
 			}
 			else
 			{
@@ -784,8 +786,11 @@ void CPlayer::ShowDebugInfo()
 		ImGui::Text("bJump       : %d", m_bJump);
 		ImGui::Text("bWalk       : %d", m_bWalk);
 		ImGui::Text("bAttack     : %d", m_bAttack);
-		ImGui::Text("AttackFlow  : %d", m_nAttackFlow);
-		ImGui::Text("AttackFrame : %d / %d", nAllFrame - m_nAttackFrame, nAllFrame);
+		if (m_bAttack)
+		{
+			ImGui::Text("AttackFlow  : %d", m_nAttackFlow);
+			ImGui::Text("AttackFrame : %d / %d", nAllFrame - m_nAttackFrame, nAllFrame);
+		}
 		ImGui::Text("GetNumStone : %d", m_nNumStone);
 		if (m_bTrans)
 			ImGui::Text("TransTime   : %d", TIME_TRANS - m_nCntTrans);

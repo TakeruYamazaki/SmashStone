@@ -51,6 +51,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_nAttackFlow		= 0;
 	m_nAttackFrame		= 0;
 	m_nCntGap			= 0;
+	m_nCntJump			= 0;
 	m_bAttack			= false;
 	m_bJump				= false;
 	m_bWalk				= false;
@@ -254,11 +255,11 @@ void CCharacter::Move(void)
 		{
 			// 地面に乗っていたら、移動量をなくす
 			if (m_move.y <= -10.0f)
-			{
 				m_move.y = -10.0f;
-			}
 			// ジャンプ解除
 			m_bJump = false;
+			// ジャンプカウンタを初期化
+			m_nCntJump = 0;
 		}
 		else
 		{
@@ -294,28 +295,61 @@ void CCharacter::Motion(void)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// ニュートラルモーション
 	if (m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);	// 移動モーション
-	//if (m_bJump)
-		//m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);	// ジャンプモーション
+	// ジャンプニュートラル
+	if (m_bJump && !m_bDaunted && !m_bBlowAway)
+	{
+		// 最初にモーションをリセット
+		if (m_nCntJump == 0)
+			m_pModelCharacter->ResetMotion();
+		// ジャンプカウンタを加算
+		m_nCntJump++;
+		// 最初はジャンプモーション
+		if (m_nCntJump <= 15)
+			m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
+		// 以降は落下モーション
+		else
+		{
+			m_pModelCharacter->ResetMotion();
+			m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
+		}
+	}
 
-	// 攻撃中であれば、攻撃フレーム減算
+	// 攻撃中
 	if (m_bAttack)
+		// 攻撃フレームを減算
 		m_nAttackFrame--;
 
+	// 攻撃終了後
 	if (m_nAttackFrame <= 0)
 	{
-		// 攻撃終了後、攻撃の状態を初期化
+		// 攻撃解除
 		m_bAttack = false;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
+		// 攻撃フレームを初期化
+		m_nAttackFrame = 0;
+	}
+
+	// ジャンプ中
+	if (m_bJump)
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
+
+	// 怯み中
+	if (m_bDaunted)
+	{
+		// 後隙フレーム減算
+		m_nCntGap--;
+		// 攻撃の状態を初期化
 		m_nAttackFlow = 0;
 	}
 
-	// 怯み中は、後隙フレーム減算
-	if (m_bDaunted)
-		m_nCntGap--;
-
+	// 怯み終了
 	if (m_nCntGap <= 0)
 	{
-		// 怯み終了後、怯みの状態を初期化
+		// 怯み解除
 		m_bDaunted = false;
+		// 後隙フレームを初期化
 		m_nCntGap = 0;
 	}
 

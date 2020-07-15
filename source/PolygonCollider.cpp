@@ -99,7 +99,9 @@ bool CPolygonCollider::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVE
 {
 	if (Test3DInsidePolygon(pPos))
 	{
+#ifdef _DEBUG
 		CDebugProc::Print("’†‚É‚¢‚é\n");
+#endif
 		if (bReflection == true)
 		{
 			pPos->y = m_VtxPos[2].y +
