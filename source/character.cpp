@@ -24,8 +24,12 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================	
-#define SPEED_ROT		(0.1f)		// 回転のスピード
-#define LIFE_DEFAULT	(100.0f)	// ライフの初期値
+#define SPEED_ROT			(0.1f)		// 回転のスピード
+#define LIFE_DEFAULT		(100.0f)	// ライフの初期値
+#define TIME_MAX_DOWN		(60)		// 最大までダウンできる時間
+
+#define INERTIA_SMASH		(0.005f)	// スマッシュ吹き飛び時の慣性
+#define INERTIA_BLOWAWAY	(0.02f)		// 通常吹き飛び時の慣性
 
 //=============================================================================
 // 静的メンバ変数の初期化
@@ -47,11 +51,11 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_rotDif			= ZeroVector3;
 	m_move				= ZeroVector3;
 	m_nCntTrans			= 0;
-	m_nCntMove			= 0;
 	m_nAttackFlow		= 0;
 	m_nAttackFrame		= 0;
 	m_nCntGap			= 0;
 	m_nCntJump			= 0;
+	m_bDown				= false;
 	m_bAttack			= false;
 	m_bJump				= false;
 	m_bWalk				= false;
@@ -223,19 +227,19 @@ void CCharacter::Move(void)
 	m_posOld = m_pos;
 
 	D3DXVECTOR3 difMove;	// 現在の移動値と目的の移動値の差
-
+	
 	// 慣性
-	if (m_bBlowAway == true)
+	if (m_bSmashBlowAway == true)
 	{
-		if (abs(m_move.x) <= 5.0f &&
-			abs(m_move.z) <= 5.0f &&
-			abs(m_move.y) <= 5.0f)
-		{
-			m_bBlowAway = false;
-		}
-		CMylibrary::SlowingMove(&m_move.x,0.005f);
-		CMylibrary::SlowingMove(&m_move.y, 0.005f);
-		CMylibrary::SlowingMove(&m_move.z,0.005f);
+		CMylibrary::SlowingMove(&m_move.x, INERTIA_SMASH);
+		CMylibrary::SlowingMove(&m_move.y, INERTIA_SMASH);
+		CMylibrary::SlowingMove(&m_move.z, INERTIA_SMASH);
+	}
+	else if (m_bBlowAway == true)
+	{
+		CMylibrary::SlowingMove(&m_move.x, INERTIA_BLOWAWAY);
+		CMylibrary::SlowingMove(&m_move.y, INERTIA_BLOWAWAY);
+		CMylibrary::SlowingMove(&m_move.z, INERTIA_BLOWAWAY);
 	}
 	else
 	{
@@ -251,20 +255,16 @@ void CCharacter::Move(void)
 	// 地面との高さを比較し、修正
 	if (CKananLibrary::FloatLowerLimit(&m_pos.y, CManager::GetRenderer()->GetGame()->GetMeshField()->GetHeight(m_pos)))
 	{
-		if (m_bBlowAway == false)
-		{
-			// 地面に乗っていたら、移動量をなくす
-			if (m_move.y <= -10.0f)
-				m_move.y = -10.0f;
-			// ジャンプ解除
-			m_bJump = false;
-			// ジャンプカウンタを初期化
-			m_nCntJump = 0;
-		}
-		else
-		{
+		// スマッシュ被弾時は反射
+		if (m_bSmashBlowAway)
 			m_move.y *= -1;
-		}
+		// 地面に乗っていたら、移動量をなくす
+		if (m_move.y <= -10.0f)
+			m_move.y = -10.0f;
+		// ジャンプ解除
+		m_bJump = false;
+		// ジャンプカウンタを初期化
+		m_nCntJump = 0;
 	}
 }
 
@@ -291,16 +291,15 @@ void CCharacter::Rot(void)
 //=============================================================================
 void CCharacter::Motion(void)
 {
-	if (!m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway)
+	if (!m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// ニュートラルモーション
-	if (m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway)
+	if (m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);	// 移動モーション
 	// ジャンプニュートラル
-	if (m_bJump && !m_bDaunted && !m_bBlowAway)
+	if (m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown)
 	{
-		// 最初にモーションをリセット
-		if (m_nCntJump == 0)
-			m_pModelCharacter->ResetMotion();
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
 		// ジャンプカウンタを加算
 		m_nCntJump++;
 		// 最初はジャンプモーション
@@ -308,32 +307,40 @@ void CCharacter::Motion(void)
 			m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
 		// 以降は落下モーション
 		else
-		{
-			m_pModelCharacter->ResetMotion();
 			m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
+	}
+	// ダウン中
+	if (m_bDown)
+	{
+		// ダウンカウント加算
+		m_nCntDown++;
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_DOWN);
+		// ダウン終了
+		if (m_nCntDown >= TIME_MAX_DOWN)
+		{
+			// ダウン状態解除
+			m_bDown = false;
+			// カウント初期化
+			m_nCntDown = 0;
 		}
 	}
 
 	// 攻撃中
 	if (m_bAttack)
+	{
 		// 攻撃フレームを減算
 		m_nAttackFrame--;
-
-	// 攻撃終了後
-	if (m_nAttackFrame <= 0)
-	{
-		// 攻撃解除
-		m_bAttack = false;
-		// 攻撃の状態を初期化
-		m_nAttackFlow = 0;
-		// 攻撃フレームを初期化
-		m_nAttackFrame = 0;
+		// 攻撃終了後
+		if (m_nAttackFrame <= 0)
+		{
+			// 攻撃解除
+			m_bAttack = false;
+			// 攻撃の状態を初期化
+			m_nAttackFlow = 0;
+			// 攻撃フレームを初期化
+			m_nAttackFrame = 0;
+		}
 	}
-
-	// ジャンプ中
-	if (m_bJump)
-		// 攻撃の状態を初期化
-		m_nAttackFlow = 0;
 
 	// 怯み中
 	if (m_bDaunted)
@@ -342,35 +349,42 @@ void CCharacter::Motion(void)
 		m_nCntGap--;
 		// 攻撃の状態を初期化
 		m_nAttackFlow = 0;
-	}
-
-	// 怯み終了
-	if (m_nCntGap <= 0)
-	{
-		// 怯み解除
-		m_bDaunted = false;
-		// 後隙フレームを初期化
-		m_nCntGap = 0;
-	}
-
-	if (m_bBlowAway)
-	{
-		if (m_move.x == 0.0f &&
-			m_move.y <= -5.0f &&
-			m_move.z == 0.0f)
+		// 怯み終了
+		if (m_nCntGap <= 0)
 		{
-			m_bSmashBlowAway = false;
-			m_bBlowAway = false;
+			// 怯み解除
+			m_bDaunted = false;
+			// 後隙フレームを初期化
+			m_nCntGap = 0;
 		}
 	}
 
-	// タイプごとの処理分け
-	switch (m_type)
+	// 吹っ飛び中
+	if (m_bBlowAway)
 	{
-		// 1ヤス
-	case CHARACTER_1YASU:
-		IchiyasuMotion();
-		break;
+		// 地面に着く
+		if (m_move.y <= -5.0f)
+		{
+			// 吹き飛び終了
+			m_bBlowAway = false;
+			// ダウン開始
+			m_bDown = true;
+		}
+	}
+
+	// スマッシュ吹き飛び中
+	if (m_bSmashBlowAway)
+	{
+		// 吹き飛びの威力が落ちる
+		if (abs(m_move.x) <= 5.0f &&
+			abs(m_move.z) <= 5.0f &&
+			abs(m_move.y) <= 5.0f)
+		{
+			// 吹き飛び終了
+			m_bSmashBlowAway = false;
+			// ダウン開始
+			m_bDown = true;
+		}
 	}
 }
 

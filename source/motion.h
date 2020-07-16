@@ -60,7 +60,7 @@ public:
 		PLAYER_SMASH,			// プレイヤー スマッシュ
 		PLAYER_DAUNTED,			// プレイヤー 怯みダメージ
 		PLAYER_BLOWAWAY,		// プレイヤー 吹っ飛びダメージ
-		//PLAYER_DOWN,			// プレイヤー ダウン
+		PLAYER_DOWN,			// プレイヤー ダウン
 		//PLAYER_WALLDOWN,		// プレイヤー 壁は貼り付き
 		MOTION_MAX				// 最大値
 	} MOTION_TYPE;
