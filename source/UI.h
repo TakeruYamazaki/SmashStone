@@ -33,7 +33,6 @@ public:
 	{
 		LOGOTYPE_TITLE = 0,			// タイトル
 		LOGOTYPE_ENTER,				// エンターロゴ
-		LOGOTYPE_COMPASS,			// コンパス
 		LOGOTYPE_ARROW,				// コンパス矢印
 		LOGOTYPE_MAX				// 最大
 	} UITYPE;
@@ -62,9 +61,16 @@ private:
 	UITYPE m_type;											// ロゴタイプ変数
 	CScene2D *m_pScene2D[LOGOTYPE_MAX];						// scene2Dの情報
 
-	D3DXVECTOR3 m_pos;										// 位置
+	D3DXVECTOR3 TitlePos;									// タイトルの位置
 
+	int m_nCntBound;										// タイトルUIバウンドカウンタ
+
+	float m_nCntUITitle0;									// タイトルUI用カウンタ0
+	float m_nCntUITitle1;									// タイトルUI用カウンタ1
 	float m_fWidth;											// 縦幅
 	float m_fSize;											// 横幅
+
+	bool m_bUITitle0;										// タイトルを動かすかどうか0
+	bool m_bUITitle1;										// タイトルを動かすかどうか1
 };
 #endif
