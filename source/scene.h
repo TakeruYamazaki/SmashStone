@@ -27,11 +27,11 @@ public:
 	typedef enum
 	{
 		PRIORITY_MESH_SPHERE = 0,		// メッシュ球
+		PRIORITY_FIELD,					// フィールド
+		PRIORITY_SHADOW,				// 影
 		PRIORITY_PLAYER,				// プレイヤー
 		PRIORITY_OBJECT,				// オブジェクト
 		PRIORITY_STONE,					// ストーン
-		PRIORITY_FIELD,					// フィールド
-		PRIORITY_SHADOW,				// 影
 		PRIORITY_EFFECT,				// エフェクト
 		PRIORITY_COLLISION,				// 衝突判定
 		PRIORITY_GAME_FADE,				// ゲームフェード

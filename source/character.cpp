@@ -363,7 +363,7 @@ void CCharacter::Motion(void)
 	if (m_bBlowAway)
 	{
 		// ’n–Ê‚É’…‚­
-		if (m_move.y <= -5.0f)
+		if (m_move.y <= -3.0f)
 		{
 			// ‚«”ò‚ÑI—¹
 			m_bBlowAway = false;

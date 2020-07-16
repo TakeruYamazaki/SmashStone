@@ -70,10 +70,13 @@ private:
 	D3DXVECTOR3 m_rot;
 	D3DXVECTOR3 m_rotBegin;
 	D3DXMATRIX m_mtxWorld;
-	MODELINFO *m_pModelInfo;
+	MODELINFO m_pModelInfo;
 	int		m_nType;		// オブジェクトタイプ
-	bool	m_bRelease;		// リリースするかどうか
 	bool	m_bCollision;	// 当たり判定処理を行うか
+
+#ifdef _DEBUG
+	bool	m_bRelease;		// リリースするかどうか
+#endif
 };
 
 #endif

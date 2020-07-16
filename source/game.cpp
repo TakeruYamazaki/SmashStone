@@ -59,7 +59,7 @@ CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
 int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 int					CGame::m_nNumStone				= 0;							// 生成したストーンの数
 int					CGame::m_nCntDecide				= 0;							// ストーン生成のタイミングを決めるカウンタ
-std::unique_ptr<CObjectManager>	CGame::m_pObjMana	= nullptr;						// オブジェクトマネージャーのポインタ
+CObjectManager		*CGame::m_pObjMana				= nullptr;						// オブジェクトマネージャーのポインタ
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ストーンの生成場所に生成されているか
 D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
 {
@@ -177,8 +177,8 @@ void CGame::Uninit(void)
 	// ポーズの終了処理
 	m_pPause->Uninit();
 
-	m_pObjMana->Uninit();				// 終了処理
-	m_pObjMana.reset();					// メモリ削除
+	//m_pObjMana->Uninit();				// 終了処理
+	//m_pObjMana.reset();					// メモリ削除
 	m_pObjMana = nullptr;				// ポインタNULL
 
 	delete m_pPause;					// メモリ削除
@@ -235,9 +235,6 @@ void CGame::Update(void)
 
 		// ストーンを生成するか決める
 		DecideCreateStone();
-
-		// オブジェクトマネージャーの更新
-		m_pObjMana->Update();
 	}
 
 	// キーボードの[P] 又は コントローラーの[START]ボタンが押されたとき
@@ -285,9 +282,6 @@ void CGame::Draw(void)
 
 	// カメラの描画処理
 	m_pCamera->Draw();
-
-	// オブジェクトマネージャーの描画処理
-	m_pObjMana->Draw();
 
 	// ポーズ状態がtrueのとき
 	if (m_pPause->GetPause() == true)
@@ -387,6 +381,11 @@ int CGame::DecideRandomPos(void)
 		}
 	}
 
+	// 出力用
+	int outValue = RandPos[rand() % RandRange];
+	// ポインタの破棄
+	delete[] RandPos;
+
 	// 値を返す
-	return RandPos[rand() % RandRange];
+	return outValue;
 }

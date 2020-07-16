@@ -12,6 +12,7 @@
 //=============================================================================
 #include "main.h"
 #include "object.h"
+#include "scene.h"
 #include <vector>
 #include <memory>							// スマートポインタの使用に必要
 #include "kananlibrary.h"
@@ -21,17 +22,17 @@
 //=============================================================================
 class CObject;
 
-class CObjectManager
+class CObjectManager : public CScene
 {
 public:
-	CObjectManager();	// コンストラクタ
+	CObjectManager(CScene::PRIORITY nPriority);	// コンストラクタ
 	~CObjectManager();	// デストラクタ
 
-	HRESULT Init();								// 初期化
+	void Init();								// 初期化
 	void Uninit();								// 終了
 	void Update();								// 更新
 	void Draw();								// 描画
-	static std::unique_ptr<CObjectManager> Create(void);		// 生成
+	static CObjectManager *Create(void);		// 生成
 
 	static HRESULT Load(void);					// モデルのロード
 	static void Unload(void);					// モデルの破棄
@@ -56,7 +57,7 @@ private:
 	static int  *m_pModelIndex;					// テクスチャを割り当てるモデルの番号
 
 #ifdef _DEBUG
-												// デバッグモードの構造体
+	// デバッグモードの構造体
 	typedef enum
 	{
 		MODE_GAME = 0,	// ゲーム
@@ -70,6 +71,7 @@ private:
 	CObject		*m_pFakeObject;						// 偽のオブジェクト
 	static bool m_bObjUse;							// 偽オブジェを使用しているか
 	static int	m_nFakeType;						// 偽オブジェのタイプ
+	static std::string	*m_pObjName;				// ImGui用のオブジェクト名
 #endif
 };
 #endif

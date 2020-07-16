@@ -16,7 +16,9 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define COLOR_ALPHA (D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f))	// 透明なカラー
+#ifdef _DEBUG
+#define COLOR_ALPHA		(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f))	// 透明なカラー
+#endif
 
 //=============================================================================
 // 静的メンバ変数宣言
@@ -28,7 +30,6 @@
 CObject::CObject()
 {
 	// 要素の初期化
-	m_bRelease = false;
 	m_bCollision = false;
 	m_pos		= ZeroVector3;
 	m_posOld	= ZeroVector3;
@@ -36,6 +37,10 @@ CObject::CObject()
 	m_move		= ZeroVector3;
 	m_rot		= ZeroVector3;
 	m_rotBegin	= ZeroVector3;
+
+#ifdef _DEBUG
+	m_bRelease = false;
+#endif
 }
 
 //=============================================================================
@@ -92,31 +97,30 @@ void CObject::Draw(void)
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
 	// テクスチャの設定
-	if (m_pModelInfo->bTex)
-		pDevice->SetTexture(0, m_pModelInfo->pTexture);
+	if (m_pModelInfo.bTex)
+		pDevice->SetTexture(0, m_pModelInfo.pTexture);
 
 	// 現在のマテリアルを取得
 	pDevice->GetMaterial(&matDef);
 
 	// マテリアル情報に対するポインタを取得
-	pMat = (D3DXMATERIAL*)m_pModelInfo->matBuff->GetBufferPointer();
+	pMat = (D3DXMATERIAL*)m_pModelInfo.matBuff->GetBufferPointer();
 
-	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo->matNum; nCntMat++)
+	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo.matNum; nCntMat++)
 	{
 		// 半透明にする
 		pMat[nCntMat].MatD3D.Diffuse.a = 1.0f;
-
 		// マテリアルの設定
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
-
 		// 描画
-		m_pModelInfo->mesh->DrawSubset(nCntMat);
+		m_pModelInfo.mesh->DrawSubset(nCntMat);
 	}
 
 	// マテリアルをデフォルトに戻す
 	pDevice->SetMaterial(&matDef);
 }
 
+#ifdef _DEBUG
 //=============================================================================
 // 透明描画
 //=============================================================================
@@ -136,30 +140,29 @@ void CObject::DrawAlpha(void)
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
 	// テクスチャの設定
-	if (m_pModelInfo->bTex)
-		pDevice->SetTexture(0, m_pModelInfo->pTexture);
+	if (m_pModelInfo.bTex)
+		pDevice->SetTexture(0, m_pModelInfo.pTexture);
 
 	// 現在のマテリアルを取得
 	pDevice->GetMaterial(&matDef);
 
 	// マテリアル情報に対するポインタを取得
-	pMat = (D3DXMATERIAL*)m_pModelInfo->matBuff->GetBufferPointer();
+	pMat = (D3DXMATERIAL*)m_pModelInfo.matBuff->GetBufferPointer();
 
-	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo->matNum; nCntMat++)
+	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo.matNum; nCntMat++)
 	{
 		// 半透明にする
 		pMat[nCntMat].MatD3D.Diffuse.a = 0.5f;
-
 		// マテリアルの設定
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
-
 		// 描画
-		m_pModelInfo->mesh->DrawSubset(nCntMat);
+		m_pModelInfo.mesh->DrawSubset(nCntMat);
 	}
 
 	// マテリアルをデフォルトに戻す
 	pDevice->SetMaterial(&matDef);
 }
+#endif
 
 //=============================================================================
 // 生成
@@ -171,10 +174,8 @@ CObject * CObject::Create(void)
 
 	// nullcheck
 	if (!pObject)
-	{
 		// 失敗
 		return nullptr;
-	}
 
 	// 初期化
 	pObject->Init();
@@ -192,7 +193,7 @@ void CObject::SetObjInfo(const D3DXVECTOR3 & pos, const D3DXVECTOR3 & rot, MODEL
 	m_posBegin = pos;
 	m_rot = rot;
 	m_rotBegin = rot;
-	m_pModelInfo = pModelInfo;
+	m_pModelInfo = *pModelInfo;
 	m_nType = type;
 	m_bCollision = bCollision;
 }
@@ -213,14 +214,12 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 		{
 			pos->z = m_pos.z + Vtx.VtxMin.z - modelVtx.VtxMax.z;
 			move->z = 0.0f;
-			bLand = true;
 		}
 		// ブロック後部の判定
 		if (pos->z + modelVtx.VtxMin.z <= m_pos.z + Vtx.VtxMax.z && posOld.z + modelVtx.VtxMin.z >= m_posOld.z + Vtx.VtxMax.z)
 		{
 			pos->z = m_pos.z + Vtx.VtxMax.z - modelVtx.VtxMin.z;
 			move->z = 0.0f;
-			bLand = true;
 		}
 	}
 
@@ -232,14 +231,12 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 		{
 			pos->x = m_pos.x + Vtx.VtxMin.x - modelVtx.VtxMax.x;
 			move->x = 0.0f;
-			bLand = true;
 		}
 		// ブロック右部の判定
 		if (pos->x + modelVtx.VtxMin.x <= m_pos.x + Vtx.VtxMax.x && posOld.x + modelVtx.VtxMin.x >= m_posOld.x + Vtx.VtxMax.x)
 		{
 			pos->x = m_pos.x + Vtx.VtxMax.x - modelVtx.VtxMin.x;
 			move->x = 0.0f;
-			bLand = true;
 		}
 	}
 
@@ -251,6 +248,7 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 		{
 			pos->y = m_pos.y + Vtx.VtxMax.y - modelVtx.VtxMin.y;
 			move->y = 0.0f;
+			// 上に載っている
 			bLand = true;
 		}
 		// ブロック下部の判定
@@ -258,7 +256,6 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 		{
 			pos->y = m_pos.y + Vtx.VtxMin.y - modelVtx.VtxMax.y;
 			move->y = 0.0f;
-			bLand = true;
 		}
 	}
 
@@ -276,9 +273,7 @@ void CObject::ShowObjectInfo(char cPrintText[16])
 	{
 		// 偽オブジェクト以外
 		if (cPrintText != "FakeObject")
-		{
 			ImGui::Text("type : %d", m_nType);
-		}
 
 		ImGui::DragFloat3("pos", m_pos, 0.5f);
 		ImGui::DragFloat3("rot", m_rot, 0.05f, -D3DX_PI, D3DX_PI);
@@ -293,10 +288,8 @@ void CObject::ShowObjectInfo(char cPrintText[16])
 
 			// 削除
 			if (ImGui::Button("delete"))
-			{
 				// リリースする
 				m_bRelease = true;
-			}
 		}
 
 		// ツリーの最後に必ず書く
