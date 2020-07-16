@@ -244,15 +244,15 @@ void CKananLibrary::Billboard(D3DXMATRIX *mtxWorld, const D3DXMATRIX mtxView)
 //=============================================================================
 void CKananLibrary::InertiaMove(D3DXVECTOR3 *move)
 {
-	move->x += (0 - move->x) * 0.3f;
-	move->y += (0 - move->y) * 0.3f;
-	move->z += (0 - move->z) * 0.3f;
+	move->x += (0 - move->x) * INERTIA;
+	move->y += (0 - move->y) * INERTIA;
+	move->z += (0 - move->z) * INERTIA;
 }
 
 void CKananLibrary::InertiaMoveXZ(D3DXVECTOR3 * move)
 {
-	move->x += (0 - move->x) * 0.3f;
-	move->z += (0 - move->z) * 0.3f;
+	move->x += (0 - move->x) * INERTIA;
+	move->z += (0 - move->z) * INERTIA;
 }
 
 //=============================================================================

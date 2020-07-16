@@ -60,7 +60,7 @@ int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 int					CGame::m_nNumStone				= 0;							// 生成したストーンの数
 int					CGame::m_nCntDecide				= 0;							// ストーン生成のタイミングを決めるカウンタ
 std::unique_ptr<CObjectManager>	CGame::m_pObjMana	= nullptr;						// オブジェクトマネージャーのポインタ
-
+bool				CGame::m_bSetPos[STONE_POS]		= {};							// ストーンの生成場所に生成されているか
 D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
 {
 	D3DXVECTOR3(0.0f, 20.0f, 0.0f),
@@ -113,8 +113,8 @@ void CGame::Init(void)
 	m_pCamera     = CCamera::Create();								// カメラの生成処理
 	m_pLight      = CLight::Create();								// ライトの生成処理
 	m_pMeshSphere = CMeshSphere::Create();							// メッシュ球の生成処理
-	m_pPlayer[0]  = CPlayer::Create(0, CHARACTER_1YASU);			// プレイヤー生成
-	m_pPlayer[1]  = CPlayer::Create(1, CHARACTER_2YASU);			// プレイヤー生成
+	m_pPlayer[PLAYER_ONE]  = CPlayer::Create(PLAYER_ONE, CHARACTER_1YASU);	// プレイヤー生成
+	m_pPlayer[PLAYER_TWO]  = CPlayer::Create(PLAYER_TWO, CHARACTER_2YASU);	// プレイヤー生成
 	m_pMeshField  = CMeshField::Create();							// メッシュフィールド生成
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
@@ -144,6 +144,11 @@ void CGame::Init(void)
 	m_nCounterGameState = 0;				// ゲームの状態管理カウンターを0にする
 	m_nNumStone			= 0;				// 値を初期化
 	m_nCntDecide		= 0;				// 値を初期化
+
+	for (int nCnt = 0; nCnt < STONE_POS; nCnt++)
+	{
+		m_bSetPos[nCnt] = false;
+	}
 }
 
 //==================================================================================================================
@@ -305,6 +310,21 @@ CGame * CGame::Create(void)
 }
 
 //==================================================================================================================
+//	どこからでも呼び出せるストーン生成処理
+//==================================================================================================================
+void CGame::AppearStone(void)
+{
+	// ランダムでポイントを決める
+	int RandValue = DecideRandomPos();
+	// 決められた位置からランダムで生成
+	CStone::Create(RandValue, CStone::STONE_ID_DEFAULT, m_stonePos[RandValue]);
+	// 生成された
+	m_bSetPos[RandValue] = true;
+	// 出現数を加算
+	m_nNumStone++;
+}
+
+//==================================================================================================================
 //	ストーンを生成するか決める
 //==================================================================================================================
 void CGame::DecideCreateStone(void)
@@ -316,13 +336,11 @@ void CGame::DecideCreateStone(void)
 	m_nCntDecide++;
 
 #ifdef _DEBUG
+	// 所持数・出現数の合計が3未満
 	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_1) && 
-		m_nNumStone + GetPlayer(0)->GetNumStone() + GetPlayer(1)->GetNumStone() < 3)
-	{
-		// 決められた位置からランダムで生成
-		CStone::Create(CStone::STONE_ID_DEFAULT, m_stonePos[rand() % STONE_POS + 1]);
-		m_nNumStone++;
-	}
+		m_nNumStone + GetPlayer(PLAYER_ONE)->GetNumStone() + GetPlayer(PLAYER_TWO)->GetNumStone() < 3)
+		// ストーン生成
+		AppearStone();
 #endif
 
 	// 時間以内
@@ -330,16 +348,45 @@ void CGame::DecideCreateStone(void)
 		// 処理を終える
 		return;
 
-	if (m_nNumStone + GetPlayer(0)->GetNumStone() + GetPlayer(1)->GetNumStone() < 3)
-	{
-		// ランダムでポイントを決める
-		int nRandPos = rand() % STONE_POS;
-		// 決められた位置からランダムで生成
-		CStone::Create(CStone::STONE_ID_DEFAULT, m_stonePos[nRandPos]);
-		// 出現数を加算
-		m_nNumStone++;
-	}
+	// 所持数・出現数の合計が3未満
+	if (m_nNumStone + GetPlayer(PLAYER_ONE)->GetNumStone() + GetPlayer(PLAYER_TWO)->GetNumStone() < 3)
+		// ストーン生成
+		AppearStone();
 
 	// カウンタを初期化
 	m_nCntDecide = 0;
+}
+
+//==================================================================================================================
+//	生成位置をランダムで決める
+//==================================================================================================================
+int CGame::DecideRandomPos(void)
+{
+	// ランダムの範囲
+	int RandRange = STONE_POS;
+	
+	// 生成された数分範囲を減らす
+	for (int nCnt = 0; nCnt < STONE_POS; nCnt++)
+	{
+		if (m_bSetPos[nCnt])
+			RandRange--;
+	}
+
+	// 範囲の分だけメモリ確保
+	int *RandPos = new int[RandRange];
+	// 番号カウンタ
+	int nCntRand = 0;
+
+	// 生成されていない番号を配列に保存
+	for (int nCnt = 0; nCnt < STONE_POS; nCnt++)
+	{
+		if (!m_bSetPos[nCnt])
+		{
+			RandPos[nCntRand] = nCnt;
+			nCntRand++;
+		}
+	}
+
+	// 値を返す
+	return RandPos[rand() % RandRange];
 }

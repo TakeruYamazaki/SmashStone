@@ -89,7 +89,6 @@ protected:
 
 	CCylinderCoillider* m_pCyliColi[COLLIPARTS_MAX];	// シリンダーコライダーポインタ
 
-	int			m_nCntMove;								// どれぐらいの時間動いているか
 	int			m_nCntTrans;							// どれぐらいの時間変身しているか
 	int			m_nNumStone;							// 取得したストーンの数
 	float		m_nLife;								// ライフ
@@ -101,11 +100,14 @@ protected:
 	bool		m_bBlowAway;							// 吹き飛んでいるか
 	bool		m_bSmashBlowAway;						// スマッシュで吹き飛んでいるか
 	bool		m_bDaunted;								// ひるんでいるか
+	bool		m_bDown;								// ダウンしているかどうか
+	bool		m_bInvincible;							// 無敵かどうか
 	static int	m_nNumCharacter;						// キャラクターの総数
 	int			m_nCntJump;								// ジャンプモーション切り替えのカウンタ
 	int			m_nAttackFrame;							// 攻撃モーション切り替えのカウンタ
 	int			m_nAttackFlow;							// 攻撃の流れ
 	int			m_nCntGap;								// 隙のカウンタ
+	int			m_nCntDown;								// ダウンしている時間
 
 	bool		m_bAttakHit;							// 攻撃を当てたフラグ
 

@@ -277,7 +277,7 @@ CString * CStone::GetResource(void)
 //-------------------------------------------------------------------------------------------------------------
 // 生成
 //-------------------------------------------------------------------------------------------------------------
-CStone * CStone::Create(CONST STONE_ID eumID, CONST D3DXVECTOR3 & pos)
+CStone * CStone::Create(CONST int nIndexPos, CONST STONE_ID eumID, CONST D3DXVECTOR3 & pos)
 {
 	// IDが設定されてい時
 	if (eumID == STONE_ID_NONE)
@@ -311,6 +311,8 @@ CStone * CStone::Create(CONST STONE_ID eumID, CONST D3DXVECTOR3 & pos)
 	pStone->m_enmStoneID = eumID;
 	// 位置の設定
 	pStone->m_pos = pos;
+	// 生成位置の設定
+	pStone->m_nIndexPos = nIndexPos;
 	// ボックスコライダーの設定
 	pStone->m_nBoxClliderID = C3DBoxCollider::SetColliderInfo(&pStone->m_pos, pStone, C3DBoxCollider::COLLIDER_SUB_OVERRAP , C3DBoxCollider::ID_STONE);
 

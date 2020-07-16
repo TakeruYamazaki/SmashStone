@@ -72,7 +72,7 @@ public:
 	static CGame *Create(void);					// 生成処理
 
 	static void SetGameState(GAMESTATE state)	{ m_gameState = state; }	// ゲームの状態設定
-	static void RemoveNumStone(void)			{ m_nNumStone--; }			// ストーンの数を減算
+	static void RemoveNumStone(int nIndexPos)	{ m_nNumStone--; m_bSetPos[nIndexPos] = false; }			// ストーンの数を減算
 	static void SetNumStone(const int &nStone)	{ m_nNumStone = nStone; }	// ストーンの数の設定
 
 	static GAMESTATE GetGameState(void)			{ return m_gameState; }			// ゲームの状態取得
@@ -85,10 +85,14 @@ public:
 	static CObjectManager *GetObjMana(void)		{ return m_pObjMana.get(); }			// オブジェクトマネージャーを取得
 
 	static CPolygonCollider* GetpolyColly(int nIndex) { return m_pPolyColli[nIndex]; }
+
+	static void AppearStone(void);				// どこからでも呼び出せるストーン出現
+
 protected:
 
 private:
 	void DecideCreateStone(void);				// ストーンを生成するか決める
+	static int DecideRandomPos(void);			// 生成位置をランダムで決める
 	static GAMESTATE m_gameState;				// ゲーム状態
 	static CPlayer *m_pPlayer[MAX_PLAYER];		// プレイヤーの配列ポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドの情報ポインタ
@@ -103,6 +107,7 @@ private:
 	static int m_nNumStone;						// 生成したストーンの数
 	static int m_nCntDecide;					// ストーン生成のタイミングを決めるカウンタ
 	static D3DXVECTOR3 m_stonePos[STONE_POS];	// ストーンの生成場所
+	static bool m_bSetPos[STONE_POS];			// ストーンが生成されているか
 	static std::unique_ptr<CObjectManager> m_pObjMana;	// オブジェクトマネージャーのポインタ
 	static CPolygonCollider* m_pPolyColli[POLYCOLLI_MAX];		// ポリゴンコライダーのポインタ
 	D3DXMATRIX  m_mtxWorld;						// マトリックス

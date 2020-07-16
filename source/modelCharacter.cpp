@@ -340,10 +340,8 @@ void CModelCharacter::SetCharacterMtx(D3DXMATRIX *mtx)
 				// 大元のマトリックス設定
 				m_pModelParts[nCnt].SetMtxParent(mtx);
 			else
-			{
 				// 親パーツのマトリックス設定
 				m_pModelParts[nCnt].SetMtxParent(m_pModelParts[m_pModelParts[nCnt].GetParent()].GetMtx());
-			}
 		}
 	}
 }
@@ -353,6 +351,11 @@ void CModelCharacter::SetCharacterMtx(D3DXMATRIX *mtx)
 //=============================================================================
 void CModelCharacter::SetMotion(CMotion::MOTION_TYPE motiontype)
 {
+	// モーションが違えばモーションリセット
+	if (m_motion != motiontype)
+		ResetMotion();
+
+	// モーションを設定
 	m_motion = motiontype;
 
 	// モーションの総フレームを格納する

@@ -43,7 +43,7 @@
 #define COMMENT_AUTHOR		("# Author : KANAN NAGANAWA\n")			// ’˜Ò–¼
 
 // •¨—
-#define INERTIA				(0.2f)								// Šµ«
+#define INERTIA				(0.3f)								// Šµ«
 #define GRAVITY				(0.2f)								// d—Í
 
 // ŠÔ
