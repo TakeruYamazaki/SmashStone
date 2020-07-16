@@ -23,6 +23,7 @@
 #include "character.h"
 #include "inputGamepad.h"
 #include "meshSphere.h"
+#include "UI.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -37,8 +38,9 @@ CCamera *CTitle::m_pCamera = NULL;					// カメラ情報
 CLight *CTitle::m_pLight = NULL;					// ライト情報
 CPolygon *CTitle::m_pPolygon = NULL;				// ポリゴン情報
 CMeshField *CTitle::m_pMeshField = NULL;			// メッシュフィールド情報
-CCharacter *CTitle::m_pCharacter = NULL;			// キャラクター情報
 CMeshSphere *CTitle::m_pMeshSphere = NULL;			// メッシュ球情報
+CUI *CTitle::m_pUI = NULL;							// UI情報
+CCharacter *CTitle::m_pCharacter = NULL;			// キャラクター情報
 
 //==================================================================================================================
 //	コンストラクタ
@@ -61,12 +63,10 @@ CTitle::~CTitle()
 //==================================================================================================================
 void CTitle::Init(void)
 {
-	//変数の初期化
-	m_nCntRanking = 0;			// ランキングへのカウンタ
-
 	CMeshField::Load();			// メッシュフィールドロード
 	CMotionModel::Load();		// モーション用モデルロード
 	CMeshSphere::Load();		// メッシュ球のテクスチャロード
+	CUI::Load();				// UIのテクスチャロード
 
 	// ライトの生成処理
 	m_pLight = CLight::Create();
@@ -77,13 +77,11 @@ void CTitle::Init(void)
 	// メッシュ球の生成処理
 	m_pMeshSphere = CMeshSphere::Create();
 
-	//// プレイヤー生成
-	//m_pPlayer = CPlayer::Create();
-	//// プレイヤ位置設定
-	//m_pPlayer->SetPos(D3DXVECTOR3(0, 10, 0));
-
-	// メッシュフィールド生成
+	// メッシュフィールド生成処理
 	m_pMeshField = CMeshField::Create();
+
+	// UIの生成処理
+	m_pUI = CUI::Create();
 }
 
 //==================================================================================================================
@@ -99,6 +97,7 @@ void CTitle::Uninit(void)
 
 	CMeshField::Unload();			// 床テクスチャアンロード
 	CMotionModel::Unload();			// モーション用モデルアンロード
+	CUI::Unload();					// UIテクスチャアンロード
 
 	delete m_pLight;				// メモリ削除
 	m_pLight = nullptr;				// ポインタNULL
@@ -132,20 +131,6 @@ void CTitle::Update(void)
 		{
 			// フェードの設定
 			CFade::SetFade(CRenderer::MODE_TUTORIAL);
-		}
-	}
-
-	// ランキングへのカウンタ加算
-	m_nCntRanking++;
-
-	// ランキングカウンタが規定値を超えたら
-	if (m_nCntRanking >= MAX_FADE_COUNT)
-	{
-		// フェードが何もない時
-		if (fade == CFade::FADE_NONE)
-		{
-			// フェードの設定
-			CFade::SetFade(CRenderer::MODE_RANKING);
 		}
 	}
 }

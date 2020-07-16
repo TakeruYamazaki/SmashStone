@@ -19,11 +19,10 @@ class CCamera;
 class CLight;
 class CPolygon;
 class CMeshField;
-class CLogo;
-class CCharacter;
 class CMeshSphere;
 class CModel;
-class CTitleFade;
+class CUI;
+class CCharacter;
 
 //==================================================================================================================
 //
@@ -54,16 +53,11 @@ private:
 	static CLight *m_pLight;					// ライトの情報
 	static CPolygon *m_pPolygon;				// ポリゴン情報
 	static CMeshField *m_pMeshField;			// メッシュフィールドの情報
-	static CLogo *m_pLogo;						// ロゴの情報
-	static CCharacter *m_pCharacter;			// キャラクターの情報ポインタ
 	static CMeshSphere *m_pMeshSphere;			// メッシュ球の情報ポインタ
-	static CTitleFade *m_pTitleFade;			// タイトルフェードの情報ポインタ
+	static CUI *m_pUI;							// UIの情報ポインタ
+	static CCharacter *m_pCharacter;			// キャラクターの情報ポインタ
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVertexBuff;		// 頂点バッファ
-
-	D3DXVECTOR3 m_pos;							// 位置
-
-	int m_nCntRanking;							// ランキングへのカウンタ
 };
 
 #endif
