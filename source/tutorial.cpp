@@ -77,7 +77,7 @@ void CTutorial::Init(void)
 	//m_pPlayer->SetPos(D3DXVECTOR3(0, 10, 0));
 
 	// メッシュフィールド生成
-	m_pMeshField = CMeshField::Create();
+	m_pMeshField = CMeshField::Create(INTEGER2(2, 2), D3DXVECTOR3(250.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 }
 
 //==================================================================================================================

@@ -9,11 +9,21 @@ SCRIPT
 #============================================================
 # オブジェクトタイプ数
 #============================================================
-NUM_TYPE = 10
+NUM_TYPE = 20
 
 #============================================================
 # モデルファイル名
 #============================================================
+MODEL_FILENAME = data/OBJECT/flower.x
+MODEL_FILENAME = data/OBJECT/Fountain.x
+MODEL_FILENAME = data/OBJECT/Roof.x
+MODEL_FILENAME = data/OBJECT/Stairs.x
+MODEL_FILENAME = data/OBJECT/WoodenBox.x
+MODEL_FILENAME = data/OBJECT/LoooseStairs.x
+MODEL_FILENAME = data/OBJECT/flower.x
+MODEL_FILENAME = data/OBJECT/Fountain.x
+MODEL_FILENAME = data/OBJECT/Roof.x
+MODEL_FILENAME = data/OBJECT/Stairs.x
 MODEL_FILENAME = data/OBJECT/flower.x
 MODEL_FILENAME = data/OBJECT/Fountain.x
 MODEL_FILENAME = data/OBJECT/Roof.x
@@ -44,55 +54,55 @@ NUM_OBJECT = 9
 #============================================================
 OBJECTSET
 	TYPE = 0
-	POS = 120.0 0.0 190.5
+	POS = 138.0 0.0 179.5
 	ROT = 0.0 0.0 0.0
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 0
-	POS = 120.0 0.0 72.0
+	POS = 138.5 0.0 128.0
 	ROT = 0.0 0.0 0.0
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 1
-	POS = -60.0 0.0 20.0
+	POS = -125.5 0.0 66.5
 	ROT = 0.0 0.0 0.0
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 5
-	POS = 2.5 0.0 -158.0
+	POS = 26.5 -14.0 -201.0
 	ROT = 0.0 0.0 0.0
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 3
-	POS = 155.5 0.0 -76.0
+	POS = 155.5 -2.5 -95.0
 	ROT = 0.0 1.6 0.0
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 3
-	POS = 200.0 27.0 -76.0
+	POS = 228.5 37.0 -95.0
 	ROT = 0.0 1.6 0.0
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 8
-	POS = 184.0 49.0 142.0
+	POS = 231.0 68.5 152.0
 	ROT = 0.0 1.6 0.0
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 0
-	POS = 81.5 0.0 -221.5
+	POS = 60.0 -11.0 -277.5
 	ROT = 0.0 0.0 0.0
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 0
-	POS = 81.0 12.0 -164.0
+	POS = 60.0 0.0 -201.0
 	ROT = 0.0 0.0 0.0
 END_OBJECTSET
 

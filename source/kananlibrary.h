@@ -52,7 +52,7 @@
 // ===================================================================
 // ç\ë¢ëÃíËã`
 // ===================================================================
-typedef struct INTEGER2
+/*typedef struct INTEGER2
 {	// intå^ÇÃç\ë¢ëÃ
 	int x;
 	int y;
@@ -64,7 +64,7 @@ typedef struct INTEGER2
 		x = nX;
 		y = nY;
 	}
-} INTEGER2;
+} INTEGER2;*/
 
 typedef struct MODEL_VTX
 {

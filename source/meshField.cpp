@@ -57,7 +57,6 @@ void CMeshField::Init(void)
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();					// デバイスの取得
 
 	// 位置・回転の初期設定
-	m_pos		= ZeroVector3;		// 位置
 	m_rot		= ZeroVector3;		// 回転
 	m_vectorA	= ZeroVector3;		// 一つ目の外積用変数
 	m_vectorB	= ZeroVector3;		// 二つ目の外積用変数
@@ -105,9 +104,9 @@ void CMeshField::Init(void)
 			//m_pVtx[0].pos = D3DXVECTOR3((-WhileX * Width) / 2 + WhileX * nWide, cosf(D3DX_PI / 6 * nDepth + fDivide) * WhileY, (WhileZ / 2 * Depth) - WhileZ * nDepth);
 
 			// 頂点座標の設定
-			m_pVtx[0].pos.x = (-WhileX * m_nWidth) / 2 + WhileX * nWide;
+			m_pVtx[0].pos.x = (-m_size.x * m_nWidth) / 2 + m_size.x * nWide;
 			m_pVtx[0].pos.y = 0.0f;
-			m_pVtx[0].pos.z = (WhileZ / 2 * m_nDepth) - WhileZ * nDepth;
+			m_pVtx[0].pos.z = (m_size.z / 2 * m_nDepth) - m_size.z * nDepth;
 
 			// 頂点カラー
 			m_pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -252,7 +251,7 @@ void CMeshField::SetPos(D3DXVECTOR3 pos)
 //==================================================================================================================
 // ポリゴン生成
 //==================================================================================================================
-CMeshField *CMeshField::Create(void)
+CMeshField *CMeshField::Create(const INTEGER2 & block, const D3DXVECTOR3 & size, const D3DXVECTOR3 & pos)
 {
 	// メモリを動的に確保
 	m_pMeshField = new CMeshField(CScene::PRIORITY_FIELD);
@@ -261,8 +260,14 @@ CMeshField *CMeshField::Create(void)
 	if (m_pMeshField != NULL)
 	{
 		// メッシュのマス数を設定
-		m_pMeshField->m_nWidth = MASS_WIDTH;
-		m_pMeshField->m_nDepth = MASS_DEPTH;
+		m_pMeshField->m_nWidth = block.nX;
+		m_pMeshField->m_nDepth = block.nY;
+
+		// メッシュのマスの長さ設定
+		m_pMeshField->m_size = size;
+
+		// メッシュの位置設定
+		m_pMeshField->m_pos = pos;
 
 		// シーン初期化
 		m_pMeshField->Init();
