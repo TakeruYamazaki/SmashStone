@@ -82,7 +82,7 @@ public:
 	static CMeshField *GetMeshField(void)		{ return m_pMeshField; }		// メッシュフィールドの取得
 	static int GetNumStone(void)				{ return m_nNumStone; }			// ストーンの数を取得
 	static CWall *GetWall(void)					{ return m_pWall; }				// 壁の取得
-	static CObjectManager *GetObjMana(void)		{ return m_pObjMana.get(); }			// オブジェクトマネージャーを取得
+	static CObjectManager *GetObjMana(void)		{ return m_pObjMana; }			// オブジェクトマネージャーを取得
 
 	static CPolygonCollider* GetpolyColly(int nIndex) { return m_pPolyColli[nIndex]; }
 
@@ -108,7 +108,7 @@ private:
 	static int m_nCntDecide;					// ストーン生成のタイミングを決めるカウンタ
 	static D3DXVECTOR3 m_stonePos[STONE_POS];	// ストーンの生成場所
 	static bool m_bSetPos[STONE_POS];			// ストーンが生成されているか
-	static std::unique_ptr<CObjectManager> m_pObjMana;	// オブジェクトマネージャーのポインタ
+	static CObjectManager *m_pObjMana;			// オブジェクトマネージャーのポインタ
 	static CPolygonCollider* m_pPolyColli[POLYCOLLI_MAX];		// ポリゴンコライダーのポインタ
 	D3DXMATRIX  m_mtxWorld;						// マトリックス
 };

@@ -38,12 +38,13 @@ int						CObjectManager::m_nFakeType = 0;
 int						CObjectManager::m_stateMode = CObjectManager::MODE_GAME;
 bool					CObjectManager::m_bObjUse = false;
 bool					CObjectManager::m_bShowAnother = true;
+std::string				*CObjectManager::m_pObjName = {};
 #endif
 
 //=============================================================================
 // コンストラクタ
 //=============================================================================
-CObjectManager::CObjectManager()
+CObjectManager::CObjectManager(PRIORITY type = CScene::PRIORITY_OBJECT) : CScene(type)
 {
 
 }
@@ -59,12 +60,10 @@ CObjectManager::~CObjectManager()
 //=============================================================================
 // 初期化
 //=============================================================================
-HRESULT CObjectManager::Init()
+void CObjectManager::Init()
 {
 	// パーツのオフセット取得
 	LoadOffset();
-
-	return S_OK;
 }
 
 //=============================================================================
@@ -79,6 +78,10 @@ void CObjectManager::Uninit()
 		delete m_pFakeObject;
 		m_pFakeObject = nullptr;
 	}
+
+	// 破棄
+	delete[] m_pObjName;
+	m_pObjName = nullptr;
 #endif
 
 	// サイズ分繰り返す (size_t = unsigned, vector.size()でメモリ数を返す)
@@ -129,19 +132,17 @@ void CObjectManager::Draw()
 
 #ifdef _DEBUG
 	if (m_pFakeObject)
-	{
 		m_pFakeObject->DrawAlpha();
-	}
 #endif
 }
 
 //=============================================================================
 // 生成
 //=============================================================================
-std::unique_ptr<CObjectManager> CObjectManager::Create(void)
+CObjectManager *CObjectManager::Create(void)
 {
 	// メモリ確保
-	std::unique_ptr<CObjectManager> pMana = std::make_unique<CObjectManager>();
+	CObjectManager *pMana = new CObjectManager();
 
 	// nullcheck
 	if (!pMana)
@@ -185,6 +186,11 @@ HRESULT CObjectManager::Load()
 		}
 	}
 
+#ifdef _DEBUG
+	// オブジェクト名のメモリ確保
+	m_pObjName = new std::string[(int)m_objInfo.size()];
+#endif
+
 	// 種類数分回す
 	for (size_t nCnt = 0; nCnt < m_objInfo.size(); nCnt++)
 	{
@@ -194,6 +200,13 @@ HRESULT CObjectManager::Load()
 		// モデルの頂点座標の最大・最小を求める
 		m_objInfo[nCnt].modelVtx =
 			CKananLibrary::OutputModelVtxColl(m_objInfo[nCnt].modelInfo.mesh);
+
+#ifdef _DEBUG
+		// モデルのパスを取得
+		std::string modelName = m_objInfo[nCnt].modelInfo.cModelName;
+		// モデル名のみ保存
+		m_pObjName[nCnt] = modelName.substr(12);
+#endif
 	}
 	// 成功
 	return S_OK;
@@ -570,16 +583,24 @@ void CObjectManager::ShowObjectManagerInfo(void)
 		// nullcheck
 		if (m_pObject[nCnt])
 		{
+			// パスをcharにキャスト
+			char *cObjName = new char[m_pObjName[m_pObject[nCnt]->GetType()].size() + 1];
+			// 文字列を複製
+			strcpy(cObjName, m_pObjName[m_pObject[nCnt]->GetType()].c_str());
 			// ツリー名の設定
-			char cText[16] = {};
-			sprintf(cText, "Object [%d]", nCnt);
+			char cText[32] = {};
+			sprintf(cText, "Object : %d (%s)", nCnt, cObjName);
 			// ImGuiの更新
 			m_pObject[nCnt]->ShowObjectInfo(cText);
+			// メモリを破棄
+			delete cObjName;
 		}
 
 		// リリースが有効
 		if (m_pObject[nCnt]->GetRelease())
 		{
+			m_pObject[nCnt]->Uninit();
+			delete m_pObject[nCnt];
 			// 指定した番号のオブジェクトを削除 : vector.erase( vectorの始まり + 指定した番号 )
 			m_pObject.erase(m_pObject.begin() + nCnt);
 		}
