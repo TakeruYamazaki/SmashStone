@@ -115,7 +115,7 @@ void CGame::Init(void)
 	m_pMeshSphere = CMeshSphere::Create();							// メッシュ球の生成処理
 	m_pPlayer[PLAYER_ONE]  = CPlayer::Create(PLAYER_ONE, CHARACTER_1YASU);	// プレイヤー生成
 	m_pPlayer[PLAYER_TWO]  = CPlayer::Create(PLAYER_TWO, CHARACTER_2YASU);	// プレイヤー生成
-	m_pMeshField  = CMeshField::Create();							// メッシュフィールド生成
+	m_pMeshField  = CMeshField::Create(INTEGER2(2, 2), D3DXVECTOR3(300.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 50.0f));// メッシュフィールド生成
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
 

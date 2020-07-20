@@ -78,7 +78,7 @@ void CTitle::Init(void)
 	m_pMeshSphere = CMeshSphere::Create();
 
 	// メッシュフィールド生成処理
-	m_pMeshField = CMeshField::Create();
+	m_pMeshField = CMeshField::Create(INTEGER2(2, 2), D3DXVECTOR3(250.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	// UIの生成処理
 	m_pUI = CUI::Create();

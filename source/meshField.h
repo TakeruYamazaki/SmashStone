@@ -12,6 +12,7 @@
 //==================================================================================================================
 #include "main.h"
 #include "scene.h"
+#include "Mylibrary.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -37,7 +38,7 @@ public:
 	void Update(void);										// 更新処理
 	void Draw(void);										// 描画処理
 
-	static CMeshField *Create(void);						// 生成処理
+	static CMeshField *Create(const INTEGER2 & block, const D3DXVECTOR3 & size, const D3DXVECTOR3 & pos);// 生成処理
 	static CMeshField *GetMeshField(void);					// メッシュフィールド情報取得
 	static HRESULT Load(void);								// テクスチャ情報ロード
 	static void Unload(void);								// テクスチャ情報アンロード
@@ -71,11 +72,14 @@ private:
 	D3DXVECTOR3 m_pos;										// 位置
 	D3DXVECTOR3 m_rot;										// 回転
 	D3DXVECTOR3 m_move;										// 移動
+	D3DXVECTOR3 m_size;										// イチマス当たりの大きさ
 	D3DXVECTOR3 *m_aVecA;									// 法線ベクトルを面の数分一時的に格納
 	D3DXVECTOR3 *m_aVecB;									// 法線ベクトルを面の数分一時的に格納
 	D3DXVECTOR3 m_vectorA;									// Aベクトル
 	D3DXVECTOR3 m_vectorB;									// Bベクトル
 	D3DXVECTOR3 m_vectorC;									// Cベクトル
+
+	INTEGER2 m_block;
 
 	int m_nDepth;											// 縦のブロック数
 	int m_nWidth;											// 横のブロック数
