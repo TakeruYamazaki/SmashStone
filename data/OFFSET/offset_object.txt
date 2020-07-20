@@ -9,7 +9,7 @@ SCRIPT
 #============================================================
 # オブジェクトタイプ数
 #============================================================
-NUM_TYPE = 20
+NUM_TYPE = 9
 
 #============================================================
 # モデルファイル名
@@ -20,20 +20,9 @@ MODEL_FILENAME = data/OBJECT/Roof.x
 MODEL_FILENAME = data/OBJECT/Stairs.x
 MODEL_FILENAME = data/OBJECT/WoodenBox.x
 MODEL_FILENAME = data/OBJECT/LoooseStairs.x
-MODEL_FILENAME = data/OBJECT/flower.x
-MODEL_FILENAME = data/OBJECT/Fountain.x
-MODEL_FILENAME = data/OBJECT/Roof.x
-MODEL_FILENAME = data/OBJECT/Stairs.x
-MODEL_FILENAME = data/OBJECT/flower.x
-MODEL_FILENAME = data/OBJECT/Fountain.x
-MODEL_FILENAME = data/OBJECT/Roof.x
-MODEL_FILENAME = data/OBJECT/Stairs.x
-MODEL_FILENAME = data/OBJECT/WoodenBox.x
-MODEL_FILENAME = data/OBJECT/LoooseStairs.x
-MODEL_FILENAME = data/OBJECT/flower.x
-MODEL_FILENAME = data/OBJECT/Fountain.x
-MODEL_FILENAME = data/OBJECT/Roof.x
-MODEL_FILENAME = data/OBJECT/Stairs.x
+MODEL_FILENAME = data/OBJECT/Fountain_Down.x
+MODEL_FILENAME = data/OBJECT/Fountain_Up.x
+MODEL_FILENAME = data/OBJECT/Fountain_w_Up.x
 
 #============================================================
 # オブジェクトテクスチャ数
@@ -47,7 +36,7 @@ NUM_TEXTURE = 0
 #============================================================
 # オブジェクト総数
 #============================================================
-NUM_OBJECT = 9
+NUM_OBJECT = 10
 
 #============================================================
 # オブジェクト情報
@@ -61,12 +50,6 @@ END_OBJECTSET
 OBJECTSET
 	TYPE = 0
 	POS = 138.5 0.0 128.0
-	ROT = 0.0 0.0 0.0
-END_OBJECTSET
-
-OBJECTSET
-	TYPE = 1
-	POS = -125.5 0.0 66.5
 	ROT = 0.0 0.0 0.0
 END_OBJECTSET
 
@@ -89,9 +72,9 @@ OBJECTSET
 END_OBJECTSET
 
 OBJECTSET
-	TYPE = 8
-	POS = 231.0 68.5 152.0
-	ROT = 0.0 1.6 0.0
+	TYPE = 2
+	POS = 227.5 68.5 152.0
+	ROT = 0.0 1.57 0.0
 END_OBJECTSET
 
 OBJECTSET
@@ -103,6 +86,18 @@ END_OBJECTSET
 OBJECTSET
 	TYPE = 0
 	POS = 60.0 0.0 -201.0
+	ROT = 0.0 0.0 0.0
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 6
+	POS = -124.7 0.0 64.7
+	ROT = 0.0 0.0 0.0
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 8
+	POS = -124.7 0.0 64.7
 	ROT = 0.0 0.0 0.0
 END_OBJECTSET
 
