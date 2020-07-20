@@ -757,7 +757,7 @@ HRESULT CObjectManager::SaveObject(void)
 				fputs(COMMENT_NEW_LINE, pFile);												//	\n
 
 				strcpy(cHeadText, "POS");
-				sprintf(cWriteText, "	%s %s %.1f %.1f %.1f",
+				sprintf(cWriteText, "	%s %s %.3f %.3f %.3f",
 					&cHeadText,
 					&cEqual,
 					m_pObject[nCnt]->GetPos()->x,
@@ -767,7 +767,7 @@ HRESULT CObjectManager::SaveObject(void)
 				fputs(COMMENT_NEW_LINE, pFile);											//	\n
 
 				strcpy(cHeadText, "ROT");
-				sprintf(cWriteText, "	%s %s %.1f %.1f %.1f",
+				sprintf(cWriteText, "	%s %s %.3f %.3f %.3f",
 					&cHeadText,
 					&cEqual,
 					m_pObject[nCnt]->GetRot()->x,
