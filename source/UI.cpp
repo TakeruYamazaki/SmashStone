@@ -30,6 +30,11 @@
 #define TITLEUI_MAXSIZE_VALUE_Y 370					// タイトルUI最大サイズ縦
 #define TITLEUI_MINSIZE_VALUE_Y 330					// タイトルUI最大サイズ縦
 #define TITLEUI_BOUND_COUNT 60						// タイトルUIバウンドカウンタ
+#define TITLEUI_FINISH_Y 250						// タイトルUIの最後の位置Y
+#define TITLEUI_UP_SPEED 2							// タイトルUI上がる速度
+#define ENTERUI_SIZE_X 950							// エンターUI大きさ横
+#define ENTERUI_SIZE_Y 80							// エンターUI大きさ縦
+#define ENTERUI_POS_Y 600							// エンターUI位置Y
 
 //==================================================================================================================
 // 静的メンバー変数の初期化
@@ -71,6 +76,7 @@ void CUI::Init(void)
 	m_nCntBound = 0;			// タイトルUIバウンドカウンタ
 	m_nCntUITitle0 = 0;			// タイトルUI用カウンタ0
 	m_nCntUITitle0 = 1;			// タイトルUI用カウンタ1
+	m_nCntEnter = 0;			// エンター用カウンタ
 	m_bUITitle0 = false;		// タイトルを動かすかどうか
 	m_bUITitle1 = false;		// タイトルを動かすかどうか
 
@@ -136,6 +142,7 @@ void CUI::Update(void)
 		SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + TitlePos.y, 0.0f), TITLEUI_BEGIN_X + m_nCntUITitle0 - m_nCntUITitle1, 
 			TITLEUI_BEGIN_Y + m_nCntUITitle0 + m_nCntUITitle1, LOGOTYPE_TITLE, NORMAL_COLOR);
 
+		// バウンドカウントが規定値以下のとき
 		if (m_nCntBound < TITLEUI_BOUND_COUNT)
 		{
 			// タイトルを動かしていなとき
@@ -185,9 +192,30 @@ void CUI::Update(void)
 			}
 		}
 		else
-		{
-			// 初期値に戻す
-			m_nCntUITitle1 = 0;
+		{// バウンドカウントが規定値を超えたとき
+
+			// タイトルUIの位置Yが規定値以下のとき
+			if (SCREEN_HEIGHT / 2 + TitlePos.y < TITLEUI_FINISH_Y)
+			{
+				// タイトルロゴ
+				SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, ENTERUI_POS_Y, 0.0f), ENTERUI_SIZE_X, ENTERUI_SIZE_Y, 
+					LOGOTYPE_ENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f + m_nCntEnter));
+
+				// エンターUIのα値が1.0以上のとき
+				if (1.0f + m_nCntEnter >= 1.0f)
+				{
+					m_nCntEnter -= 0.05f;
+				}
+				else if (1.0f + m_nCntEnter <= 0.0f)
+				{
+					m_nCntEnter += 0.05f;
+				}
+			}
+			else
+			{
+				// タイトル位置加算
+				TitlePos.y -= TITLEUI_UP_SPEED;
+			}
 		}
 	}
 }

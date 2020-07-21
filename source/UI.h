@@ -67,8 +67,7 @@ private:
 
 	float m_nCntUITitle0;									// タイトルUI用カウンタ0
 	float m_nCntUITitle1;									// タイトルUI用カウンタ1
-	float m_fWidth;											// 縦幅
-	float m_fSize;											// 横幅
+	float m_nCntEnter;										// エンター用カウンタ
 
 	bool m_bUITitle0;										// タイトルを動かすかどうか0
 	bool m_bUITitle1;										// タイトルを動かすかどうか1
