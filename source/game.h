@@ -17,6 +17,7 @@
 // マクロ定義
 //==================================================================================================================
 #define STONE_POS (5)
+#define POLYCOLLI_USE_TYPE	2
 
 //==================================================================================================================
 // 前方宣言
@@ -55,13 +56,6 @@ public:
 		GAMESTATE_END,			// ゲームの終了
 		GAMESTATE_MAX			// 最大
 	} GAMESTATE;				// ゲームの状態
-
-	enum
-	{
-		POLYCOLLI_STAIRS = 0,
-		POLYCOLLI_LONGSTAIRS,
-		POLYCOLLI_MAX
-	};
 
 	CGame();									// コンストラクタ
 	~CGame();									// デストラクタ
@@ -109,7 +103,7 @@ private:
 	static D3DXVECTOR3 m_stonePos[STONE_POS];	// ストーンの生成場所
 	static bool m_bSetPos[STONE_POS];			// ストーンが生成されているか
 	static CObjectManager *m_pObjMana;			// オブジェクトマネージャーのポインタ
-	static CPolygonCollider* m_pPolyColli[POLYCOLLI_MAX];		// ポリゴンコライダーのポインタ
+	static CPolygonCollider* m_pPolyColli[POLYCOLLI_USE_TYPE];		// ポリゴンコライダーのポインタ
 	D3DXMATRIX  m_mtxWorld;						// マトリックス
 };
 #endif

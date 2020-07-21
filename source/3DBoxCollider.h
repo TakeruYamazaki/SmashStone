@@ -66,10 +66,11 @@ public:
 
 	typedef enum
 	{
-		COLLIDER_TYPE_NORMAL = 0,	// ’Êí
-		COLLIDER_TYPE_CYLINDER,		// ‰~’Œ
-		COLLIDER_TYPE_SPHERE,		// ‹…‘Ì
-		COLLIDER_TYPE_MAX			// Å‘å
+		COLLIDER_TYPE_NORMAL = 0,			// ’Êí
+		COLLIDER_TYPE_CYLINDER,				// ‰~’Œ
+		COLLIDER_TYPE_SPHERE,				// ‹…‘Ì
+		COLLIDER_TYPE_CYLINDER_CANRIDE,		// ‰~’Œ‚Ìæ‚ê‚é‚â‚Â
+		COLLIDER_TYPE_MAX					// Å‘å
 	} COLLIDER_TYPE;
 
 	typedef enum

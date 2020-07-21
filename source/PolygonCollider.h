@@ -24,10 +24,19 @@
 class CPolygonCollider : public CScene
 {
 public:
+	enum
+	{
+		POLYCOLLI_STAIRS = 0,	// 階段
+		POLYCOLLI_LONGSTAIRS,	// 緩やかな階段
+		POLYCOLLI_MAX			// 最大
+	};
+
+
+
 	CPolygonCollider() : CScene(PRIORITY_COLLISION) {}			// コンストラクタ
 	~CPolygonCollider() {}										// デストラクタ
 
-	static CPolygonCollider* Create(D3DXVECTOR3 *pVertexsPos);	// 生成
+	static CPolygonCollider* Create(int nType);					// 生成
 
 	void Init(void);											// 初期化
 	void Uninit(void);											// 終了
@@ -41,10 +50,11 @@ public:
 private:
 	void SetVtxPos(D3DXVECTOR3 *pVertexsPos);					// 頂点位置の設定
 	HRESULT MakeVertex(void);									// 頂点情報の作成
-
-	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;							// バッファ
-	D3DXVECTOR3             m_VtxPos[POLYCOLLI_USE_VTX];		// 頂点位置
-	D3DXVECTOR3             m_SurfaceNor;						// 面の法線
+	
+	static D3DXVECTOR3 m_conSetingVtxPos[POLYCOLLI_MAX][POLYCOLLI_USE_VTX];	// 設定用頂点位置
+	LPDIRECT3DVERTEXBUFFER9  m_pVtxBuff;											// バッファ
+	D3DXVECTOR3              m_VtxPos[POLYCOLLI_USE_VTX];							// 頂点位置
+	D3DXVECTOR3              m_SurfaceNor;											// 面の法線
 };
 
 #endif
