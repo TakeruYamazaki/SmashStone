@@ -419,7 +419,7 @@ void CWall::Draw(void)
 		pDevice->SetTexture(0, m_pTexture);
 
 		// ポリゴンの描画
-		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntWall * 4, 2);
+		//pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntWall * 4, 2);
 	}
 
 	// ライティングモード有効

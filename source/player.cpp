@@ -228,7 +228,7 @@ void CPlayer::Collision(void)
 		}
 	}
 
-	for (int nCntPolyColli = 0; nCntPolyColli < CGame::POLYCOLLI_MAX; nCntPolyColli++)
+	for (int nCntPolyColli = 0; nCntPolyColli < CPolygonCollider::POLYCOLLI_MAX; nCntPolyColli++)
 	{
 		// ポリゴンコライダーの取得
 		CPolygonCollider*pPolyColli = CGame::GetpolyColly(nCntPolyColli);

@@ -840,6 +840,52 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 				pos.z = pOwnerCollider->pos.z;
 			}
 		}
+		else if (pOtherCollider->ColliderType == C3DBoxCollider::COLLIDER_TYPE_CYLINDER_CANRIDE)
+		{
+			// YŽ²‚ðl—¶‚µ‚È‚¢‚Å“ü‚Á‚Ä‚¢‚½ê‡
+			D3DXVECTOR2 diffPos = D3DXVECTOR2(pOtherCollider->pos.x - pOwnerCollider->pos.x, pOtherCollider->pos.z - pOwnerCollider->pos.z);
+			float fRadius = (sqrtf(pOwnerCollider->size.x*pOwnerCollider->size.x + pOwnerCollider->size.z*pOwnerCollider->size.z)*_3DBOXCOLLIDER_HALF_SIZE) + (sqrtf(pOtherCollider->size.x*pOtherCollider->size.x + pOtherCollider->size.z*pOtherCollider->size.z)*_3DBOXCOLLIDER_HALF_SIZE);
+			if (diffPos.x*diffPos.x +
+				diffPos.y*diffPos.y <=
+				(fRadius*fRadius))
+			{
+				if (pOwnerCollider->pos.y + pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE > pOtherCollider->pos.y - pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE&&
+					pOwnerCollider->posOld.y + pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE <= pOtherCollider->pos.y - pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE)
+				{
+					pOwnerCollider->pos.y = pOwnerCollider->posOld.y;
+					pos.y = pOwnerCollider->pos.y;
+					move.y = 0.0f;
+				}
+				else if (pOwnerCollider->pos.y - pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE < pOtherCollider->pos.y + pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE&&
+					pOwnerCollider->posOld.y - pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE >= pOtherCollider->pos.y + pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE)
+				{
+					pOwnerCollider->pos.y = pOtherCollider->pos.y + pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE + 0.0001f;
+					pos.y = pOwnerCollider->pos.y - pOwnerCollider->difference.y;
+					// ˆÚ“®—Ê‚Ì‰Šú‰»
+					move.y = 0.0f;
+					bCollision = true;
+				}
+			}
+			// YŽ²‚ªd‚È‚Á‚Ä‚¢‚é‚Æ‚«
+			if (pOwnerCollider->pos.y + pOwnerCollider->size.y*_3DBOXCOLLIDER_HALF_SIZE > pOtherCollider->pos.y - pOtherCollider->size.y*_3DBOXCOLLIDER_HALF_SIZE &&
+				pOwnerCollider->pos.y - pOwnerCollider->size.y*_3DBOXCOLLIDER_HALF_SIZE < pOtherCollider->pos.y + pOtherCollider->size.y*_3DBOXCOLLIDER_HALF_SIZE)
+			{
+				D3DXVECTOR2 diffPos = D3DXVECTOR2(pOtherCollider->pos.x - pOwnerCollider->pos.x, pOtherCollider->pos.z - pOwnerCollider->pos.z);
+				float fRadius = (sqrtf(pOwnerCollider->size.x*pOwnerCollider->size.x + pOwnerCollider->size.z*pOwnerCollider->size.z)*_3DBOXCOLLIDER_HALF_SIZE) + (sqrtf(pOtherCollider->size.x*pOtherCollider->size.x + pOtherCollider->size.z*pOtherCollider->size.z)*_3DBOXCOLLIDER_HALF_SIZE);
+				if (diffPos.x*diffPos.x +
+					diffPos.y*diffPos.y <=
+					(fRadius*fRadius))
+				{
+					// Šp“x‚ðÝ’è
+					float radian = atan2f(-diffPos.x, -diffPos.y);
+					pOwnerCollider->pos.x = pOtherCollider->pos.x + sinf(radian)*(fRadius);
+					pOwnerCollider->pos.z = pOtherCollider->pos.z + cosf(radian)*(fRadius);
+					pos.x = pOwnerCollider->pos.x;
+					pos.z = pOwnerCollider->pos.z;
+
+				}
+			}
+		}
 	}
 	//CDebugProc::print("PlayerColli = [%.4f] [%.4f] [%.4f]\n", pOwnerCollider->pos.x, pOwnerCollider->pos.y, pOwnerCollider->pos.z);
 

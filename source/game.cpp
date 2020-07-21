@@ -70,7 +70,7 @@ D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
 	D3DXVECTOR3(-100.0f, 20.0f, -100.0f)
 };
 
-CPolygonCollider* CGame::m_pPolyColli[POLYCOLLI_MAX] = { NULL };							// ポリゴンコライダーのポインタ
+CPolygonCollider* CGame::m_pPolyColli[POLYCOLLI_USE_TYPE] = { NULL };							// ポリゴンコライダーのポインタ
 
 //==================================================================================================================
 //	コンストラクタ
@@ -119,25 +119,10 @@ void CGame::Init(void)
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
 
-	// 横に長い階段
-	D3DXVECTOR3 LongStairsVtxPos[POLYCOLLI_USE_VTX] =
-	{
-		{ -250.0f,14.0f,-175.0f },
-		{ 250.0f,14.0f,-175.0f },
-		{ -250.0f,0.0f, -202.0f },
-		{ 250.0f,0.0f,-202.0f },
-	};
-	m_pPolyColli[POLYCOLLI_LONGSTAIRS] = CPolygonCollider::Create(&LongStairsVtxPos[0]);
-
+	// 緩やかな階段
+	m_pPolyColli[CPolygonCollider::POLYCOLLI_LONGSTAIRS] = CPolygonCollider::Create(CPolygonCollider::POLYCOLLI_LONGSTAIRS);
 	// 階段
-	D3DXVECTOR3 StairsVtxPos[POLYCOLLI_USE_VTX] = 
-	{
-		{ 70.0f,0.0f,5.0f },
-		{ 163.0f,55.0f,5.0f },
-		{ 70.0f,0.0f, -155.0f },
-		{ 163.0f,55.0f,-155.0f },
-	};
-	m_pPolyColli[POLYCOLLI_STAIRS] = CPolygonCollider::Create(&StairsVtxPos[0]);
+	m_pPolyColli[CPolygonCollider::POLYCOLLI_STAIRS] = CPolygonCollider::Create(CPolygonCollider::POLYCOLLI_STAIRS);
 
 	/* ゲームの初期化 */
 	SetGameState(GAMESTATE_NORMAL);			// 通常状態に設定
@@ -178,7 +163,7 @@ void CGame::Uninit(void)
 	m_pPause->Uninit();
 
 	//m_pObjMana->Uninit();				// 終了処理
-	//m_pObjMana.reset();					// メモリ削除
+	//m_pObjMana.reset();				// メモリ削除
 	m_pObjMana = nullptr;				// ポインタNULL
 
 	delete m_pPause;					// メモリ削除
