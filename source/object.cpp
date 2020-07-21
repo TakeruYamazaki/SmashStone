@@ -9,6 +9,8 @@
 #include "renderer.h"
 #include "debugProc.h"
 #include "objManager.h"
+#include "3DBoxCollider.h"
+
 #include "ImGui/imgui.h"				// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
@@ -30,14 +32,14 @@
 CObject::CObject()
 {
 	// 要素の初期化
-	m_bCollision = false;
-	m_pos		= ZeroVector3;
-	m_posOld	= ZeroVector3;
-	m_posBegin	= ZeroVector3;
-	m_move		= ZeroVector3;
-	m_rot		= ZeroVector3;
-	m_rotBegin	= ZeroVector3;
-
+	m_bCollision	= false;
+	m_pos			= ZeroVector3;
+	m_posOld		= ZeroVector3;
+	m_posBegin		= ZeroVector3;
+	m_move			= ZeroVector3;
+	m_rot			= ZeroVector3;
+	m_rotBegin		= ZeroVector3;
+	m_nColliderID	= -1;
 #ifdef _DEBUG
 	m_bRelease = false;
 #endif
@@ -56,7 +58,6 @@ CObject::~CObject()
 //=============================================================================
 void CObject::Init(void)
 {
-
 }
 
 //=============================================================================
@@ -196,6 +197,9 @@ void CObject::SetObjInfo(const D3DXVECTOR3 & pos, const D3DXVECTOR3 & rot, MODEL
 	m_pModelInfo = *pModelInfo;
 	m_nType = type;
 	m_bCollision = bCollision;
+
+	// コライダーの設定
+	SetCollider();
 }
 
 //=============================================================================
@@ -260,6 +264,20 @@ bool CObject::CollObject(D3DXVECTOR3 *pos, const D3DXVECTOR3 & posOld, D3DXVECTO
 	}
 
 	return bLand;
+}
+
+//=============================================================================
+// コライダーの設定
+//=============================================================================
+void CObject::SetCollider(void)
+{
+	// 設定されているとき
+	if (m_nColliderID != -1)
+	{// 処理を抜ける
+		return;
+	}
+	// コライダーIDの設定
+	m_nColliderID = C3DBoxCollider::SetColliderInfo(&m_pos, NULL, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::TOP_OBJECT + m_nType);
 }
 
 #ifdef _DEBUG

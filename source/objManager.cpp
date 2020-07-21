@@ -302,6 +302,8 @@ HRESULT CObjectManager::LoadOffset(void)
 				// ƒ‚ƒfƒ‹î•ñŠi”[
 				m_pObject[nModel]->SetObjInfo(pos, rot, &m_objInfo[nType].modelInfo, nType, bCollision);
 
+
+
 				// ƒ‚ƒfƒ‹”‚ğ‰ÁZ
 				nModel++;
 			}

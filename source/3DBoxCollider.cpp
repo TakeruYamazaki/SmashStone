@@ -154,7 +154,7 @@ HRESULT C3DBoxCollider::Load(void)
 					&aEmpty, &aEmpty, 
 					&pCell->nColliderType);
 
-				// サイズを設定しない時
+				// サイズを設定する時
 				if (strcmp(aSizeWord, "UNSET") != 0)
 				{
 					// サイズの生成
@@ -170,7 +170,7 @@ HRESULT C3DBoxCollider::Load(void)
 				{// それ以外の時
 					pCell->pSize = NULL;
 				}
-				// 差分を設定しない時
+				// 差分を設定する時
 				if (strcmp(aDiffWord, "UNSET") != 0)
 				{
 					// 差分の生成

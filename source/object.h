@@ -23,7 +23,6 @@
 //=============================================================================
 // クラス定義
 //=============================================================================
-
 class CObject
 {
 public:
@@ -36,24 +35,27 @@ public:
 	void Draw(void);								// 描画
 	void DrawAlpha(void);							// 透明描画
 
-	static CObject *Create(void);
+	static CObject *Create(void);					// 生成
 
 	void SetObjInfo(const D3DXVECTOR3 & pos,
 		const D3DXVECTOR3 & rot,
 		MODELINFO *pModelInfo,
 		const int & type,
-		const bool & bCollision);						// オブジェクトの情報設定
+		const bool & bCollision);					// オブジェクトの情報設定
 
 	bool CollObject(D3DXVECTOR3 *pos,
 		const D3DXVECTOR3 & posOld,
 		D3DXVECTOR3 *move,
-		const MODEL_VTX & modelVtx);
+		const MODEL_VTX & modelVtx);				// オブジェクトの衝突処理
 
-	D3DXVECTOR3 *GetPos(void)		{ return &m_pos; }
-	D3DXVECTOR3 *GetPosOld(void)	{ return &m_posOld; }
-	D3DXVECTOR3 *GetRot(void)		{ return &m_rot; }
-	D3DXVECTOR3 *GetMove(void)		{ return &m_move; }
-	D3DXMATRIX	*GetMtx(void)		{ return &m_mtxWorld; }
+
+	void SetCollider(void);							// コライダーの設定
+
+	D3DXVECTOR3 *GetPos(void)		{ return &m_pos; }			// 位置の取得
+	D3DXVECTOR3 *GetPosOld(void)	{ return &m_posOld; }		// 前回の入りの取得
+	D3DXVECTOR3 *GetRot(void)		{ return &m_rot; }			// 向きの取得
+	D3DXVECTOR3 *GetMove(void)		{ return &m_move; }			// 前回の向きの取得
+	D3DXMATRIX	*GetMtx(void)		{ return &m_mtxWorld; }		// ワールドマトリックスの取得
 	bool GetRelease(void)			{ return m_bRelease; }		// リリースするかどうか
 	bool GetbColl(void)				{ return m_bCollision; }	// 当たり判定を行うか
 	int	 GetType(void)				{ return m_nType; }			// タイプ取得
@@ -63,16 +65,17 @@ public:
 #endif
 
 private:
-	D3DXVECTOR3 m_pos;
-	D3DXVECTOR3 m_posOld;
-	D3DXVECTOR3 m_posBegin;
-	D3DXVECTOR3 m_move;
-	D3DXVECTOR3 m_rot;
-	D3DXVECTOR3 m_rotBegin;
-	D3DXMATRIX m_mtxWorld;
-	MODELINFO m_pModelInfo;
-	int		m_nType;		// オブジェクトタイプ
-	bool	m_bCollision;	// 当たり判定処理を行うか
+	D3DXVECTOR3 m_pos;			// 位置
+	D3DXVECTOR3 m_posOld;		// 前回の位置
+	D3DXVECTOR3 m_posBegin;		// 開始位置
+	D3DXVECTOR3 m_move;			// 移動量
+	D3DXVECTOR3 m_rot;			// 向き
+	D3DXVECTOR3 m_rotBegin;		// 開始向き
+	D3DXMATRIX	m_mtxWorld;		// ワールドマトリックス
+	MODELINFO	m_pModelInfo;	// モデル情報
+	int			m_nType;		// オブジェクトタイプ
+	bool		m_bCollision;	// 当たり判定処理を行うか
+	int			m_nColliderID;	// コライダーID
 
 #ifdef _DEBUG
 	bool	m_bRelease;		// リリースするかどうか
