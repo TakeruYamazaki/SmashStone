@@ -17,14 +17,23 @@
 #define POLYCOLLI_COL	D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)
 
 //-------------------------------------------------------------------------------------------------------------
+// 静的メンバ変数の初期化
+//-------------------------------------------------------------------------------------------------------------
+D3DXVECTOR3 CPolygonCollider::m_conSetingVtxPos[POLYCOLLI_MAX][POLYCOLLI_USE_VTX] = 	// 設定用頂点位置
+{
+	{ { 70.0f, 0.0f, 0.0f },{ 163.0f,55.0f,0.0f },{ 70.0f,0.0f, -175.0f },{ 163.0f,55.0f,-175.0f }, },
+	{ { -250.0f, 14.0f, -175.0f },{ 250.0f,14.0f,-175.0f },{ -250.0f,0.0f, -202.0f },{ 250.0f,0.0f,-202.0f }, },
+};
+
+//-------------------------------------------------------------------------------------------------------------
 // 生成
 //-------------------------------------------------------------------------------------------------------------
-CPolygonCollider * CPolygonCollider::Create(D3DXVECTOR3 * pVertexsPos)
+CPolygonCollider * CPolygonCollider::Create(int nType)
 {
 	// 生成
 	CPolygonCollider *pCPolyColli = new CPolygonCollider;
 	// 頂点位置の設定
-	pCPolyColli->SetVtxPos(pVertexsPos);
+	pCPolyColli->SetVtxPos(&m_conSetingVtxPos[nType][0]);
 	// 初期化
 	pCPolyColli->Init();
 	return pCPolyColli;
