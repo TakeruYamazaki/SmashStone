@@ -35,6 +35,7 @@
 #define ENTERUI_SIZE_X 950							// エンターUI大きさ横
 #define ENTERUI_SIZE_Y 80							// エンターUI大きさ縦
 #define ENTERUI_POS_Y 600							// エンターUI位置Y
+#define ENTERUI_ALPHA 0.03f							// エンターUIα値変更値
 
 //==================================================================================================================
 // 静的メンバー変数の初期化
@@ -79,6 +80,7 @@ void CUI::Init(void)
 	m_nCntEnter = 0;			// エンター用カウンタ
 	m_bUITitle0 = false;		// タイトルを動かすかどうか
 	m_bUITitle1 = false;		// タイトルを動かすかどうか
+	m_bUIEnter = false;			// エンターのα値用変数
 
 	// ロゴの最大枚数カウント
 	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
@@ -204,11 +206,25 @@ void CUI::Update(void)
 				// エンターUIのα値が1.0以上のとき
 				if (1.0f + m_nCntEnter >= 1.0f)
 				{
-					m_nCntEnter -= 0.05f;
+					// エンター用α値を減らす状態にする
+					m_bUIEnter = true;
 				}
 				else if (1.0f + m_nCntEnter <= 0.0f)
 				{
-					m_nCntEnter += 0.05f;
+					// エンター用α値を増やす状態にする
+					m_bUIEnter = false;
+				}
+
+				// エンターUIを減らす状態のとき
+				if (m_bUIEnter)
+				{
+					// カウンタ減算
+					m_nCntEnter -= ENTERUI_ALPHA;
+				}
+				else
+				{// エンターUIを増やす状態のとき
+					// カウンタ加算
+					m_nCntEnter += ENTERUI_ALPHA;
 				}
 			}
 			else

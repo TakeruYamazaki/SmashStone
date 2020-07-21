@@ -9,20 +9,19 @@ SCRIPT
 #============================================================
 # オブジェクトタイプ数
 #============================================================
-NUM_TYPE = 9
+NUM_TYPE = 8
 
 #============================================================
 # モデルファイル名
 #============================================================
 MODEL_FILENAME = data/OBJECT/flower.x
-MODEL_FILENAME = data/OBJECT/Fountain.x
 MODEL_FILENAME = data/OBJECT/Roof.x
 MODEL_FILENAME = data/OBJECT/Stairs.x
 MODEL_FILENAME = data/OBJECT/WoodenBox.x
-MODEL_FILENAME = data/OBJECT/LoooseStairs.x
+MODEL_FILENAME = data/OBJECT/LooseStairs.x
 MODEL_FILENAME = data/OBJECT/Fountain_Down.x
-MODEL_FILENAME = data/OBJECT/Fountain_Up.x
 MODEL_FILENAME = data/OBJECT/Fountain_w_Up.x
+MODEL_FILENAME = data/OBJECT/Iron.x
 
 #============================================================
 # オブジェクトテクスチャ数
@@ -36,7 +35,7 @@ NUM_TEXTURE = 0
 #============================================================
 # オブジェクト総数
 #============================================================
-NUM_OBJECT = 10
+NUM_OBJECT = 11
 
 #============================================================
 # オブジェクト情報
@@ -54,25 +53,19 @@ OBJECTSET
 END_OBJECTSET
 
 OBJECTSET
-	TYPE = 5
-	POS = 26.500 -14.000 -201.000
+	TYPE = 4
+	POS = -0.500 -19.000 -206.000
 	ROT = 0.000 0.000 0.000
 END_OBJECTSET
 
 OBJECTSET
-	TYPE = 3
-	POS = 155.500 -2.500 -95.000
-	ROT = 0.000 1.600 0.000
-END_OBJECTSET
-
-OBJECTSET
-	TYPE = 3
-	POS = 228.500 37.000 -95.000
-	ROT = 0.000 1.600 0.000
-END_OBJECTSET
-
-OBJECTSET
 	TYPE = 2
+	POS = 210.000 -2.500 -95.000
+	ROT = 0.000 1.570 0.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 1
 	POS = 221.000 68.500 146.000
 	ROT = 0.000 1.570 0.000
 END_OBJECTSET
@@ -90,15 +83,27 @@ OBJECTSET
 END_OBJECTSET
 
 OBJECTSET
-	TYPE = 6
+	TYPE = 5
 	POS = -124.700 0.000 64.700
 	ROT = 0.000 0.000 0.000
 END_OBJECTSET
 
 OBJECTSET
-	TYPE = 8
+	TYPE = 6
 	POS = -124.700 0.000 64.700
 	ROT = 0.000 2.450 0.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 7
+	POS = 201.479 0.000 -11.796
+	ROT = 0.000 1.570 0.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 7
+	POS = 201.479 0.000 -181.296
+	ROT = 0.000 1.570 0.000
 END_OBJECTSET
 
 
