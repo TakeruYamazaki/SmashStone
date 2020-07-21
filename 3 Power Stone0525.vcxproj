@@ -161,7 +161,7 @@
     <ClCompile Include="source\bar.cpp" />
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\character.cpp" />
-    <ClCompile Include="source\characterParameter.cpp" />
+    <ClCompile Include="source\charaParam.cpp" />
     <ClCompile Include="source\charaICHIYAS.cpp" />
     <ClCompile Include="source\charaKURURU.cpp" />
     <ClCompile Include="source\charaNYAS.cpp" />
@@ -218,7 +218,7 @@
     <ClInclude Include="source\bar.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\character.h" />
-    <ClInclude Include="source\characterParameter.h" />
+    <ClInclude Include="source\charaParam.h" />
     <ClInclude Include="source\ichiyasu.h" />
     <ClInclude Include="source\charaKURURU.h" />
     <ClInclude Include="source\charaNYAS.h" />

@@ -1,6 +1,6 @@
 // ===================================================================
 //
-// キャラクターパラメーター処理 [ characterParameter.h ]
+// キャラクターパラメーター処理 [ charaParame.h ]
 // Author : KANAN NAGANAWA
 //
 // ===================================================================
@@ -24,15 +24,15 @@
 // クラス定義
 // ===================================================================
 
-class CCharacterParameter
+class CCharaParam
 {
 public:
 	typedef enum
 	{	// パラメーターのタイプ
-		PARAMETER_1YASU = 0,	// 1ヤス
-		PARAMETER_2YASU,		// 2ヤス
-		PARAMETER_MAX			// 最大数
-	} PARAMETER_TYPE;
+		PARAM_1YASU = 0,	// 1ヤス
+		PARAM_2YASU,		// 2ヤス
+		PARAM_MAX			// 最大数
+	} PARAM_TYPE;
 
 	typedef struct INT_START_END
 	{	// int型の開始～終了フレームの構造体
@@ -53,29 +53,28 @@ public:
 		float					fAttackPower;	// 攻撃力
 		INT_START_END			CancelFrame;	// キャンセルフレーム
 		CPlayer::BLOWAWAY_TYPE	blowType;		// 吹っ飛びの種類
-	} PARAMETER_ATTACK;
+	} PARAM_ATTACK;
 
 	typedef struct
 	{	// 移動のパラメーター
 		float fRunSpeed;	// 移動力
 		float fJumpPower;	// ジャンプ力
-	} PARAMETER_MOVE;
+	} PARAM_MOVE;
 
 
-	CCharacterParameter();			// コンストラクタ
-	~CCharacterParameter();			// デストラクタ
+	CCharaParam();			// コンストラクタ
+	~CCharaParam();			// デストラクタ
 
-	void               Init(void);					// 初期化
-	void               Uninit(void);				// 終了
-	HRESULT            Load(PARAMETER_TYPE type);	// キャラクターごとのパラメーターロード
+	static HRESULT         Load(void);		// キャラクターごとのパラメーターロード
+	static void			   Unload(void);	// データの破棄
 
 protected:
-	int m_nMaxLife;		// 最大HP
-	PARAMETER_ATTACK	*m_attackParameter;	// 攻撃のパラメーターのポインタ
-	PARAMETER_MOVE		m_moveParameter;	// 移動のパラメーター
+	static int			m_nMaxLife[PARAM_MAX];			// 最大HP
+	static PARAM_MOVE	m_moveParam[PARAM_MAX];		// 移動のパラメーター
+	static PARAM_ATTACK	*m_pAttackParam[PARAM_MAX];	// 攻撃のパラメーターのポインタ
 
 private:
-	static char m_aFileName[PARAMETER_MAX][64];	// 変身前キャラ数分のパラメーターファイル名
+	static char m_aFileName[PARAM_MAX][64];	// 変身前キャラ数分のパラメーターファイル名
 };
 
 #endif

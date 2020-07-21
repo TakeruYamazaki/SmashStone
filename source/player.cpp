@@ -101,10 +101,8 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {
 	if (m_bBlowAway == false && m_bDaunted == false)
-	{
 		// 操作
 		Control();
-	}
 
 	// 更新
 	CCharacter::Update();
@@ -124,9 +122,7 @@ void CPlayer::Update(void)
 	ShowDebugInfo();
 
 	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_2))
-	{
 		m_bTrans = true;
-	}
 #endif
 }
 
@@ -433,10 +429,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	// スマッシュ系モーション中は以降の処理をしない
 	if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE ||
 		m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH)
-	{
 		// 処理を終える
 		return;
-	}
 
 	if (((m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
 		m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_ATTACK))) &&
