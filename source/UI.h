@@ -71,5 +71,6 @@ private:
 
 	bool m_bUITitle0;										// タイトルを動かすかどうか0
 	bool m_bUITitle1;										// タイトルを動かすかどうか1
+	bool m_bUIEnter;										// エンターのα値用変数
 };
 #endif
