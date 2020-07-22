@@ -47,14 +47,13 @@ public:
 		ID_STONE,				// ストーン
 
 		ID_FLOWER,				// 植木鉢
-		ID_FOUNTAIN,			// 噴水
 		ID_ROOF,				// 屋根
-		ID_STAIRS,				// 解散
+		ID_STAIRS,				// 階段
 		ID_WOODENBOX,			// 木の箱
 		ID_LOOOSESTAIRS,		// 緩い階段
 		ID_FOUNTAIN_DOWN,		// 噴水の下
-		ID_FOUNTAIN_UP,			// 噴水の上の部分
 		ID_FOUNTAIN_W_UP,		// 噴水の水がある上の部分
+		ID_FOUNTAIN_IRON,		// 鉄
 
 		ID_MAX					// 最大数
 	};
