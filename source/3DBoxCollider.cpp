@@ -887,8 +887,6 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 			}
 		}
 	}
-	//CDebugProc::print("PlayerColli = [%.4f] [%.4f] [%.4f]\n", pOwnerCollider->pos.x, pOwnerCollider->pos.y, pOwnerCollider->pos.z);
-
 	// 頂点データをアンロック
 	m_pVtxBuff->Unlock();
 	return bCollision;
