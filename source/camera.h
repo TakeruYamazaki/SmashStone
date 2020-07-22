@@ -55,11 +55,16 @@ public:
 protected:
 
 private:
+#ifdef _DEBUG
 	void ShowDebugInfo(void);			// ImGuiの更新
-	void GameCamera(void);				// ゲームのカメラ
+	void SwitchMode(void);				// モード切替
 	void DebugControl(void);			// デバッグ時の操作
 	void ControlMouse(void);			// マウスでの操作
 	void ControlKeyboard(CInputKeyboard *pKeyboard);	// キーボードでの操作
+	D3DXVECTOR3 m_posDebug;				// デバッグ用の位置
+#endif
+
+	void MoveCamera(void);				// ゲームの移動
 	static CCamera *m_pCamera;			// カメラ情報
 	CAMERA_MODE m_mode;					// カメラの状態
 
@@ -70,7 +75,6 @@ private:
 	D3DXVECTOR3 m_posVDest;				// 視点の目標地点
 	D3DXVECTOR3 m_posR;					// 注視点(参照点)
 	D3DXVECTOR3 m_posRDest;				// 注視点(参照点)の目標地点
-	D3DXVECTOR3 m_posDebug;				// デバッグ用の位置
 	D3DXVECTOR3 m_posU;					// 上方向ベクトル
 	D3DXVECTOR3 m_rot;					// 回転
 	D3DXVECTOR3 m_rotDest;				// 回転の目標地点

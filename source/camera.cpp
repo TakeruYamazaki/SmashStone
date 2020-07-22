@@ -100,6 +100,7 @@ void CCamera::Init(void)
 
 #ifdef _DEBUG
 	m_mode = CAMERA_DEBUG;
+	m_posDebug = ZeroVector3;
 #endif
 }
 
@@ -116,34 +117,16 @@ void CCamera::Uninit(void)
 //==================================================================================================================
 void CCamera::Update(void)
 {
-	// ゲームモードがタイトルのとき
-	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
-	{
-
-	}
-
-	// ゲームモードがゲームのとき 又は チュートリアルのとき
-	if (CRenderer::GetMode() == CRenderer::MODE_GAME || CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
-	{
-		// ゲームモードがチュートリアルのとき
-		if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
-		{
-
-		}
-
-		// ゲームモードがゲームのとき
-		if (CRenderer::GetMode() == CRenderer::MODE_GAME){}
-			GameCamera();
-	}
-
 #ifdef _DEBUG
-	if (CAMERA_DEBUG == m_mode)
-		// デバッグ時の操作
-		DebugControl();
+	// デバッグ時の操作
+	DebugControl();
 
 	// ImGuiの更新
 	ShowDebugInfo();
-#endif // _DEBUG
+#endif
+
+	// カメラの移動
+	MoveCamera();
 
 	// ベクトルを算出して正規化
 	m_vec = m_posR - m_posV;
@@ -205,10 +188,12 @@ void CCamera::SetCameraPos(const D3DXVECTOR3 posV, const D3DXVECTOR3 posR)
 	m_posR = posR;
 	m_posVDest = posV;
 	m_posRDest = posR;
-	m_posDebug = ZeroVector3;
 	m_posU = AboveNormal;
 	m_rot = D3DXVECTOR3(0.6f, -0.8f, 0.0f);
 	m_fDistance = 0.0f;
+#ifdef _DEBUG
+	m_posDebug = ZeroVector3;
+#endif
 
 	// 位置の差を求め、距離を測る
 	D3DXVECTOR3 difpos = m_posR - m_posV;
@@ -235,7 +220,7 @@ void CCamera::ShowDebugInfo(void)
 //==================================================================================================================
 // ゲームのカメラ
 //==================================================================================================================
-void CCamera::GameCamera(void)
+void CCamera::MoveCamera(void)
 {
 	D3DXVECTOR3 difposR, difposV;	// posとposDestの差分格納用
 
@@ -243,6 +228,10 @@ void CCamera::GameCamera(void)
 	m_posRDest.x = sinf(m_rot.y);
 	m_posRDest.y = tanf(m_rot.x);
 	m_posRDest.z = cosf(m_rot.y);
+
+#ifdef _DEBUG
+	m_posRDest += m_posDebug;
+#endif
 
 	// 現在の注視点と目的の注視点の差分の計算
 	difposR = m_posRDest - m_posR;
@@ -254,6 +243,10 @@ void CCamera::GameCamera(void)
 	m_posVDest.x = -cosf(m_rot.x) * sinf(m_rot.y) * m_fDistance * m_fDisScale;
 	m_posVDest.y = sinf(m_rot.x) * m_fDistance * m_fDisScale;
 	m_posVDest.z = -cosf(m_rot.x) * cosf(m_rot.y) * m_fDistance * m_fDisScale;
+
+#ifdef _DEBUG
+	m_posVDest += m_posDebug;
+#endif
 
 	if (m_mode == CAMERA_GAME)
 	{
@@ -288,28 +281,39 @@ void CCamera::GameCamera(void)
 //==================================================================================================================
 void CCamera::DebugControl(void)
 {
+	// モード切替
+	SwitchMode();
+
+	// ゲームモードなら処理終了
+	if (m_mode != CAMERA_DEBUG)
+		return;
+
+	// キーボード取得
+	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
+
+	// マウスでの操作
+	ControlMouse();
+	// キーボードでの操作
+	ControlKeyboard(pInputKeyboard);
+}
+
+//==================================================================================================================
+// モード切替
+//==================================================================================================================
+void CCamera::SwitchMode(void)
+{
 	// キーボード取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
 
 	// F1キーでモード切替
 	if (pInputKeyboard->GetKeyboardTrigger(DIK_F1))
-		m_mode ?
-		m_mode = CAMERA_DEBUG :
-		m_mode = CAMERA_GAME;
-
-	CDebugProc::Print("%d\n", m_mode);
-
-	if (m_mode == CAMERA_DEBUG)
 	{
-		// マウスでの操作
-		ControlMouse();
-		// キーボードでの操作
-		ControlKeyboard(pInputKeyboard);
+		if (m_mode == CAMERA_DEBUG)
+			m_mode = CAMERA_GAME;
+		else if (m_mode == CAMERA_GAME)
+			m_mode = CAMERA_DEBUG;
 	}
-
-	CKananLibrary::InterpolationRot(&m_rot);
 }
-#endif
 
 //==================================================================================================================
 // マウスの操作
@@ -318,6 +322,9 @@ void CCamera::ControlMouse(void)
 {
 	// マウスの取得
 	CMouse *pMouse = CManager::GetMouse();
+
+	if (!pMouse)
+		return;
 
 	// 左クリック時
 	if (pMouse->GetPressTrigger(1))
@@ -357,67 +364,49 @@ void CCamera::ControlMouse(void)
 //==================================================================================================================
 void CCamera::ControlKeyboard(CInputKeyboard *pKeyboard)
 {
-
 	// キーボードの[←]が押されたとき
-	/*if (pKeyboard->GetKeyboardPress(DIK_LEFTARROW))
+	if (pKeyboard->GetKeyboardPress(DIK_NUMPAD4))
 	{
 		// 視点を左に動かす
-		m_posV.x += sinf(-D3DX_PI * 0.5f + m_rot.y) * camera_move;
-		m_posV.z += cosf(-D3DX_PI * 0.5f + m_rot.y) * camera_move;
-
-		// 視点を左に動かす
-		m_posR.x += sinf(-D3DX_PI * 0.5f + m_rot.y) * camera_move;
-		m_posR.z += cosf(-D3DX_PI * 0.5f + m_rot.y) * camera_move;
+		m_posDebug.x += sinf(-D3DX_PI * 0.5f + m_rot.y) * camera_move;
+		m_posDebug.z += cosf(-D3DX_PI * 0.5f + m_rot.y) * camera_move;
 	}
 
 	// キーボードの[→]が押されたとき
-	if (pKeyboard->GetKeyboardPress(DIK_RIGHTARROW))
+	if (pKeyboard->GetKeyboardPress(DIK_NUMPAD6))
 	{
 		// 視点を右に動かす
-		m_posV.x += sinf(D3DX_PI * 0.5f + m_rot.y) * camera_move;
-		m_posV.z += cosf(D3DX_PI * 0.5f + m_rot.y) * camera_move;
-		// 視点を右に動かす
-		m_posR.x += sinf(D3DX_PI * 0.5f + m_rot.y) * camera_move;
-		m_posR.z += cosf(D3DX_PI * 0.5f + m_rot.y) * camera_move;
+		m_posDebug.x += sinf(D3DX_PI * 0.5f + m_rot.y) * camera_move;
+		m_posDebug.z += cosf(D3DX_PI * 0.5f + m_rot.y) * camera_move;
 	}
 
 	// キーボードの[↑]が押されたとき
-	if (pKeyboard->GetKeyboardPress(DIK_UP))
+	if (pKeyboard->GetKeyboardPress(DIK_NUMPAD8))
 	{
 		// 視点を前に動かす
-		m_posV.x += sinf(D3DX_PI * 0.0f + m_rot.y) * camera_move;
-		m_posV.z += cosf(D3DX_PI * 0.0f + m_rot.y) * camera_move;
-		// 視点を前に動かす
-		m_posR.x += sinf(D3DX_PI * 0.0f + m_rot.y) * camera_move;
-		m_posR.z += cosf(D3DX_PI * 0.0f + m_rot.y) * camera_move;
+		m_posDebug.x += sinf(D3DX_PI * 0.0f + m_rot.y) * camera_move;
+		m_posDebug.z += cosf(D3DX_PI * 0.0f + m_rot.y) * camera_move;
 	}
 
 	// キーボードの[↓]が押されたとき
-	if (pKeyboard->GetKeyboardPress(DIK_DOWN))
+	if (pKeyboard->GetKeyboardPress(DIK_NUMPAD5))
 	{
 		// 視点を後ろに動かす
-		m_posV.x += sinf(-D3DX_PI * 1.0f + m_rot.y) * camera_move;
-		m_posV.z += cosf(-D3DX_PI * 1.0f + m_rot.y) * camera_move;
-		// 視点を後ろに動かす
-		m_posR.x += sinf(-D3DX_PI * 1.0f + m_rot.y) * camera_move;
-		m_posR.z += cosf(-D3DX_PI * 1.0f + m_rot.y) * camera_move;
-	}*/
+		m_posDebug.x += sinf(-D3DX_PI * 1.0f + m_rot.y) * camera_move;
+		m_posDebug.z += cosf(-D3DX_PI * 1.0f + m_rot.y) * camera_move;
+	}
 
 	if (pKeyboard->GetKeyboardPress(DIK_1))
 	{// キーボードの[1]が押されたとき
 	 // 視点を上に動かす
-		m_posV.y += cosf(D3DX_PI * 1.0f + m_rot.y) * camera_move;
-		// 視点を上に動かす
-		m_posR.y += cosf(D3DX_PI * 1.0f + m_rot.y) * camera_move;
+		m_posDebug.y += cosf(D3DX_PI * 1.0f + m_rot.y) * camera_move;
 	}
 
 	// キーボードの[2]が押されたとき
 	if (pKeyboard->GetKeyboardPress(DIK_2))
 	{
 		// 視点を下に動かす
-		m_posV.y += cosf(D3DX_PI * 0.0f + m_rot.y) * camera_move;
-		// 視点を下に動かす
-		m_posR.y += cosf(D3DX_PI * 0.0f + m_rot.y) * camera_move;
+		m_posDebug.y += cosf(D3DX_PI * 0.0f + m_rot.y) * camera_move;
 	}
 
 	if (!pKeyboard->GetKeyboardPress(DIK_LSHIFT))
@@ -477,6 +466,7 @@ void CCamera::ControlKeyboard(CInputKeyboard *pKeyboard)
 
 	CKananLibrary::InterpolationRot(&m_rot);
 }
+#endif
 
 //==================================================================================================================
 // カメラの生成
