@@ -34,6 +34,10 @@ public:
 		LOGOTYPE_TITLE = 0,			// タイトル
 		LOGOTYPE_ENTER,				// エンターロゴ
 		LOGOTYPE_ARROW,				// コンパス矢印
+		LOGOTYPE_SIGN,				// 看板
+		LOGOTYPE_MODE00,			// モード00
+		LOGOTYPE_MODE01,			// モード01
+		LOGOTYPE_MODEFREAM,			// モード枠線
 		LOGOTYPE_MAX				// 最大
 	} UITYPE;
 
@@ -55,22 +59,24 @@ public:
 protected:
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture[LOGOTYPE_MAX];		// テクスチャ情報
-	static char *m_apFileName[LOGOTYPE_MAX];				// ロゴのファイル名
+	static LPDIRECT3DTEXTURE9 m_pTexture[LOGOTYPE_MAX];	// テクスチャ情報
+	static char *m_apFileName[LOGOTYPE_MAX];			// ロゴのファイル名
 
-	UITYPE m_type;											// ロゴタイプ変数
-	CScene2D *m_pScene2D[LOGOTYPE_MAX];						// scene2Dの情報
+	UITYPE m_type;										// ロゴタイプ変数
+	CScene2D *m_pScene2D[LOGOTYPE_MAX];					// scene2Dの情報
 
-	D3DXVECTOR3 TitlePos;									// タイトルの位置
+	D3DXVECTOR3 TitlePos;								// タイトルの位置
 
-	int m_nCntBound;										// タイトルUIバウンドカウンタ
+	int m_nCntBound;									// タイトルUIバウンドカウンタ
+	int m_nMode;										// モード番号
 
-	float m_nCntUITitle0;									// タイトルUI用カウンタ0
-	float m_nCntUITitle1;									// タイトルUI用カウンタ1
-	float m_nCntEnter;										// エンター用カウンタ
+	float m_nCntUITitle0;								// タイトルUI用カウンタ0
+	float m_nCntUITitle1;								// タイトルUI用カウンタ1
+	float m_nCntEnter;									// エンター用カウンタ
+	float m_nCntUISign;									// 看板用カウンタ
 
-	bool m_bUITitle0;										// タイトルを動かすかどうか0
-	bool m_bUITitle1;										// タイトルを動かすかどうか1
-	bool m_bUIEnter;										// エンターのα値用変数
+	bool m_bUITitle0;									// タイトルを動かすかどうか0
+	bool m_bUITitle1;									// タイトルを動かすかどうか1
+	bool m_bUIEnter;									// エンターのα値用変数
 };
 #endif
