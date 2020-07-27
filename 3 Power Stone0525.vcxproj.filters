@@ -64,9 +64,6 @@
     <ClCompile Include="source\game.cpp">
       <Filter>mode</Filter>
     </ClCompile>
-    <ClCompile Include="source\ranking.cpp">
-      <Filter>mode</Filter>
-    </ClCompile>
     <ClCompile Include="source\title.cpp">
       <Filter>mode</Filter>
     </ClCompile>
@@ -166,6 +163,9 @@
     <ClCompile Include="source\charaParam.cpp">
       <Filter>character</Filter>
     </ClCompile>
+    <ClCompile Include="source\result.cpp">
+      <Filter>mode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\sceneX.h">
@@ -232,9 +232,6 @@
       <Filter>character</Filter>
     </ClInclude>
     <ClInclude Include="source\game.h">
-      <Filter>mode</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ranking.h">
       <Filter>mode</Filter>
     </ClInclude>
     <ClInclude Include="source\title.h">
@@ -338,6 +335,9 @@
     </ClInclude>
     <ClInclude Include="source\charaParam.h">
       <Filter>character</Filter>
+    </ClInclude>
+    <ClInclude Include="source\result.h">
+      <Filter>mode</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

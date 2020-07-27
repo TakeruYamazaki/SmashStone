@@ -251,7 +251,7 @@ void CGame::Update(void)
 		if (fade == CFade::FADE_NONE)
 		{
 			// フェードを設定する
-			CFade::SetFade(CRenderer::MODE_RANKING);
+			CFade::SetFade(CRenderer::MODE_RESULT);
 		}
 	}
 #endif // _DEBUG

@@ -45,7 +45,7 @@ public:
 		MODE_TITLE,				// タイトル
 		MODE_TUTORIAL,			// チュートリアル
 		MODE_GAME,				// ゲーム
-		MODE_RANKING,			// ランキング
+		MODE_RESULT,			// リザルト
 		MODE_MAX				// 最大数
 	} MODE;						// モード
 
@@ -77,7 +77,6 @@ private:
 	static CTitle *m_pTitle;							// タイトル情報のポインタ
 	static CGame *m_pGame;								// ゲーム情報のポインタ
 	static CResult *m_pResult;							// リザルト情報のポインタ
-	static CRanking *m_pRanking;						// ランキング情報のポインタ
 	static CTutorial *m_pTutorial;						// チュートリアル情報のポインタ
 	static MODE m_mode;									// モード情報のポインタ
 	static CSound *m_pSound;							// 音情報のポインタ
