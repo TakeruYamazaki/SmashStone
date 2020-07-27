@@ -41,6 +41,7 @@ CMeshField *CTitle::m_pMeshField = NULL;			// メッシュフィールド情報
 CMeshSphere *CTitle::m_pMeshSphere = NULL;			// メッシュ球情報
 CUI *CTitle::m_pUI = NULL;							// UI情報
 CCharacter *CTitle::m_pCharacter = NULL;			// キャラクター情報
+bool CTitle::m_bNextScreen = false;					// 次のモードにいくかどうか
 
 //==================================================================================================================
 //	コンストラクタ
@@ -63,6 +64,10 @@ CTitle::~CTitle()
 //==================================================================================================================
 void CTitle::Init(void)
 {
+	// 初期化
+	m_nNextMode = 0;			// 次のモード番号
+	m_bNextScreen = false;		// 次の画面に行くかどうか
+
 	CMeshField::Load();			// メッシュフィールドロード
 	CMotionModel::Load();		// モーション用モデルロード
 	CMeshSphere::Load();		// メッシュ球のテクスチャロード
@@ -126,11 +131,20 @@ void CTitle::Update(void)
 	// キーボードの[Enter] 又は コントローラーの[START]を押したとき
 	if (pInputKeyboard->GetKeyboardTrigger(DIK_RETURN))
 	{
-		// フェードが何もない時
-		if (fade == CFade::FADE_NONE)
+		// 次の画面のとき
+		if (m_bNextScreen)
 		{
-			// フェードの設定
-			CFade::SetFade(CRenderer::MODE_TUTORIAL);
+			// フェードが何もない時
+			if (fade == CFade::FADE_NONE)
+			{
+				// フェードの設定
+				CFade::SetFade(CRenderer::MODE_TUTORIAL);
+			}
+		}
+		else
+		{// 次の画面にいくかどうか
+			// 次の画面に進む状態にする
+			m_bNextScreen = true;
 		}
 	}
 }
@@ -175,4 +189,12 @@ CCharacter * CTitle::GetCharacter(void)
 CCamera * CTitle::GetCamera(void)
 {
 	return m_pCamera;
+}
+
+//==================================================================================================================
+// 次のモード設定処理
+//==================================================================================================================
+void CTitle::SetNextMode(int nNextMode)
+{
+	m_nNextMode = nNextMode;
 }

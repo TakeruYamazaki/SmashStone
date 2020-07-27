@@ -43,21 +43,28 @@ public:
 	static CTitle *Create(void);				// 生成処理
 	static CCharacter *GetCharacter(void);		// キャラクターの情報取得処理
 	static CCamera *GetCamera(void);			// カメラの情報取得処理
+	static bool GetbModeNext(void) { return m_bNextScreen; }// 次の画面に行くかどうか取得処理
+
+	void SetNextMode(int nNextMode);			// 次のモード設定処理
 
 protected:
 
 private:
 
-	static LPDIRECT3DTEXTURE9 m_pTexture;		// テクスチャ情報
-	static CCamera *m_pCamera;					// カメラの情報
-	static CLight *m_pLight;					// ライトの情報
-	static CPolygon *m_pPolygon;				// ポリゴン情報
-	static CMeshField *m_pMeshField;			// メッシュフィールドの情報
-	static CMeshSphere *m_pMeshSphere;			// メッシュ球の情報ポインタ
-	static CUI *m_pUI;							// UIの情報ポインタ
-	static CCharacter *m_pCharacter;			// キャラクターの情報ポインタ
+	static LPDIRECT3DTEXTURE9 m_pTexture;	// テクスチャ情報
+	static CCamera *m_pCamera;				// カメラの情報
+	static CLight *m_pLight;				// ライトの情報
+	static CPolygon *m_pPolygon;			// ポリゴン情報
+	static CMeshField *m_pMeshField;		// メッシュフィールドの情報
+	static CMeshSphere *m_pMeshSphere;		// メッシュ球の情報ポインタ
+	static CUI *m_pUI;						// UIの情報ポインタ
+	static CCharacter *m_pCharacter;		// キャラクターの情報ポインタ
+	static bool m_bNextScreen;				// 次のモードにいくかどうか
 
-	LPDIRECT3DVERTEXBUFFER9 m_pVertexBuff;		// 頂点バッファ
+	LPDIRECT3DVERTEXBUFFER9 m_pVertexBuff;	// 頂点バッファ
+
+	int m_nNextMode;						// 次のモード
+
 };
 
 #endif
