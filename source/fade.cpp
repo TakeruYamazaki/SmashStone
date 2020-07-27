@@ -160,11 +160,11 @@ void CFade::Update(void)
 
 			// ƒQ[ƒ€‚Ì‚Æ‚«
 		case CRenderer::MODE_GAME:
-			m_modeNext = CRenderer::MODE_RANKING;
+			m_modeNext = CRenderer::MODE_RESULT;
 			break;
 
 			// ƒ‰ƒ“ƒLƒ“ƒO‚Ì‚Æ‚«
-		case CRenderer::MODE_RANKING:
+		case CRenderer::MODE_RESULT:
 			m_modeNext = CRenderer::MODE_TITLE;
 			break;
 		}
