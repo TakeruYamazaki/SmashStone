@@ -43,6 +43,7 @@ void CScene2D::Init(void)
 	m_size = GetSize();												// 大きさ取得
 	m_fAngle = atan2f(POLGON_X, POLGON_Y);							// 角度
 	m_fLength = sqrtf(POLGON_X * POLGON_X + POLGON_Y * POLGON_Y);	// 長さ
+	m_bShow = true;													// 描画するか
 
 	// オブジェクトの頂点バッファを生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
@@ -122,7 +123,8 @@ void CScene2D::Draw(void)
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
 	// ポリゴン描画
-	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	if (m_bShow)
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
 	// テクスチャの設定
 	pDevice->SetTexture(0, NULL);

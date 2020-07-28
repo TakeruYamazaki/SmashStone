@@ -34,6 +34,7 @@ class CTime;
 class CWall;
 class CObjectManager;
 class CPolygonCollider;
+class CUIKO;
 
 //==================================================================================================================
 //
@@ -53,6 +54,9 @@ public:
 		GAMESTATE_PAUSE,		// ポーズ状態
 		GAMESTATE_START_OVER,	// 初めからやり直す
 		GAMESTATE_BREAK,		// ゲーム中断
+		GAMESTATE_KO,			// KO演出
+		GAMESTATE_NEXTROUND,	// 次のラウンドへ
+		GAMESTATE_RESULT,		// リザルト
 		GAMESTATE_END,			// ゲームの終了
 		GAMESTATE_MAX			// 最大
 	} GAMESTATE;				// ゲームの状態
@@ -85,6 +89,8 @@ public:
 protected:
 
 private:
+	void SwitchPause(void);						// ポーズの切り替え
+	void KOAction(void);						// KO演出
 	void DecideCreateStone(void);				// ストーンを生成するか決める
 	static int DecideRandomPos(void);			// 生成位置をランダムで決める
 	static GAMESTATE m_gameState;				// ゲーム状態
@@ -104,6 +110,7 @@ private:
 	static bool m_bSetPos[STONE_POS];			// ストーンが生成されているか
 	static CObjectManager *m_pObjMana;			// オブジェクトマネージャーのポインタ
 	static CPolygonCollider* m_pPolyColli[POLYCOLLI_USE_TYPE];		// ポリゴンコライダーのポインタ
+	static CUIKO *m_pUIKO;						// KOのポインタ
 	D3DXMATRIX  m_mtxWorld;						// マトリックス
 };
 #endif

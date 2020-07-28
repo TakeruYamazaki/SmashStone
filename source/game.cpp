@@ -33,6 +33,7 @@
 #include "objManager.h"
 #include "CylinderCollider.h"
 #include "PolygonCollider.h"
+#include "UI_KO.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -55,6 +56,7 @@ CPause				*CGame::m_pPause				= NULL;							// ポーズ情報
 CMeshSphere			*CGame::m_pMeshSphere			= NULL;							// メッシュ球の情報
 CTime				*CGame::m_pTime					= NULL;							// タイム情報
 CWall				*CGame::m_pWall					= NULL;							// 壁のポインタ
+CUIKO				*CGame::m_pUIKO					= nullptr;						// KOのポインタ
 CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
 int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 int					CGame::m_nNumStone				= 0;							// 生成したストーンの数
@@ -105,6 +107,7 @@ void CGame::Init(void)
 	CWall::Load();							// 壁のロード
 	CObjectManager::Load();					// オブジェクトマネージャーのロード
 	CCylinderCoillider::Load();				// シリンダーコライダーのロード
+	CUIKO::Load();							// KOのロード
 
 	/* 生成 */
 	C3DBoxCollider::Create();										// ボックスコライダーの生成
@@ -158,12 +161,11 @@ void CGame::Uninit(void)
 	CMotionModel::Unload();				// モーション用モデルアンロード
 	CBar::Unload();						// Barテクスチャアンロード
 	CObjectManager::Unload();			// オブジェクトマネージャーのアンロード
+	CUIKO::Unload();					// KOのアンロード
 
 	// ポーズの終了処理
 	m_pPause->Uninit();
 
-	//m_pObjMana->Uninit();				// 終了処理
-	//m_pObjMana.reset();				// メモリ削除
 	m_pObjMana = nullptr;				// ポインタNULL
 
 	delete m_pPause;					// メモリ削除
@@ -186,9 +188,6 @@ void CGame::Update(void)
 	// キーボード取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
 
-	// フェード取得
-	CFade::FADE fade = CFade::GetFade();
-
 	// ゲームの状態取得
 	m_gameState = GetGameState();
 
@@ -198,17 +197,12 @@ void CGame::Update(void)
 		// ポーズの更新処理
 		m_pPause->Update();
 
-		// ゲーム状態が初めからやり直すとき
+		// リトライ
 		if (m_gameState == GAMESTATE_START_OVER)
-		{
-			// フェードを設定する
 			CFade::SetFade(CRenderer::MODE_GAME);
-		}
+		// タイトルに戻る
 		else if (m_gameState == GAMESTATE_BREAK)
-		{// ゲーム状態が中断のとき
-			// フェードを設定する
 			CFade::SetFade(CRenderer::MODE_TITLE);
-		}
 	}
 	else
 	{
@@ -222,37 +216,23 @@ void CGame::Update(void)
 		DecideCreateStone();
 	}
 
-	// キーボードの[P] 又は コントローラーの[START]ボタンが押されたとき
+	KOAction();
+
+	// ポーズの切り替え
 	if (pInputKeyboard->GetKeyboardTrigger(DIK_P))
-	{// ポーズ切り替え
-		// ゲーム状態がポーズのとき
-		if (m_gameState == GAMESTATE_PAUSE)
-		{
-			// ゲーム状態をNORMALにする
-			m_gameState = GAMESTATE_NORMAL;
+		SwitchPause();
 
-			// ポーズ状態の設定
-			m_pPause->SetPause(false);
-		}
-		else
-		{// ゲーム状態がポーズじゃないとき
-			// ゲーム状態をポーズにする
-			m_gameState = GAMESTATE_PAUSE;
-
-			// ポーズ状態の設定
-			m_pPause->SetPause(true);
-		}
-	}
 #ifdef _DEBUG
 	// キーボードの[0]を押したとき
 	if (pInputKeyboard->GetKeyboardTrigger(DIK_RETURN))
 	{
+		// フェード取得
+		CFade::FADE fade = CFade::GetFade();
+
 		// フェードが何もない時
 		if (fade == CFade::FADE_NONE)
-		{
 			// フェードを設定する
 			CFade::SetFade(CRenderer::MODE_RESULT);
-		}
 	}
 #endif // _DEBUG
 }
@@ -270,10 +250,12 @@ void CGame::Draw(void)
 
 	// ポーズ状態がtrueのとき
 	if (m_pPause->GetPause() == true)
-	{
 		// ポーズの更新処理
 		m_pPause->Draw();
-	}
+
+	// KOの描画
+	if (m_pUIKO)
+		m_pUIKO->Draw();
 }
 
 //==================================================================================================================
@@ -281,11 +263,12 @@ void CGame::Draw(void)
 //==================================================================================================================
 CGame * CGame::Create(void)
 {
-	// 変数宣言
-	CGame *pGame = NULL;		// ゲーム変数NULL
-	pGame = new CGame;			// 動的に確保
-	pGame->Init();				// 初期化処理
-	return pGame;				// 値を返す
+	// メモリ確保
+	CGame *pGame = new CGame;
+	// 初期化
+	pGame->Init();
+	// 値を返す
+	return pGame;
 }
 
 //==================================================================================================================
@@ -301,6 +284,64 @@ void CGame::AppearStone(void)
 	m_bSetPos[RandValue] = true;
 	// 出現数を加算
 	m_nNumStone++;
+}
+
+//==================================================================================================================
+//	ポーズの切り替え
+//==================================================================================================================
+void CGame::SwitchPause(void)
+{
+	// ゲーム状態がポーズのとき
+	if (m_gameState == GAMESTATE_PAUSE)
+	{
+		// ゲーム状態をNORMALにする
+		m_gameState = GAMESTATE_NORMAL;
+		// ポーズ状態の設定
+		m_pPause->SetPause(false);
+	}
+	else
+	{// ゲーム状態がポーズじゃないとき
+	 // ゲーム状態をポーズにする
+		m_gameState = GAMESTATE_PAUSE;
+		// ポーズ状態の設定
+		m_pPause->SetPause(true);
+	}
+}
+
+//==================================================================================================================
+//	KO演出
+//==================================================================================================================
+void CGame::KOAction(void)
+{
+	// どちらかのプレイヤーのライフが0
+	if ((GetPlayer(PLAYER_ONE)->GetLife() <= 0 ||
+		GetPlayer(PLAYER_TWO)->GetLife() <= 0) &&
+		m_gameState != GAMESTATE_END)
+		// KO
+		m_gameState = GAMESTATE_KO;
+
+	// KOでない
+	if (m_gameState != GAMESTATE_KO)
+	{
+		// nullcheck
+		if (m_pUIKO)
+		{
+			// 破棄
+			m_pUIKO->Uninit();
+			delete m_pUIKO;
+			m_pUIKO = nullptr;
+		}
+		// 処理を終える
+		return;
+	}
+
+	// KOのUIを生成
+	if (!m_pUIKO)
+		m_pUIKO = CUIKO::Create();
+
+	// KOの更新
+	if (m_pUIKO)
+		m_pUIKO->Update();
 }
 
 //==================================================================================================================

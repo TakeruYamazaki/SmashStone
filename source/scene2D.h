@@ -44,9 +44,11 @@ public:
 	void SetPos(D3DXVECTOR3 pos);														// ˆÊ’uİ’èˆ—
 	void SetSize(D3DXVECTOR3 size);														// ‘å‚«‚³İ’èˆ—
 	void SetRot(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fAngle, float fLength);			// ‰ñ“]İ’èˆ—
+	void SetbShow(bool bShow) { m_bShow = bShow; }										// •`‰æ‚·‚é‚©İ’è
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; }											// ˆÊ’uæ“¾ˆ—
 	D3DXVECTOR3 GetSize(void) { return m_size; }										// ‘å‚«‚³æ“¾ˆ—
+	bool GetbShow(void) { return m_bShow; }												// •`‰æ‚·‚é‚©æ“¾
 
 	bool SetCollision(D3DXVECTOR3 posDo, int sizeX, int sizeY, D3DXVECTOR3 posDone);	// “–‚½‚è”»’èˆ—
 
@@ -62,7 +64,7 @@ private:
 	D3DXVECTOR3 m_pos;																	// ˆÊ’u
 	D3DXVECTOR3 m_size;																	// ‘å‚«‚³
 	D3DXVECTOR3 m_rot;																	// ‰ñ“]
-
+	bool  m_bShow;																		// •`‰æ‚·‚é‚©
 	float m_fAngle;																		// Šp“x
 	float m_fLength;																	// ’·‚³
 };
