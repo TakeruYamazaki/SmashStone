@@ -23,19 +23,20 @@
 #include "motionModel.h"
 #include "inputGamepad.h"
 #include "meshSphere.h"
+#include "UI.h"
 
 //==================================================================================================================
 //	静的メンバ変数宣言
 //==================================================================================================================
-LPDIRECT3DTEXTURE9 CTutorial::m_pTexture = NULL;			// テクスチャ情報
-CCamera *CTutorial::m_pCamera = NULL;						// カメラ情報
-CLight *CTutorial::m_pLight = NULL;							// ライト情報
-CPolygon *CTutorial::m_pPolygon = NULL;						// ポリゴン情報
-CMeshField *CTutorial::m_pMeshField = NULL;					// メッシュフィールド情報
-CCharacter *CTutorial::m_pCharacter = NULL;					// キャラクター情報
-CLogo *CTutorial::m_pLogo = NULL;							// ロゴ情報
-CMeshSphere *CTutorial::m_pMeshSphere = NULL;				// メッシュ球情報
-CModel *CTutorial::m_pModel[TUTORIAL_MAX_MODEL] = {};		// モデル情報
+LPDIRECT3DTEXTURE9 CTutorial::m_pTexture = NULL;		// テクスチャ情報
+CCamera *CTutorial::m_pCamera = NULL;					// カメラ情報
+CLight *CTutorial::m_pLight = NULL;						// ライト情報
+CPolygon *CTutorial::m_pPolygon = NULL;					// ポリゴン情報
+CMeshField *CTutorial::m_pMeshField = NULL;				// メッシュフィールド情報
+CCharacter *CTutorial::m_pCharacter = NULL;				// キャラクター情報
+CUI *CTutorial::m_pUI = NULL;							// UI情報
+CMeshSphere *CTutorial::m_pMeshSphere = NULL;			// メッシュ球情報
+CModel *CTutorial::m_pModel[TUTORIAL_MAX_MODEL] = {};	// モデル情報
 
 //==================================================================================================================
 //	コンストラクタ
@@ -61,6 +62,7 @@ void CTutorial::Init(void)
 	CMeshField::Load();				// メッシュフィールドテクスチャロード
 	CMotionModel::Load();			// モデルロード
 	CMeshSphere::Load();			// メッシュ球のテクスチャロード
+	CUI::Load();					// UIテクスチャロード
 
 	// カメラの生成処理
 	m_pCamera = CCamera::Create();
@@ -71,13 +73,11 @@ void CTutorial::Init(void)
 	// メッシュ球の生成処理
 	m_pMeshSphere = CMeshSphere::Create();
 
-	//// プレイヤー生成
-	//m_pPlayer = CPlayer::Create();
-	//// プレイヤ位置設定
-	//m_pPlayer->SetPos(D3DXVECTOR3(0, 10, 0));
-
-	// メッシュフィールド生成
+	// メッシュフィールド生成処理
 	m_pMeshField = CMeshField::Create(INTEGER2(2, 2), D3DXVECTOR3(250.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+
+	// UI生成処理
+	m_pUI = CUI::Create();
 }
 
 //==================================================================================================================
@@ -93,6 +93,7 @@ void CTutorial::Uninit(void)
 
 	CMeshField::Unload();			// メッシュフィールドテクスチャアンロード
 	CMotionModel::Unload();			// プレイヤーテクスチャモデルアンロード
+	CUI::Unload();					// UIテクスチャアンロード
 
 	delete m_pLight;				// メモリ削除
 	m_pLight = nullptr;				// ポインタNULL

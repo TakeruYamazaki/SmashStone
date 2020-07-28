@@ -17,6 +17,7 @@
 // 前方宣言
 //==================================================================================================================
 class CScene2D;
+class CInputKeyboard;
 
 //==================================================================================================================
 //
@@ -38,6 +39,19 @@ public:
 		LOGOTYPE_MODE00,			// モード00
 		LOGOTYPE_MODE01,			// モード01
 		LOGOTYPE_MODEFREAM,			// モード枠線
+		LOGOTYPE_GEAR0,				// 歯車0
+		LOGOTYPE_CLOCK0,			// 時計土台0
+		LOGOTYPE_CLOCKHANDS0,		// 時計の針0
+		LOGOTYPE_CLOCKGEAR0,		// 時計の歯車0
+		LOGOTYPE_GEAR1,				// 歯車0
+		LOGOTYPE_CLOCK1,			// 時計土台0
+		LOGOTYPE_CLOCKHANDS1,		// 時計の針0
+		LOGOTYPE_CLOCKGEAR1,		// 時計の歯車0
+		LOGOTYPE_CHARAFULL,			// キャラクター全員
+		LOGOTYPE_1PCHARA,			// 1Pキャラクター
+		LOGOTYPE_2PCHARA,			// 2Pキャラクター
+		LOGOTYPE_1PCHARA_FREAM,		// 1Pキャラクター枠線
+		LOGOTYPE_2PCHARA_FREAM,		// 2Pキャラクター枠線
 		LOGOTYPE_MAX				// 最大
 	} UITYPE;
 
@@ -59,6 +73,9 @@ public:
 protected:
 
 private:
+	void TitleUpdate(CInputKeyboard *pInputKeyboard);	// タイトルの更新処理
+	void TutorialUpdate(CInputKeyboard *pInputKeyboard);// チュートリアルの更新処理
+
 	static LPDIRECT3DTEXTURE9 m_pTexture[LOGOTYPE_MAX];	// テクスチャ情報
 	static char *m_apFileName[LOGOTYPE_MAX];			// ロゴのファイル名
 
@@ -69,6 +86,7 @@ private:
 
 	int m_nCntBound;									// タイトルUIバウンドカウンタ
 	int m_nMode;										// モード番号
+	int m_nCharaNum[MAX_PLAYER];						// キャラ番号
 
 	float m_nCntUITitle0;								// タイトルUI用カウンタ0
 	float m_nCntUITitle1;								// タイトルUI用カウンタ1
