@@ -211,6 +211,7 @@
     <ClCompile Include="source\title.cpp" />
     <ClCompile Include="source\tutorial.cpp" />
     <ClCompile Include="source\UI.cpp" />
+    <ClCompile Include="source\UI_gameStart.cpp" />
     <ClCompile Include="source\UI_KO.cpp" />
     <ClCompile Include="source\wall.cpp" />
   </ItemGroup>
@@ -271,6 +272,7 @@
     <ClInclude Include="source\title.h" />
     <ClInclude Include="source\tutorial.h" />
     <ClInclude Include="source\UI.h" />
+    <ClInclude Include="source\UI_gameStart.h" />
     <ClInclude Include="source\UI_KO.h" />
     <ClInclude Include="source\wall.h" />
   </ItemGroup>

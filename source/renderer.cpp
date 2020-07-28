@@ -318,7 +318,8 @@ void CRenderer::Update(void)
 	CGame::GAMESTATE gameState = CGame::GetGameState();
 
 	// ゲーム状態がポーズじゃないとき
-	if (gameState != CGame::GAMESTATE_PAUSE)
+	if (gameState != CGame::GAMESTATE_PAUSE && 
+		gameState != CGame::GAMESTATE_KO)
 	{
 		// Sceneで管理するすべての更新処理
 		CScene::UpdateAll();

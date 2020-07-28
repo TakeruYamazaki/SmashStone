@@ -1,11 +1,11 @@
 //==================================================================================================================
 //
-// KOのUI処理 [ UI_KO.h ]
+// ゲーム開始時のUI処理 [ UI_gameStart.h ]
 // Author : KANAN NAGANAWA
 //
 //==================================================================================================================
-#ifndef _UI_KO_H_
-#define _UI_KO_H_
+#ifndef _UI_START_H_
+#define _UI_START_H_
 
 //==================================================================================================================
 // インクルードファイル
@@ -21,42 +21,38 @@
 // 前方宣言
 class CScene2D;
 
-class CUIKO
+class CUI_GameStart
 {
 public:
 	typedef enum
 	{
-		KOUITEX_K = 0,	// K
-		KOUITEX_O,		// O
-		KOUITEX_BACK,	// 背景
-		KOUI_MAX		// 最大数
-	} KO_TEX_TYPE;		// KOテクスチャのタイプ
+		GAMEUITEX_ROUND = 0,// Round
+		GAMEUITEX_1,		// 1
+		GAMEUITEX_2,		// 2
+		GAMEUITEX_3,		// 3
+		GAMEUITEX_FIGHT,	// Fight
+		GAMEUITEX_MAX		// 最大数
+	} GAMEUITEX_TYPE;		// ゲーム開始時のテクスチャのタイプ
 
-	CUIKO();	// コンストラクタ
-	~CUIKO();				// デストラクタ
+	CUI_GameStart();			// コンストラクタ
+	~CUI_GameStart();		// デストラクタ
 	void Init(void);		// 初期化処理
 	void Uninit(void);		// 終了処理
 	void Update(void);		// 更新処理
 	void Draw(void);		// 描画処理
 
-	static CUIKO *Create(void);		// 生成処理
-	static HRESULT Load(void);		// ロード
-	static void Unload(void);		// アンロード
+	static CUI_GameStart *Create(void);		// 生成処理
+	static HRESULT Load(void);				// ロード
+	static void Unload(void);				// アンロード
 
 protected:
 
 private:
-	void MoveUI(void);				// UIの移動
 	void CreateUI(int type);		// UIの生成
-	void NextFase(void) { m_nCntFase++; m_nCntAny = 0; }	// 次のフェーズに移行
-	static LPDIRECT3DTEXTURE9 m_pTexture[KOUI_MAX];	// テクスチャ情報
-	static CScene2D *m_pScene2D[KOUI_MAX];			// テクスチャ数分の2DUI
-	static char *m_apFileName[KOUI_MAX];			// テクスチャのファイル名
-	static D3DXVECTOR3 m_sizeBegin[KOUI_MAX];		// 最初のテクスチャのサイズ
-	static D3DXVECTOR3 m_sizeEnd[KOUI_MAX];			// 最後のテクスチャのサイズ
-	static D3DXVECTOR3 m_posBegin[KOUI_MAX];		// 最初のテクスチャの位置
-	static D3DXVECTOR3 m_posEnd[KOUI_MAX];			// 最後のテクスチャの位置
-	int m_nCntFase;									// テクスチャ生成の順序
-	int m_nCntAny;									// UIの移動や表示などに使う
+	static LPDIRECT3DTEXTURE9 m_pTexture[GAMEUITEX_MAX];	// テクスチャ情報
+	static CScene2D *m_pScene2D[GAMEUITEX_MAX];				// テクスチャ数分の2DUI
+	static char *m_apFileName[GAMEUITEX_MAX];				// テクスチャのファイル名
+	int m_nCntFase;											// テクスチャ生成の順序
+	int m_nCntAny;											// UIの移動や表示などに使う
 };
 #endif

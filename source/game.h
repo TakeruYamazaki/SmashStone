@@ -11,6 +11,8 @@
 // インクルードファイル
 //==================================================================================================================
 #include "main.h"
+#include "Mylibrary.h"
+#include "kananlibrary.h"
 #include <memory>	// スマートポインタの使用に必要
 
 //==================================================================================================================
@@ -50,11 +52,13 @@ public:
 	typedef enum
 	{
 		GAMESTATE_NONE = 0,		// 何もしていない状態
+		GAMESTATE_BEFORE,		// ゲームの前
 		GAMESTATE_NORMAL,		// 通常状態
 		GAMESTATE_PAUSE,		// ポーズ状態
 		GAMESTATE_START_OVER,	// 初めからやり直す
 		GAMESTATE_BREAK,		// ゲーム中断
 		GAMESTATE_KO,			// KO演出
+		GAMESTATE_KO_AFTER,		// KO後
 		GAMESTATE_NEXTROUND,	// 次のラウンドへ
 		GAMESTATE_RESULT,		// リザルト
 		GAMESTATE_END,			// ゲームの終了
@@ -81,7 +85,6 @@ public:
 	static int GetNumStone(void)				{ return m_nNumStone; }			// ストーンの数を取得
 	static CWall *GetWall(void)					{ return m_pWall; }				// 壁の取得
 	static CObjectManager *GetObjMana(void)		{ return m_pObjMana; }			// オブジェクトマネージャーを取得
-
 	static CPolygonCollider* GetpolyColly(int nIndex) { return m_pPolyColli[nIndex]; }
 
 	static void AppearStone(void);				// どこからでも呼び出せるストーン出現
@@ -89,28 +92,35 @@ public:
 protected:
 
 private:
-	void SwitchPause(void);						// ポーズの切り替え
-	void KOAction(void);						// KO演出
-	void DecideCreateStone(void);				// ストーンを生成するか決める
-	static int DecideRandomPos(void);			// 生成位置をランダムで決める
-	static GAMESTATE m_gameState;				// ゲーム状態
-	static CPlayer *m_pPlayer[MAX_PLAYER];		// プレイヤーの配列ポインタ
-	static CMeshField *m_pMeshField;			// メッシュフィールドの情報ポインタ
-	static CCamera *m_pCamera;					// カメラの情報ポインタ
-	static CLight *m_pLight;					// ライトの情報ポインタ
-	static CLogo *m_pLogo;						// ロゴの情報ポインタ
-	static CPause *m_pPause;					// ポーズの情報ポインタ
-	static CMeshSphere *m_pMeshSphere;			// メッシュ球の情報ポインタ
-	static CTime *m_pTime;						// タイムの情報ポインタ
-	static CWall *m_pWall;						// 壁のポインタ
-	static int m_nCounterGameState;				// ゲームの状態管理カウンター
-	static int m_nNumStone;						// 生成したストーンの数
-	static int m_nCntDecide;					// ストーン生成のタイミングを決めるカウンタ
-	static D3DXVECTOR3 m_stonePos[STONE_POS];	// ストーンの生成場所
-	static bool m_bSetPos[STONE_POS];			// ストーンが生成されているか
-	static CObjectManager *m_pObjMana;			// オブジェクトマネージャーのポインタ
+	void GameBefore(void);							// ゲームの前の更新
+	void GameNormal(void);							// 通常の更新
+	void GamePause(void);							// ポーズの更新
+	void GameKO(void);								// KOの更新
+	void GameKOAfter(void);							// KOの後の更新
+	void SwitchPause(void);							// ポーズの切り替え
+	void NextRound(void);							// 次のラウンドへ
+	void DecideCreateStone(void);					// ストーンを生成するか決める
+	static int DecideRandomPos(void);				// 生成位置をランダムで決める
+	static GAMESTATE m_gameState;					// ゲーム状態
+	static CPlayer *m_pPlayer[MAX_PLAYER];			// プレイヤーの配列ポインタ
+	static CMeshField *m_pMeshField;				// メッシュフィールドの情報ポインタ
+	static CCamera *m_pCamera;						// カメラの情報ポインタ
+	static CLight *m_pLight;						// ライトの情報ポインタ
+	static CLogo *m_pLogo;							// ロゴの情報ポインタ
+	static CPause *m_pPause;						// ポーズの情報ポインタ
+	static CMeshSphere *m_pMeshSphere;				// メッシュ球の情報ポインタ
+	static CTime *m_pTime;							// タイムの情報ポインタ
+	static CWall *m_pWall;							// 壁のポインタ
+	static int m_nCounterGameState;					// ゲームの状態管理カウンター
+	static int m_nNumStone;							// 生成したストーンの数
+	static int m_nCntDecide;						// ストーン生成のタイミングを決めるカウンタ
+	static D3DXVECTOR3 m_stonePos[STONE_POS];		// ストーンの生成場所
+	static bool m_bSetPos[STONE_POS];				// ストーンが生成されているか
+	static CObjectManager *m_pObjMana;				// オブジェクトマネージャーのポインタ
 	static CPolygonCollider* m_pPolyColli[POLYCOLLI_USE_TYPE];		// ポリゴンコライダーのポインタ
-	static CUIKO *m_pUIKO;						// KOのポインタ
-	D3DXMATRIX  m_mtxWorld;						// マトリックス
+	static CUIKO *m_pUIKO;							// KOのポインタ
+	static NUM_PLAYER m_winPlayer;					// 勝利したプレイヤー
+	INTEGER2 m_roundPoint;							// ラウンドのポイント数
+	int m_nRound;									// 現在のラウンド
 };
 #endif

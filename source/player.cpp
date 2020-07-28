@@ -37,10 +37,12 @@
 // マクロ定義
 //==================================================================================================================
 #define VALUE_MOVE_PLAYER	(1.0f)	// プレイヤーの移動値
-#define VALUE_JUMP			(5.0f)	// ジャンプ力の値
+#define VALUE_JUMP			(10.0f)	// ジャンプ力の値
 
 #define POS_1P	(D3DXVECTOR3(0.0f, 0.0f, 100.0f))	// 1Pプレイヤーの初期座標
 #define POS_2P	(D3DXVECTOR3(0.0f, 0.0f, -100.0f))	// 2Pプレイヤーの初期座標
+
+#define HEIGHT_CEILING	(400.0f)			// 天井の高さ
 
 #define BLOWAWAYFORCE_SMASH		(100.0f)	// 吹き飛ばし力(スマッシュ攻撃)
 #define BLOWAWAYFORCE_NORMAL	(8.0f)		// 吹き飛ばし力(通常攻撃)
@@ -100,7 +102,8 @@ void CPlayer::Uninit(void)
 //==================================================================================================================
 void CPlayer::Update(void)
 {
-	if (m_bBlowAway == false && m_bDaunted == false)
+	if (m_bBlowAway == false && m_bDaunted == false &&
+		CManager::GetRenderer()->GetGame()->GetGameState() == CGame::GAMESTATE_NORMAL)
 		// 操作
 		Control();
 
@@ -194,7 +197,8 @@ void CPlayer::Collision(void)
 	// 当たり判定位置の更新
 	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
 	// 当たり判定
-	C3DBoxCollider::CollisionBox(this->m_nBoxColliderID, this->m_pos, m_move);
+	if (C3DBoxCollider::CollisionBox(this->m_nBoxColliderID, this->m_pos, m_move))
+		m_bJump = false;
 
 	// 壁の取得
 	CWall *pWall = CGame::GetWall();
@@ -252,9 +256,9 @@ void CPlayer::Collision(void)
 	}
 
 	// 高さ制限
-	if (m_pos.y > 200.0f)
+	if (m_pos.y > HEIGHT_CEILING)
 	{
-		m_pos.y = 200.0f;
+		m_pos.y = HEIGHT_CEILING;
 		m_move.y *= -1;
 	}
 }

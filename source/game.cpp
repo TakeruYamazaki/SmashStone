@@ -38,11 +38,13 @@
 //==================================================================================================================
 //	マクロ定義
 //==================================================================================================================
+#define MAX_ROUND			(3)										// 最大ラウンド数
 #define PLAYER_START_POS_X 390.0f									// プレイヤーの初期位置X
 #define PLAYER_START_POS_Z -585.0f									// プレイヤーの初期位置Z
 #define RESPAWN_SIZE 0.000001f										// リスポーンモデルの大きさ
 
-#define TIME_CREATE_STONE (5 * ONE_SECOND_FPS)						// ストーンを生成する時間
+#define TIME_CREATE_STONE	(5 * ONE_SECOND_FPS)					// ストーンを生成する時間
+#define TIME_KO_AFTER		(60)									// KOの後の時間
 
 //==================================================================================================================
 //	静的メンバ変数宣言
@@ -61,6 +63,7 @@ CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
 int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 int					CGame::m_nNumStone				= 0;							// 生成したストーンの数
 int					CGame::m_nCntDecide				= 0;							// ストーン生成のタイミングを決めるカウンタ
+NUM_PLAYER			CGame::m_winPlayer				= NUM_PLAYER::PLAYER_NONE;		// 勝利したプレイヤー
 CObjectManager		*CGame::m_pObjMana				= nullptr;						// オブジェクトマネージャーのポインタ
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ストーンの生成場所に生成されているか
 D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
@@ -132,6 +135,8 @@ void CGame::Init(void)
 	m_nCounterGameState = 0;				// ゲームの状態管理カウンターを0にする
 	m_nNumStone			= 0;				// 値を初期化
 	m_nCntDecide		= 0;				// 値を初期化
+	m_nRound			= 0;
+	m_roundPoint		= INTEGER2(0, 0);
 
 	for (int nCnt = 0; nCnt < STONE_POS; nCnt++)
 	{
@@ -185,46 +190,28 @@ void CGame::Uninit(void)
 //==================================================================================================================
 void CGame::Update(void)
 {
-	// キーボード取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
-
-	// ゲームの状態取得
-	m_gameState = GetGameState();
-
+	// 開始前
+	if (m_gameState == GAMESTATE_BEFORE)
+		GameBefore();
+	// 通常のとき
+	if (m_gameState == GAMESTATE_NORMAL)
+		GameNormal();
 	// ゲーム状態がポーズのとき
-	if (m_gameState == GAMESTATE_PAUSE)
-	{
-		// ポーズの更新処理
-		m_pPause->Update();
-
-		// リトライ
-		if (m_gameState == GAMESTATE_START_OVER)
-			CFade::SetFade(CRenderer::MODE_GAME);
-		// タイトルに戻る
-		else if (m_gameState == GAMESTATE_BREAK)
-			CFade::SetFade(CRenderer::MODE_TITLE);
-	}
-	else
-	{
-		// カメラの更新処理
-		m_pCamera->Update();
-
-		// ライトの更新処理
-		m_pLight->Update();
-
-		// ストーンを生成するか決める
-		DecideCreateStone();
-	}
-
-	KOAction();
-
-	// ポーズの切り替え
-	if (pInputKeyboard->GetKeyboardTrigger(DIK_P))
-		SwitchPause();
+	else if (m_gameState == GAMESTATE_PAUSE)
+		GamePause();
+	// KOのとき
+	else if (m_gameState == GAMESTATE_KO)
+		GameKO();
+	// KOの後
+	else if (m_gameState == GAMESTATE_KO_AFTER)
+		GameKOAfter();
+	// 次のラウンド
+	else if (m_gameState == GAMESTATE_NEXTROUND)
+		NextRound();
 
 #ifdef _DEBUG
 	// キーボードの[0]を押したとき
-	if (pInputKeyboard->GetKeyboardTrigger(DIK_RETURN))
+	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_RETURN))
 	{
 		// フェード取得
 		CFade::FADE fade = CFade::GetFade();
@@ -287,6 +274,90 @@ void CGame::AppearStone(void)
 }
 
 //==================================================================================================================
+//	ゲームの前の更新
+//==================================================================================================================
+void CGame::GameBefore(void)
+{
+}
+
+//==================================================================================================================
+//	通常の更新
+//==================================================================================================================
+void CGame::GameNormal(void)
+{
+	// カメラの更新処理
+	m_pCamera->Update();
+
+	// ライトの更新処理
+	m_pLight->Update();
+
+	// ストーンを生成するか決める
+	DecideCreateStone();
+
+	// どちらかのプレイヤーのライフが0
+	if (GetPlayer(PLAYER_ONE)->GetLife() <= 0 ||
+		GetPlayer(PLAYER_TWO)->GetLife() <= 0)
+		// KO
+		m_gameState = GAMESTATE_KO;
+
+	// ポーズの切り替え
+	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_P))
+		SwitchPause();
+}
+
+//==================================================================================================================
+//	ポーズの更新
+//==================================================================================================================
+void CGame::GamePause(void)
+{
+	// ポーズの更新処理
+	m_pPause->Update();
+
+	// リトライ
+	if (m_gameState == GAMESTATE_START_OVER)
+		CFade::SetFade(CRenderer::MODE_GAME);
+	// タイトルに戻る
+	else if (m_gameState == GAMESTATE_BREAK)
+		CFade::SetFade(CRenderer::MODE_TITLE);
+}
+
+//==================================================================================================================
+//	KOの更新
+//==================================================================================================================
+void CGame::GameKO(void)
+{
+	// KOのUIを生成
+	if (!m_pUIKO)
+		m_pUIKO = CUIKO::Create();
+
+	// KOの更新
+	if (m_pUIKO)
+		m_pUIKO->Update();
+}
+
+//==================================================================================================================
+//	KOの後の更新
+//==================================================================================================================
+void CGame::GameKOAfter(void)
+{
+	// カウンタの加算
+	static int nCntAfter = 0;
+	nCntAfter++;
+	// 一定時間で次へ
+	if (nCntAfter >= TIME_KO_AFTER && 
+		!m_pPlayer[PLAYER_ONE]->GetbJump() && !m_pPlayer[PLAYER_TWO]->GetbJump())
+	{
+		m_gameState = GAMESTATE_NEXTROUND;
+		return;
+	}
+
+	// カメラの更新処理
+	m_pCamera->Update();
+	// ライトの更新処理
+	m_pLight->Update();
+}
+
+//==================================================================================================================
 //	ポーズの切り替え
 //==================================================================================================================
 void CGame::SwitchPause(void)
@@ -309,39 +380,33 @@ void CGame::SwitchPause(void)
 }
 
 //==================================================================================================================
-//	KO演出
+//	次のラウンドへ
 //==================================================================================================================
-void CGame::KOAction(void)
+void CGame::NextRound(void)
 {
-	// どちらかのプレイヤーのライフが0
-	if ((GetPlayer(PLAYER_ONE)->GetLife() <= 0 ||
-		GetPlayer(PLAYER_TWO)->GetLife() <= 0) &&
-		m_gameState != GAMESTATE_END)
-		// KO
-		m_gameState = GAMESTATE_KO;
-
-	// KOでない
-	if (m_gameState != GAMESTATE_KO)
+	// nullcheck
+	if (m_pUIKO)
 	{
-		// nullcheck
-		if (m_pUIKO)
-		{
-			// 破棄
-			m_pUIKO->Uninit();
-			delete m_pUIKO;
-			m_pUIKO = nullptr;
-		}
-		// 処理を終える
-		return;
+		// 破棄
+		m_pUIKO->Uninit();
+		delete m_pUIKO;
+		m_pUIKO = nullptr;
 	}
 
-	// KOのUIを生成
-	if (!m_pUIKO)
-		m_pUIKO = CUIKO::Create();
+	// ラウンド数を加算
+	m_nRound++;
+	// プレイヤーのラウンドポイントを加算
+	if (GetPlayer(PLAYER_ONE)->GetLife() > 0)
+		m_roundPoint.nX++;
+	if (GetPlayer(PLAYER_TWO)->GetLife() > 0)
+		m_roundPoint.nY++;
 
-	// KOの更新
-	if (m_pUIKO)
-		m_pUIKO->Update();
+	// どちらかが最大まで得点したら終了
+	if (m_roundPoint.nX >= (int)(MAX_ROUND / 2 + 0.5f) ||
+		m_roundPoint.nY >= (int)(MAX_ROUND / 2 + 0.5f))
+		m_gameState = GAMESTATE_RESULT;
+	else
+		m_gameState = GAMESTATE_BEFORE;
 }
 
 //==================================================================================================================
