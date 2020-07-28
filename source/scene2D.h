@@ -43,7 +43,7 @@ public:
 	void SetCol(D3DXCOLOR col);															// Fİ’èˆ—
 	void SetPos(D3DXVECTOR3 pos);														// ˆÊ’uİ’èˆ—
 	void SetSize(D3DXVECTOR3 size);														// ‘å‚«‚³İ’èˆ—
-	void SetRot(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fAngle, float fLength);			// ‰ñ“]İ’èˆ—
+	void SetRot(D3DXVECTOR3 pos, float fAngle, D3DXVECTOR3 diff);						// ‰ñ“]İ’èˆ—
 	void SetbShow(bool bShow) { m_bShow = bShow; }										// •`‰æ‚·‚é‚©İ’è
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; }											// ˆÊ’uæ“¾ˆ—
