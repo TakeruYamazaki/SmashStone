@@ -87,14 +87,22 @@ private:
 	int m_nCntBound;									// タイトルUIバウンドカウンタ
 	int m_nMode;										// モード番号
 	int m_nCharaNum[MAX_PLAYER];						// キャラ番号
+	int m_nCntRot[MAX_PLAYER];							// 時計の針回転用カウンタ
+	int m_nCntWait[MAX_PLAYER];							// 待機時間用カウンタ
+	int m_nCntMove[MAX_PLAYER];							// 枠線移動用カウンタ
+	int m_nCntRotGear[MAX_PLAYER];						// 歯車の回転用カウンタ
 
-	float m_nCntUITitle0;								// タイトルUI用カウンタ0
-	float m_nCntUITitle1;								// タイトルUI用カウンタ1
-	float m_nCntEnter;									// エンター用カウンタ
-	float m_nCntUISign;									// 看板用カウンタ
+	float m_fCntUITitle0;								// タイトルUI用カウンタ0
+	float m_fCntUITitle1;								// タイトルUI用カウンタ1
+	float m_fCntEnter;									// エンター用カウンタ
+	float m_fCntUISign;									// 看板用カウンタ
+	float m_fPosMove[MAX_PLAYER];						// 位置移動用カウンタ
+	float m_fPos[MAX_PLAYER];							// 現在の枠線テクスチャ位置X
+	float m_fPosDiff[MAX_PLAYER];						// 目標の枠線テクスチャ位置X
 
 	bool m_bUITitle0;									// タイトルを動かすかどうか0
 	bool m_bUITitle1;									// タイトルを動かすかどうか1
 	bool m_bUIEnter;									// エンターのα値用変数
+	bool m_bUIClockHands[MAX_PLAYER];					// 時計の針が動いているかどうか
 };
 #endif

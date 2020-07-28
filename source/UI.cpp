@@ -56,6 +56,8 @@
 #define CHARAFULLUI_SIZE_X 720						// 全員キャラUI大きさX
 #define CHARAFULLUI_SIZE_Y 200						// 全員キャラUI大きさY
 #define CHARAFREAMUI_SIZE_X 180						// キャラUI大きさX
+#define GEAR_POS_Y 530								// 歯車の位置Y
+#define CLOCK_HANDS_DIFF 0.1f						// 回転の初期値
 
 //==================================================================================================================
 // 静的メンバー変数の初期化
@@ -78,9 +80,9 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/clock.png" },		// 時計土台1
 	{ "data/TEXTURE/Clock hands.png" },	// 時計の針1
 	{ "data/TEXTURE/clock gear.png" },	// 時計の歯車1
-	{ "data/TEXTURE/FULLchara.jpg" },	// キャラクター全員
-	{ "data/TEXTURE/FULLchara.jpg" },	// キャラクター全員
-	{ "data/TEXTURE/FULLchara.jpg" },	// キャラクター全員
+	{ "data/TEXTURE/FULLchara.png" },	// キャラクター全員
+	{ "data/TEXTURE/FULLchara.png" },	// キャラクター全員
+	{ "data/TEXTURE/FULLchara.png" },	// キャラクター全員
 	{ "data/TEXTURE/1Pchara.png" },		// 1Pキャラクター
 	{ "data/TEXTURE/2Pchara.png" },		// 2Pキャラクター
 };
@@ -110,18 +112,27 @@ CUI::~CUI()
 //==================================================================================================================
 void CUI::Init(void)
 {
-	TitlePos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// タイトルの位置
+	TitlePos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);// タイトルの位置
 	m_nCntBound = 0;			// タイトルUIバウンドカウンタ
 	m_nMode = 0;				// モード番号
 	m_nCharaNum[0] = 0;			// キャラ番号
 	m_nCharaNum[1] = 3;			// キャラ番号
-	m_nCntUITitle0 = 0;			// タイトルUI用カウンタ0
-	m_nCntUITitle1 = 0;			// タイトルUI用カウンタ1
-	m_nCntEnter = 0;			// エンター用カウンタ
-	m_nCntUISign = 0;			// 看板用カウンタ
+	m_nCntRot[MAX_PLAYER] = 0;	// 時計の針の回転用カウンタ
+	m_nCntWait[MAX_PLAYER] = 0;	// 待機時間用カウンタ
+	m_nCntMove[MAX_PLAYER] = 0;	// 移動用カウンタ
+	m_nCntRotGear[MAX_PLAYER] = 0;// 歯車の回転用カウンタ
+	m_fCntUITitle0 = 0;			// タイトルUI用カウンタ0
+	m_fCntUITitle1 = 0;			// タイトルUI用カウンタ1
+	m_fCntEnter = 0;			// エンター用カウンタ
+	m_fCntUISign = 0;			// 看板用カウンタ
+	m_fPosMove[MAX_PLAYER] = 0;	// 位置移動変数
+	m_fPos[0] = 370;			// 現在の枠線テクスチャの位置X
+	m_fPos[1] = 910;			// 現在の枠線テクスチャの位置X
+	m_fPosDiff[MAX_PLAYER] = 0;	// 前回の枠線テクスチャの位置X
 	m_bUITitle0 = false;		// タイトルを動かすかどうか
 	m_bUITitle1 = false;		// タイトルを動かすかどうか
 	m_bUIEnter = false;			// エンターのα値用変数
+	m_bUIClockHands[MAX_PLAYER] = false;// 時計の針が動いたかどうか0
 
 	// ロゴの最大枚数カウント
 	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
@@ -290,8 +301,8 @@ void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
 		if (!bModeNext)
 		{
 			// タイトルUI
-			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + TitlePos.y, 0.0f), TITLEUI_BEGIN_X + m_nCntUITitle0 - m_nCntUITitle1,
-				TITLEUI_BEGIN_Y + m_nCntUITitle0 + m_nCntUITitle1, LOGOTYPE_TITLE, NORMAL_COLOR);
+			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + TitlePos.y, 0.0f), TITLEUI_BEGIN_X + m_fCntUITitle0 - m_fCntUITitle1,
+				TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1, LOGOTYPE_TITLE, NORMAL_COLOR);
 
 			// バウンドカウントが規定値以下のとき
 			if (m_nCntBound < TITLEUI_BOUND_COUNT)
@@ -300,7 +311,7 @@ void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
 				if (!m_bUITitle0)
 				{
 					// タイトルUIの縦の長さが規定値以下のとき
-					if (TITLEUI_BEGIN_Y + m_nCntUITitle0 <= TITLEUI_VALUE_Y)
+					if (TITLEUI_BEGIN_Y + m_fCntUITitle0 <= TITLEUI_VALUE_Y)
 					{
 						// タイトルを動かす状態にする
 						m_bUITitle0 = true;
@@ -308,19 +319,19 @@ void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
 					else
 					{
 						// タイトルカウンタ減算
-						m_nCntUITitle0 -= TITLEUI_SMALL_SPEED;
+						m_fCntUITitle0 -= TITLEUI_SMALL_SPEED;
 					}
 				}
 				else
 				{// タイトルを動かしていいとき
 				 // タイトルUIの縦の長さが[360]以上のとき
-					if (TITLEUI_BEGIN_Y + m_nCntUITitle0 + m_nCntUITitle1 >= TITLEUI_MAXSIZE_VALUE_Y)
+					if (TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1 >= TITLEUI_MAXSIZE_VALUE_Y)
 					{
 						// タイトルを最大まで拡大させた
 						m_bUITitle1 = true;
 
 					}
-					else if (TITLEUI_BEGIN_Y + m_nCntUITitle0 + m_nCntUITitle1 <= TITLEUI_MINSIZE_VALUE_Y)
+					else if (TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1 <= TITLEUI_MINSIZE_VALUE_Y)
 					{// タイトルUIの縦の長さが[330]以下のとき
 					 // タイトルを最小まで拡小させた
 						m_bUITitle1 = false;
@@ -330,12 +341,12 @@ void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
 					if (m_bUITitle1)
 					{
 						// タイトルカウンタ加算
-						m_nCntUITitle1 -= TITLEUI_BOUND_SPEED;
+						m_fCntUITitle1 -= TITLEUI_BOUND_SPEED;
 					}
 					else
 					{// タイトルを最小まで拡小させたとき
 					 // タイトルカウンタ減算
-						m_nCntUITitle1 += TITLEUI_BOUND_SPEED;
+						m_fCntUITitle1 += TITLEUI_BOUND_SPEED;
 					}
 
 					// タイトルUIバウンドカウンタ加算
@@ -349,15 +360,15 @@ void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
 				{
 					// エンターUI
 					SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, ENTERUI_POS_Y, 0.0f), ENTERUI_SIZE_X, ENTERUI_SIZE_Y,
-						LOGOTYPE_ENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f + m_nCntEnter));
+						LOGOTYPE_ENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f + m_fCntEnter));
 
 					// エンターUIのα値が1.0以上のとき
-					if (1.0f + m_nCntEnter >= 1.0f)
+					if (1.0f + m_fCntEnter >= 1.0f)
 					{
 						// エンター用α値を減らす状態にする
 						m_bUIEnter = true;
 					}
-					else if (1.0f + m_nCntEnter <= 0.0f)
+					else if (1.0f + m_fCntEnter <= 0.0f)
 					{
 						// エンター用α値を増やす状態にする
 						m_bUIEnter = false;
@@ -367,12 +378,12 @@ void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
 					if (m_bUIEnter)
 					{
 						// カウンタ減算
-						m_nCntEnter -= ENTERUI_ALPHA;
+						m_fCntEnter -= ENTERUI_ALPHA;
 					}
 					else
 					{// エンターUIを増やす状態のとき
 					 // カウンタ加算
-						m_nCntEnter += ENTERUI_ALPHA;
+						m_fCntEnter += ENTERUI_ALPHA;
 					}
 				}
 				else
@@ -385,7 +396,7 @@ void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
 		else
 		{
 			// タイトルUI
-			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, TITLEUI_FINISH_Y + m_nCntUISign / 5, 0.0f), TITLEUI_LAST_X,
+			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, TITLEUI_FINISH_Y + m_fCntUISign / 5, 0.0f), TITLEUI_LAST_X,
 				TITLEUI_VALUE_Y, LOGOTYPE_TITLE, NORMAL_COLOR);
 
 			// エンターUI
@@ -393,30 +404,30 @@ void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
 				LOGOTYPE_ENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 
 			// 看板UI
-			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SIGNUI_BEGINPOS_Y + m_nCntUISign, 0.0f), SIGNUI_SIZE_X, SIGNUI_SIZE_Y, LOGOTYPE_SIGN, NORMAL_COLOR);
+			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SIGNUI_BEGINPOS_Y + m_fCntUISign, 0.0f), SIGNUI_SIZE_X, SIGNUI_SIZE_Y, LOGOTYPE_SIGN, NORMAL_COLOR);
 
 			// モード00UI
-			SetUI(D3DXVECTOR3(MODE00UI_BEGINPOS_X, MODEUI_BEGINPOS_Y + m_nCntUISign, 0.0f), MODEUI_SIZE_X, MODEUI_SIZE_Y, LOGOTYPE_MODE00, NORMAL_COLOR);
+			SetUI(D3DXVECTOR3(MODE00UI_BEGINPOS_X, MODEUI_BEGINPOS_Y + m_fCntUISign, 0.0f), MODEUI_SIZE_X, MODEUI_SIZE_Y, LOGOTYPE_MODE00, NORMAL_COLOR);
 			// モード01UI
-			SetUI(D3DXVECTOR3(MODE01UI_BEGINPOS_X, MODEUI_BEGINPOS_Y + m_nCntUISign, 0.0f), MODEUI_SIZE_X, MODEUI_SIZE_Y, LOGOTYPE_MODE01, NORMAL_COLOR);
+			SetUI(D3DXVECTOR3(MODE01UI_BEGINPOS_X, MODEUI_BEGINPOS_Y + m_fCntUISign, 0.0f), MODEUI_SIZE_X, MODEUI_SIZE_Y, LOGOTYPE_MODE01, NORMAL_COLOR);
 
 			// 看板UIが規定値より大きい時
-			if (SIGNUI_BEGINPOS_Y + m_nCntUISign > SIGNUI_LASTPOS_Y)
+			if (SIGNUI_BEGINPOS_Y + m_fCntUISign > SIGNUI_LASTPOS_Y)
 			{
 				// 看板用カウンタ減算
-				m_nCntUISign -= SIGNUI_MOVE_SPEED;
+				m_fCntUISign -= SIGNUI_MOVE_SPEED;
 			}
 
 			// モード番号が[0]のとき
 			if (m_nMode == 0)
 			{
 				// モード枠線UI
-				SetUI(D3DXVECTOR3(MODE00UI_BEGINPOS_X, MODEUI_BEGINPOS_Y + m_nCntUISign, 0.0f), MODEUI_SIZE_X, MODEUI_SIZE_Y, LOGOTYPE_MODEFREAM, NORMAL_COLOR);
+				SetUI(D3DXVECTOR3(MODE00UI_BEGINPOS_X, MODEUI_BEGINPOS_Y + m_fCntUISign, 0.0f), MODEUI_SIZE_X, MODEUI_SIZE_Y, LOGOTYPE_MODEFREAM, NORMAL_COLOR);
 			}
 			else if (m_nMode == 1)
 			{
 				// モード枠線UI
-				SetUI(D3DXVECTOR3(MODE01UI_BEGINPOS_X, MODEUI_BEGINPOS_Y + m_nCntUISign, 0.0f), MODEUI_SIZE_X, MODEUI_SIZE_Y, LOGOTYPE_MODEFREAM, NORMAL_COLOR);
+				SetUI(D3DXVECTOR3(MODE01UI_BEGINPOS_X, MODEUI_BEGINPOS_Y + m_fCntUISign, 0.0f), MODEUI_SIZE_X, MODEUI_SIZE_Y, LOGOTYPE_MODEFREAM, NORMAL_COLOR);
 			}
 
 			// キーボードの[→]を押したとき
@@ -448,11 +459,29 @@ void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
 		{
 			// キャラ番号減算
 			m_nCharaNum[0] -= 1;
+
+			// 時計の針が動いていい状態にする
+			m_bUIClockHands[0] = true;
+
+			// 位置移動用カウンタ初期化
+			m_fPosMove[0] = 0;
+
+			// 歯車の回転用カウンタ初期化
+			m_nCntRotGear[0] = 0;
 		}
 		else if (pInputKeyboard->GetKeyboardTrigger(DIK_D))
 		{// キーボードの[D]が押されたとき
 			// キャラ番号加算
 			m_nCharaNum[0] += 1;
+
+			// 時計の針が動いていい状態にする
+			m_bUIClockHands[0] = true;
+
+			// 位置移動用カウンタ初期化
+			m_fPosMove[0] = 0;
+
+			// 歯車の回転用カウンタ初期化
+			m_nCntRotGear[0] = 0;
 		}
 
 		// キーボードの[←]が押されたとき
@@ -460,26 +489,115 @@ void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
 		{
 			// キャラ番号減算
 			m_nCharaNum[1] -= 1;
+
+			// 時計の針が動いていい状態にする
+			m_bUIClockHands[1] = true;
+
+			// 位置移動用カウンタ初期化
+			m_fPosMove[1] = 0;
 		}
 		else if (pInputKeyboard->GetKeyboardTrigger(DIK_RIGHTARROW))
 		{// キーボードの[→]が押されたとき
 			// キャラ番号加算
 			m_nCharaNum[1] += 1;
+
+			// 時計の針が動いていい状態にする
+			m_bUIClockHands[1] = true;
+
+			// 位置移動用カウンタ初期化
+			m_fPosMove[1] = 0;
 		}
 
 		// 時計土台0UI
 		SetUI(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCK0, NORMAL_COLOR);
 		// 時計の針0UI
 		SetUI(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCKHANDS0, NORMAL_COLOR);
+		// 時計の針回転設定
+		m_pScene2D[LOGOTYPE_CLOCKHANDS0]->SetRot(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0), -D3DX_PI / 6 - m_nCntRot[0] * CLOCK_HANDS_DIFF, D3DXVECTOR3(0, 0, 0));
 		// 時計の針0UI
 		SetUI(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCKGEAR0, NORMAL_COLOR);
+
+		// 時計の針が動いていい状態のとき
+		if (m_bUIClockHands[0])
+		{
+			// 時計の針が最大回転値より大きいとき
+			if ((-D3DX_PI / 6) * 5 < (-D3DX_PI / 6) - m_nCntRot[0] * CLOCK_HANDS_DIFF)
+			{
+				// 回転させていく
+				m_nCntRot[0]++;
+			}
+			else
+			{
+				// 待機時間加算
+				m_nCntWait[0]++;
+
+				// 待機時間が0.5秒経ったとき
+				if (m_nCntWait[0] >= 30)
+				{
+					m_bUIClockHands[0] = false;
+				}
+			}
+		}
+		else
+		{
+			// 待機時間用カウンタ初期化
+			m_nCntWait[0] = 0;
+
+			// 回転させていく
+			m_nCntRot[0]--;
+
+			// 回転用カウンタが[0]以下になったとき
+			if (m_nCntRot[0] <= 0)
+			{
+				// 回転用カウンタ初期化
+				m_nCntRot[0] = 0;
+			}
+		}
 
 		// 時計土台1UI
 		SetUI(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCK1, NORMAL_COLOR);
 		// 時計の針1UI
 		SetUI(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCKHANDS1, NORMAL_COLOR);
+		m_pScene2D[LOGOTYPE_CLOCKHANDS1]->SetRot(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0), D3DX_PI / 6 + m_nCntRot[1] * CLOCK_HANDS_DIFF, D3DXVECTOR3(0, 0, 0));
 		// 時計の針1UI
 		SetUI(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCKGEAR1, NORMAL_COLOR);
+
+		// 時計の針が動いていい状態のとき
+		if (m_bUIClockHands[1])
+		{
+			// 時計の針が最大回転値より大きいとき
+			if ((D3DX_PI / 6) * 5 > (D3DX_PI / 6) + m_nCntRot[1] * CLOCK_HANDS_DIFF)
+			{
+				// 回転させていく
+				m_nCntRot[1]++;
+			}
+			else
+			{
+				// 待機時間加算
+				m_nCntWait[1]++;
+
+				// 待機時間が0.5秒経ったとき
+				if (m_nCntWait[1] >= 30)
+				{
+					m_bUIClockHands[1] = false;
+				}
+			}
+		}
+		else
+		{
+			// 待機時間用カウンタ初期化
+			m_nCntWait[1] = 0;
+
+			// 回転させていく
+			m_nCntRot[1]--;
+
+			// 回転用カウンタが[0]以下になったとき
+			if (m_nCntRot[1] <= 0)
+			{
+				// 回転用カウンタ初期化
+				m_nCntRot[1] = 0;
+			}
+		}
 
 		// 最大人数までカウント
 		for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
@@ -499,17 +617,64 @@ void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
 			}
 		}
 
+		// 目標位置格納変数
+		m_fPosDiff[0] = 370 + (float)m_nCharaNum[0] * CHARAFREAMUI_SIZE_X;
+
+		// 計算用変数
+		float pos0 = ((m_fPosDiff[0] - m_fPos[0]) / 60) * m_fPosMove[0];
+		
+		// 位置が同じじゃないとき
+		if (m_fPosDiff[0] != m_fPos[0])
+		{
+			// 位置移動用カウンタ加算
+			m_fPosMove[0]++;
+
+			// 位置が正のとき
+			if (pos0 > 0)
+			{
+				// 回転設定
+				m_pScene2D[LOGOTYPE_GEAR0]->SetRot(D3DXVECTOR3(m_fPos[0] + pos0, GEAR_POS_Y, 0), m_nCntRotGear[0] * 0.5f, D3DXVECTOR3(0, 0, 0));
+			}
+			else
+			{// 位置が負のとき
+				// 回転設定
+				m_pScene2D[LOGOTYPE_GEAR0]->SetRot(D3DXVECTOR3(m_fPos[0] + pos0, GEAR_POS_Y, 0), m_nCntRotGear[0] * -0.5f, D3DXVECTOR3(0, 0, 0));
+			}
+
+			// 歯車の回転用カウンタ加算
+			m_nCntRotGear[0]++;
+		}
+
+		// 目標位置格納変数
+		m_fPosDiff[1] = 370 + (float)m_nCharaNum[1] * CHARAFREAMUI_SIZE_X;
+
+		// 計算用変数
+		float pos1 = ((m_fPosDiff[1] - m_fPos[1]) / 60) * m_fPosMove[1];
+
+		// 位置が同じじゃないとき
+		if (m_fPosDiff[1] != m_fPos[1])
+		{
+			// 位置移動用カウンタ加算
+			m_fPosMove[1]++;
+		}
+
 		// 1Pキャラクター枠線UI
-		SetUI(D3DXVECTOR3(370 + (float)m_nCharaNum[0] * CHARAFREAMUI_SIZE_X, CHARAUI_POS_Y, 0.0f), 
-			CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_1PCHARA_FREAM, NORMAL_COLOR);
+		SetUI(D3DXVECTOR3(m_fPos[0] + pos0, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_1PCHARA_FREAM, NORMAL_COLOR);
 
 		// 歯車0UI
-		SetUI(D3DXVECTOR3(370 + (float)m_nCharaNum[0] * CHARAFREAMUI_SIZE_X, CHARAUI_POS_Y, 0.0f),
-			CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_GEAR0, NORMAL_COLOR);
+		SetUI(D3DXVECTOR3(m_fPos[0] + pos0, GEAR_POS_Y, 0.0f), CHARAFULLUI_SIZE_Y, CHARAFULLUI_SIZE_Y, LOGOTYPE_GEAR0, NORMAL_COLOR);
 
 		// 2Pキャラクター枠線UI
-		SetUI(D3DXVECTOR3(370 + (float)m_nCharaNum[1] * CHARAFREAMUI_SIZE_X, CHARAUI_POS_Y, 0.0f), 
-			CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_2PCHARA_FREAM, NORMAL_COLOR);
+		SetUI(D3DXVECTOR3(m_fPos[1] + pos1, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_2PCHARA_FREAM, NORMAL_COLOR);
+
+		// 歯車1UI
+		SetUI(D3DXVECTOR3(m_fPos[1] + pos1, GEAR_POS_Y, 0.0f), CHARAFULLUI_SIZE_Y, CHARAFULLUI_SIZE_Y, LOGOTYPE_GEAR1, NORMAL_COLOR);
+
+		// 現在の位置設定
+		m_fPos[0] = m_fPos[0] + pos0;
+
+		// 現在の位置設定
+		m_fPos[1] = m_fPos[1] + pos1;
 
 		// 1PキャラクターUI
 		SetUI(D3DXVECTOR3(200, 230, 0.0f), CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_1PCHARA, NORMAL_COLOR);
