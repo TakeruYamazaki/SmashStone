@@ -120,7 +120,6 @@ void CUI::Init(void)
 	m_nCntRot[MAX_PLAYER] = 0;	// 時計の針の回転用カウンタ
 	m_nCntWait[MAX_PLAYER] = 0;	// 待機時間用カウンタ
 	m_nCntMove[MAX_PLAYER] = 0;	// 移動用カウンタ
-	m_nCntRotGear[MAX_PLAYER] = 0;// 歯車の回転用カウンタ
 	m_fCntUITitle0 = 0;			// タイトルUI用カウンタ0
 	m_fCntUITitle1 = 0;			// タイトルUI用カウンタ1
 	m_fCntEnter = 0;			// エンター用カウンタ
@@ -128,7 +127,13 @@ void CUI::Init(void)
 	m_fPosMove[MAX_PLAYER] = 0;	// 位置移動変数
 	m_fPos[0] = 370;			// 現在の枠線テクスチャの位置X
 	m_fPos[1] = 910;			// 現在の枠線テクスチャの位置X
-	m_fPosDiff[MAX_PLAYER] = 0;	// 前回の枠線テクスチャの位置X
+	m_fPosDiff[MAX_PLAYER] = 0;	// 目標の枠線テクスチャの位置X
+	m_fPosOld[MAX_PLAYER] = 0;	// 前回の枠線テクスチャの位置X
+	m_fRotGear[MAX_PLAYER] = 0;	// 歯車の回転格納変数
+	m_fPosCul[MAX_PLAYER] = 0;	// 位置計算用変数
+	m_fDiff[MAX_PLAYER] = 0;	// 1フレーム前との距離
+	m_fAngle[MAX_PLAYER] - 0;	// 歯車の回転角度
+	m_fRad[MAX_PLAYER] = 0;		// ラジアン値
 	m_bUITitle0 = false;		// タイトルを動かすかどうか
 	m_bUITitle1 = false;		// タイトルを動かすかどうか
 	m_bUIEnter = false;			// エンターのα値用変数
@@ -465,9 +470,6 @@ void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
 
 			// 位置移動用カウンタ初期化
 			m_fPosMove[0] = 0;
-
-			// 歯車の回転用カウンタ初期化
-			m_nCntRotGear[0] = 0;
 		}
 		else if (pInputKeyboard->GetKeyboardTrigger(DIK_D))
 		{// キーボードの[D]が押されたとき
@@ -479,9 +481,6 @@ void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
 
 			// 位置移動用カウンタ初期化
 			m_fPosMove[0] = 0;
-
-			// 歯車の回転用カウンタ初期化
-			m_nCntRotGear[0] = 0;
 		}
 
 		// キーボードの[←]が押されたとき
@@ -602,6 +601,9 @@ void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
 		// 最大人数までカウント
 		for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 		{
+			// 現在の位置を前回の位置に代入
+			m_fPosOld[nCnt] = m_fPos[nCnt];
+
 			// キャラ番号が0より小さくなったとき
 			if (m_nCharaNum[nCnt] < 0)
 			{
@@ -615,67 +617,61 @@ void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
 				// 3に戻す
 				m_nCharaNum[nCnt] = 3;
 			}
+			// 目標位置格納変数
+			m_fPosDiff[nCnt] = 370 + (float)m_nCharaNum[nCnt] * CHARAFREAMUI_SIZE_X;
 		}
 
-		// 目標位置格納変数
-		m_fPosDiff[0] = 370 + (float)m_nCharaNum[0] * CHARAFREAMUI_SIZE_X;
-
-		// 計算用変数
-		float pos0 = ((m_fPosDiff[0] - m_fPos[0]) / 60) * m_fPosMove[0];
-		
-		// 位置が同じじゃないとき
-		if (m_fPosDiff[0] != m_fPos[0])
+		// 最大人数までカウント
+		for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 		{
-			// 位置移動用カウンタ加算
-			m_fPosMove[0]++;
+			float fRadius = CHARAFULLUI_SIZE_Y / 2;											// 歯車テクスチャの半径
+			m_fPosCul[nCnt] = ((m_fPosDiff[nCnt] - m_fPos[nCnt]) / 60) * m_fPosMove[nCnt];	// 計算用変数
+			m_fDiff[nCnt] = fabsf(m_fPos[nCnt] + m_fPosCul[nCnt] - m_fPosOld[nCnt]);		// 1フレーム後の距離
+			m_fAngle[nCnt] = 180 * m_fDiff[nCnt] / (D3DX_PI * fRadius);						// 角度算出
+			m_fRad[nCnt] = D3DX_PI * m_fAngle[nCnt] / 360;					// ラジアン値
 
-			// 位置が正のとき
-			if (pos0 > 0)
+			// 位置の差が正のとき
+			if (m_fPosCul[nCnt] > 0)
 			{
-				// 回転設定
-				m_pScene2D[LOGOTYPE_GEAR0]->SetRot(D3DXVECTOR3(m_fPos[0] + pos0, GEAR_POS_Y, 0), m_nCntRotGear[0] * 0.5f, D3DXVECTOR3(0, 0, 0));
+				m_fRotGear[nCnt] = m_fRotGear[nCnt] + m_fRad[nCnt];					// 角度格納(加算)
 			}
-			else
-			{// 位置が負のとき
-				// 回転設定
-				m_pScene2D[LOGOTYPE_GEAR0]->SetRot(D3DXVECTOR3(m_fPos[0] + pos0, GEAR_POS_Y, 0), m_nCntRotGear[0] * -0.5f, D3DXVECTOR3(0, 0, 0));
+			else if (m_fPosCul[nCnt] < 0)
+			{// 位置の差が負のとき
+				m_fRotGear[nCnt] = m_fRotGear[nCnt] - m_fRad[nCnt];					// 角度格納(減算)
 			}
-
-			// 歯車の回転用カウンタ加算
-			m_nCntRotGear[0]++;
-		}
-
-		// 目標位置格納変数
-		m_fPosDiff[1] = 370 + (float)m_nCharaNum[1] * CHARAFREAMUI_SIZE_X;
-
-		// 計算用変数
-		float pos1 = ((m_fPosDiff[1] - m_fPos[1]) / 60) * m_fPosMove[1];
-
-		// 位置が同じじゃないとき
-		if (m_fPosDiff[1] != m_fPos[1])
-		{
-			// 位置移動用カウンタ加算
-			m_fPosMove[1]++;
 		}
 
 		// 1Pキャラクター枠線UI
-		SetUI(D3DXVECTOR3(m_fPos[0] + pos0, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_1PCHARA_FREAM, NORMAL_COLOR);
-
+		SetUI(D3DXVECTOR3(m_fPos[0] + m_fPosCul[0], CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_1PCHARA_FREAM, NORMAL_COLOR);
 		// 歯車0UI
-		SetUI(D3DXVECTOR3(m_fPos[0] + pos0, GEAR_POS_Y, 0.0f), CHARAFULLUI_SIZE_Y, CHARAFULLUI_SIZE_Y, LOGOTYPE_GEAR0, NORMAL_COLOR);
+		SetUI(D3DXVECTOR3(m_fPos[0] + m_fPosCul[0], GEAR_POS_Y, 0.0f), CHARAFULLUI_SIZE_Y, CHARAFULLUI_SIZE_Y, LOGOTYPE_GEAR0, NORMAL_COLOR);
+		// 回転設定
+		m_pScene2D[LOGOTYPE_GEAR0]->SetRot(D3DXVECTOR3(m_fPos[0] + m_fPosCul[0], GEAR_POS_Y, 0), m_fRotGear[0], D3DXVECTOR3(0, 0, 0));
 
 		// 2Pキャラクター枠線UI
-		SetUI(D3DXVECTOR3(m_fPos[1] + pos1, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_2PCHARA_FREAM, NORMAL_COLOR);
-
+		SetUI(D3DXVECTOR3(m_fPos[1] + m_fPosCul[1], CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_2PCHARA_FREAM, NORMAL_COLOR);
 		// 歯車1UI
-		SetUI(D3DXVECTOR3(m_fPos[1] + pos1, GEAR_POS_Y, 0.0f), CHARAFULLUI_SIZE_Y, CHARAFULLUI_SIZE_Y, LOGOTYPE_GEAR1, NORMAL_COLOR);
+		SetUI(D3DXVECTOR3(m_fPos[1] + m_fPosCul[1], GEAR_POS_Y, 0.0f), CHARAFULLUI_SIZE_Y, CHARAFULLUI_SIZE_Y, LOGOTYPE_GEAR1, NORMAL_COLOR);
+		// 回転設定
+		m_pScene2D[LOGOTYPE_GEAR1]->SetRot(D3DXVECTOR3(m_fPos[1] + m_fPosCul[1], GEAR_POS_Y, 0), m_fRotGear[1], D3DXVECTOR3(0, 0, 0));
 
-		// 現在の位置設定
-		m_fPos[0] = m_fPos[0] + pos0;
+		// 最大人数までカウント
+		for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+		{
+			// 位置が同じじゃないとき
+			if (m_fPosDiff[nCnt] != m_fPos[nCnt])
+			{
+				// 位置移動用カウンタ加算
+				m_fPosMove[nCnt]++;
+			}
 
-		// 現在の位置設定
-		m_fPos[1] = m_fPos[1] + pos1;
+			// 現在の位置設定
+			m_fPos[nCnt] = m_fPos[nCnt] + m_fPosCul[nCnt];
 
+			// 現在の位置を前回の位置に代入
+			m_fPosOld[nCnt] = m_fPos[nCnt] + m_fPosCul[nCnt];
+
+		}
 		// 1PキャラクターUI
 		SetUI(D3DXVECTOR3(200, 230, 0.0f), CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_1PCHARA, NORMAL_COLOR);
 		// テクスチャ設定

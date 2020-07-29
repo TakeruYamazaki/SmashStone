@@ -90,7 +90,6 @@ private:
 	int m_nCntRot[MAX_PLAYER];							// 時計の針回転用カウンタ
 	int m_nCntWait[MAX_PLAYER];							// 待機時間用カウンタ
 	int m_nCntMove[MAX_PLAYER];							// 枠線移動用カウンタ
-	int m_nCntRotGear[MAX_PLAYER];						// 歯車の回転用カウンタ
 
 	float m_fCntUITitle0;								// タイトルUI用カウンタ0
 	float m_fCntUITitle1;								// タイトルUI用カウンタ1
@@ -99,6 +98,12 @@ private:
 	float m_fPosMove[MAX_PLAYER];						// 位置移動用カウンタ
 	float m_fPos[MAX_PLAYER];							// 現在の枠線テクスチャ位置X
 	float m_fPosDiff[MAX_PLAYER];						// 目標の枠線テクスチャ位置X
+	float m_fPosOld[MAX_PLAYER];						// 前回の枠線テクスチャ位置X
+	float m_fRotGear[MAX_PLAYER];						// 歯車の回転格納変数
+	float m_fPosCul[MAX_PLAYER];						// 位置計算用変数
+	float m_fDiff[MAX_PLAYER];							// 1フレーム前との距離
+	float m_fAngle[MAX_PLAYER];							// 歯車の回転角度
+	float m_fRad[MAX_PLAYER];							// ラジアン値
 
 	bool m_bUITitle0;									// タイトルを動かすかどうか0
 	bool m_bUITitle1;									// タイトルを動かすかどうか1
