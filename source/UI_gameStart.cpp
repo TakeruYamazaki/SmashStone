@@ -30,9 +30,11 @@ LPDIRECT3DTEXTURE9	CUI_GameStart::m_pTexture[GAMEUITEX_MAX] = {};
 CScene2D			*CUI_GameStart::m_pScene2D[GAMEUITEX_MAX] = {};
 char				*CUI_GameStart::m_apFileName[GAMEUITEX_MAX] =
 {
-	{ "data/TEXTURE/K.png" },
-	{ "data/TEXTURE/O.png" },
-	{ "data/TEXTURE/KO_back.png" }
+	{ "data/TEXTURE/round.png" },
+	{ "data/TEXTURE/round_1.png" },
+	{ "data/TEXTURE/round_2.png" },
+	{ "data/TEXTURE/round_3.png" },
+	{ "data/TEXTURE/fight.png" }
 };
 
 //==================================================================================================================

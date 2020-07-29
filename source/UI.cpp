@@ -132,7 +132,7 @@ void CUI::Init(void)
 	m_fRotGear[MAX_PLAYER] = 0;	// 歯車の回転格納変数
 	m_fPosCul[MAX_PLAYER] = 0;	// 位置計算用変数
 	m_fDiff[MAX_PLAYER] = 0;	// 1フレーム前との距離
-	m_fAngle[MAX_PLAYER] - 0;	// 歯車の回転角度
+	m_fAngle[MAX_PLAYER] = 0;	// 歯車の回転角度
 	m_fRad[MAX_PLAYER] = 0;		// ラジアン値
 	m_bUITitle0 = false;		// タイトルを動かすかどうか
 	m_bUITitle1 = false;		// タイトルを動かすかどうか
