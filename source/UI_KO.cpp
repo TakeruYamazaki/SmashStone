@@ -17,7 +17,7 @@
 #include "game.h"
 #include "fade.h"
 #include "kananlibrary.h"
-#include "scene2D.h"
+#include "polygon2D.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -31,7 +31,7 @@
 // 静的メンバ変数宣言
 //==================================================================================================================
 LPDIRECT3DTEXTURE9	CUIKO::m_pTexture[KOUI_MAX]		= {};
-CScene2D			*CUIKO::m_pScene2D[KOUI_MAX]	= {};
+CPolygon2D			*CUIKO::m_pPolygon[KOUI_MAX]	= {};
 char				*CUIKO::m_apFileName[KOUI_MAX]	=
 {
 	{ "data/TEXTURE/K.png" },
@@ -90,7 +90,7 @@ void CUIKO::Init(void)
 {
 	// 生成してテクスチャバインド
 	CreateUI(KOUITEX_BACK);
-	m_pScene2D[KOUITEX_BACK]->SetbShow(false);
+	m_pPolygon[KOUITEX_BACK]->SetbShow(false);
 
 	// 生成してテクスチャバインド
 	CreateUI(KOUITEX_K);
@@ -107,8 +107,11 @@ void CUIKO::Uninit(void)
 {
 	for (int nCnt = 0; nCnt < KOUI_MAX; nCnt++)
 	{
-		if (m_pScene2D[nCnt])
-			m_pScene2D[nCnt]->Uninit();
+		if (!m_pPolygon[nCnt])
+			continue;
+		m_pPolygon[nCnt]->Uninit();
+		delete m_pPolygon[nCnt];
+		m_pPolygon[nCnt] = nullptr;
 	}
 }
 
@@ -140,7 +143,7 @@ void CUIKO::Update(void)
 		// 次のフェーズ
 		NextFase();
 		// 影を表示
-		m_pScene2D[KOUITEX_BACK]->SetbShow(true);
+		m_pPolygon[KOUITEX_BACK]->SetbShow(true);
 	}
 
 	// UIのスライド
@@ -151,10 +154,10 @@ void CUIKO::Update(void)
 			// KOを左上にずらす
 			for (int nCnt = 0; nCnt < KOUITEX_BACK; nCnt++)
 			{
-				m_pScene2D[nCnt]->SetPos(m_pScene2D[nCnt]->GetPos() - POS_SLIDE_SHADOW / TIME_SLIDE_SHADOW);
+				m_pPolygon[nCnt]->SetPos(*m_pPolygon[nCnt]->GetPos() - POS_SLIDE_SHADOW / TIME_SLIDE_SHADOW);
 			}
 			// 影を反対にずらす
-			m_pScene2D[KOUITEX_BACK]->SetPos(m_pScene2D[KOUITEX_BACK]->GetPos() + POS_SLIDE_SHADOW / TIME_SLIDE_SHADOW);
+			m_pPolygon[KOUITEX_BACK]->SetPos(*m_pPolygon[KOUITEX_BACK]->GetPos() + POS_SLIDE_SHADOW / TIME_SLIDE_SHADOW);
 		}
 		else
 			// 次のフェーズ
@@ -162,9 +165,12 @@ void CUIKO::Update(void)
 	}
 
 	if (m_nCntFase == KOUI_MAX && m_nCntAny == TIME_AFTER_SLIDE)
+		CGame::SetGameState(CGame::GAMESTATE_NEXTROUND);
+
+	for (int nCnt = 0; nCnt < KOUI_MAX; nCnt++)
 	{
-		CGame *pGame = CManager::GetRenderer()->GetGame();
-		pGame->SetGameState(CGame::GAMESTATE_NEXTROUND);
+		if (m_pPolygon[nCnt])
+			m_pPolygon[nCnt]->Update();
 	}
 }
 
@@ -174,16 +180,16 @@ void CUIKO::Update(void)
 void CUIKO::Draw(void)
 {
 	// 背景を先に描画
-	if (m_pScene2D[KOUITEX_BACK]->GetbShow())
-		m_pScene2D[KOUITEX_BACK]->Draw();
+	if (m_pPolygon[KOUITEX_BACK]->GetbShow())
+		m_pPolygon[KOUITEX_BACK]->Draw();
 
 	for (int nCnt = 0; nCnt < KOUITEX_BACK; nCnt++)
 	{
 		// 無ければ処理しない
-		if (!m_pScene2D[nCnt])
+		if (!m_pPolygon[nCnt])
 			continue;
 		// 描画
-		m_pScene2D[nCnt]->Draw();
+		m_pPolygon[nCnt]->Draw();
 	}
 }
 
@@ -251,8 +257,8 @@ void CUIKO::MoveUI(void)
 	D3DXVECTOR3 difPos = m_posEnd[m_nCntFase] - m_posBegin[m_nCntFase];
 	D3DXVECTOR3 difSize = m_sizeEnd[m_nCntFase] - m_sizeBegin[m_nCntFase];
 	// 段々移動
-	m_pScene2D[m_nCntFase]->SetPos(m_pScene2D[m_nCntFase]->GetPos() + difPos / TIME_ZOOM_KO);
-	m_pScene2D[m_nCntFase]->SetSize(m_pScene2D[m_nCntFase]->GetSize() + difSize / TIME_ZOOM_KO);
+	m_pPolygon[m_nCntFase]->SetPos(*m_pPolygon[m_nCntFase]->GetPos() + difPos / TIME_ZOOM_KO);
+	m_pPolygon[m_nCntFase]->SetSize(*m_pPolygon[m_nCntFase]->GetSize() + difSize / TIME_ZOOM_KO);
 }
 
 //==================================================================================================================
@@ -261,10 +267,11 @@ void CUIKO::MoveUI(void)
 void CUIKO::CreateUI(int type)
 {
 	// 生成
-	m_pScene2D[type] = CScene2D::Create();
+	m_pPolygon[type] = CPolygon2D::Create();
 	// テクスチャバインド
-	m_pScene2D[type]->BindTex(m_pTexture[type]);
+	m_pPolygon[type]->BindTexture(m_pTexture[type]);
 	// 位置とサイズを設定
-	m_pScene2D[type]->SetSize(m_sizeBegin[type]);
-	m_pScene2D[type]->SetPos(m_posBegin[type]);
+	m_pPolygon[type]->SetSize(m_sizeBegin[type]);
+	m_pPolygon[type]->SetPos(m_posBegin[type]);
+	m_pPolygon[type]->SetPosStart(CPolygon2D::POSSTART_CENTRAL_CENTRAL);
 }

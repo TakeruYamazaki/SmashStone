@@ -11,7 +11,6 @@
 // インクルードファイル
 //==================================================================================================================
 #include "main.h"
-#include "scene.h"
 
 //==================================================================================================================
 //
@@ -19,7 +18,7 @@
 //
 //==================================================================================================================
 // 前方宣言
-class CScene2D;
+class CPolygon2D;
 
 class CUIKO
 {
@@ -50,7 +49,7 @@ private:
 	void CreateUI(int type);		// UIの生成
 	void NextFase(void) { m_nCntFase++; m_nCntAny = 0; }	// 次のフェーズに移行
 	static LPDIRECT3DTEXTURE9 m_pTexture[KOUI_MAX];	// テクスチャ情報
-	static CScene2D *m_pScene2D[KOUI_MAX];			// テクスチャ数分の2DUI
+	static CPolygon2D *m_pPolygon[KOUI_MAX];			// テクスチャ数分の2DUI
 	static char *m_apFileName[KOUI_MAX];			// テクスチャのファイル名
 	static D3DXVECTOR3 m_sizeBegin[KOUI_MAX];		// 最初のテクスチャのサイズ
 	static D3DXVECTOR3 m_sizeEnd[KOUI_MAX];			// 最後のテクスチャのサイズ

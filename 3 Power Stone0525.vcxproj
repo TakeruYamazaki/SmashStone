@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\polygon2D.cpp" />
     <ClCompile Include="source\3DBoxCollider.cpp" />
     <ClCompile Include="source\bar.cpp" />
     <ClCompile Include="source\camera.cpp" />
@@ -258,6 +259,7 @@
     <ClInclude Include="source\objManager.h" />
     <ClInclude Include="source\pause.h" />
     <ClInclude Include="source\player.h" />
+    <ClInclude Include="source\polygon2D.h" />
     <ClInclude Include="source\PolygonCollider.h" />
     <ClInclude Include="source\result.h" />
     <ClInclude Include="source\Reflection.h" />
