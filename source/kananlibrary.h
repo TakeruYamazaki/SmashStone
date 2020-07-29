@@ -44,7 +44,7 @@
 
 // 物理
 #define INERTIA				(0.3f)								// 慣性
-#define GRAVITY				(0.2f)								// 重力
+#define GRAVITY				(0.3f)								// 重力
 
 // 時間
 #define ONE_SECOND_FPS		(60)								// 一秒毎のフレーム数
@@ -138,6 +138,7 @@ typedef enum
 
 typedef enum
 {	// プレイヤー数
+	PLAYER_NONE,	// いない
 	PLAYER_ONE = 0,	// 1P
 	PLAYER_TWO,		// 2P
 	PLAYER_MAX		// 最大数

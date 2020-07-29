@@ -242,9 +242,7 @@ void CCharacter::Move(void)
 		CMylibrary::SlowingMove(&m_move.z, INERTIA_BLOWAWAY);
 	}
 	else
-	{
 		CKananLibrary::InertiaMoveXZ(&m_move);
-	}
 
 	// èdóÕ
 	CKananLibrary::Gravity(m_move.y);

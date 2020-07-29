@@ -65,7 +65,7 @@ public:
 	inline D3DXVECTOR3 GetRotDest(void)	{ return m_rotDest; }		// 回転先の取得
 	inline float       GetMaxLife(void)	{ return m_nMaxLife; }		// 最大ライフ取得
 	inline float       GetLife(void)	{ return m_nLife; }			// ライフ取得
-
+	inline bool		   GetbJump(void)	{ return m_bJump; }			// ジャンプ状態の取得
 	inline void        Damage(const int nDamage)	{ m_nLife -= nDamage; }	// ダメージ処理
 	void			   Daunted(const int nGap);		// 怯み処理
 
