@@ -120,7 +120,7 @@ void CTime::Update(void)
 		if (fade == CFade::FADE_NONE)
 		{
 			// フェードの設定
-			CFade::SetFade(CRenderer::MODE_RESULT);
+			CFade::SetFade(CRenderer::MODE_RESULT, DEFAULT_FADE_TIME);
 		}
 	}
 }

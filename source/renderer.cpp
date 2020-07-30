@@ -39,7 +39,7 @@ CTitle *CRenderer::m_pTitle = NULL;						// タイトル情報
 CResult *CRenderer::m_pResult = NULL;					// リザルト情報
 CTutorial *CRenderer::m_pTutorial = NULL;				// チュートリアル情報
 CSound *CRenderer::m_pSound = NULL;						// 音情報
-CRenderer::MODE CRenderer::m_mode = MODE_GAME;			// 最初の画面
+CRenderer::MODE CRenderer::m_mode = MODE_TITLE;			// 最初の画面
 
 //==================================================================================================================
 // コンストラクタ
@@ -445,6 +445,10 @@ void CRenderer::Draw(void)
 //==================================================================================================================
 void CRenderer::SetMode(MODE mode)
 {
+	// なにもないなら処理しない
+	if (mode == CRenderer::MODE_NONE)
+		return;
+
 	// 指定した音を止める
 	switch (mode)
 	{

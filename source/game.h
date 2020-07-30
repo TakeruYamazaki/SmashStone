@@ -38,6 +38,7 @@ class CObjectManager;
 class CPolygonCollider;
 class CUIKO;
 class CUI_GameStart;
+class CUI_GameResult;
 
 //==================================================================================================================
 //
@@ -74,6 +75,8 @@ public:
 	void Draw(void);							// 描画処理
 	static CGame *Create(void);					// 生成処理
 
+	static void SetPlayerType(const int nPlayer, const int type)
+		{ m_nPlayerType[nPlayer] = type * 2; }									// プレイヤータイプを保存
 	static void SetGameState(GAMESTATE state)	{ m_gameState = state; }	// ゲームの状態設定
 	static void RemoveNumStone(int nIndexPos)	{ m_nNumStone--; m_bSetPos[nIndexPos] = false; }			// ストーンの数を減算
 	static void SetNumStone(const int &nStone)	{ m_nNumStone = nStone; }	// ストーンの数の設定
@@ -89,7 +92,7 @@ public:
 	static CPolygonCollider* GetpolyColly(int nIndex) { return m_pPolyColli[nIndex]; }
 	static int GetRound(void)					{ return m_nRound; }			// 現在のラウンド数取得
 	static int GetAllRound(void)				{ return m_nRoundAll; }			// 全ラウンド数の取得
-
+	
 	static void AppearStone(void);				// どこからでも呼び出せるストーン出現
 
 protected:
@@ -102,9 +105,12 @@ private:
 	void GameKOAfter(void);							// KOの後の更新
 	void SwitchPause(void);							// ポーズの切り替え
 	void NextRound(void);							// 次のラウンドへ
+	void GameResult(void);							// ゲームのリザルト
+	void GameEnd(void);								// ゲームの終了
 	void DecideCreateStone(void);					// ストーンを生成するか決める
 	static int DecideRandomPos(void);				// 生成位置をランダムで決める
 	static GAMESTATE m_gameState;					// ゲーム状態
+	static int m_nPlayerType[MAX_PLAYER];			// キャラクターセレクト時のタイプを保存
 	static CPlayer *m_pPlayer[MAX_PLAYER];			// プレイヤーの配列ポインタ
 	static CMeshField *m_pMeshField;				// メッシュフィールドの情報ポインタ
 	static CCamera *m_pCamera;						// カメラの情報ポインタ
@@ -123,9 +129,11 @@ private:
 	static CPolygonCollider* m_pPolyColli[POLYCOLLI_USE_TYPE];		// ポリゴンコライダーのポインタ
 	static CUIKO *m_pUIKO;							// KOのポインタ
 	static CUI_GameStart *m_pUIGameStart;			// ゲーム開始時のUIのポインタ
+	static CUI_GameResult *m_pUIGameResult;			// ゲームリザルトのUIのポインタ
 	static NUM_PLAYER m_winPlayer;					// 勝利したプレイヤー
 	INTEGER2 m_roundPoint;							// ラウンドのポイント数
 	static int m_nRound;							// 現在のラウンド
 	static int m_nRoundAll;							// 全ラウンド数
+	int m_nCntAny;									// モード毎の様々な状況で使う(主に時間管理)
 };
 #endif

@@ -69,6 +69,7 @@ public:
 	void SetUI(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nCnt, D3DXCOLOR col);	// ロゴ設定処理
 
 	UITYPE GetType(void);			// ロゴタイプ取得処理
+	int GetCharaNum(int nPlayer) { return m_nCharaNum[nPlayer]; }	// プレイヤーのタイプを取得
 
 protected:
 

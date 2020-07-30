@@ -35,6 +35,7 @@
 #include "PolygonCollider.h"
 #include "UI_KO.h"
 #include "UI_gameStart.h"
+#include "UI_gameResult.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -46,6 +47,8 @@
 
 #define TIME_CREATE_STONE	(5 * ONE_SECOND_FPS)					// ストーンを生成する時間
 #define TIME_KO_AFTER		(60)									// KOの後の時間
+
+#define TIME_FADE_NEXTROUND	(10)									// ラウンド切り替えのフェード時間
 
 //==================================================================================================================
 //	静的メンバ変数宣言
@@ -61,6 +64,7 @@ CTime				*CGame::m_pTime					= NULL;							// タイム情報
 CWall				*CGame::m_pWall					= NULL;							// 壁のポインタ
 CUIKO				*CGame::m_pUIKO					= nullptr;						// KOのポインタ
 CUI_GameStart		*CGame::m_pUIGameStart			= nullptr;						// ゲーム開始時のUIのポインタ
+CUI_GameResult		*CGame::m_pUIGameResult			= nullptr;						// ゲームリザルトのUIのポインタ
 CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
 int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 int					CGame::m_nNumStone				= 0;							// 生成したストーンの数
@@ -78,6 +82,8 @@ D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
 	D3DXVECTOR3(-100.0f, 20.0f, 100.0f),
 	D3DXVECTOR3(-100.0f, 20.0f, -100.0f)
 };
+
+int					CGame::m_nPlayerType[MAX_PLAYER] = {};	// キャラクターセレクト時のタイプを保存
 
 CPolygonCollider* CGame::m_pPolyColli[POLYCOLLI_USE_TYPE] = { NULL };							// ポリゴンコライダーのポインタ
 
@@ -124,8 +130,10 @@ void CGame::Init(void)
 	m_pCamera     = CCamera::Create();								// カメラの生成処理
 	m_pLight      = CLight::Create();								// ライトの生成処理
 	m_pMeshSphere = CMeshSphere::Create();							// メッシュ球の生成処理
-	m_pPlayer[PLAYER_ONE]  = CPlayer::Create(PLAYER_ONE, CHARACTER_1YASU);	// プレイヤー生成
-	m_pPlayer[PLAYER_TWO]  = CPlayer::Create(PLAYER_TWO, CHARACTER_2YASU);	// プレイヤー生成
+	m_pPlayer[PLAYER_ONE] = CPlayer::Create(PLAYER_ONE, (CHARACTER_TYPE)m_nPlayerType[PLAYER_ONE]);	// プレイヤー生成
+	m_pPlayer[PLAYER_TWO] = CPlayer::Create(PLAYER_TWO, (CHARACTER_TYPE)m_nPlayerType[PLAYER_TWO]);	// プレイヤー生成
+	//m_pPlayer[PLAYER_ONE]  = CPlayer::Create(PLAYER_ONE, CHARACTER_1YASU);	// プレイヤー生成
+	//m_pPlayer[PLAYER_TWO]  = CPlayer::Create(PLAYER_TWO, CHARACTER_2YASU);	// プレイヤー生成
 	m_pMeshField  = CMeshField::Create(INTEGER2(2, 2), D3DXVECTOR3(300.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 50.0f));// メッシュフィールド生成
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
@@ -140,6 +148,7 @@ void CGame::Init(void)
 	m_nCounterGameState = 0;				// ゲームの状態管理カウンターを0にする
 	m_nNumStone			= 0;				// 値を初期化
 	m_nCntDecide		= 0;				// 値を初期化
+	m_nCntAny			= 0;
 	m_nRound			= 0;
 	m_nRoundAll			= MAX_ROUND;
 	m_roundPoint		= INTEGER2(0, 0);
@@ -233,6 +242,9 @@ void CGame::Update(void)
 	// 次のラウンド
 	else if (m_gameState == GAMESTATE_NEXTROUND)
 		NextRound();
+	// リザルト
+	else if (m_gameState == GAMESTATE_RESULT)
+		GameResult();
 
 #ifdef _DEBUG
 	// キーボードの[0]を押したとき
@@ -244,7 +256,7 @@ void CGame::Update(void)
 		// フェードが何もない時
 		if (fade == CFade::FADE_NONE)
 			// フェードを設定する
-			CFade::SetFade(CRenderer::MODE_RESULT);
+			CFade::SetFade(CRenderer::MODE_RESULT, DEFAULT_FADE_TIME);
 	}
 #endif // _DEBUG
 }
@@ -272,6 +284,10 @@ void CGame::Draw(void)
 	// KOの描画
 	if (m_pUIKO)
 		m_pUIKO->Draw();
+
+	// リザルトのUIの描画
+	if (m_pUIGameResult)
+		m_pUIGameResult->Draw();
 }
 
 //==================================================================================================================
@@ -364,10 +380,10 @@ void CGame::GamePause(void)
 
 	// リトライ
 	if (m_gameState == GAMESTATE_START_OVER)
-		CFade::SetFade(CRenderer::MODE_GAME);
+		CFade::SetFade(CRenderer::MODE_GAME, DEFAULT_FADE_TIME);
 	// タイトルに戻る
 	else if (m_gameState == GAMESTATE_BREAK)
-		CFade::SetFade(CRenderer::MODE_TITLE);
+		CFade::SetFade(CRenderer::MODE_TITLE, DEFAULT_FADE_TIME);
 }
 
 //==================================================================================================================
@@ -390,12 +406,12 @@ void CGame::GameKO(void)
 void CGame::GameKOAfter(void)
 {
 	// カウンタの加算
-	static int nCntAfter = 0;
-	nCntAfter++;
+	m_nCntAny++;
 	// 一定時間で次へ
-	if (nCntAfter >= TIME_KO_AFTER && 
+	if (m_nCntAny >= TIME_KO_AFTER &&
 		!m_pPlayer[PLAYER_ONE]->GetbJump() && !m_pPlayer[PLAYER_TWO]->GetbJump())
 	{
+		m_nCntAny = 0;
 		m_gameState = GAMESTATE_NEXTROUND;
 		return;
 	}
@@ -456,9 +472,42 @@ void CGame::NextRound(void)
 	// どちらかが最大まで得点したら終了
 	if (m_roundPoint.nX == (int)((float)m_nRoundAll / 2.0f + 0.5f) ||
 		m_roundPoint.nY == (int)((float)m_nRoundAll / 2.0f + 0.5f))
+	{
+		// 勝者を決める
+		if (m_roundPoint.nX > m_roundPoint.nY)
+			m_winPlayer = PLAYER_ONE;
+		else
+			m_winPlayer = PLAYER_TWO;
+		// リザルトへ
 		m_gameState = GAMESTATE_RESULT;
+	}
+	// それ以外は再バトル
 	else
+	{
+		// フェード取得
+		CFade *pFade = CManager::GetRenderer()->GetFade();
+		// フェード時間を設定し、空のフェード実行
+		pFade->SetFade(CRenderer::MODE_NONE, TIME_FADE_NEXTROUND);
+		// バトル前へ
 		m_gameState = GAMESTATE_BEFORE;
+	}
+}
+
+//==================================================================================================================
+//	ゲームのリザルト
+//==================================================================================================================
+void CGame::GameResult(void)
+{
+	// 生成
+	if (!m_pUIGameResult)
+		m_pUIGameResult = CUI_GameResult::Create();
+
+	// 勝利時の行動
+	m_pPlayer[m_winPlayer]->VictoryAction();
+
+	// 更新
+	if (m_pUIGameResult)
+		m_pUIGameResult->Update();
 }
 
 //==================================================================================================================

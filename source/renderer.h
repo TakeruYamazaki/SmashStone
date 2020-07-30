@@ -60,7 +60,7 @@ public:
 	static MODE GetMode(void);							// モードの取得
 	static CGame *GetGame(void);						// ゲームの取得
 	static CSound *GetSound(void);						// 音の取得
-
+	static CFade *GetFade(void) { return m_pFade; }		// フェードの取得
 	LPDIRECT3DDEVICE9 GetDevice(void);					// デバイス取得関数
 
 #ifdef _DEBUG

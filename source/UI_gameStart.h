@@ -23,14 +23,6 @@ class CPolygon2D;
 class CUI_GameStart
 {
 public:
-	typedef enum
-	{
-		STARTUITYPE_ROUND = 0,	// ラウンド
-		STARTUITYPE_NUMROUND,	// ラウンド数
-		STARTUITYPE_FIGHT,		// ファイト
-		STARTUITYPE_MAX			// 最大数
-	} UITYPE_GAMESTART;			// UIの種類
-
 	CUI_GameStart();		// コンストラクタ
 	~CUI_GameStart();		// デストラクタ
 	void Init(void);		// 初期化処理
@@ -45,6 +37,14 @@ public:
 protected:
 
 private:
+	typedef enum
+	{
+		STARTUITYPE_ROUND = 0,	// ラウンド
+		STARTUITYPE_NUMROUND,	// ラウンド数
+		STARTUITYPE_FIGHT,		// ファイト
+		STARTUITYPE_MAX			// 最大数
+	} UITYPE_GAMESTART;			// UIの種類
+
 	typedef enum
 	{
 		GAMEUITEX_ROUND = 0,// Round

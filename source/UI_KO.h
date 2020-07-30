@@ -23,14 +23,6 @@ class CPolygon2D;
 class CUIKO
 {
 public:
-	typedef enum
-	{
-		KOUITEX_K = 0,	// K
-		KOUITEX_O,		// O
-		KOUITEX_BACK,	// 背景
-		KOUI_MAX		// 最大数
-	} KO_TEX_TYPE;		// KOテクスチャのタイプ
-
 	CUIKO();	// コンストラクタ
 	~CUIKO();				// デストラクタ
 	void Init(void);		// 初期化処理
@@ -45,6 +37,14 @@ public:
 protected:
 
 private:
+	typedef enum
+	{
+		KOUITEX_K = 0,	// K
+		KOUITEX_O,		// O
+		KOUITEX_BACK,	// 背景
+		KOUI_MAX		// 最大数
+	} KO_TEX_TYPE;		// KOテクスチャのタイプ
+
 	void MoveUI(void);				// UIの移動
 	void CreateUI(int type);		// UIの生成
 	void NextFase(void) { m_nCntFase++; m_nCntAny = 0; }	// 次のフェーズに移行

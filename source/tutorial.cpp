@@ -24,6 +24,7 @@
 #include "inputGamepad.h"
 #include "meshSphere.h"
 #include "UI.h"
+#include "game.h"
 
 //==================================================================================================================
 //	静的メンバ変数宣言
@@ -125,8 +126,12 @@ void CTutorial::Update(void)
 		// フェードが何もない時
 		if (fade == CFade::FADE_NONE)
 		{
+			// それぞれのタイプを保存
+			CGame::SetPlayerType(PLAYER_ONE, m_pUI->GetCharaNum(PLAYER_ONE));
+			CGame::SetPlayerType(PLAYER_TWO, m_pUI->GetCharaNum(PLAYER_TWO));
+
 			// フェードの設定
-			CFade::SetFade(CRenderer::MODE_GAME);
+			CFade::SetFade(CRenderer::MODE_GAME, DEFAULT_FADE_TIME);
 		}
 	}
 }

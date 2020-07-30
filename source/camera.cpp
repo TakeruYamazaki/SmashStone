@@ -96,10 +96,10 @@ void CCamera::Init(void)
 	nCntRot = 0;										// 回転を始めるカウンタ
 	m_nCntTitleFade = 0;								// タイトルフェードカウンタ
 	m_bCameraMode = false;								// カメラモードかどうか
-	m_mode = CAMERA_GAME;
+	this->m_mode = CAMERA_GAME;
 
 #ifdef _DEBUG
-	m_mode = CAMERA_DEBUG;
+	this->m_mode = CAMERA_DEBUG;
 	m_posDebug = ZeroVector3;
 #endif
 }
@@ -248,7 +248,7 @@ void CCamera::MoveCamera(void)
 	m_posVDest += m_posDebug;
 #endif
 
-	if (m_mode == CAMERA_GAME)
+	if (this->m_mode == CAMERA_GAME)
 	{
 		// posVの高さ制限
 		if (m_posVDest.y <= POSV_Y_DOWN_LIMIT)
@@ -262,7 +262,7 @@ void CCamera::MoveCamera(void)
 	m_posV += difposV / SPEED_INERTIA;
 
 
-	if (m_mode == CAMERA_GAME)
+	if (this->m_mode == CAMERA_GAME)
 	{
 		// posVの高さ制限
 		if (m_posV.y <= POSV_Y_DOWN_LIMIT)
@@ -285,7 +285,7 @@ void CCamera::DebugControl(void)
 	SwitchMode();
 
 	// ゲームモードなら処理終了
-	if (m_mode != CAMERA_DEBUG)
+	if (this->m_mode != CAMERA_DEBUG)
 		return;
 
 	// キーボード取得
@@ -308,10 +308,10 @@ void CCamera::SwitchMode(void)
 	// F1キーでモード切替
 	if (pInputKeyboard->GetKeyboardTrigger(DIK_F1))
 	{
-		if (m_mode == CAMERA_DEBUG)
-			m_mode = CAMERA_GAME;
-		else if (m_mode == CAMERA_GAME)
-			m_mode = CAMERA_DEBUG;
+		if (this->m_mode == CAMERA_DEBUG)
+			this->m_mode = CAMERA_GAME;
+		else if (this->m_mode == CAMERA_GAME)
+			this->m_mode = CAMERA_DEBUG;
 	}
 }
 

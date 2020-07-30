@@ -67,7 +67,9 @@ public:
 	inline float       GetLife(void)	{ return m_nLife; }			// ライフ取得
 	inline bool		   GetbJump(void)	{ return m_bJump; }			// ジャンプ状態の取得
 	inline void        Damage(const int nDamage)	{ m_nLife -= nDamage; }	// ダメージ処理
-	void			   Daunted(const int nGap);		// 怯み処理
+
+	void			   Daunted(const int nGap);						// 怯み処理
+	void			   VictoryAction(void);							// 勝利行動
 
 protected:
 	CModelCharacter *m_pModelCharacter;					// モデルキャラクターのポインタ

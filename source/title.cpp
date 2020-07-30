@@ -138,7 +138,7 @@ void CTitle::Update(void)
 			if (fade == CFade::FADE_NONE)
 			{
 				// フェードの設定
-				CFade::SetFade(CRenderer::MODE_TUTORIAL);
+				CFade::SetFade(CRenderer::MODE_TUTORIAL, DEFAULT_FADE_TIME);
 			}
 		}
 		else

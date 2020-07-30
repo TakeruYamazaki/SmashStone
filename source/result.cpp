@@ -87,7 +87,7 @@ void CResult::Update(void)
 		// フェード状態がない時
 		if (Fade == CFade::FADE_NONE)
 		{
-			CFade::SetFade(CRenderer::MODE_TITLE);					// フェードの設定
+			CFade::SetFade(CRenderer::MODE_TITLE, DEFAULT_FADE_TIME);					// フェードの設定
 		}
 	}
 
@@ -101,7 +101,7 @@ void CResult::Update(void)
 		if (Fade == CFade::FADE_NONE)
 		{
 			// フェードの設定
-			CFade::SetFade(CRenderer::MODE_TITLE);
+			CFade::SetFade(CRenderer::MODE_TITLE, DEFAULT_FADE_TIME);
 		}
 	}
 }

@@ -26,7 +26,7 @@ LPDIRECT3DTEXTURE9 CFade::m_pTexture = NULL;					// テクスチャ情報
 CRenderer::MODE CFade::m_modeNext = CRenderer::MODE_TITLE;		// 次のモード
 CFade::FADE CFade::m_fade = FADE_NONE;							// フェードの状態
 D3DXCOLOR CFade::m_colorFade = D3DXCOLOR(0.0, 0.0, 0.0, 1.0);	// 色情報
-float CFade::m_nCntFade = 0.05f;								// フェードカウント
+int CFade::m_nCntFade = DEFAULT_FADE_TIME;						// フェードカウント
 
 //==================================================================================================================
 // コンストラクタ
@@ -148,6 +148,10 @@ void CFade::Update(void)
 		// 現在のモードによって切り替える
 		switch (m_modeNext)
 		{
+			// なにもないとき
+		case CRenderer::MODE_NONE:
+			break;
+
 			// タイトルのとき
 		case CRenderer::MODE_TITLE:
 			m_modeNext = CRenderer::MODE_TUTORIAL;
@@ -173,7 +177,7 @@ void CFade::Update(void)
 		m_nCntTest = 0;
 
 		// フェードの設定
-		SetFade(m_modeNext);
+		SetFade(m_modeNext, DEFAULT_FADE_TIME);
 	}
 
 	// フェードがあるとき
@@ -183,7 +187,7 @@ void CFade::Update(void)
 		if (m_fade == FADE_IN)
 		{
 			// フェードイン処理
-			m_colorFade.a -= m_nCntFade;				// 透明度減らしていく
+			m_colorFade.a -= 1.0f / (float)m_nCntFade;	// 透明度減らしていく
 
 			// 透明度が0以下だったとき
 			if (m_colorFade.a <= 0.0f)
@@ -196,7 +200,7 @@ void CFade::Update(void)
 		else if (m_fade == FADE_OUT)
 		{// フェード状態がアウトのとき
 			//フェードアウト処理
-			m_colorFade.a += m_nCntFade;				// 画面を不透明にしていく
+			m_colorFade.a += 1.0f / (float)m_nCntFade;	// 画面を不透明にしていく
 
 			// 透明度が1より大きくなったとき
 			if (m_colorFade.a >= 1.0f)
@@ -252,11 +256,12 @@ void CFade::Draw(void)
 //==================================================================================================================
 // フェードの設定
 //==================================================================================================================
-void CFade::SetFade(CRenderer::MODE modeNext)
+void CFade::SetFade(CRenderer::MODE modeNext, const int fadeCount)
 {
 	// 音取得
 	CSound *pSound = CRenderer::GetSound();
 
+	m_nCntFade = fadeCount;
 	m_fade = FADE_OUT;									// フェード状態をアウトにする
 	m_modeNext = modeNext;								// モードを次のモードにする
 	//pSound->PlaySound(CSound::SOUND_LABEL_SE_DECISION);	// 決定ボタン

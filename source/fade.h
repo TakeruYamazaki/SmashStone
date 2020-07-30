@@ -14,6 +14,11 @@
 #include "renderer.h"
 
 //==================================================================================================================
+// マクロ定義
+//==================================================================================================================
+#define DEFAULT_FADE_TIME (20)	// デフォルトのフェード時間
+
+//==================================================================================================================
 //
 // フェードクラスの定義
 //
@@ -39,7 +44,7 @@ public:
 	void Update(void);								// 更新処理
 	void Draw(void);								// 描画処理
 
-	static void SetFade(CRenderer::MODE modeNext);	// フェードの設定処理
+	static void SetFade(CRenderer::MODE modeNext, const int fadeCount);	// フェードの設定処理
 	static FADE GetFade(void);						// フェードの取得処理
 	static CFade *Create(CRenderer::MODE modeNext);	// 生成処理
 	static HRESULT Load(void);						// フェードの情報ロード
@@ -54,7 +59,7 @@ private:
 	static CRenderer::MODE m_modeNext;				// 次のモード変数
 	static FADE m_fade;								// フェードの情報
 	static D3DXCOLOR m_colorFade;					// フェードの色情報
-	static float m_nCntFade;								// フェードカウント
+	static int m_nCntFade;							// フェードカウント
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVertexBuff;			// 頂点バッファ
 
@@ -62,7 +67,6 @@ private:
 
 	int m_nCntTest;									// テスト用カウンタ
 	int m_nMode;									// モード用カウンタ
-
 	bool m_bTest;									// テストをするかどうか
 };
 #endif

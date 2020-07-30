@@ -102,8 +102,10 @@ void CPlayer::Uninit(void)
 //==================================================================================================================
 void CPlayer::Update(void)
 {
+	CGame::GAMESTATE gameState = CManager::GetRenderer()->GetGame()->GetGameState();
 	if (m_bBlowAway == false && m_bDaunted == false &&
-		CManager::GetRenderer()->GetGame()->GetGameState() == CGame::GAMESTATE_NORMAL)
+		(gameState == CGame::GAMESTATE_NORMAL || 
+		gameState == CGame::GAMESTATE_BEFORE))
 		// 操作
 		Control();
 
@@ -408,80 +410,83 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	D3DXVECTOR3 rotDest = GetRotDest();										// 目的の向きを格納する変数
 	float		CameraRotY = pCamera->GetRotY();								// カメラのY軸回転の取得
 
-	if (m_bTrans &&
-		((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_SMASH)) ||
-		(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_SMASH))))
+	if (CGame::GetGameState() == CGame::GAMESTATE_NORMAL)
 	{
-		// 条件を設定
-		m_bWalk = false;
-		m_bAttack = true;
-
-		// スマッシュ
-		if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE)
-			m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH);
-		// スマッシュチャージ
-		else if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
-			m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH)
-			m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
-
-		// 攻撃が当たったフラグをオフにする
-		m_bAttakHit = false;
-		// 攻撃フレームを設定
-		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
-	}
-
-	// スマッシュ系モーション中は以降の処理をしない
-	if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE ||
-		m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH)
-		// 処理を終える
-		return;
-
-	if (((m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
-		m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_ATTACK))) &&
-		m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
-		m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH))
-	{
-		if (!m_bAttack && !m_bJump)
+		if (m_bTrans &&
+			((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_SMASH)) ||
+			(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_SMASH))))
 		{
 			// 条件を設定
 			m_bWalk = false;
 			m_bAttack = true;
+
+			// スマッシュ
+			if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE)
+				m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH);
+			// スマッシュチャージ
+			else if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
+				m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH)
+				m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
+
+			// 攻撃が当たったフラグをオフにする
+			m_bAttakHit = false;
+			// 攻撃フレームを設定
+			m_nAttackFrame = m_pModelCharacter->GetAllFrame();
 		}
-		else if (m_bAttack)
+
+		// スマッシュ系モーション中は以降の処理をしない
+		if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE ||
+			m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH)
+			// 処理を終える
+			return;
+
+		if (((m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
+			m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_ATTACK))) &&
+			m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
+			m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH))
 		{
-			switch (m_nAttackFlow)
+			if (!m_bAttack && !m_bJump)
 			{
-			case 0:
-				return;
-				break;
-			case 1:
-				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 15)
-					return;
-				break;
-			case 2:
-				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 10)
-					return;
-				break;
-			case 3:
-				if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 25)
-					return;
-				break;
+				// 条件を設定
+				m_bWalk = false;
+				m_bAttack = true;
 			}
+			else if (m_bAttack)
+			{
+				switch (m_nAttackFlow)
+				{
+				case 0:
+					return;
+					break;
+				case 1:
+					if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 15)
+						return;
+					break;
+				case 2:
+					if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 10)
+						return;
+					break;
+				case 3:
+					if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 25)
+						return;
+					break;
+				}
+			}
+
+			// モーションの切り替え
+			m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
+			// 攻撃が当たったフラグをオフにする
+			m_bAttakHit = false;
+			// 攻撃フレームを設定
+			m_nAttackFrame = m_pModelCharacter->GetAllFrame();
+			// 攻撃の順番を設定
+			m_nAttackFlow++;
+			if (m_nAttackFlow >= 4)
+				m_nAttackFlow = 0;
+
+			// 処理を終える
+			return;
 		}
-
-		// モーションの切り替え
-		m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
-		// 攻撃が当たったフラグをオフにする
-		m_bAttakHit = false;
-		// 攻撃フレームを設定
-		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
-		// 攻撃の順番を設定
-		m_nAttackFlow++;
-		if (m_nAttackFlow >= 4)
-			m_nAttackFlow = 0;
-
-		// 処理を終える
-		return;
 	}
 
 	if (!m_bJump && !m_bAttack &&
