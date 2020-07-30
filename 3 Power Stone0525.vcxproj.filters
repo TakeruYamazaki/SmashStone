@@ -172,6 +172,9 @@
     <ClCompile Include="source\UI_gameStart.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\polygon2D.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\sceneX.h">
@@ -349,6 +352,9 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\UI_gameStart.h">
+      <Filter>ソースファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\polygon2D.h">
       <Filter>ソースファイル</Filter>
     </ClInclude>
   </ItemGroup>

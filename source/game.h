@@ -37,6 +37,7 @@ class CWall;
 class CObjectManager;
 class CPolygonCollider;
 class CUIKO;
+class CUI_GameStart;
 
 //==================================================================================================================
 //
@@ -86,6 +87,8 @@ public:
 	static CWall *GetWall(void)					{ return m_pWall; }				// 壁の取得
 	static CObjectManager *GetObjMana(void)		{ return m_pObjMana; }			// オブジェクトマネージャーを取得
 	static CPolygonCollider* GetpolyColly(int nIndex) { return m_pPolyColli[nIndex]; }
+	static int GetRound(void)					{ return m_nRound; }			// 現在のラウンド数取得
+	static int GetAllRound(void)				{ return m_nRoundAll; }			// 全ラウンド数の取得
 
 	static void AppearStone(void);				// どこからでも呼び出せるストーン出現
 
@@ -119,8 +122,10 @@ private:
 	static CObjectManager *m_pObjMana;				// オブジェクトマネージャーのポインタ
 	static CPolygonCollider* m_pPolyColli[POLYCOLLI_USE_TYPE];		// ポリゴンコライダーのポインタ
 	static CUIKO *m_pUIKO;							// KOのポインタ
+	static CUI_GameStart *m_pUIGameStart;			// ゲーム開始時のUIのポインタ
 	static NUM_PLAYER m_winPlayer;					// 勝利したプレイヤー
 	INTEGER2 m_roundPoint;							// ラウンドのポイント数
-	int m_nRound;									// 現在のラウンド
+	static int m_nRound;							// 現在のラウンド
+	static int m_nRoundAll;							// 全ラウンド数
 };
 #endif

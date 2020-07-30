@@ -34,6 +34,7 @@
 #include "CylinderCollider.h"
 #include "PolygonCollider.h"
 #include "UI_KO.h"
+#include "UI_gameStart.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -59,10 +60,13 @@ CMeshSphere			*CGame::m_pMeshSphere			= NULL;							// メッシュ球の情報
 CTime				*CGame::m_pTime					= NULL;							// タイム情報
 CWall				*CGame::m_pWall					= NULL;							// 壁のポインタ
 CUIKO				*CGame::m_pUIKO					= nullptr;						// KOのポインタ
+CUI_GameStart		*CGame::m_pUIGameStart			= nullptr;						// ゲーム開始時のUIのポインタ
 CGame::GAMESTATE	CGame::m_gameState				= CGame::GAMESTATE_NONE;		// ゲーム状態
 int					CGame::m_nCounterGameState		= NULL;							// ゲームの状態管理カウンター
 int					CGame::m_nNumStone				= 0;							// 生成したストーンの数
 int					CGame::m_nCntDecide				= 0;							// ストーン生成のタイミングを決めるカウンタ
+int					CGame::m_nRound					= 0;							// ラウンド数
+int					CGame::m_nRoundAll				= 0;							// 全ラウンド数
 NUM_PLAYER			CGame::m_winPlayer				= NUM_PLAYER::PLAYER_NONE;		// 勝利したプレイヤー
 CObjectManager		*CGame::m_pObjMana				= nullptr;						// オブジェクトマネージャーのポインタ
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ストーンの生成場所に生成されているか
@@ -111,6 +115,7 @@ void CGame::Init(void)
 	CObjectManager::Load();					// オブジェクトマネージャーのロード
 	CCylinderCoillider::Load();				// シリンダーコライダーのロード
 	CUIKO::Load();							// KOのロード
+	CUI_GameStart::Load();					// 開始UIのロード
 
 	/* 生成 */
 	C3DBoxCollider::Create();										// ボックスコライダーの生成
@@ -131,11 +136,12 @@ void CGame::Init(void)
 	m_pPolyColli[CPolygonCollider::POLYCOLLI_STAIRS] = CPolygonCollider::Create(CPolygonCollider::POLYCOLLI_STAIRS);
 
 	/* ゲームの初期化 */
-	SetGameState(GAMESTATE_NORMAL);			// 通常状態に設定
+	m_gameState = GAMESTATE_BEFORE;
 	m_nCounterGameState = 0;				// ゲームの状態管理カウンターを0にする
 	m_nNumStone			= 0;				// 値を初期化
 	m_nCntDecide		= 0;				// 値を初期化
 	m_nRound			= 0;
+	m_nRoundAll			= MAX_ROUND;
 	m_roundPoint		= INTEGER2(0, 0);
 
 	for (int nCnt = 0; nCnt < STONE_POS; nCnt++)
@@ -167,6 +173,25 @@ void CGame::Uninit(void)
 	CBar::Unload();						// Barテクスチャアンロード
 	CObjectManager::Unload();			// オブジェクトマネージャーのアンロード
 	CUIKO::Unload();					// KOのアンロード
+	CUI_GameStart::Unload();			// 開始時のUIのアンロード
+
+	// 万が一残っていた場合
+	if (m_pUIGameStart)
+	{
+		// 破棄
+		m_pUIGameStart->Uninit();
+		delete m_pUIGameStart;
+		m_pUIGameStart = nullptr;
+	}
+
+	// 万が一残っていた場合
+	if (m_pUIKO)
+	{
+		// 破棄
+		m_pUIKO->Uninit();
+		delete m_pUIKO;
+		m_pUIKO = nullptr;
+	}
 
 	// ポーズの終了処理
 	m_pPause->Uninit();
@@ -240,6 +265,10 @@ void CGame::Draw(void)
 		// ポーズの更新処理
 		m_pPause->Draw();
 
+	// ゲーム開始時のUIの描画
+	if (m_pUIGameStart)
+		m_pUIGameStart->Draw();
+
 	// KOの描画
 	if (m_pUIKO)
 		m_pUIKO->Draw();
@@ -278,6 +307,17 @@ void CGame::AppearStone(void)
 //==================================================================================================================
 void CGame::GameBefore(void)
 {
+	if (!m_pUIGameStart)
+		m_pUIGameStart = CUI_GameStart::Create();
+
+	// カメラの更新処理
+	m_pCamera->Update();
+
+	// ライトの更新処理
+	m_pLight->Update();
+
+	if (m_pUIGameStart)
+		m_pUIGameStart->Update();
 }
 
 //==================================================================================================================
@@ -285,6 +325,15 @@ void CGame::GameBefore(void)
 //==================================================================================================================
 void CGame::GameNormal(void)
 {
+	// nullcheck
+	if (m_pUIGameStart)
+	{
+		// 破棄
+		m_pUIGameStart->Uninit();
+		delete m_pUIGameStart;
+		m_pUIGameStart = nullptr;
+	}
+
 	// カメラの更新処理
 	m_pCamera->Update();
 
@@ -396,14 +445,17 @@ void CGame::NextRound(void)
 	// ラウンド数を加算
 	m_nRound++;
 	// プレイヤーのラウンドポイントを加算
-	if (GetPlayer(PLAYER_ONE)->GetLife() > 0)
+	if (GetPlayer(PLAYER_ONE)->GetLife() <= 0 &&
+		GetPlayer(PLAYER_TWO)->GetLife() <= 0)
+		m_nRound--;
+	else if (GetPlayer(PLAYER_ONE)->GetLife() > 0)
 		m_roundPoint.nX++;
-	if (GetPlayer(PLAYER_TWO)->GetLife() > 0)
+	else if (GetPlayer(PLAYER_TWO)->GetLife() > 0)
 		m_roundPoint.nY++;
 
 	// どちらかが最大まで得点したら終了
-	if (m_roundPoint.nX >= (int)(MAX_ROUND / 2 + 0.5f) ||
-		m_roundPoint.nY >= (int)(MAX_ROUND / 2 + 0.5f))
+	if (m_roundPoint.nX == (int)((float)m_nRoundAll / 2.0f + 0.5f) ||
+		m_roundPoint.nY == (int)((float)m_nRoundAll / 2.0f + 0.5f))
 		m_gameState = GAMESTATE_RESULT;
 	else
 		m_gameState = GAMESTATE_BEFORE;
