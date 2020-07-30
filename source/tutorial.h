@@ -64,5 +64,7 @@ private:
 
 	D3DXVECTOR3 m_pos;							// 位置
 
+	bool m_bCharaDecide[MAX_PLAYER];			// キャラクターが選ばれたかどうか
+
 };
 #endif
