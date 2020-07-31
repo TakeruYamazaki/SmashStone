@@ -67,6 +67,8 @@ private:
 	void Control(void);								// ‘€ìŠÖ”
 	void Collision(void);							// “–‚½‚è”»’èŠÖ”
 	void Attack(void);								// UŒ‚ŠÖ”
+	void Smash(void);
+	void NormalAttack(void);
 
 	void CollisionAttack(void);						// UŒ‚”»’è
 
