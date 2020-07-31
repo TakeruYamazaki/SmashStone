@@ -225,6 +225,13 @@ void CPlayer::Collision(void)
 	{
 		// ポリゴンコライダーの取得
 		CPolygonCollider*pPolyColli = CGame::GetpolyColly(nCntPolyColli);
+
+		// ポリゴンコライダーポインタがNULLだった時
+		if (pPolyColli == NULL)
+		{// スキップ
+			continue;
+		}
+
 		// ポリゴンコライダーの衝突判定
 		if (pPolyColli[0].Collision(&m_pos, &m_posOld, &m_move, &out_intersect, &out_nor, m_bSmashBlowAway) == true)
 		{
