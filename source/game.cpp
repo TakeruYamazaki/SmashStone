@@ -50,8 +50,8 @@
 
 #define TIME_FADE_NEXTROUND	(10)									// ラウンド切り替えのフェード時間
 
-#define DEFAULTPOS_1P		(D3DXVECTOR3(0.0f, 0.0f, 100.0f))	// 1Pプレイヤーの初期座標
-#define DEFAULTPOS_2P		(D3DXVECTOR3(0.0f, 0.0f, -100.0f))	// 2Pプレイヤーの初期座標
+#define DEFAULTPOS_1P		(D3DXVECTOR3(100.0f, 0.0f, 100.0f))	// 1Pプレイヤーの初期座標
+#define DEFAULTPOS_2P		(D3DXVECTOR3(100.0f, 0.0f, 100.0f))	// 2Pプレイヤーの初期座標
 
 //==================================================================================================================
 //	静的メンバ変数宣言
@@ -536,6 +536,10 @@ void CGame::NextRound(void)
 		pFade->SetFade(CRenderer::MODE_NONE, TIME_FADE_NEXTROUND);
 		// バトル前へ
 		m_gameState = GAMESTATE_BEFORE;
+		m_pPlayer[PLAYER_ONE]->SetPos(DEFAULTPOS_1P);
+		m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_1P);
+		m_pPlayer[PLAYER_ONE]->SetLife(m_pPlayer[PLAYER_ONE]->GetMaxLife());
+		m_pPlayer[PLAYER_TWO]->SetLife(m_pPlayer[PLAYER_TWO]->GetMaxLife());
 	}
 }
 
