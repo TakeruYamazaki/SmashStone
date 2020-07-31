@@ -123,6 +123,7 @@ void CGame::Init(void)
 	m_pPolyColli[CPolygonCollider::POLYCOLLI_LONGSTAIRS] = CPolygonCollider::Create(CPolygonCollider::POLYCOLLI_LONGSTAIRS);
 	// äKíi
 	m_pPolyColli[CPolygonCollider::POLYCOLLI_STAIRS] = CPolygonCollider::Create(CPolygonCollider::POLYCOLLI_STAIRS);
+	m_pPolyColli[CPolygonCollider::POLYCOLLI_STAIRS_TOP] = CPolygonCollider::Create(CPolygonCollider::POLYCOLLI_STAIRS_TOP);
 
 	/* ÉQÅ[ÉÄÇÃèâä˙âª */
 	SetGameState(GAMESTATE_NORMAL);			// í èÌèÛë‘Ç…ê›íË
