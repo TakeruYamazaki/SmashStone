@@ -39,9 +39,6 @@
 #define VALUE_MOVE_PLAYER	(1.0f)	// プレイヤーの移動値
 #define VALUE_JUMP			(10.0f)	// ジャンプ力の値
 
-#define POS_1P	(D3DXVECTOR3(0.0f, 0.0f, 100.0f))	// 1Pプレイヤーの初期座標
-#define POS_2P	(D3DXVECTOR3(0.0f, 0.0f, -100.0f))	// 2Pプレイヤーの初期座標
-
 #define HEIGHT_CEILING	(400.0f)			// 天井の高さ
 
 #define BLOWAWAYFORCE_SMASH		(100.0f)	// 吹き飛ばし力(スマッシュ攻撃)
@@ -157,12 +154,6 @@ CPlayer *CPlayer::Create(int nPlayer, CHARACTER_TYPE type)
 	pPlayer->m_nPlayer = nPlayer;
 	// 初期化
 	pPlayer->Init();
-
-	// プレイヤー番号によって座標を再設定
-	if (nPlayer == PLAYER_ONE)
-		pPlayer->SetPos(POS_1P);
-	if (nPlayer == PLAYER_TWO)
-		pPlayer->SetPos(POS_2P);
 
 	// 値を返す
 	return pPlayer;
@@ -407,8 +398,31 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 		return;
 	}
 
-	// 歩いている
-	SetbWalk(true);
+	if (CGame::GetGameState() == CGame::GAMESTATE_NORMAL)
+	{
+		// 変身中、スマッシュ入力
+		if (m_bTrans &&
+			(pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_B)))
+			// スマッシュ
+			Smash();
+
+		// スマッシュ系モーション中は以降の処理をしない
+		if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE ||
+			m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH)
+			// 処理を終える
+			return;
+
+		// 攻撃入力
+		if (pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X) &&
+			(m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
+				m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH))
+		{
+			// 通常攻撃
+			NormalAttack();
+			// 処理を終える
+			return;
+		}
+	}
 
 	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// カメラ取得
 
@@ -418,6 +432,29 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 	float		CameraRotY = pCamera->GetRotY();	// カメラのY軸回転の取得
 	float		fSpeed = 0.0f;						// プレイヤーの速度
 	float		fAngle;								// スティック角度の計算用変数
+
+	if (!m_bJump && !m_bAttack && 
+		pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A))
+	{
+		// 条件を設定
+		m_bJump = true;
+		m_bWalk = false;
+
+		// 移動値を設定
+		move.y = VALUE_JUMP;
+	}
+
+	if (m_bAttack)
+	{
+		m_bWalk = false;
+		return;
+	}
+
+	if (m_bDown)
+	{
+		m_bWalk = false;
+		return;
+	}
 
 	// 角度の計算して補正
 	fAngle = atan2f(fValueX, fValueY);
@@ -440,16 +477,14 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 		m_bWalk = true;
 	}
 
-	// ジャンプ処理
-	if (!m_bJump &&
-		pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A))
+	if (!m_bJump)
 	{
-		move.y += VALUE_JUMP;
-		m_bJump = true;
+		if (!m_bWalk)
+			// 歩き始めはモーションリセット
+			m_pModelCharacter->ResetMotion();
+		// 歩いている
+		m_bWalk = true;
 	}
-
-	if (m_bJump)
-		m_bWalk = false;
 
 	// 回転の補正
 	CKananLibrary::InterpolationRot(&rotDest);

@@ -50,6 +50,9 @@
 
 #define TIME_FADE_NEXTROUND	(10)									// ƒ‰ƒEƒ“ƒhØ‚è‘Ö‚¦‚ÌƒtƒF[ƒhŠÔ
 
+#define DEFAULTPOS_1P		(D3DXVECTOR3(0.0f, 0.0f, 100.0f))	// 1PƒvƒŒƒCƒ„[‚Ì‰ŠúÀ•W
+#define DEFAULTPOS_2P		(D3DXVECTOR3(0.0f, 0.0f, -100.0f))	// 2PƒvƒŒƒCƒ„[‚Ì‰ŠúÀ•W
+
 //==================================================================================================================
 //	Ã“Iƒƒ“ƒo•Ï”éŒ¾
 //==================================================================================================================
@@ -72,6 +75,7 @@ int					CGame::m_nCntDecide				= 0;							// ƒXƒg[ƒ“¶¬‚Ìƒ^ƒCƒ~ƒ“ƒO‚ğŒˆ‚ß‚éƒJƒ
 int					CGame::m_nRound					= 0;							// ƒ‰ƒEƒ“ƒh”
 int					CGame::m_nRoundAll				= 0;							// ‘Sƒ‰ƒEƒ“ƒh”
 NUM_PLAYER			CGame::m_winPlayer				= NUM_PLAYER::PLAYER_NONE;		// Ÿ—˜‚µ‚½ƒvƒŒƒCƒ„[
+NUM_PLAYER			CGame::m_losePlayer				= NUM_PLAYER::PLAYER_NONE;		// •‰‚¯‚½ƒvƒŒƒCƒ„[
 CObjectManager		*CGame::m_pObjMana				= nullptr;						// ƒIƒuƒWƒFƒNƒgƒ}ƒl[ƒWƒƒ[‚Ìƒ|ƒCƒ“ƒ^
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ƒXƒg[ƒ“‚Ì¶¬êŠ‚É¶¬‚³‚ê‚Ä‚¢‚é‚©
 D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ƒXƒg[ƒ“‚Ì¶¬êŠ
@@ -79,7 +83,7 @@ D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ƒXƒg[ƒ“‚Ì¶¬êŠ
 	D3DXVECTOR3(0.0f, 20.0f, 0.0f),
 	D3DXVECTOR3(100.0f, 20.0f, 100.0f),
 	D3DXVECTOR3(100.0f, 20.0f, -100.0f),
-	D3DXVECTOR3(-100.0f, 20.0f, 100.0f),
+	D3DXVECTOR3(200.0f, 90.0f, 155.0f),
 	D3DXVECTOR3(-100.0f, 20.0f, -100.0f)
 };
 
@@ -122,6 +126,7 @@ void CGame::Init(void)
 	CCylinderCoillider::Load();				// ƒVƒŠƒ“ƒ_[ƒRƒ‰ƒCƒ_[‚Ìƒ[ƒh
 	CUIKO::Load();							// KO‚Ìƒ[ƒh
 	CUI_GameStart::Load();					// ŠJnUI‚Ìƒ[ƒh
+	CUI_GameResult::Load();
 
 	/* ¶¬ */
 	C3DBoxCollider::Create();										// ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[‚Ì¶¬
@@ -132,8 +137,9 @@ void CGame::Init(void)
 	m_pMeshSphere = CMeshSphere::Create();							// ƒƒbƒVƒ…‹…‚Ì¶¬ˆ—
 	m_pPlayer[PLAYER_ONE] = CPlayer::Create(PLAYER_ONE, (CHARACTER_TYPE)m_nPlayerType[PLAYER_ONE]);	// ƒvƒŒƒCƒ„[¶¬
 	m_pPlayer[PLAYER_TWO] = CPlayer::Create(PLAYER_TWO, (CHARACTER_TYPE)m_nPlayerType[PLAYER_TWO]);	// ƒvƒŒƒCƒ„[¶¬
-	//m_pPlayer[PLAYER_ONE]  = CPlayer::Create(PLAYER_ONE, CHARACTER_1YASU);	// ƒvƒŒƒCƒ„[¶¬
-	//m_pPlayer[PLAYER_TWO]  = CPlayer::Create(PLAYER_TWO, CHARACTER_2YASU);	// ƒvƒŒƒCƒ„[¶¬
+	m_pPlayer[PLAYER_ONE]->SetPos(DEFAULTPOS_1P);
+	m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_1P);
+
 	m_pMeshField  = CMeshField::Create(INTEGER2(2, 2), D3DXVECTOR3(300.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 50.0f));// ƒƒbƒVƒ…ƒtƒB[ƒ‹ƒh¶¬
 	m_pTime       = CTime::Create();								// ƒ^ƒCƒ€¶¬
 	m_pPause      = CPause::Create();								// ƒ|[ƒY‚Ì¶¬ˆ—
@@ -183,6 +189,7 @@ void CGame::Uninit(void)
 	CObjectManager::Unload();			// ƒIƒuƒWƒFƒNƒgƒ}ƒl[ƒWƒƒ[‚ÌƒAƒ“ƒ[ƒh
 	CUIKO::Unload();					// KO‚ÌƒAƒ“ƒ[ƒh
 	CUI_GameStart::Unload();			// ŠJn‚ÌUI‚ÌƒAƒ“ƒ[ƒh
+	CUI_GameResult::Unload();
 
 	// –œ‚ªˆêc‚Á‚Ä‚¢‚½ê‡
 	if (m_pUIGameStart)
@@ -191,6 +198,15 @@ void CGame::Uninit(void)
 		m_pUIGameStart->Uninit();
 		delete m_pUIGameStart;
 		m_pUIGameStart = nullptr;
+	}
+
+	// –œ‚ªˆêc‚Á‚Ä‚¢‚½ê‡
+	if (m_pUIGameResult)
+	{
+		// ”jŠü
+		m_pUIGameResult->Uninit();
+		delete m_pUIGameResult;
+		m_pUIGameResult = nullptr;
 	}
 
 	// –œ‚ªˆêc‚Á‚Ä‚¢‚½ê‡
@@ -248,7 +264,7 @@ void CGame::Update(void)
 
 #ifdef _DEBUG
 	// ƒL[ƒ{[ƒh‚Ì[0]‚ğ‰Ÿ‚µ‚½‚Æ‚«
-	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_RETURN))
+	if (m_gameState != GAMESTATE_RESULT && CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_RETURN))
 	{
 		// ƒtƒF[ƒhæ“¾
 		CFade::FADE fade = CFade::GetFade();
@@ -256,7 +272,7 @@ void CGame::Update(void)
 		// ƒtƒF[ƒh‚ª‰½‚à‚È‚¢
 		if (fade == CFade::FADE_NONE)
 			// ƒtƒF[ƒh‚ğİ’è‚·‚é
-			CFade::SetFade(CRenderer::MODE_RESULT, DEFAULT_FADE_TIME);
+			CFade::SetFade(CRenderer::MODE_TITLE, DEFAULT_FADE_TIME);
 	}
 #endif // _DEBUG
 }
@@ -301,6 +317,31 @@ CGame * CGame::Create(void)
 	pGame->Init();
 	// ’l‚ğ•Ô‚·
 	return pGame;
+}
+
+//==================================================================================================================
+//	Ÿ‚Ìƒ‚[ƒh‚ÖˆÚs
+//==================================================================================================================
+void CGame::SetNextMode(const int nextMode)
+{
+	// nullcheck
+	if (m_pUIGameResult)
+	{
+		// ”jŠü
+		m_pUIGameResult->Uninit();
+		delete m_pUIGameResult;
+		m_pUIGameResult = nullptr;
+	}
+
+	m_gameState = GAMESTATE_END;
+
+	// ƒtƒF[ƒhæ“¾
+	CFade::FADE fade = CFade::GetFade();
+
+	// ƒtƒF[ƒh‚ª‰½‚à‚È‚¢
+	if (fade == CFade::FADE_NONE)
+		// ƒtƒF[ƒh‚ğİ’è‚·‚é
+		CFade::SetFade((CRenderer::MODE)nextMode, DEFAULT_FADE_TIME);
 }
 
 //==================================================================================================================
@@ -475,10 +516,15 @@ void CGame::NextRound(void)
 	{
 		// ŸÒ‚ğŒˆ‚ß‚é
 		if (m_roundPoint.nX > m_roundPoint.nY)
+		{
 			m_winPlayer = PLAYER_ONE;
+			m_losePlayer = PLAYER_TWO;
+		}
 		else
+		{
 			m_winPlayer = PLAYER_TWO;
-		// ƒŠƒUƒ‹ƒg‚Ö
+			m_losePlayer = PLAYER_ONE;
+		}		// ƒŠƒUƒ‹ƒg‚Ö
 		m_gameState = GAMESTATE_RESULT;
 	}
 	// ‚»‚êˆÈŠO‚ÍÄƒoƒgƒ‹
@@ -508,29 +554,6 @@ void CGame::GameResult(void)
 	// XV
 	if (m_pUIGameResult)
 		m_pUIGameResult->Update();
-}
-
-//==================================================================================================================
-//	ƒQ[ƒ€I—¹
-//==================================================================================================================
-void CGame::GameEnd(void)
-{
-	// nullcheck
-	if (m_pUIGameResult)
-	{
-		// ”jŠü
-		m_pUIGameResult->Uninit();
-		delete m_pUIGameResult;
-		m_pUIGameResult = nullptr;
-	}
-
-	// ƒtƒF[ƒhæ“¾
-	CFade::FADE fade = CFade::GetFade();
-
-	// ƒtƒF[ƒh‚ª‰½‚à‚È‚¢
-	if (fade == CFade::FADE_NONE)
-		// ƒtƒF[ƒh‚ğİ’è‚·‚é
-		CFade::SetFade(CRenderer::MODE_RESULT, DEFAULT_FADE_TIME);
 }
 
 //==================================================================================================================
