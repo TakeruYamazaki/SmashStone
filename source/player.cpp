@@ -444,8 +444,12 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 	if (!m_bJump &&
 		pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A))
 	{
-		move.y += VALUE_JUMP;
+		// ğŒ‚ğİ’è
 		m_bJump = true;
+		m_bWalk = false;
+
+		// ˆÚ“®’l‚ğİ’è
+		move.y = VALUE_JUMP;
 	}
 
 	if (m_bJump)
