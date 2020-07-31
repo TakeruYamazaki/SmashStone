@@ -55,6 +55,11 @@ private:
 		FASE_MAX		// 最大数
 	} GAMESTART_FASE;	// UI表示の順序
 
+	void Victory(void);
+	void Result(void);
+	void CursorUp(void);
+	void CursorDown(void);
+	void CursorDecide(void);
 	void CreateUI(const int type);								// UIの生成
 	void MoveUI(void);											// UIの移動
 	void NextFase(void) { m_fase++; m_nCntAny = 0; }			// 次のフェーズに移行

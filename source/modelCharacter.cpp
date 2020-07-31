@@ -35,7 +35,11 @@ char			CModelCharacter::m_aFileName[CHARACTER_MAX][64] =
 	{ "data/OFFSET/offset_fokker.txt" },
 	{ "data/OFFSET/offset_fokker_trans.txt" },
 	{ "data/OFFSET/offset_niyasu.txt" },
-	{ "data/OFFSET/offset_niyasu_trans.txt" }
+	{ "data/OFFSET/offset_niyasu_trans.txt" },
+	{ "data/OFFSET/offset_sanyasu.txt" },
+	{ "data/OFFSET/offset_sanyasu_trans.txt" },
+	{ "data/OFFSET/offset_yonyasu.txt" },
+	{ "data/OFFSET/offset_yonyasu_trans.txt" }
 };
 
 //=============================================================================

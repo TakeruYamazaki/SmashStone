@@ -39,6 +39,7 @@ class CPolygonCollider;
 class CUIKO;
 class CUI_GameStart;
 class CUI_GameResult;
+class CRenderer;
 
 //==================================================================================================================
 //
@@ -63,7 +64,7 @@ public:
 		GAMESTATE_KO_AFTER,		// KO後
 		GAMESTATE_NEXTROUND,	// 次のラウンドへ
 		GAMESTATE_RESULT,		// リザルト
-		GAMESTATE_END,			// ゲームの終了
+		GAMESTATE_END,			// 終了
 		GAMESTATE_MAX			// 最大
 	} GAMESTATE;				// ゲームの状態
 
@@ -77,9 +78,10 @@ public:
 
 	static void SetPlayerType(const int nPlayer, const int type)
 		{ m_nPlayerType[nPlayer] = type * 2; }									// プレイヤータイプを保存
-	static void SetGameState(GAMESTATE state)	{ m_gameState = state; }	// ゲームの状態設定
+	static void SetGameState(GAMESTATE state)	{ m_gameState = state; }		// ゲームの状態設定
 	static void RemoveNumStone(int nIndexPos)	{ m_nNumStone--; m_bSetPos[nIndexPos] = false; }			// ストーンの数を減算
-	static void SetNumStone(const int &nStone)	{ m_nNumStone = nStone; }	// ストーンの数の設定
+	static void SetNumStone(const int &nStone)	{ m_nNumStone = nStone; }		// ストーンの数の設定
+	static void SetNextMode(const int nextMode);								// 次のモードへ移行
 
 	static GAMESTATE GetGameState(void)			{ return m_gameState; }			// ゲームの状態取得
 	static CPlayer *GetPlayer(int nPlayer)		{ return m_pPlayer[nPlayer]; }	// キャラクターの情報取得処理
@@ -92,7 +94,7 @@ public:
 	static CPolygonCollider* GetpolyColly(int nIndex) { return m_pPolyColli[nIndex]; }
 	static int GetRound(void)					{ return m_nRound; }			// 現在のラウンド数取得
 	static int GetAllRound(void)				{ return m_nRoundAll; }			// 全ラウンド数の取得
-	
+	static NUM_PLAYER GetLosePlayer(void)		{ return m_losePlayer; }		// 負けたプレイヤーの取得
 	static void AppearStone(void);				// どこからでも呼び出せるストーン出現
 
 protected:
@@ -106,7 +108,6 @@ private:
 	void SwitchPause(void);							// ポーズの切り替え
 	void NextRound(void);							// 次のラウンドへ
 	void GameResult(void);							// ゲームのリザルト
-	void GameEnd(void);								// ゲームの終了
 	void DecideCreateStone(void);					// ストーンを生成するか決める
 	static int DecideRandomPos(void);				// 生成位置をランダムで決める
 	static GAMESTATE m_gameState;					// ゲーム状態
@@ -131,6 +132,7 @@ private:
 	static CUI_GameStart *m_pUIGameStart;			// ゲーム開始時のUIのポインタ
 	static CUI_GameResult *m_pUIGameResult;			// ゲームリザルトのUIのポインタ
 	static NUM_PLAYER m_winPlayer;					// 勝利したプレイヤー
+	static NUM_PLAYER m_losePlayer;					// 負けたプレイヤー
 	INTEGER2 m_roundPoint;							// ラウンドのポイント数
 	static int m_nRound;							// 現在のラウンド
 	static int m_nRoundAll;							// 全ラウンド数
