@@ -83,7 +83,6 @@ void CCamera::Init(void)
 {
 	// 変数の初期化
 	m_posV		= ZeroVector3;
-	m_posDebug	= ZeroVector3;
 	m_posR		= ZeroVector3;
 	m_posVDest	= ZeroVector3;
 	m_posRDest	= ZeroVector3;
@@ -92,13 +91,14 @@ void CCamera::Init(void)
 	m_rotDest	= ZeroVector3;
 	m_mousePos	= ZeroVector3;
 	m_fDistance = 0.0f;
-	m_fDisScale = 1.0f;
+	m_fDisScale = 1.4f;
 	nCntRot = 0;										// 回転を始めるカウンタ
 	m_nCntTitleFade = 0;								// タイトルフェードカウンタ
 	m_bCameraMode = false;								// カメラモードかどうか
 	this->m_mode = CAMERA_GAME;
 
 #ifdef _DEBUG
+	m_posDebug = ZeroVector3;
 	this->m_mode = CAMERA_DEBUG;
 	m_posDebug = ZeroVector3;
 #endif
@@ -200,6 +200,7 @@ void CCamera::SetCameraPos(const D3DXVECTOR3 posV, const D3DXVECTOR3 posR)
 	m_fDistance = (float)sqrt(difpos.y * difpos.y + difpos.z * difpos.z);
 }
 
+#ifdef _DEBUG
 //==================================================================================================================
 // ImGuiの更新
 //==================================================================================================================
@@ -216,6 +217,7 @@ void CCamera::ShowDebugInfo(void)
 		ImGui::DragFloat("Distance", &m_fDisScale, 0.05f, 0.0f, 100.0f);
 	}
 }
+#endif
 
 //==================================================================================================================
 // ゲームのカメラ

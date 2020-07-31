@@ -55,6 +55,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_nAttackFrame		= 0;
 	m_nCntGap			= 0;
 	m_nCntJump			= 0;
+	m_nNumStone 		= 0;
 	m_bDown				= false;
 	m_bAttack			= false;
 	m_bJump				= false;

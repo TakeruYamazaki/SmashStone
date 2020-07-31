@@ -314,8 +314,8 @@ void CPlayer::NormalAttack(void)
 			if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 10)
 				return;
 			break;
-		case 3:
-			if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 25)
+		case 3:// 25
+			if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 10)
 				return;
 			break;
 		}
