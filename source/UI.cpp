@@ -14,6 +14,7 @@
 #include "game.h"
 #include "title.h"
 #include "tutorial.h"
+#include "kananlibrary.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -138,6 +139,7 @@ void CUI::Init(void)
 	m_bUITitle1 = false;		// タイトルを動かすかどうか
 	m_bUIEnter = false;			// エンターのα値用変数
 	m_bUIClockHands[MAX_PLAYER] = false;// 時計の針が動いたかどうか0
+	m_bCharaDecide[MAX_PLAYER] = false;// 自分のキャラクターを選択したかどうか
 
 	// ロゴの最大枚数カウント
 	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
@@ -459,52 +461,74 @@ void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
 		// キャラクター全員UI
 		SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, CHARAUI_POS_Y, 0.0f), CHARAFULLUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_CHARAFULL, NORMAL_COLOR);
 
-		// キーボードの[A]が押されたとき
-		if (pInputKeyboard->GetKeyboardTrigger(DIK_A))
+		// 自分のキャラクターを選択してないとき
+		if (!m_bCharaDecide[0])
 		{
-			// キャラ番号減算
-			m_nCharaNum[0] -= 1;
+			// キーボードの[A]が押されたとき
+			if (pInputKeyboard->GetKeyboardTrigger(ONE_LEFT))
+			{
+				// キャラ番号減算
+				m_nCharaNum[0] -= 1;
 
-			// 時計の針が動いていい状態にする
-			m_bUIClockHands[0] = true;
+				// 時計の針が動いていい状態にする
+				m_bUIClockHands[0] = true;
 
-			// 位置移動用カウンタ初期化
-			m_fPosMove[0] = 0;
+				// 位置移動用カウンタ初期化
+				m_fPosMove[0] = 0;
+			}
+			else if (pInputKeyboard->GetKeyboardTrigger(ONE_RIGHT))
+			{// キーボードの[D]が押されたとき
+			 // キャラ番号加算
+				m_nCharaNum[0] += 1;
+
+				// 時計の針が動いていい状態にする
+				m_bUIClockHands[0] = true;
+
+				// 位置移動用カウンタ初期化
+				m_fPosMove[0] = 0;
+			}
+
+			// 1Pが決定ボタンをおしたとき
+			if (pInputKeyboard->GetKeyboardTrigger(ONE_JUMP))
+			{
+				// キャラクターを選択した状態にする
+				m_bCharaDecide[0] = true;
+			}
 		}
-		else if (pInputKeyboard->GetKeyboardTrigger(DIK_D))
-		{// キーボードの[D]が押されたとき
-			// キャラ番号加算
-			m_nCharaNum[0] += 1;
 
-			// 時計の針が動いていい状態にする
-			m_bUIClockHands[0] = true;
-
-			// 位置移動用カウンタ初期化
-			m_fPosMove[0] = 0;
-		}
-
-		// キーボードの[←]が押されたとき
-		if (pInputKeyboard->GetKeyboardTrigger(DIK_LEFTARROW))
+		// 2Pのキャラクターが選ばれていないとき
+		if (!m_bCharaDecide[1])
 		{
-			// キャラ番号減算
-			m_nCharaNum[1] -= 1;
+			// キーボードの[←]が押されたとき
+			if (pInputKeyboard->GetKeyboardTrigger(TWO_LEFT))
+			{
+				// キャラ番号減算
+				m_nCharaNum[1] -= 1;
 
-			// 時計の針が動いていい状態にする
-			m_bUIClockHands[1] = true;
+				// 時計の針が動いていい状態にする
+				m_bUIClockHands[1] = true;
 
-			// 位置移動用カウンタ初期化
-			m_fPosMove[1] = 0;
-		}
-		else if (pInputKeyboard->GetKeyboardTrigger(DIK_RIGHTARROW))
-		{// キーボードの[→]が押されたとき
-			// キャラ番号加算
-			m_nCharaNum[1] += 1;
+				// 位置移動用カウンタ初期化
+				m_fPosMove[1] = 0;
+			}
+			else if (pInputKeyboard->GetKeyboardTrigger(TWO_RIGHT))
+			{// キーボードの[→]が押されたとき
+			 // キャラ番号加算
+				m_nCharaNum[1] += 1;
 
-			// 時計の針が動いていい状態にする
-			m_bUIClockHands[1] = true;
+				// 時計の針が動いていい状態にする
+				m_bUIClockHands[1] = true;
 
-			// 位置移動用カウンタ初期化
-			m_fPosMove[1] = 0;
+				// 位置移動用カウンタ初期化
+				m_fPosMove[1] = 0;
+			}
+
+			// 2Pが決定ボタンをおしたとき
+			if (pInputKeyboard->GetKeyboardTrigger(TWO_JUMP))
+			{
+				// キャラクターを選んだ状態にする
+				m_bCharaDecide[1] = true;
+			}
 		}
 
 		// 時計土台0UI

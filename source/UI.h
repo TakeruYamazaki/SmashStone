@@ -70,6 +70,7 @@ public:
 
 	UITYPE GetType(void);			// ロゴタイプ取得処理
 	int GetCharaNum(int nPlayer) { return m_nCharaNum[nPlayer]; }	// プレイヤーのタイプを取得
+	bool GetCharaDecide(int nPlayer) { return m_bCharaDecide[nPlayer]; }
 
 protected:
 
@@ -110,5 +111,6 @@ private:
 	bool m_bUITitle1;									// タイトルを動かすかどうか1
 	bool m_bUIEnter;									// エンターのα値用変数
 	bool m_bUIClockHands[MAX_PLAYER];					// 時計の針が動いているかどうか
+	bool m_bCharaDecide[MAX_PLAYER];					// 自分のキャラクターを選択したかどうか
 };
 #endif
