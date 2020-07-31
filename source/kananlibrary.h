@@ -44,7 +44,7 @@
 
 // 物理
 #define INERTIA				(0.3f)								// 慣性
-#define GRAVITY				(0.2f)								// 重力
+#define GRAVITY				(0.3f)								// 重力
 
 // 時間
 #define ONE_SECOND_FPS		(60)								// 一秒毎のフレーム数
@@ -133,11 +133,16 @@ typedef enum
 	CHARACTER_1YASU_TRANS,	// 1ヤス変身
 	CHARACTER_2YASU,		// 2ヤス
 	CHARACTER_2YASU_TRANS,	// 2ヤス変身
+	CHARACTER_3YASU,		// 3ヤス
+	CHARACTER_3YASU_TRANS,	// 3ヤス変身
+	CHARACTER_4YASU,		// 4ヤス
+	CHARACTER_4YASU_TRANS,	// 4ヤス変身
 	CHARACTER_MAX			// キャラクターの最大数
 } CHARACTER_TYPE;
 
 typedef enum
 {	// プレイヤー数
+	PLAYER_NONE,	// いない
 	PLAYER_ONE = 0,	// 1P
 	PLAYER_TWO,		// 2P
 	PLAYER_MAX		// 最大数

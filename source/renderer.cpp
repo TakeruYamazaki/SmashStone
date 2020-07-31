@@ -13,7 +13,7 @@
 #include "game.h"
 #include "title.h"
 #include "tutorial.h"
-#include "ranking.h"
+#include "result.h"
 #include "sound.h"
 #include "kananlibrary.h"
 #include "modelCharacter.h"
@@ -37,10 +37,9 @@ CLight *CRenderer::m_pLight = NULL;						// ライトの情報
 CGame *CRenderer::m_pGame = NULL;						// ゲーム情報
 CTitle *CRenderer::m_pTitle = NULL;						// タイトル情報
 CResult *CRenderer::m_pResult = NULL;					// リザルト情報
-CRanking *CRenderer::m_pRanking = NULL;					// ランキング情報
 CTutorial *CRenderer::m_pTutorial = NULL;				// チュートリアル情報
 CSound *CRenderer::m_pSound = NULL;						// 音情報
-CRenderer::MODE CRenderer::m_mode = MODE_GAME;			// 最初の画面
+CRenderer::MODE CRenderer::m_mode = MODE_TITLE;			// 最初の画面
 
 //==================================================================================================================
 // コンストラクタ
@@ -197,9 +196,9 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 		break;
 
 		// ランキングのとき
-	case MODE_RANKING:
+	case MODE_RESULT:
 		// ランキングの生成
-		m_pRanking = CRanking::Create();
+		m_pResult = CResult::Create();
 		break;
 	}
 
@@ -284,12 +283,12 @@ void CRenderer::Uninit(void)
 		m_pGame = nullptr;		// ポインタNULL
 		break;
 
-		// ランキングのとき
-	case MODE_RANKING:
-		// ランキングの終了処理
-		m_pRanking->Uninit();
-		delete m_pRanking;		// メモリの削除
-		m_pRanking = nullptr;	// ポインタNULL
+		// リザルト
+	case MODE_RESULT:
+		// 終了処理
+		m_pResult->Uninit();
+		delete m_pResult;		// メモリの削除
+		m_pResult = nullptr;	// ポインタNULL
 		break;
 	}
 
@@ -319,7 +318,8 @@ void CRenderer::Update(void)
 	CGame::GAMESTATE gameState = CGame::GetGameState();
 
 	// ゲーム状態がポーズじゃないとき
-	if (gameState != CGame::GAMESTATE_PAUSE)
+	if (gameState != CGame::GAMESTATE_PAUSE && 
+		gameState != CGame::GAMESTATE_KO)
 	{
 		// Sceneで管理するすべての更新処理
 		CScene::UpdateAll();
@@ -348,10 +348,10 @@ void CRenderer::Update(void)
 		m_pGame->Update();
 		break;
 
-		// ランキングのとき
-	case MODE_RANKING:
+		// リザルト
+	case MODE_RESULT:
 		// 更新処理
-		m_pRanking->Update();
+		m_pResult->Update();
 		break;
 	}
 
@@ -397,10 +397,10 @@ void CRenderer::Draw(void)
 			m_pGame->Draw();
 			break;
 
-			// ランキングのとき
-		case MODE_RANKING:
+			// リザルト
+		case MODE_RESULT:
 			// 描画処理
-			m_pRanking->Draw();
+			m_pResult->Draw();
 			break;
 		}
 
@@ -445,6 +445,10 @@ void CRenderer::Draw(void)
 //==================================================================================================================
 void CRenderer::SetMode(MODE mode)
 {
+	// なにもないなら処理しない
+	if (mode == CRenderer::MODE_NONE)
+		return;
+
 	// 指定した音を止める
 	switch (mode)
 	{
@@ -468,7 +472,7 @@ void CRenderer::SetMode(MODE mode)
 		break;
 
 		// ランキングのとき
-	case MODE_RANKING:
+	case MODE_RESULT:
 		// 音を止める
 		//m_pSound->StopSound(CSound::SOUND_LABEL_BGMGAME);
 		//m_pSound->StopSound(CSound::SOUND_LABEL_BGMTITLE);
@@ -508,14 +512,14 @@ void CRenderer::SetMode(MODE mode)
 		m_pGame = nullptr;
 		break;
 
-		// ランキングのとき
-	case MODE_RANKING:
+		// リザルト
+	case MODE_RESULT:
 		// 終了処理
-		m_pRanking->Uninit();
+		m_pResult->Uninit();
 		// 破棄
-		delete m_pRanking;
+		delete m_pResult;
 		// NULLにする
-		m_pRanking = nullptr;
+		m_pResult = nullptr;
 		break;
 	}
 
@@ -545,10 +549,10 @@ void CRenderer::SetMode(MODE mode)
 		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMGAME);
 		break;
 
-		// ランキングのとき
-	case MODE_RANKING:
+		// リザルト
+	case MODE_RESULT:
 		// 生成処理
-		m_pRanking = CRanking::Create();
+		m_pResult = CResult::Create();
 		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMRESULT);
 		break;
 	}

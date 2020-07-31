@@ -64,9 +64,6 @@
     <ClCompile Include="source\game.cpp">
       <Filter>mode</Filter>
     </ClCompile>
-    <ClCompile Include="source\ranking.cpp">
-      <Filter>mode</Filter>
-    </ClCompile>
     <ClCompile Include="source\title.cpp">
       <Filter>mode</Filter>
     </ClCompile>
@@ -166,6 +163,18 @@
     <ClCompile Include="source\charaParam.cpp">
       <Filter>character</Filter>
     </ClCompile>
+    <ClCompile Include="source\result.cpp">
+      <Filter>mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_KO.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_gameStart.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\polygon2D.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\sceneX.h">
@@ -232,9 +241,6 @@
       <Filter>character</Filter>
     </ClInclude>
     <ClInclude Include="source\game.h">
-      <Filter>mode</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ranking.h">
       <Filter>mode</Filter>
     </ClInclude>
     <ClInclude Include="source\title.h">
@@ -338,6 +344,18 @@
     </ClInclude>
     <ClInclude Include="source\charaParam.h">
       <Filter>character</Filter>
+    </ClInclude>
+    <ClInclude Include="source\result.h">
+      <Filter>mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_KO.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\polygon2D.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_gameStart.h">
+      <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

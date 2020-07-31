@@ -49,6 +49,7 @@ public:
 	static void UpdateAll(void);							// 全ての更新処理
 	static void DrawAll(void);								// 全ての描画処理
 	static void ReleaseAll(void);							// 全てに死亡フラグ立てる処理
+	void Release(void);
 
 	void Deleate(int type);					// 削除する
 
@@ -58,7 +59,6 @@ public:
 	void SetPriority(PRIORITY priority) { m_nPriority = priority; }	// プライオリティの設定
 
 protected:
-	void Release(void);
 
 private:
 	static CScene *m_pTop[PRIORITY_MAX];					// 先頭オブジェクトへのポインタ

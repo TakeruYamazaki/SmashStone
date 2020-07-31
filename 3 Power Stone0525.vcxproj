@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\polygon2D.cpp" />
     <ClCompile Include="source\3DBoxCollider.cpp" />
     <ClCompile Include="source\bar.cpp" />
     <ClCompile Include="source\camera.cpp" />
@@ -198,7 +199,7 @@
     <ClCompile Include="source\pause.cpp" />
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\PolygonCollider.cpp" />
-    <ClCompile Include="source\ranking.cpp" />
+    <ClCompile Include="source\result.cpp" />
     <ClCompile Include="source\Reflection.cpp" />
     <ClCompile Include="source\renderer.cpp" />
     <ClCompile Include="source\scene.cpp" />
@@ -211,6 +212,9 @@
     <ClCompile Include="source\title.cpp" />
     <ClCompile Include="source\tutorial.cpp" />
     <ClCompile Include="source\UI.cpp" />
+    <ClCompile Include="source\UI_gameResult.cpp" />
+    <ClCompile Include="source\UI_gameStart.cpp" />
+    <ClCompile Include="source\UI_KO.cpp" />
     <ClCompile Include="source\wall.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -256,8 +260,9 @@
     <ClInclude Include="source\objManager.h" />
     <ClInclude Include="source\pause.h" />
     <ClInclude Include="source\player.h" />
+    <ClInclude Include="source\polygon2D.h" />
     <ClInclude Include="source\PolygonCollider.h" />
-    <ClInclude Include="source\ranking.h" />
+    <ClInclude Include="source\result.h" />
     <ClInclude Include="source\Reflection.h" />
     <ClInclude Include="source\renderer.h" />
     <ClInclude Include="source\scene.h" />
@@ -270,6 +275,9 @@
     <ClInclude Include="source\title.h" />
     <ClInclude Include="source\tutorial.h" />
     <ClInclude Include="source\UI.h" />
+    <ClInclude Include="source\UI_gameResult.h" />
+    <ClInclude Include="source\UI_gameStart.h" />
+    <ClInclude Include="source\UI_KO.h" />
     <ClInclude Include="source\wall.h" />
   </ItemGroup>
   <ItemGroup>

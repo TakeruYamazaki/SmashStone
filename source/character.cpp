@@ -219,6 +219,13 @@ void CCharacter::Daunted(const int nGap)
 }
 
 //=============================================================================
+// èüóòçsìÆ
+//=============================================================================
+void CCharacter::VictoryAction(void)
+{
+}
+
+//=============================================================================
 // à⁄ìÆÇÃèàóù
 //=============================================================================
 void CCharacter::Move(void)
@@ -242,9 +249,7 @@ void CCharacter::Move(void)
 		CMylibrary::SlowingMove(&m_move.z, INERTIA_BLOWAWAY);
 	}
 	else
-	{
 		CKananLibrary::InertiaMoveXZ(&m_move);
-	}
 
 	// èdóÕ
 	CKananLibrary::Gravity(m_move.y);

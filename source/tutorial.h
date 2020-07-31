@@ -25,9 +25,9 @@ class CLight;
 class CPolygon;
 class CMeshField;
 class CCharacter;
-class CLogo;
 class CModel;
 class CMeshSphere;
+class CUI;
 
 //==================================================================================================================
 //
@@ -37,32 +37,34 @@ class CMeshSphere;
 class CTutorial
 {
 public:
-	CTutorial();									// コンストラクタ
-	~CTutorial();									// デストラクタ
-	void Init(void);								// 初期化処理
-	void Uninit(void);								// 終了処理
-	void Update(void);								// 更新処理
-	void Draw(void);								// 描画処理
+	CTutorial();								// コンストラクタ
+	~CTutorial();								// デストラクタ
+	void Init(void);							// 初期化処理
+	void Uninit(void);							// 終了処理
+	void Update(void);							// 更新処理
+	void Draw(void);							// 描画処理
 
-	static CTutorial *Create(void);					// 生成処理
-	static CCharacter *GetCharacter(void);			// キャラクターの情報取得処理
+	static CTutorial *Create(void);				// 生成処理
+	static CCharacter *GetCharacter(void);		// キャラクターの情報取得処理
 
 protected:
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture;			// テクスチャの情報ポインタ
-	static CCamera *m_pCamera;						// カメラのの情報ポインタ
-	static CLight *m_pLight;						// ライトのの情報ポインタ
-	static CPolygon *m_pPolygon;					// ポリゴンの情報ポインタ
-	static CMeshField *m_pMeshField;				// メッシュフィールドの情報ポインタ
-	static CCharacter *m_pCharacter;				// キャラクターの情報ポインタ
-	static CLogo *m_pLogo;							// ロゴの情報ポインタ
-	static CModel *m_pModel[TUTORIAL_MAX_MODEL];	// モデルの情報ポインタ
-	static CMeshSphere *m_pMeshSphere;				// メッシュ球の情報ポインタ
+	static LPDIRECT3DTEXTURE9 m_pTexture;		// テクスチャの情報ポインタ
+	static CCamera *m_pCamera;					// カメラのの情報ポインタ
+	static CLight *m_pLight;					// ライトのの情報ポインタ
+	static CPolygon *m_pPolygon;				// ポリゴンの情報ポインタ
+	static CMeshField *m_pMeshField;			// メッシュフィールドの情報ポインタ
+	static CCharacter *m_pCharacter;			// キャラクターの情報ポインタ
+	static CUI *m_pUI;							// UIの情報ポインタ
+	static CModel *m_pModel[TUTORIAL_MAX_MODEL];// モデルの情報ポインタ
+	static CMeshSphere *m_pMeshSphere;			// メッシュ球の情報ポインタ
 
-	LPDIRECT3DVERTEXBUFFER9 m_pVertexBuff;			// 頂点バッファ
+	LPDIRECT3DVERTEXBUFFER9 m_pVertexBuff;		// 頂点バッファ
 
-	D3DXVECTOR3 m_pos;								// 位置
+	D3DXVECTOR3 m_pos;							// 位置
+
+	bool m_bCharaDecide[MAX_PLAYER];			// キャラクターが選ばれたかどうか
 
 };
 #endif
