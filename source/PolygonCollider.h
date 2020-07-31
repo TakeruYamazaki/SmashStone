@@ -26,9 +26,11 @@ class CPolygonCollider : public CScene
 public:
 	enum
 	{
-		POLYCOLLI_STAIRS = 0,	// 階段
-		POLYCOLLI_LONGSTAIRS,	// 緩やかな階段
-		POLYCOLLI_MAX			// 最大
+		POLYCOLLI_STAIRS = 0,		// 階段
+		POLYCOLLI_STAIRS_TOP,		// 階段の上部
+		POLYCOLLI_LONGSTAIRS,		// 緩やかな階段
+		POLYCOLLI_LONGSTAIRS_TOP,	// 緩やかな階段の上部
+		POLYCOLLI_MAX				// 最大
 	};
 
 
