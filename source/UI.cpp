@@ -15,6 +15,7 @@
 #include "title.h"
 #include "tutorial.h"
 #include "kananlibrary.h"
+#include "inputGamepad.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -125,6 +126,7 @@ void CUI::Init(void)
 	m_fCntUITitle1 = 0;			// タイトルUI用カウンタ1
 	m_fCntEnter = 0;			// エンター用カウンタ
 	m_fCntUISign = 0;			// 看板用カウンタ
+	m_nPlayer = 0;				// プレイヤー番号
 	m_fPosMove[MAX_PLAYER] = 0;	// 位置移動変数
 	m_fPos[0] = 370;			// 現在の枠線テクスチャの位置X
 	m_fPos[1] = 910;			// 現在の枠線テクスチャの位置X
@@ -140,6 +142,7 @@ void CUI::Init(void)
 	m_bUIEnter = false;			// エンターのα値用変数
 	m_bUIClockHands[MAX_PLAYER] = false;// 時計の針が動いたかどうか0
 	m_bCharaDecide[MAX_PLAYER] = false;// 自分のキャラクターを選択したかどうか
+	m_bStickReturn[MAX_PLAYER] = false;// パッドスティックを戻したかどうか
 
 	// ロゴの最大枚数カウント
 	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
@@ -188,11 +191,21 @@ void CUI::Update(void)
 	// キーボード取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
 
+	// ゲームパッド変数
+	CInputGamepad *pGamepad[MAX_PLAYER];
+
+	// 最大人数までカウント
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+	{
+		// ゲームパッド取得
+		pGamepad[nCnt] = CManager::GetInputGamepad(nCnt);
+	}
+
 	// UIタイトルの更新処理
-	TitleUpdate(pInputKeyboard);
+	TitleUpdate(pInputKeyboard, pGamepad[0], pGamepad[1]);
 
 	// UIチュートリアル更新処理
-	TutorialUpdate(pInputKeyboard);
+	TutorialUpdate(pInputKeyboard, pGamepad[0], pGamepad[1]);
 
 }
 
@@ -297,7 +310,7 @@ CUI::UITYPE CUI::GetType(void)
 //==================================================================================================================
 // タイトル更新処理
 //==================================================================================================================
-void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
+void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInputGamepad *pGamepad1)
 {
 	// タイトルのとき
 	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
@@ -437,15 +450,14 @@ void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
 				SetUI(D3DXVECTOR3(MODE01UI_BEGINPOS_X, MODEUI_BEGINPOS_Y + m_fCntUISign, 0.0f), MODEUI_SIZE_X, MODEUI_SIZE_Y, LOGOTYPE_MODEFREAM, NORMAL_COLOR);
 			}
 
-			// キーボードの[→]を押したとき
-			if (pInputKeyboard->GetKeyboardTrigger(DIK_RIGHTARROW))
-			{
-				m_nMode = 1;
-			}
-			else if (pInputKeyboard->GetKeyboardTrigger(DIK_LEFTARROW))
-			{// キーボードの[←]を押したとき
-				m_nMode = 0;
-			}
+			// ゲームパッド有効時
+			if (pGamepad0->GetbConnect() || pGamepad1->GetbConnect())
+				// ゲームパッド操作
+				ControlGamepad(pGamepad0, pGamepad1);
+			// ゲームパッド無効時
+			else
+				// キーボード操作
+				ControlKeyboard(pKeyboard);
 		}
 	}
 }
@@ -453,7 +465,7 @@ void CUI::TitleUpdate(CInputKeyboard *pInputKeyboard)
 //==================================================================================================================
 // チュートリアル更新処理
 //==================================================================================================================
-void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
+void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, CInputGamepad *pGamepad1)
 {
 	// チュートリアルのとき
 	if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
@@ -461,75 +473,14 @@ void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
 		// キャラクター全員UI
 		SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, CHARAUI_POS_Y, 0.0f), CHARAFULLUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_CHARAFULL, NORMAL_COLOR);
 
-		// 自分のキャラクターを選択してないとき
-		if (!m_bCharaDecide[0])
-		{
-			// キーボードの[A]が押されたとき
-			if (pInputKeyboard->GetKeyboardTrigger(ONE_LEFT))
-			{
-				// キャラ番号減算
-				m_nCharaNum[0] -= 1;
-
-				// 時計の針が動いていい状態にする
-				m_bUIClockHands[0] = true;
-
-				// 位置移動用カウンタ初期化
-				m_fPosMove[0] = 0;
-			}
-			else if (pInputKeyboard->GetKeyboardTrigger(ONE_RIGHT))
-			{// キーボードの[D]が押されたとき
-			 // キャラ番号加算
-				m_nCharaNum[0] += 1;
-
-				// 時計の針が動いていい状態にする
-				m_bUIClockHands[0] = true;
-
-				// 位置移動用カウンタ初期化
-				m_fPosMove[0] = 0;
-			}
-
-			// 1Pが決定ボタンをおしたとき
-			if (pInputKeyboard->GetKeyboardTrigger(ONE_JUMP))
-			{
-				// キャラクターを選択した状態にする
-				m_bCharaDecide[0] = true;
-			}
-		}
-
-		// 2Pのキャラクターが選ばれていないとき
-		if (!m_bCharaDecide[1])
-		{
-			// キーボードの[←]が押されたとき
-			if (pInputKeyboard->GetKeyboardTrigger(TWO_LEFT))
-			{
-				// キャラ番号減算
-				m_nCharaNum[1] -= 1;
-
-				// 時計の針が動いていい状態にする
-				m_bUIClockHands[1] = true;
-
-				// 位置移動用カウンタ初期化
-				m_fPosMove[1] = 0;
-			}
-			else if (pInputKeyboard->GetKeyboardTrigger(TWO_RIGHT))
-			{// キーボードの[→]が押されたとき
-			 // キャラ番号加算
-				m_nCharaNum[1] += 1;
-
-				// 時計の針が動いていい状態にする
-				m_bUIClockHands[1] = true;
-
-				// 位置移動用カウンタ初期化
-				m_fPosMove[1] = 0;
-			}
-
-			// 2Pが決定ボタンをおしたとき
-			if (pInputKeyboard->GetKeyboardTrigger(TWO_JUMP))
-			{
-				// キャラクターを選んだ状態にする
-				m_bCharaDecide[1] = true;
-			}
-		}
+		// ゲームパッド有効時
+		if (pGamepad0->GetbConnect() || pGamepad1->GetbConnect())
+			// ゲームパッド操作
+			ControlGamepad(pGamepad0, pGamepad1);
+		// ゲームパッド無効時
+		else
+			// キーボード操作
+			ControlKeyboard(pKeyboard);
 
 		// 時計土台0UI
 		SetUI(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCK0, NORMAL_COLOR);
@@ -705,6 +656,256 @@ void CUI::TutorialUpdate(CInputKeyboard * pInputKeyboard)
 		// テクスチャ設定
 		m_pScene2D[LOGOTYPE_2PCHARA]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1]);
 	}
+}
+
+//==================================================================================================================
+// ゲームパッド操作
+//==================================================================================================================
+void CUI::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGamepad1)
+{
+	float fValueX0, fValueY0 = 0;	// ゲームパッドのスティック情報の取得用
+	float fValueX1, fValueY1 = 0;	// ゲームパッドのスティック情報の取得用
+
+	// 左スティック取得
+	pGamepad0->GetStickLeft(&fValueX0, &fValueY0);
+	pGamepad1->GetStickLeft(&fValueX1, &fValueY1);
+
+	//// 何も入力されていなければ、処理しない
+	//if (FAILED(CKananLibrary::GetMoveByGamepad(pGamepad0)) &&
+	//	fValueX0 == 0 && fValueY0 == 0 &&
+	//	FAILED(CKananLibrary::GetMoveByGamepad(pGamepad1)) &&
+	//	fValueX1 == 0 && fValueY1 == 0)
+	//{
+	//	return;
+	//}
+
+	// タイトルのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
+	{
+		// 左に傾けたとき
+		if (fValueX0 < 0 || fValueX1 < 0)
+		{
+			// モード0
+			m_nMode = 0;
+		}
+		else if (fValueX0 > 0 || fValueX1 > 0)
+		{// 右に傾けたとき
+			// モード1
+			m_nMode = 1;
+		}
+	}
+
+	// チュートリアルのとき
+	else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
+	{
+		// 自分のキャラクターを選択してないとき
+		if (!m_bCharaDecide[0])
+		{
+			// スティックを戻しているとき
+			if (m_bStickReturn[0])
+			{
+				// 左に傾けたとき
+				if (fValueX0 < 0)
+				{
+					// キャラ番号減算
+					m_nCharaNum[0] -= 1;
+
+					// 時計の針が動いていい状態にする
+					m_bUIClockHands[0] = true;
+
+					// 位置移動用カウンタ初期化
+					m_fPosMove[0] = 0;
+
+					// スティックを戻したかどうか
+					m_bStickReturn[0] = false;
+				}
+				else if (fValueX0 > 0)
+				{// 右に傾けたとき
+					// キャラ番号加算
+					m_nCharaNum[0] += 1;
+
+					// 時計の針が動いていい状態にする
+					m_bUIClockHands[0] = true;
+
+					// 位置移動用カウンタ初期化
+					m_fPosMove[0] = 0;
+
+					// スティックを戻したかどうか
+					m_bStickReturn[0] = false;
+				}
+
+				// 四角ボタンを押したとき
+				if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_X))
+				{
+					// キャラクターを選択した状態にする
+					m_bCharaDecide[0] = true;
+				}
+			}
+
+			// スティック角度0のとき
+			if (fValueX0 == 0)
+			{
+				// スティックを戻している状態にする
+				m_bStickReturn[0] = true;
+			}
+		}
+
+		// 2Pのキャラクターが選ばれていないとき
+		if (!m_bCharaDecide[1])
+		{
+			// スティックを戻しているとき
+			if (m_bStickReturn[1])
+			{
+				// 左に傾けたとき
+				if (fValueX1 < 0)
+				{
+					// キャラ番号減算
+					m_nCharaNum[1] -= 1;
+
+					// 時計の針が動いていい状態にする
+					m_bUIClockHands[1] = true;
+
+					// 位置移動用カウンタ初期化
+					m_fPosMove[1] = 0;
+
+					// スティックが戻っていない状態にする
+					m_bStickReturn[1] = false;
+				}
+				else if (fValueX1 > 0)
+				{
+					// キャラ番号加算
+					m_nCharaNum[1] += 1;
+
+					// 時計の針が動いていい状態にする
+					m_bUIClockHands[1] = true;
+
+					// 位置移動用カウンタ初期化
+					m_fPosMove[1] = 0;
+
+					// スティックが戻っていない状態にする
+					m_bStickReturn[1] = false;
+				}
+
+				// 四角ボタンを押したとき
+				if (pGamepad1->GetTrigger(CInputGamepad::JOYPADKEY_X))
+				{
+					// キャラクターを選択した状態にする
+					m_bCharaDecide[1] = true;
+				}
+			}
+
+			// スティックが傾いていないとき
+			if (fValueX1 == 0)
+			{
+				// スティックが戻っている状態にする
+				m_bStickReturn[1] = true;
+			}
+		}
+	}
+}
+//==================================================================================================================
+// キーボード処理
+//==================================================================================================================
+void CUI::ControlKeyboard(CInputKeyboard * pKeyboard)
+{
+	// タイトルのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
+	{
+		// キーボードの[→]を押したとき
+		if (pKeyboard->GetKeyboardTrigger(DIK_RIGHTARROW))
+		{
+			m_nMode = 1;
+		}
+		else if (pKeyboard->GetKeyboardTrigger(DIK_LEFTARROW))
+		{// キーボードの[←]を押したとき
+			m_nMode = 0;
+		}
+
+		// キーボードの[D]を押したとき
+		if (pKeyboard->GetKeyboardTrigger(DIK_D))
+		{
+			m_nMode = 1;
+		}
+		else if (pKeyboard->GetKeyboardTrigger(DIK_A))
+		{// キーボードの[A]を押したとき
+			m_nMode = 0;
+		}
+	}
+
+	else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
+	{// チュートリアルのとき
+
+		// 自分のキャラクターを選択してないとき
+		if (!m_bCharaDecide[0])
+		{
+			// キーボードの[A]が押されたとき
+			if (pKeyboard->GetKeyboardTrigger(ONE_LEFT))
+			{
+				// キャラ番号減算
+				m_nCharaNum[0] -= 1;
+
+				// 時計の針が動いていい状態にする
+				m_bUIClockHands[0] = true;
+
+				// 位置移動用カウンタ初期化
+				m_fPosMove[0] = 0;
+			}
+			else if (pKeyboard->GetKeyboardTrigger(ONE_RIGHT))
+			{// キーボードの[D]が押されたとき
+			 // キャラ番号加算
+				m_nCharaNum[0] += 1;
+
+				// 時計の針が動いていい状態にする
+				m_bUIClockHands[0] = true;
+
+				// 位置移動用カウンタ初期化
+				m_fPosMove[0] = 0;
+			}
+
+			// 1Pが決定ボタンをおしたとき
+			if (pKeyboard->GetKeyboardTrigger(ONE_JUMP))
+			{
+				// キャラクターを選択した状態にする
+				m_bCharaDecide[0] = true;
+			}
+		}
+
+		// 2Pのキャラクターが選ばれていないとき
+		if (!m_bCharaDecide[1])
+		{
+			// キーボードの[←]が押されたとき
+			if (pKeyboard->GetKeyboardTrigger(TWO_LEFT))
+			{
+				// キャラ番号減算
+				m_nCharaNum[1] -= 1;
+
+				// 時計の針が動いていい状態にする
+				m_bUIClockHands[1] = true;
+
+				// 位置移動用カウンタ初期化
+				m_fPosMove[1] = 0;
+			}
+			else if (pKeyboard->GetKeyboardTrigger(TWO_RIGHT))
+			{// キーボードの[→]が押されたとき
+			 // キャラ番号加算
+				m_nCharaNum[1] += 1;
+
+				// 時計の針が動いていい状態にする
+				m_bUIClockHands[1] = true;
+
+				// 位置移動用カウンタ初期化
+				m_fPosMove[1] = 0;
+			}
+
+			// 2Pが決定ボタンをおしたとき
+			if (pKeyboard->GetKeyboardTrigger(TWO_JUMP))
+			{
+				// キャラクターを選んだ状態にする
+				m_bCharaDecide[1] = true;
+			}
+		}
+	}
+
 }
 
 //==================================================================================================================

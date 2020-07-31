@@ -117,7 +117,20 @@ void CTitle::Uninit(void)
 void CTitle::Update(void)
 {
 	// キーボード取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = nullptr;
+
+	// ゲームパッド変数
+	CInputGamepad *pInputGamepad[MAX_PLAYER];
+
+	// 最大人数までカウント
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+	{
+		// ゲームパッド取得
+		pInputGamepad[nCnt] = CManager::GetInputGamepad(nCnt);
+	}
+	if (!pInputGamepad[PLAYER_ONE]->GetbConnect() ||
+		!pInputGamepad[PLAYER_TWO]->GetbConnect())
+			pInputKeyboard = CManager::GetInputKeyboard();
 
 	// フェード取得
 	CFade::FADE fade = CFade::GetFade();
@@ -129,7 +142,9 @@ void CTitle::Update(void)
 	m_pLight->Update();
 
 	// キーボードの[Enter] 又は コントローラーの[START]を押したとき
-	if (pInputKeyboard->GetKeyboardTrigger(DIK_RETURN))
+	if ((pInputGamepad[PLAYER_ONE]->GetTrigger(CInputGamepad::JOYPADKEY_START)) ||
+		(pInputGamepad[PLAYER_TWO]->GetTrigger(CInputGamepad::JOYPADKEY_START)) || 
+		(pInputKeyboard && pInputKeyboard->GetKeyboardTrigger(DIK_RETURN)))
 	{
 		// 次の画面のとき
 		if (m_bNextScreen)

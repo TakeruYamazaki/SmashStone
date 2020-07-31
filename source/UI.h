@@ -18,6 +18,7 @@
 //==================================================================================================================
 class CScene2D;
 class CInputKeyboard;
+class CInputGamepad;
 
 //==================================================================================================================
 //
@@ -75,8 +76,10 @@ public:
 protected:
 
 private:
-	void TitleUpdate(CInputKeyboard *pInputKeyboard);	// タイトルの更新処理
-	void TutorialUpdate(CInputKeyboard *pInputKeyboard);// チュートリアルの更新処理
+	void TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *Gamepad0, CInputGamepad *pGamepad1);	// タイトルの更新処理
+	void TutorialUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInputGamepad *pGamepad1);// チュートリアルの更新処理
+	void ControlGamepad(CInputGamepad *pGamepad0, CInputGamepad *pGamepad1);// ゲームパッド操作
+	void ControlKeyboard(CInputKeyboard *pKeyboard);	// キーボード操作
 
 	static LPDIRECT3DTEXTURE9 m_pTexture[LOGOTYPE_MAX];	// テクスチャ情報
 	static char *m_apFileName[LOGOTYPE_MAX];			// ロゴのファイル名
@@ -92,6 +95,7 @@ private:
 	int m_nCntRot[MAX_PLAYER];							// 時計の針回転用カウンタ
 	int m_nCntWait[MAX_PLAYER];							// 待機時間用カウンタ
 	int m_nCntMove[MAX_PLAYER];							// 枠線移動用カウンタ
+	int m_nPlayer;										// プレイヤー番号
 
 	float m_fCntUITitle0;								// タイトルUI用カウンタ0
 	float m_fCntUITitle1;								// タイトルUI用カウンタ1
@@ -112,5 +116,6 @@ private:
 	bool m_bUIEnter;									// エンターのα値用変数
 	bool m_bUIClockHands[MAX_PLAYER];					// 時計の針が動いているかどうか
 	bool m_bCharaDecide[MAX_PLAYER];					// 自分のキャラクターを選択したかどうか
+	bool m_bStickReturn[MAX_PLAYER];					// パッドのスティックを戻したかどうか
 };
 #endif
