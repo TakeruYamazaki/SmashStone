@@ -96,7 +96,6 @@ void CHitPoint::Init(void)
 	m_nCntPos1 = 21;				// 位置変更用カウンタ
 	m_nCntPos2 = 21;				// 位置変更用カウンタ
 	m_nCntPos3 = 21;				// 位置変更用カウンタ
-	m_fMaxHP = 100;					// 最大HP
 	m_fNowHP = m_fMaxHP;			// 現在のHP
 	m_fHeight = MAX_HEIGHT;			// 高さ
 
@@ -252,11 +251,12 @@ void CHitPoint::Draw(void)
 //==================================================================================================================
 // オブジェクトの生成
 //==================================================================================================================
-CHitPoint * CHitPoint::Create(int nNumber)
+CHitPoint * CHitPoint::Create(int nNumber, float fMaxHP)
 {
 	CHitPoint *pHitPoint = NULL;				// ポインタ変数
 
 	pHitPoint = new CHitPoint(PRIORITY_UI);		// メモリを動的確保
+	pHitPoint->m_fMaxHP = fMaxHP;				// プレイヤー最大HP代入
 	pHitPoint->Init();							// 初期化処理
 
 	return pHitPoint;							// 値を返す
