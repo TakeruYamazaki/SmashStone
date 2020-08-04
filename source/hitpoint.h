@@ -39,7 +39,7 @@ public:
 	void Update(void);					// 更新処理
 	void Draw(void);					// 描画処理
 
-	static CHitPoint *Create(int nNumber);// 生成処理
+	static CHitPoint *Create(int nNumber, float fMaxHP);// 生成処理
 
 	void SetPos(D3DXVECTOR3 pos);		// 位置設定処理
 	void SetnPlayerNum(int nPlayerNum);	// プレイヤー番号設定処理
@@ -57,7 +57,7 @@ private:
 	void Bar4Update(float NowHP);	// バー4の更新処理
 
 	static CPlayer *m_pPlayer;		// プレイヤーの情報ポインタ
-	static int m_nInitCnt;					// 初期化用カウンタ
+	static int m_nInitCnt;			// 初期化用カウンタ
 
 	CBar *m_pBar;					// バーの情報ポインタ
 
@@ -77,8 +77,8 @@ private:
 	int m_nCntPos3;			// 位置変更用カウンタ
 	int m_nPlayerNum;		// プレイヤーの番号
 
-	float m_fNowHP;			// 現在のHP
 	float m_fMaxHP;			// 最大HP
+	float m_fNowHP;			// 現在のHP
 	float m_fHeight;		// 縦の長さ
 
 	bool m_bBar[MAX_BAR];	// バーがあるかどうか
