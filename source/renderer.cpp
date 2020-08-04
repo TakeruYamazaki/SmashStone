@@ -18,6 +18,7 @@
 #include "kananlibrary.h"
 #include "modelCharacter.h"
 #include "motion.h"
+#include "charaParam.h"
 #include "ImGui/imgui.h"			// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"	// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"	// Imguiの実装に必要
@@ -39,7 +40,7 @@ CTitle *CRenderer::m_pTitle = NULL;						// タイトル情報
 CResult *CRenderer::m_pResult = NULL;					// リザルト情報
 CTutorial *CRenderer::m_pTutorial = NULL;				// チュートリアル情報
 CSound *CRenderer::m_pSound = NULL;						// 音情報
-CRenderer::MODE CRenderer::m_mode = MODE_TITLE;			// 最初の画面
+CRenderer::MODE CRenderer::m_mode = MODE_GAME;			// 最初の画面
 
 //==================================================================================================================
 // コンストラクタ
@@ -166,6 +167,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 #endif
 
 	// ロード
+	CCharaParam::Load();
 	CModelCharacter::Load();
 	CMotion::Load();
 
@@ -254,6 +256,7 @@ void CRenderer::Uninit(void)
 	}
 
 	// アンロード
+	CCharaParam::Unload();
 	CModelCharacter::Unload();
 	CMotion::UnLoad();
 

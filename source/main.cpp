@@ -40,7 +40,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);	// リーク検出時に必要
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);				// リダイレクトやウィンドウ行き来を可能にする
 
-	//_CrtSetBreakAlloc(2629);											// メモリリーク検出用（）内に番号を入力してブレイクポイントを発生させる
+	//_CrtSetBreakAlloc(182);											// メモリリーク検出用（）内に番号を入力してブレイクポイントを発生させる
 
 	CManager *pManager;
 	pManager = new CManager;				// 動的確保

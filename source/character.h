@@ -15,6 +15,7 @@
 #include "main.h"
 #include "scene.h"
 #include "motion.h"
+#include "charaParam.h"
 #include "kananlibrary.h"
 
 // ===================================================================
@@ -27,6 +28,7 @@
 // ===================================================================
 class CModelCharacter;
 class CCylinderCoillider;
+class CCharaParam;
 
 class CCharacter : public CScene
 {
@@ -59,13 +61,13 @@ public:
 	void               SetModelType(CHARACTER_TYPE type);									// モデルの設定
 	void               SetCylinderCoillider(void);											// シリンダーコライダーの設定
 
-	inline D3DXVECTOR3 GetPos(void)		{ return m_pos; }			// 位置の取得
-	inline D3DXVECTOR3 GetMove(void)	{ return m_move; }			// 移動値の取得
-	inline D3DXVECTOR3 GetRot(void)		{ return m_rot; }			// 回転の取得
-	inline D3DXVECTOR3 GetRotDest(void)	{ return m_rotDest; }		// 回転先の取得
-	inline float       GetMaxLife(void)	{ return m_nMaxLife; }		// 最大ライフ取得
-	inline float       GetLife(void)	{ return m_nLife; }			// ライフ取得
-	inline bool		   GetbJump(void)	{ return m_bJump; }			// ジャンプ状態の取得
+	inline D3DXVECTOR3 GetPos(void)		{ return m_pos; }				// 位置の取得
+	inline D3DXVECTOR3 GetMove(void)	{ return m_move; }				// 移動値の取得
+	inline D3DXVECTOR3 GetRot(void)		{ return m_rot; }				// 回転の取得
+	inline D3DXVECTOR3 GetRotDest(void)	{ return m_rotDest; }			// 回転先の取得
+	inline float       GetMaxLife(void)	{ return m_param.fMaxLife; }	// 最大ライフ取得
+	inline float       GetLife(void)	{ return m_nLife; }				// ライフ取得
+	inline bool		   GetbJump(void)	{ return m_bJump; }				// ジャンプ状態の取得
 	inline void        Damage(const int nDamage)	{ m_nLife -= nDamage; }	// ダメージ処理
 
 	void			   Daunted(const int nGap);						// 怯み処理
@@ -91,25 +93,25 @@ protected:
 
 	CCylinderCoillider* m_pCyliColi[COLLIPARTS_MAX];	// シリンダーコライダーポインタ
 
-	int			m_nCntTrans;							// どれぐらいの時間変身しているか
-	int			m_nNumStone;							// 取得したストーンの数
-	float		m_nLife;								// ライフ
-	float		m_nMaxLife;								// 最大ライフ
-	bool		m_bJump;								// ジャンプしたかどうか
-	bool		m_bWalk;								// 歩いてるかどうか
-	bool		m_bTrans;								// 変身しているか
-	bool		m_bAttack;								// 攻撃しているか
-	bool		m_bBlowAway;							// 吹き飛んでいるか
-	bool		m_bSmashBlowAway;						// スマッシュで吹き飛んでいるか
-	bool		m_bDaunted;								// ひるんでいるか
-	bool		m_bDown;								// ダウンしているかどうか
-	bool		m_bInvincible;							// 無敵かどうか
-	static int	m_nNumCharacter;						// キャラクターの総数
-	int			m_nCntJump;								// ジャンプモーション切り替えのカウンタ
-	int			m_nAttackFrame;							// 攻撃モーション切り替えのカウンタ
-	int			m_nAttackFlow;							// 攻撃の流れ
-	int			m_nCntGap;								// 隙のカウンタ
-	int			m_nCntDown;								// ダウンしている時間
+	CCharaParam::PLAYER_PARAM m_param;					// プレイヤーのパラメーター
+	int						  m_nCntTrans;				// どれぐらいの時間変身しているか
+	int						  m_nNumStone;				// 取得したストーンの数
+	float					  m_nLife;					// ライフ
+	bool					  m_bJump;					// ジャンプしたかどうか
+	bool					  m_bWalk;					// 歩いてるかどうか
+	bool					  m_bTrans;					// 変身しているか
+	bool					  m_bAttack;				// 攻撃しているか
+	bool					  m_bBlowAway;				// 吹き飛んでいるか
+	bool					  m_bSmashBlowAway;			// スマッシュで吹き飛んでいるか
+	bool					  m_bDaunted;				// ひるんでいるか
+	bool					  m_bDown;					// ダウンしているかどうか
+	bool					  m_bInvincible;			// 無敵かどうか
+	static int				  m_nNumCharacter;			// キャラクターの総数
+	int						  m_nCntJump;				// ジャンプモーション切り替えのカウンタ
+	int						  m_nAttackFrame;			// 攻撃モーション切り替えのカウンタ
+	int						  m_nAttackFlow;			// 攻撃の流れ
+	int						  m_nCntGap;				// 隙のカウンタ
+	int						  m_nCntDown;				// ダウンしている時間
 
 	bool		m_bAttakHit;							// 攻撃を当てたフラグ
 
@@ -118,7 +120,6 @@ private:
 	void Rot(void);										// 回転関数
 	void Motion(void);									// モーション関数
 	void Trans(void);									// 変身関数
-	void IchiyasuMotion(void);							// 1ヤスのモーション
 };
 
 #endif

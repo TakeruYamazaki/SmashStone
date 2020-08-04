@@ -32,7 +32,6 @@ class CInputKeyboard;
 class CInputGamepad;
 class CFade;
 class CHitPoint;
-class CPlayer;
 
 //==================================================================================================================
 //
@@ -42,13 +41,6 @@ class CPlayer;
 class CPlayer : public CCharacter
 {
 public:
-	typedef enum
-	{
-		BLOWAYAY_NORMAL = 0,	// 吹き飛び
-		BLOWAWAY_SMASH,
-		BLOWAWAY_MAX
-	} BLOWAWAY_TYPE;
-
 	CPlayer(PRIORITY type);							// コンストラクタ
 	~CPlayer();										// デストラクタ
 	void Init(void);								// 初期化処理
@@ -69,6 +61,7 @@ private:
 	void Attack(void);								// 攻撃関数
 	void Smash(void);
 	void NormalAttack(void);
+	void Jump(void);
 
 	void CollisionAttack(void);						// 攻撃判定
 

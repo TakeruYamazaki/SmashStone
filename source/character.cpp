@@ -25,7 +25,6 @@
 // マクロ定義
 //=============================================================================	
 #define SPEED_ROT			(0.1f)		// 回転のスピード
-#define LIFE_DEFAULT		(100.0f)	// ライフの初期値
 #define TIME_MAX_DOWN		(60)		// 最大までダウンできる時間
 
 #define INERTIA_SMASH		(0.005f)	// スマッシュ吹き飛び時の慣性
@@ -56,6 +55,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_nCntGap			= 0;
 	m_nCntJump			= 0;
 	m_nNumStone 		= 0;
+	m_nLife				= 0;
 	m_bDown				= false;
 	m_bAttack			= false;
 	m_bJump				= false;
@@ -63,9 +63,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_bBlowAway			= false;
 	m_bSmashBlowAway	= false;
 	m_bDaunted			= false;
-	m_nMaxLife			= LIFE_DEFAULT;
-	m_nLife				= m_nMaxLife;
-
+	
 	// 総数を加算
 	m_nNumCharacter++;
 }
@@ -145,15 +143,15 @@ void CCharacter::Update()
 	if (pKeyboard->GetKeyboardPress(DIK_7))
 	{
 		// 体力を増やす
-		m_nLife = m_nMaxLife;
+		m_nLife = m_param.fMaxLife;
 	}
 
 #endif // _DEBUG
 
 	if (m_nLife <= 0)
 		m_nLife = 0;
-	if (m_nLife >= m_nMaxLife)
-		m_nLife = m_nMaxLife;
+	if (m_nLife >= m_param.fMaxLife)
+		m_nLife = m_param.fMaxLife;
 }
 
 //=============================================================================
@@ -175,6 +173,10 @@ void CCharacter::SetModelType(CHARACTER_TYPE type)
 
 	m_type = type;
 	m_typeTrans = (CHARACTER_TYPE)(type + 1);
+
+	// タイプごとに最大HP設定
+	m_param = CCharaParam::GetPlayerParam((CCharaParam::PARAM_TYPE)(m_type / 2));
+	m_nLife = m_param.fMaxLife;
 
 	// ワールドマトリックスの設定
 	m_pModelCharacter->SetCharacterMtx(&m_mtxWorld);
@@ -424,69 +426,4 @@ void CCharacter::Trans(void)
 	m_bTrans = false;
 	// モデルの再バインド
 	m_pModelCharacter->ModelRebind(m_type);
-}
-
-//=============================================================================
-// 1ヤスのモーション
-//=============================================================================
-void CCharacter::IchiyasuMotion(void)
-{
-	// 攻撃フレームが総フレームを超える
-	/*if (!m_nAttackFrame >= m_pModelCharacter->GetAllFrame())
-	{
-		return;
-	}*/
-
-	/*if (!m_bAttack)
-	{
-		if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_M))
-		{
-			m_pModelCharacter->SetMotion(CMotion::PLAYER_ATTACK_0);
-			m_nAttackFlow++;
-			m_nAttackFrame = 60;
-			m_bAttack = true;
-			m_bWalk = false;
-		}
-	}
-	else
-	{
-		// SPACEキー
-		if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_M))
-		{
-			// モーション切り替え
-			switch (m_nAttackFlow)
-			{
-			case 1:
-				if (m_nAttackFrame < 15)
-				{
-					m_pModelCharacter->SetMotion(CMotion::PLAYER_ATTACK_1);
-					m_nAttackFrame = 40;
-					m_nAttackFlow++;
-				}
-				break;
-			case 2:
-				if (m_nAttackFrame < 10)
-				{
-					m_pModelCharacter->SetMotion(CMotion::PLAYER_ATTACK_2);
-					m_nAttackFrame = 40;
-					m_nAttackFlow++;
-				}
-				break;
-			case 3:
-				if (m_nAttackFrame < 10)
-				{
-					m_pModelCharacter->SetMotion(CMotion::PLAYER_ATTACK_3);
-					m_nAttackFrame = 150;
-					m_nAttackFlow = 0;
-				}
-				break;
-			}
-		}
-	}*/
-
-	/*if (m_bAttack)
-	{
-		m_nAttackFrame = 0;
-		m_nAttackFlow++;
-	}*/
 }

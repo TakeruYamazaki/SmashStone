@@ -157,12 +157,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\charaParam.cpp" />
     <ClCompile Include="source\polygon2D.cpp" />
     <ClCompile Include="source\3DBoxCollider.cpp" />
     <ClCompile Include="source\bar.cpp" />
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\character.cpp" />
-    <ClCompile Include="source\charaParam.cpp" />
     <ClCompile Include="source\charaICHIYAS.cpp" />
     <ClCompile Include="source\charaKURURU.cpp" />
     <ClCompile Include="source\charaNYAS.cpp" />

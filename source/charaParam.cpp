@@ -17,14 +17,14 @@
 //=============================================================================
 // 静的メンバ変数の初期化
 //=============================================================================
-int			CCharaParam::m_nMaxLife[PARAM_MAX] = {};			// 最大HP
-CCharaParam::PARAM_MOVE	CCharaParam::m_moveParam[PARAM_MAX] = {};		// 移動のパラメーター
-CCharaParam::PARAM_ATTACK	*CCharaParam::m_pAttackParam[PARAM_MAX] = {};	// 攻撃のパラメーターのポインタ
+CCharaParam::PLAYER_PARAM	CCharaParam::m_playerParam[PARAM_MAX] = {};
 
-char CCharaParam::m_aFileName[PARAM_MAX][64] =
+char						CCharaParam::m_aFileName[PARAM_MAX][64] =
 {
 	"data/PARAMETER/parameter_fokker.txt",
-	"data/PARAMETER/parameter_niyasu.txt"
+	"data/PARAMETER/parameter_niyasu.txt",
+	"data/PARAMETER/parameter_sanyasu.txt",
+	"data/PARAMETER/parameter_yonyasu.txt"
 };
 
 //=============================================================================
@@ -51,12 +51,8 @@ HRESULT CCharaParam::Load(void)
 
 	for (int type = 0; type < PARAM_MAX; type++)
 	{
-		// 攻撃の数
-		int nNumAttack = 0;
-		int nCntAttack = 0;
-
 		// キャラ名を表示
-		printf("キャラクター %d (%s)\n", type, m_aFileName[type]);
+		printf("キャラクター %d を読み込み (%s)\n", type, m_aFileName[type]);
 		// ファイルを開く
 		pFile = fopen(m_aFileName[type], "r");
 
@@ -82,21 +78,22 @@ HRESULT CCharaParam::Load(void)
 			// 一行ずつ読み込み
 			fgets(cReadText, sizeof(cReadText), pFile);
 			sscanf(cReadText, "%s", &cHeadText);
+
+			// 攻撃読み込みのカウンタ
+			int nCntAttack = 0;
+
 			// 改行
 			if (strcmp(cHeadText, "\n") == 0)
 				continue;
 			// 最大HP
 			else if (strcmp(cHeadText, "MAX_LIFE") == 0)
-				sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_nMaxLife[type]);
+				sscanf(cReadText, "%s %s %f", &cDieText, &cDieText, &m_playerParam[type].fMaxLife);
 			// 走る速度
 			else if (strcmp(cHeadText, "RUN_SPEED") == 0)
-				sscanf(cReadText, "%s %s %f", &cDieText, &cDieText, &m_moveParam[type].fRunSpeed);
+				sscanf(cReadText, "%s %s %f", &cDieText, &cDieText, &m_playerParam[type].moveParam.fRunSpeed);
 			// ジャンプ力
 			else if (strcmp(cHeadText, "JUMP_POWER") == 0)
-				sscanf(cReadText, "%s %s %f", &cDieText, &cDieText, &m_moveParam[type].fJumpPower);
-			// ジャンプ力
-			else if (strcmp(cHeadText, "JUMP_POWER") == 0)
-				sscanf(cReadText, "%s %s %f", &cDieText, &cDieText, &m_moveParam[type].fJumpPower);
+				sscanf(cReadText, "%s %s %f", &cDieText, &cDieText, &m_playerParam[type].moveParam.fJumpPower);
 			// 攻撃
 			else if (strcmp(cHeadText, "SET_ATTACKPARAM") == 0)
 			{
@@ -106,32 +103,26 @@ HRESULT CCharaParam::Load(void)
 					// 一行ずつ読み込み
 					fgets(cReadText, sizeof(cReadText), pFile);
 					sscanf(cReadText, "%s", &cHeadText);
-					// 攻撃の数
-					if (strcmp(cHeadText, "NUM_ATTACKPARAM") == 0)
-					{
-						sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &nNumAttack);
-						m_pAttackParam[type] = new PARAM_ATTACK[nNumAttack];
-					}
 					// 攻撃力
 					if (strcmp(cHeadText, "ATTACK_POWER") == 0)
-						sscanf(cReadText, "%s %s %f", 
-							&cDieText, 
-							&cDieText, 
-							&m_pAttackParam[type][nCntAttack].fAttackPower);
-					// 攻撃力
-					if (strcmp(cHeadText, "CANCEL_FRAME") == 0)
-						sscanf(cReadText, "%s %s %d %s %d", 
-							&cDieText, 
-							&cDieText, 
-							&m_pAttackParam[type][nCntAttack].CancelFrame.start, 
+						sscanf(cReadText, "%s %s %f",
 							&cDieText,
-							&m_pAttackParam[type][nCntAttack].CancelFrame.end);
-					// 攻撃力
+							&cDieText,
+							&m_playerParam[type].attackParam[nCntAttack].fAttackPower);
+					// 攻撃のキャンセルフレーム
+					if (strcmp(cHeadText, "CANCEL_FRAME") == 0)
+						sscanf(cReadText, "%s %s %d %s %d",
+							&cDieText,
+							&cDieText,
+							&m_playerParam[type].attackParam[nCntAttack].CancelFrame.start,
+							&cDieText,
+							&m_playerParam[type].attackParam[nCntAttack].CancelFrame.end);
+					// 吹き飛び方
 					if (strcmp(cHeadText, "BLOWAWAY_TYPE") == 0)
-						sscanf(cReadText, "%s %s %d", 
-							&cDieText, 
-							&cDieText, 
-							&m_pAttackParam[type][nCntAttack].blowType);
+						sscanf(cReadText, "%s %s %d",
+							&cDieText,
+							&cDieText,
+							&m_playerParam[type].attackParam[nCntAttack].blowType);
 				}
 				// 攻撃の加算
 				nCntAttack++;
@@ -152,7 +143,7 @@ HRESULT CCharaParam::Load(void)
 void CCharaParam::Unload(void)
 {
 	// 種類数分繰り返す
-	for (int type = 0; type < PARAM_MAX; type++)
+	/*for (int type = 0; type < PARAM_MAX; type++)
 	{
 		// nullcheck
 		if (m_pAttackParam[type])
@@ -161,5 +152,5 @@ void CCharaParam::Unload(void)
 			delete m_pAttackParam[type];
 			m_pAttackParam[type] = nullptr;
 		}
-	}
+	}*/
 }
