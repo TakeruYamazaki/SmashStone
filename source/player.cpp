@@ -36,8 +36,6 @@
 //==================================================================================================================
 // マクロ定義
 //==================================================================================================================
-#define VALUE_MOVE_PLAYER	(1.0f)	// プレイヤーの移動値
-
 #define HEIGHT_CEILING	(400.0f)			// 天井の高さ
 
 #define BLOWAWAYFORCE_SMASH		(100.0f)	// 吹き飛ばし力(スマッシュ攻撃)
@@ -481,8 +479,8 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 		fSpeed = (abs(fValueY));		// 縦の倒れ具合
 
 	// スティックの角度によってプレイヤー移動
-	m_move.x += sinf(fAngle + CameraRotY) * fSpeed;
-	m_move.z += cosf(fAngle + CameraRotY) * fSpeed;
+	m_move.x += sinf(fAngle + CameraRotY) * fSpeed * m_param.moveParam.fRunSpeed;
+	m_move.z += cosf(fAngle + CameraRotY) * fSpeed * m_param.moveParam.fRunSpeed;
 
 	// 目的の向きを決定
 	if (fValueX != 0 || fValueY != 0)
@@ -581,8 +579,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_UP))
 		{
 			// 左上移動
-			m_move.x += sinf(-D3DX_PI * 0.75f - CameraRotY) * VALUE_MOVE_PLAYER;
-			m_move.z -= cosf(-D3DX_PI * 0.75f - CameraRotY) * VALUE_MOVE_PLAYER;
+			m_move.x += sinf(-D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(-D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			// 目的の向きを決定
 			rotDest.y = D3DX_PI * 0.75f + CameraRotY;
 		}
@@ -591,8 +589,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_DOWN))
 		{
 			// 左下移動
-			m_move.x += sinf(-D3DX_PI * 0.25f - CameraRotY) * VALUE_MOVE_PLAYER;
-			m_move.z -= cosf(-D3DX_PI * 0.25f - CameraRotY) * VALUE_MOVE_PLAYER;
+			m_move.x += sinf(-D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(-D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			// 目的の向きを決定
 			rotDest.y = D3DX_PI * 0.25f + CameraRotY;
 		}
@@ -600,8 +598,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		else
 		{
 			// 左移動
-			m_move.x += sinf(-D3DX_PI * 0.5f - CameraRotY) * VALUE_MOVE_PLAYER;
-			m_move.z -= cosf(-D3DX_PI * 0.5f - CameraRotY) * VALUE_MOVE_PLAYER;
+			m_move.x += sinf(-D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(-D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			// 目的の向きを決定
 			rotDest.x = 0.0f;
 			rotDest.y = D3DX_PI * 0.5f + CameraRotY;
@@ -616,8 +614,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_UP))
 		{
 			// 右上移動
-			m_move.x += sinf(D3DX_PI * 0.75f - CameraRotY) * VALUE_MOVE_PLAYER;
-			m_move.z -= cosf(D3DX_PI * 0.75f - CameraRotY) * VALUE_MOVE_PLAYER;
+			m_move.x += sinf(D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			// 目的の向きを決定
 			rotDest.y = -D3DX_PI * 0.75f + CameraRotY;
 		}
@@ -626,8 +624,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_DOWN))
 		{
 			// 右下移動
-			m_move.x += sinf(D3DX_PI * 0.25f - CameraRotY) * VALUE_MOVE_PLAYER;
-			m_move.z -= cosf(D3DX_PI * 0.25f - CameraRotY) * VALUE_MOVE_PLAYER;
+			m_move.x += sinf(D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			// 目的の向きを決定
 			rotDest.y = -D3DX_PI * 0.25f + CameraRotY;
 		}
@@ -635,8 +633,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		else
 		{
 			// 右移動
-			m_move.x += sinf(D3DX_PI * 0.5f - CameraRotY) * VALUE_MOVE_PLAYER;
-			m_move.z -= cosf(D3DX_PI * 0.5f - CameraRotY) * VALUE_MOVE_PLAYER;
+			m_move.x += sinf(D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			// 目的の向きを決定
 			rotDest.y = -D3DX_PI * 0.5f + CameraRotY;
 		}
@@ -646,8 +644,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_UP))
 	{
 		// 上移動
-		m_move.x += sinf(D3DX_PI * 1.0f - CameraRotY) * VALUE_MOVE_PLAYER;
-		m_move.z -= cosf(D3DX_PI * 1.0f - CameraRotY) * VALUE_MOVE_PLAYER;
+		m_move.x += sinf(D3DX_PI * 1.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
+		m_move.z -= cosf(D3DX_PI * 1.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
 		// 目的の向きを決定
 		rotDest.y = -D3DX_PI * 1.0f + CameraRotY;
 	}
@@ -656,8 +654,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_DOWN))
 	{
 		// 下移動
-		m_move.x += sinf(D3DX_PI * 0.0f - CameraRotY) * VALUE_MOVE_PLAYER;
-		m_move.z -= cosf(D3DX_PI * 0.0f - CameraRotY) * VALUE_MOVE_PLAYER;
+		m_move.x += sinf(D3DX_PI * 0.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
+		m_move.z -= cosf(D3DX_PI * 0.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
 		// 目的の向きを決定
 		rotDest.y = CameraRotY;
 	}

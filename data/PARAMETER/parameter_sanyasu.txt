@@ -1,2 +1,56 @@
-SCRIPT
-END_SCRIPT
+#============================================================
+#
+# キャラクターパラメーター
+# Author : KANAN NAGANAWA
+#
+#============================================================
+SCRIPT	# 消さないで 
+
+#============================================================
+# 基本ステータス
+#============================================================
+MAX_LIFE      = 250.00000 # 最大HP
+RUN_SPEED     = 8.00000 # 移動速度
+JUMP_POWER    = 12.00000 # ジャンプ力
+ATTACK_POWER  = 24.00000 # 攻撃力
+DEFENSE_POWER = 24.00000 # 防御力
+
+#============================================================
+# モーションごとのパラメーター
+#============================================================
+SET_MOTIONPARAM	# 通常攻撃 1
+	CANCEL_FRAME = 10 - 30
+	BLOWAWAY_TYPE = 0
+END_MOTIONPARAM
+
+SET_MOTIONPARAM	# 通常攻撃 2
+	CANCEL_FRAME = 0 - 0
+	BLOWAWAY_TYPE = 0
+END_MOTIONPARAM
+
+SET_MOTIONPARAM	# 通常攻撃 3 
+	CANCEL_FRAME = 0 - 0
+	BLOWAWAY_TYPE = 0
+END_MOTIONPARAM
+
+SET_MOTIONPARAM	# 通常攻撃 4 
+	CANCEL_FRAME = 0 - 0
+	BLOWAWAY_TYPE = 0
+END_MOTIONPARAM
+
+SET_MOTIONPARAM	# 空中パンチ
+	CANCEL_FRAME = 0 - 0
+	BLOWAWAY_TYPE = 0
+END_MOTIONPARAM
+
+SET_MOTIONPARAM	# 空中キック
+	CANCEL_FRAME = 0 - 0
+	BLOWAWAY_TYPE = 0
+END_MOTIONPARAM
+
+SET_MOTIONPARAM	# スマッシュ
+	CANCEL_FRAME = 0 - 0
+	BLOWAWAY_TYPE = 0
+END_MOTIONPARAM
+
+END_SCRIPT	# 消さないで 

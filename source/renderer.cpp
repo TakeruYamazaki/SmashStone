@@ -256,7 +256,10 @@ void CRenderer::Uninit(void)
 	}
 
 	// ƒAƒ“ƒ[ƒh
-	CCharaParam::Unload();
+	for (int nCnt = 0; nCnt < 4; nCnt++)
+	{
+		CCharaParam::Save((CCharaParam::PARAM_TYPE)nCnt);
+	}
 	CModelCharacter::Unload();
 	CMotion::UnLoad();
 

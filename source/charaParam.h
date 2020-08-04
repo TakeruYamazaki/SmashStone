@@ -70,10 +70,9 @@ public:
 
 	typedef struct
 	{	// 攻撃のパラメーター
-		float			fAttackPower;	// 攻撃力
 		INT_START_END	CancelFrame;	// キャンセルフレーム
 		BLOWAWAY_TYPE	blowType;		// 吹っ飛びの種類
-	} ATTACK_PARAM;
+	} MOTION_PARAM;
 
 	typedef struct
 	{	// 移動のパラメーター
@@ -84,15 +83,17 @@ public:
 	typedef struct
 	{	// プレイヤーのパラメーター
 		float		 fMaxLife;					// 最大HP
+		float		 fAttackPower;				// 攻撃力
+		float		 fDefensePower;				// 防御力
 		MOVE_PARAM	 moveParam;					// 移動のパラメーター
-		ATTACK_PARAM attackParam[ATTACK_MAX];	// 攻撃のパラメーター
+		MOTION_PARAM motionParam[ATTACK_MAX];	// モーションのパラメーター
 	} PLAYER_PARAM;
 
 	CCharaParam();			// コンストラクタ
 	~CCharaParam();			// デストラクタ
 
-	static HRESULT         Load(void);		// キャラクターごとのパラメーターロード
-	static void			   Unload(void);	// データの破棄
+	static HRESULT         Load(void);						// 全キャラクターのパラメーターロード
+	static HRESULT		   Save(const PARAM_TYPE type);		// 各キャラクターのパラメーターセーブ
 	static PLAYER_PARAM	   GetPlayerParam(PARAM_TYPE type) { return m_playerParam[type]; }	// パラメーターの取得
 	
 protected:
