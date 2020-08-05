@@ -40,6 +40,11 @@ public:
 	static CInputGamepad *GetInputGamepad(int nPlayer);				// ゲームパッドの取得
 	static CMouse *GetMouse(void) { return m_pMouse; }				// マウスの取得
 
+#ifdef _DEBUG
+	static bool GetShowImGui(void) { return m_bShowWindow; }		// 表示の有無の取得
+	static void SetShowImGui(bool bShow) { m_bShowWindow = bShow; }	// 表示の有無の設定
+#endif
+
 protected:
 
 private:
@@ -47,5 +52,12 @@ private:
 	static CRenderer *m_pRenderer;									// レンダラー情報のポインタ
 	static CInputKeyboard *m_pInputKeyboard;						// キーボード情報のポインタ
 	static CInputGamepad *m_pInputGamepad[MAX_PLAYER];				// ゲームパッド情報のポインタ
+
+#ifdef _DEBUG
+	HRESULT LoadImGuiInfo(void);			// ImGui情報の読み込み
+	HRESULT SaveImGuiInfo(void);			// ImGui情報の保存
+	static char	m_cFileImGui[64];		// ImGui設定のファイル名
+	static bool	m_bShowWindow;			// 表示の有無
+#endif
 };
 #endif

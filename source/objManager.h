@@ -44,6 +44,8 @@ public:
 
 #ifdef _DEBUG
 	void ShowObjectManagerInfo(void);			// ImGuiの更新
+	static bool GetShowObjWindow(void) { return m_bShowAnother; }			// オブジェウィンドウ表示の有無を取得
+	static void SetShowObjWindow(bool bShow) { m_bShowAnother = bShow; }	// 表示の設定
 #endif
 
 private:

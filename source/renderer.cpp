@@ -19,6 +19,7 @@
 #include "modelCharacter.h"
 #include "motion.h"
 #include "charaParam.h"
+#include "inputKeyboard.h"
 #include "ImGui/imgui.h"			// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"	// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"	// Imguiの実装に必要
@@ -603,17 +604,20 @@ LPDIRECT3DDEVICE9 CRenderer::GetDevice(void)
 //==================================================================================================================
 void CRenderer::DrawImGui(void)
 {
-	// ImGuiウィンドウは常に通常描画
-	m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	
-	// Imguiの描画
-	ImGui::Render();
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-	
-	// 元の描画方法に戻す
-	CKananLibrary::GetWire() ?
-		m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME) :	// ワイヤーフレーム
-		m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);		// 通常
+	if (CManager::GetShowImGui())
+	{
+		// ImGuiウィンドウは常に通常描画
+		m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+
+		// Imguiの描画
+		ImGui::Render();
+		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+
+		// 元の描画方法に戻す
+		CKananLibrary::GetWire() ?
+			m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME) :	// ワイヤーフレーム
+			m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);		// 通常
+	}
 }
 
 //==================================================================================================================
@@ -673,6 +677,19 @@ void CRenderer::InitImGui(D3DPRESENT_PARAMETERS d3dpp, HWND hWnd)
 //==================================================================================================================
 void CRenderer::UpdateImGui(void)
 {
+	// ImGui表示確認
+	CManager::GetShowImGui() ?
+		CDebugProc::Print("ImGui表示中	 [ F2で非表示 ]\n") :
+		CDebugProc::Print("ImGui非表示中 [ F2で表示 ]\n");
+
+	// F2キーで表示切替
+	if (CInputKeyboard::GetKeyboardTrigger(DIK_F2))
+	{
+		CManager::GetShowImGui() ?
+			CManager::SetShowImGui(false) :
+			CManager::SetShowImGui(true);
+	}
+
 	// デバッグの基本情報の更新
 	CKananLibrary::ShowDebugInfo();
 

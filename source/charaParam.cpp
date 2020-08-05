@@ -177,7 +177,7 @@ HRESULT CCharaParam::Save(const PARAM_TYPE type)
 	if (!pFile)
 	{
 		// コンソールに表示
-		CKananLibrary::EndBlockComment("キャラクターのパラメーターセーブに失敗");
+		CKananLibrary::EndBlockComment("ファイルを開けませんでした");
 		// 失敗
 		return E_FAIL;
 	}
@@ -263,10 +263,10 @@ HRESULT CCharaParam::Save(const PARAM_TYPE type)
 	}
 	fputs("END_SCRIPT	# 消さないで \n", pFile);									// END_SCRIPT
 
+	CKananLibrary::EndBlockComment("キャラクターのパラメーターセーブ終了");
 	// ファイルを閉じる
 	fclose(pFile);
 
 	// 成功
 	return S_OK;
 }
-

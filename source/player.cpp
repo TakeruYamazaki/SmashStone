@@ -261,15 +261,6 @@ void CPlayer::Collision(void)
 }
 
 //==================================================================================================================
-// 攻撃の処理
-//==================================================================================================================
-void CPlayer::Attack(void)
-{
-	if (!m_bAttack)
-		return;
-}
-
-//==================================================================================================================
 // スマッシュ
 //==================================================================================================================
 void CPlayer::Smash(void)
@@ -297,6 +288,8 @@ void CPlayer::Smash(void)
 //==================================================================================================================
 void CPlayer::NormalAttack(void)
 {
+	int AllFrame = m_pModelCharacter->GetAllFrame();
+
 	if (!m_bAttack && !m_bJump)
 	{
 		// 条件を設定
@@ -305,24 +298,9 @@ void CPlayer::NormalAttack(void)
 	}
 	else if (m_bAttack)
 	{
-		switch (m_nAttackFlow)
-		{
-		case 0:
+		if (AllFrame - m_nAttackFrame <= AllFrame &&
+			AllFrame - m_nAttackFrame >= m_param.motionParam[(CCharaParam::PLAYER_ATTACK_TYPE)m_nAttackFlow].CancelFrame.start)
 			return;
-			break;
-		case 1:
-			if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 15)
-				return;
-			break;
-		case 2:
-			if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 10)
-				return;
-			break;
-		case 3:// 25
-			if (m_pModelCharacter->GetAllFrame() - m_nAttackFrame < 10)
-				return;
-			break;
-		}
 	}
 
 	// モーションの切り替え

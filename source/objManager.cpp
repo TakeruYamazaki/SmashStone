@@ -37,7 +37,7 @@ int						*CObjectManager::m_pModelIndex = {};
 int						CObjectManager::m_nFakeType = 0;
 int						CObjectManager::m_stateMode = CObjectManager::MODE_GAME;
 bool					CObjectManager::m_bObjUse = false;
-bool					CObjectManager::m_bShowAnother = true;
+bool					CObjectManager::m_bShowAnother = false;
 std::string				*CObjectManager::m_pObjName = {};
 #endif
 
