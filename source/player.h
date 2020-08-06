@@ -77,6 +77,12 @@ private:
 	void AnotherPlayerAttack2(CPlayer *pAnother);	// 別のプレイヤーが攻撃2している時
 	void AnotherPlayerAttack3(CPlayer *pAnother);	// 別のプレイヤーが攻撃3している時
 	void AnotherPlayerSmash(CPlayer *pAnother);		// 別のプレイヤーがスマッシュ攻撃している時
+
+	void TakeDamage(CPlayer * pAnother);							// ダメージを受ける
+	void TakeAttack3Damage(CPlayer * pAnother);					// 攻撃3のダメージを受ける
+	void TakeSmashDamage(CPlayer * pAnother);						// 攻撃3のダメージを受ける
+
+
 	bool BlowAway(CPlayer *pAnother, const float MoveVecY, const float fBlowAwayForce);		// 吹き飛ぶ
 
 	int m_nPlayer;			// プレイヤー番号

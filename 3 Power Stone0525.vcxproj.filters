@@ -176,6 +176,9 @@
     <ClCompile Include="source\charaParam.cpp">
       <Filter>character</Filter>
     </ClCompile>
+    <ClCompile Include="source\CapsuleCollider.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\sceneX.h">
@@ -359,6 +362,7 @@
     <ClInclude Include="source\charaParam.h">
       <Filter>character</Filter>
     </ClInclude>
+    <ClInclude Include="source\CapsuleCollider.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="scene">

@@ -28,7 +28,7 @@
 // クラス定義
 // ===================================================================
 class CModelCharacter;
-class CCylinderCoillider;
+class CCapsuleCollider;
 class CCharaParam;
 
 class CCharacter : public CScene
@@ -37,6 +37,7 @@ public:
 	enum COLLIPARTS
 	{
 		COLLIPARTS_NONE = -1,	// なし
+		COLLIPARTS_BODY,		// 体
 		COLLIPARTS_FOREARM_R,	// 右前腕
 		COLLIPARTS_UPPERARM_R,	// 右上腕
 		COLLIPARTS_FOREARM_L,	// 前腕
@@ -93,7 +94,7 @@ protected:
 	D3DXVECTOR3 m_rotDif;								// 回転の差
 	D3DXMATRIX	m_mtxWorld;								// ワールドマトリックス
 
-	CCylinderCoillider* m_pCyliColi[COLLIPARTS_MAX];	// シリンダーコライダーポインタ
+	CCapsuleCollider* m_pCapColi[COLLIPARTS_MAX];	// シリンダーコライダーポインタ
 
 	CCharaParam::PLAYER_PARAM m_param;					// プレイヤーのパラメーター
 	int						  m_nCntTrans;				// どれぐらいの時間変身しているか
