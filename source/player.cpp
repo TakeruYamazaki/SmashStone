@@ -32,6 +32,7 @@
 #include "Reflection.h"
 #include "hitpoint.h"
 #include "PolygonCollider.h"
+#include "CapsuleCollider.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -696,17 +697,14 @@ void CPlayer::CatchStone(void)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 {
-	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
-		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
-	{
-		// ダメージ
-		this->Damage(2);
-		if (!m_bTrans)
-			// 怯み
-			this->Daunted(20);
-		// 当てたフラグを立てる
-		pAnother->m_bAttakHit = true;
-	}
+	// if (pAnother->m_pCapColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
+	// 	pAnother->m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
+	// {
+	// 	// ダメージを受ける
+	// 	TakeDamage();
+	// 	// 当てたフラグを立てる
+	// 	pAnother->m_bAttakHit = true;
+	// }
 }
 
 //==================================================================================================================
@@ -714,17 +712,14 @@ void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 {
-	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
-		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
-	{
-		// ダメージ
-		this->Damage(2);
-		if (!m_bTrans)
-			// 怯み
-			this->Daunted(20);
-		// 当てたフラグを立てる
-		pAnother->m_bAttakHit = true;
-	}
+	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
+	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
+	//{
+	// ダメージを受ける
+	//	TakeDamage();
+	//	// 当てたフラグを立てる
+	//	pAnother->m_bAttakHit = true;
+	//}
 }
 
 //==================================================================================================================
@@ -732,17 +727,14 @@ void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 {
-	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
-		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
-	{
-		// ダメージ
-		this->Damage(2);
-		if (!m_bTrans)
-			// 怯み
-			this->Daunted(20);
-		// 当てたフラグを立てる
-		pAnother->m_bAttakHit = true;
-	}
+	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
+	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
+	//{
+	// ダメージを受ける
+	//	TakeDamage();
+	//	// 当てたフラグを立てる
+	//	pAnother->m_bAttakHit = true;
+	//}
 }
 
 //==================================================================================================================
@@ -750,29 +742,29 @@ void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 {
-	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
-		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
-	{
-		// ダメージ
-		this->Damage(2);
-		// 変身中以外は吹き飛ぶ
-		if (!m_bTrans)
-		{
-			// 吹き飛び
-			BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
-			// 吹き飛びを有効
-			m_bBlowAway = true;
-			if (m_nNumStone > 0)
-			{
-				// 所持ストーンを一つ減らすn
-				m_nNumStone--;
-				// 減らしたストーンを即生成
-				CGame::AppearStone();
-			}
-		}
-		// 当てたフラグを立てる
-		pAnother->m_bAttakHit = true;
-	}
+	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
+	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
+	//{
+	//	// ダメージ
+	//	this->Damage(2);
+	//	// 変身中以外は吹き飛ぶ
+	//	if (!m_bTrans)
+	//	{
+	//		// 吹き飛び
+	//		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
+	//		// 吹き飛びを有効
+	//		m_bBlowAway = true;
+	//		if (m_nNumStone > 0)
+	//		{
+	//			// 所持ストーンを一つ減らすn
+	//			m_nNumStone--;
+	//			// 減らしたストーンを即生成
+	//			CGame::AppearStone();
+	//		}
+	//	}
+	//	// 当てたフラグを立てる
+	//	pAnother->m_bAttakHit = true;
+	//}
 }
 
 //==================================================================================================================
@@ -780,20 +772,77 @@ void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 {
-	// シリンダーコライダーの衝突判定
-	if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
-		pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
-	{
-		// ダメージ
-		this->Damage(2);
-		// 変身中以外は吹き飛ぶ
-		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
-		// スマッシュによる吹き飛びを実行
-		m_bSmashBlowAway = true;
-		// 当てたフラグを立てる
-		pAnother->m_bAttakHit = true;
-	}
+	//// シリンダーコライダーの衝突判定
+	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
+	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
+	//{
+	//	// ダメージ
+	//	this->Damage(2);
+	//	// 変身中以外は吹き飛ぶ
+	//	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
+	//	// スマッシュによる吹き飛びを実行
+	//	m_bSmashBlowAway = true;
+	//	// 当てたフラグを立てる
+	//	pAnother->m_bAttakHit = true;
+	//}
 }
+
+//==================================================================================================================
+//ダメージを受ける
+//==================================================================================================================
+void CPlayer::TakeDamage(CPlayer * pAnother)
+{
+	// ダメージ
+	this->Damage(2);
+	if (!m_bTrans)
+		// 怯み
+		this->Daunted(20);
+
+	// 当てたフラグを立てる
+	pAnother->m_bAttakHit = true;
+}
+
+//==================================================================================================================
+// 攻撃3のダメージを受ける
+//==================================================================================================================
+void CPlayer::TakeAttack3Damage(CPlayer * pAnother)
+{
+	// ダメージ
+	this->Damage(2);
+	// 変身中以外は吹き飛ぶ
+	if (!m_bTrans)
+	{
+		// 吹き飛び
+		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
+		// 吹き飛びを有効
+		m_bBlowAway = true;
+		if (m_nNumStone > 0)
+		{
+			// 所持ストーンを一つ減らすn
+			m_nNumStone--;
+			// 減らしたストーンを即生成
+			CGame::AppearStone();
+		}
+	}
+	// 当てたフラグを立てる
+	pAnother->m_bAttakHit = true;
+}
+
+//==================================================================================================================
+// スマッシュ攻撃のダメージを受ける
+//==================================================================================================================
+void CPlayer::TakeSmashDamage(CPlayer * pAnother)
+{
+	// ダメージ
+	this->Damage(2);
+	// 変身中以外は吹き飛ぶ
+	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
+	// スマッシュによる吹き飛びを実行
+	m_bSmashBlowAway = true;
+	// 当てたフラグを立てる
+	pAnother->m_bAttakHit = true;
+}
+
 //==================================================================================================================
 // プレイヤー番号設定処理
 //==================================================================================================================

@@ -110,8 +110,8 @@ private:
 	LPDIRECT3DINDEXBUFFER9		m_pIdxBuff;				// インデックスのバッファのポインタ
 	D3DXMATRIX					m_mtxWorld;				// ワールドマトリックス
 	D3DXMATRIX*					m_pPareMtxWorld;		// 親のワールドマトリックスポインタ
-	D3DXVECTOR3					m_Difference;			// 差分
 	float						m_fRadius;				// 半径
+	D3DXVECTOR3					m_Difference;			// 差分
 	D3DXVECTOR3					m_TopTransVec;			// 上面までの長さと向き
 	D3DXVECTOR3					m_BottomTransVec;		// 底面までの長さと向き
 	int							m_nNumVertex;			// 総頂点数

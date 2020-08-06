@@ -19,7 +19,7 @@
 #include "game.h"
 #include "meshField.h"
 #include "modelParts.h"
-#include "CylinderCollider.h"
+#include "CapsuleCollider.h"
 
 //=============================================================================
 // マクロ定義
@@ -195,17 +195,21 @@ void CCharacter::SetCylinderCoillider(void)
 	CModelParts *pParts = m_pModelCharacter->GetModelParts();
 
 	// 右前腕の設定
-	m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R] =
-		CCylinderCoillider::Create(CCylinderCoillider::TYPEID_FOREARM_R, pParts[CModelParts::PARTSNAME_LOWARM_R].GetMtx());
+	m_pCapColi[CCharacter::COLLIPARTS_FOREARM_R] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_LOWARM_R].GetMtx(), CCharacter::COLLIPARTS_FOREARM_R);
 	// 右上腕の設定
-	m_pCyliColi[CCylinderCoillider::TYPEID_UPPERARM_R] =
-		CCylinderCoillider::Create(CCylinderCoillider::TYPEID_UPPERARM_R, pParts[CModelParts::PARTSNAME_UPARM_R].GetMtx());
+	m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_R] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_UPARM_R].GetMtx(), CCharacter::COLLIPARTS_UPPERARM_R);
 	// 左前腕の設定
-	m_pCyliColi[CCylinderCoillider::TYPEID_FOREARM_L] =
-		CCylinderCoillider::Create(CCylinderCoillider::TYPEID_FOREARM_L, pParts[CModelParts::PARTSNAME_LOWARM_L].GetMtx());
+	m_pCapColi[CCharacter::COLLIPARTS_FOREARM_L] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_LOWARM_L].GetMtx(), CCharacter::COLLIPARTS_FOREARM_L);
 	// 左上腕の設定
-	m_pCyliColi[CCylinderCoillider::TYPEID_UPPERARM_L] =
-		CCylinderCoillider::Create(CCylinderCoillider::TYPEID_UPPERARM_L, pParts[CModelParts::PARTSNAME_UPARM_L].GetMtx());
+	m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_L] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_UPARM_L].GetMtx(), CCharacter::COLLIPARTS_UPPERARM_L);
+
+	// 体の設定
+	m_pCapColi[CCharacter::COLLIPARTS_BODY] =
+		CCapsuleCollider::Create(this, &m_mtxWorld, CCharacter::COLLIPARTS_BODY);
 
 }
 

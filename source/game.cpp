@@ -32,6 +32,7 @@
 #include "debugProc.h"
 #include "objManager.h"
 #include "CylinderCollider.h"
+#include "CapsuleCollider.h"
 #include "PolygonCollider.h"
 #include "UI_KO.h"
 #include "UI_gameStart.h"
@@ -123,7 +124,7 @@ void CGame::Init(void)
 	C3DBoxCollider::Load();					// 3Dボックスコライダーの読み込み
 	CWall::Load();							// 壁のロード
 	CObjectManager::Load();					// オブジェクトマネージャーのロード
-	CCylinderCoillider::Load();				// シリンダーコライダーのロード
+	CCapsuleCollider::Load();				// カプセルコライダーのロード
 	CUIKO::Load();							// KOのロード
 	CUI_GameStart::Load();					// 開始UIのロード
 	CUI_GameResult::Load();
@@ -179,7 +180,7 @@ void CGame::Uninit(void)
 	CScene3D::ReleaseAll();				// 3Dのもの全て破棄
 
 	/* アンロード */
-	CCylinderCoillider::Unload();
+	CCapsuleCollider::Unload();
 	CWall::Unload();					// 壁の開放
 	C3DBoxCollider::Unload();			// 3Dボックスコライダーの開放
 	CStone::Unload();					// ストーンの開放
