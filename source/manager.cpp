@@ -13,6 +13,7 @@
 #include "mouse.h"
 #include "kananlibrary.h"
 #include "objManager.h"
+#include "charaParam.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -281,6 +282,16 @@ HRESULT CManager::LoadImGuiInfo(void)
 			if (bShow == 1)
 				CObjectManager::SetShowObjWindow(true);
 		}
+		// 表示の有無
+		else if (strcmp(cHeadText, "SHOW_CHARAPARAM_WINDOW") == 0)
+		{
+			// 表示の読み込み
+			int bShow = 0;
+			sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &bShow);
+			// 表示
+			if (bShow == 1)
+				CCharaParam::SetShowWindow(true);
+		}
 	}
 	// ファイルを閉じる
 	fclose(pFile);
@@ -329,18 +340,25 @@ HRESULT CManager::SaveImGuiInfo(void)
 	fputs(COMMENT_NEW_LINE, pFile);													// \n
 
 	strcpy(cHeadText, "SHOW_DEBUG_WINDOW");
-	sprintf(cWriteText, "%s %s %d # 表示の有無\n",
+	sprintf(cWriteText, "%s %s %d # ImGuiウィンドウ表示の有無\n",
 		&cHeadText,
 		&cEqual,
 		m_bShowWindow);
 	fputs(cWriteText, pFile);														// SHOW_DEBUG_WINDOW = bShow
 
 	strcpy(cHeadText, "SHOW_OBJECT_WINDOW");
-	sprintf(cWriteText, "%s %s %d # 表示の有無\n",
+	sprintf(cWriteText, "%s %s %d # オブジェクト情報表示の有無\n",
 		&cHeadText,
 		&cEqual,
 		CObjectManager::GetShowObjWindow());
 	fputs(cWriteText, pFile);														// SHOW_OBJECT_WINDOW = bShow
+
+	strcpy(cHeadText, "SHOW_CHARAPARAM_WINDOW");
+	sprintf(cWriteText, "%s %s %d # キャラパラメーター表示の有無\n",
+		&cHeadText,
+		&cEqual,
+		CCharaParam::GetShowWindow());
+	fputs(cWriteText, pFile);														// SHOW_CHARAPARAM_WINDOW = bShow
 
 	fputs(COMMENT_NEW_LINE, pFile);													// \n
 

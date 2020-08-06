@@ -62,6 +62,7 @@ public:
 	void               SetModelType(CHARACTER_TYPE type);									// モデルの設定
 	void               SetCylinderCoillider(void);											// シリンダーコライダーの設定
 
+	inline CHARACTER_TYPE GetCharaType(void) { return m_type; }			// キャラタイプの取得
 	inline D3DXVECTOR3 GetPos(void)		{ return m_pos; }				// 位置の取得
 	inline D3DXVECTOR3 GetMove(void)	{ return m_move; }				// 移動値の取得
 	inline D3DXVECTOR3 GetRot(void)		{ return m_rot; }				// 回転の取得

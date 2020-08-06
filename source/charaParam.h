@@ -13,7 +13,6 @@
 // インクルードファイル
 // ===================================================================
 #include "main.h"
-#include "kananlibrary.h"
 
 // ===================================================================
 // マクロ定義
@@ -96,11 +95,22 @@ public:
 	static HRESULT		   Save(const PARAM_TYPE type);		// 各キャラクターのパラメーターセーブ
 	static PLAYER_PARAM	   GetPlayerParam(PARAM_TYPE type) { return m_playerParam[type]; }	// パラメーターの取得
 	
+#ifdef _DEBUG
+	static void UpdateImGui(void);										// ImGuiの更新
+	static bool GetShowWindow(void) { return m_bShowWindow; }			// ウィンドウ表示の取得
+	static void SetShowWindow(bool bShow) { m_bShowWindow = bShow; }	// ウィンドウ表示の設定
+#endif
+
 protected:
 	static PLAYER_PARAM m_playerParam[PARAM_MAX];	// プレイヤーのパラメーター
 
 private:
 	static char m_aFileName[PARAM_MAX][64];	// 変身前キャラ数分のパラメーターファイル名
+
+#ifdef _DEBUG
+	static void ShowCharaParam(const char cName[16], CCharaParam::PARAM_TYPE type);
+	static bool m_bShowWindow;				// ImGuiウィンドウを表示するか
+#endif
 };
 
 #endif

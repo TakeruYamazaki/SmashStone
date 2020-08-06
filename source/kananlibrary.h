@@ -66,6 +66,20 @@
 	}
 } INTEGER2;*/
 
+/*typedef struct FLOAT2
+{	// int型の構造体
+	float x;
+	float y;
+
+	// コンストラクタ
+	FLOAT2() {};
+	FLOAT2(float fX, float fY)
+	{
+		x = fX;
+		y = fY;
+	}
+} FLOAT2;*/
+
 typedef struct MODEL_VTX
 {
 	D3DXVECTOR3 VtxMax;	// 頂点の最大値
@@ -199,6 +213,8 @@ public:
 
 	static float OutputSqrt(D3DXVECTOR3 difpos);				// 平方根計算
 	static float OutputDistance(D3DXVECTOR3 difpos);			// 距離計算
+
+	static void SameLineDummy(const float & fX, const float & fY);
 
 #ifdef _DEBUG
 	static void ShowDebugInfo(void);					// ImGuiの更新

@@ -10,7 +10,7 @@ SCRIPT	# 消さないで
 # 基本ステータス
 #============================================================
 MAX_LIFE      = 250.00000 # 最大HP
-RUN_SPEED     = 1.50000 # 移動速度
+RUN_SPEED     = 1.60000 # 移動速度
 JUMP_POWER    = 7.00000 # ジャンプ力
 ATTACK_POWER  = 30.00000 # 攻撃力
 DEFENSE_POWER = 5.00000 # 防御力
@@ -19,12 +19,12 @@ DEFENSE_POWER = 5.00000 # 防御力
 # モーションごとのパラメーター
 #============================================================
 SET_MOTIONPARAM	# 通常攻撃 1
-	CANCEL_FRAME = 20 - 30
+	CANCEL_FRAME = 20 - -10
 	BLOWAWAY_TYPE = 0
 END_MOTIONPARAM
 
 SET_MOTIONPARAM	# 通常攻撃 2
-	CANCEL_FRAME = 20 - 30
+	CANCEL_FRAME = 30 - -27
 	BLOWAWAY_TYPE = 0
 END_MOTIONPARAM
 

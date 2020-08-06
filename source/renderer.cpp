@@ -693,6 +693,11 @@ void CRenderer::UpdateImGui(void)
 	// デバッグの基本情報の更新
 	CKananLibrary::ShowDebugInfo();
 
+	// ゲームモード中
+	if (m_mode == MODE_GAME)
+		// キャラパラメーターの情報更新
+		CCharaParam::UpdateImGui();
+
 	ImGui::End();
 
 	// 枠を作り終わったら必ず書く

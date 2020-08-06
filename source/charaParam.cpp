@@ -9,15 +9,23 @@
 // インクルード
 //=============================================================================
 #include "charaParam.h"
+#include "kananlibrary.h"
+#include "player.h"
+#include "game.h"
+#include "ImGui/imgui.h"				// Imguiの実装に必要
+#include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
+#include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
 
 //=============================================================================
 // マクロ定義
 //=============================================================================	
+#define SPEED_IMGUI_DRAGFLOAT	(0.1f)	// DragFloatのスピード
 
 //=============================================================================
 // 静的メンバ変数の初期化
 //=============================================================================
 CCharaParam::PLAYER_PARAM	CCharaParam::m_playerParam[PARAM_MAX] = {};
+bool						CCharaParam::m_bShowWindow = false;
 
 char						CCharaParam::m_aFileName[PARAM_MAX][64] =
 {
@@ -270,3 +278,104 @@ HRESULT CCharaParam::Save(const PARAM_TYPE type)
 	// 成功
 	return S_OK;
 }
+
+#ifdef _DEBUG
+//=============================================================================
+// ImGuiの更新
+//=============================================================================
+void CCharaParam::UpdateImGui(void)
+{
+	// ウィンドウを表示するか
+	ImGui::Checkbox("show charaParam window", &m_bShowWindow);
+
+	// nullcheck
+	if (!m_bShowWindow)
+		// 表示しない
+		return;
+
+	// ImGuiの更新開始
+	ImGui::Begin("charaParam window", &m_bShowWindow);
+
+	PARAM_TYPE charaType[MAX_PLAYER];
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+	{
+		charaType[nCnt] = (PARAM_TYPE)(CManager::GetRenderer()->GetGame()->GetPlayer(nCnt)->GetCharaType() / 2);
+	}
+
+	char cName[PARAM_MAX][16] = 
+	{
+		"1 yasu",
+		"2 yasu",
+		"3 yasu",
+		"4 yasu"
+	};
+
+	// タブ用の線を表示
+	if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
+	{
+		for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+		{
+			// プレイヤー1と同じキャラ
+			if (nCnt != 0 && charaType[nCnt] == charaType[0])
+				// 処理しない
+				continue;
+
+			// キャラパラメーターの詳細
+			ShowCharaParam(cName[charaType[nCnt]], charaType[nCnt]);
+		}
+		// タブの終了に必ず書く
+		ImGui::EndTabBar();
+	}
+
+	// 閉じるボタン
+	if (ImGui::Button("close this window"))
+		m_bShowWindow = false;
+
+	// ImGuiの更新終了
+	ImGui::End();
+}
+
+//=============================================================================
+// キャラパラメーターの詳細
+//=============================================================================
+void CCharaParam::ShowCharaParam(const char cName[16], CCharaParam::PARAM_TYPE type)
+{
+	// プレイヤー1の情報
+	if (ImGui::BeginTabItem(cName))
+	{
+		// モーション名の表記を設定
+		char cMotionName[ATTACK_MAX][64] =
+		{
+			"NormalAttack_0",
+			"NormalAttack_1",
+			"NormalAttack_2",
+			"NormalAttack_3",
+			"AirPunch",
+			"AirKick",
+			"Smash",
+		};
+
+		// 基本情報
+		ImGui::DragFloat("MaxLife", &m_playerParam[type].fMaxLife, SPEED_IMGUI_DRAGFLOAT);
+		ImGui::DragFloat("RunSpeed", &m_playerParam[type].moveParam.fRunSpeed, SPEED_IMGUI_DRAGFLOAT);
+		ImGui::DragFloat("JumpPower", &m_playerParam[type].moveParam.fJumpPower, SPEED_IMGUI_DRAGFLOAT);
+		ImGui::DragFloat("AttackPower", &m_playerParam[type].fAttackPower, SPEED_IMGUI_DRAGFLOAT);
+		ImGui::DragFloat("DefensePower", &m_playerParam[type].fDefensePower, SPEED_IMGUI_DRAGFLOAT);
+
+		for (int nCnt = 0; nCnt < ATTACK_MAX; nCnt++)
+		{
+			// モーション名
+			ImGui::Text(cMotionName[nCnt]);
+			sprintf(cMotionName[nCnt], "%d", nCnt);
+			// 項目名
+			ImGui::Text("CancelFrame");
+			ImGui::SameLine();
+			ImGui::InputInt2(cMotionName[nCnt], &m_playerParam[type].motionParam[nCnt].CancelFrame.start);
+			ImGui::Dummy(ImVec2(0.0f, 2.0f));
+		}
+		// タブの終了に必ず書く
+		ImGui::EndTabItem();
+	}
+}
+
+#endif

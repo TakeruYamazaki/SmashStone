@@ -77,8 +77,8 @@ void CPlayer::Init(void)
 	// 当たり判定の設定
 	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), this, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::ID_CHARACTER);
 
-	m_pHitPoint = CHitPoint::Create(m_nPlayer, LIFE_DEFAULT);// プレイヤーの生成処理
-	m_pHitPoint->SetnPlayerNum(m_nPlayer);					// プレイヤー番号設定
+	m_pHitPoint = CHitPoint::Create(m_nPlayer, m_param.fMaxLife);	// プレイヤーの生成処理
+	m_pHitPoint->SetnPlayerNum(m_nPlayer);							// プレイヤー番号設定
 }
 
 //==================================================================================================================

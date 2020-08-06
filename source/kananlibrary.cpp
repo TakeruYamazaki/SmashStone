@@ -224,6 +224,22 @@ float CKananLibrary::OutputDistance(D3DXVECTOR3 difpos)
 }
 
 //=============================================================================
+// 改行しないImGuiダミー
+//=============================================================================
+void CKananLibrary::SameLineDummy(const float & fX, const float & fY)
+{
+	// 改行無し
+	ImGui::SameLine();
+
+	// サイズを設定し、ダミーを作る
+	ImVec2 size = ImVec2(fX, fY);
+	ImGui::Dummy(size);
+
+	// 改行無し
+	ImGui::SameLine();
+}
+
+//=============================================================================
 // ビルボード化処理
 //=============================================================================
 void CKananLibrary::Billboard(D3DXMATRIX *mtxWorld, const D3DXMATRIX mtxView)
