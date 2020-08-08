@@ -10,12 +10,14 @@
 #include "CapsuleCollider.h"
 #include "manager.h"
 #include "renderer.h"
+#include "player.h"
+#include "game.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
 //-------------------------------------------------------------------------------------------------------------
 #define CAPCOLLI_SLICES		5
-#define CAPCOLLI_STACKS		6
+#define CAPCOLLI_STACKS		5
 
 #define CAPCOLLI_BOTTOMUNITVEC_NUMVTX	(3)		// 底面の単位ベクトル計算に必要な頂点数
 
@@ -257,7 +259,7 @@ void CCapsuleCollider::Unload(void)
 void CCapsuleCollider::Init(void)
 {
 	m_ColliderInfo.nSlices = CAPCOLLI_SLICES * 2;
-	m_ColliderInfo.nStacks_1_2 = CAPCOLLI_STACKS;
+	m_ColliderInfo.nStacks_1_2 = (CAPCOLLI_STACKS % 2 == 0) ? CAPCOLLI_STACKS: CAPCOLLI_STACKS + 1;
 	// 頂点数
 	m_ColliderInfo.nNumVertex = (m_ColliderInfo.nStacks_1_2 + 1) * (m_ColliderInfo.nSlices + 1);
 	// 見た目の頂点数
@@ -300,6 +302,11 @@ void CCapsuleCollider::Uninit(void)
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::Update(void)
 {
+	// シーンがNULLじゃない時
+	if (m_ColliderInfo.pScene != NULL)
+	{// 衝突判定
+		this->Collision();
+	}
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -445,6 +452,22 @@ void CCapsuleCollider::InfoSetSync(float fRadius, float fLengthMax, float fLengt
 	m_ColliderInfo.TopPoint.y = fLengthMax;	// 上面の位置
 	m_ColliderInfo.BottomPoint.y = fLengthMin;	// 底面の位置
 	m_ColliderInfo.Difference = diff;			// 差分
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// 衝突判定
+//-------------------------------------------------------------------------------------------------------------
+bool CCapsuleCollider::Collision(void)
+{
+	// 変数宣言
+	CPlayer          *pOwn            = (CPlayer *)m_ColliderInfo.pScene;						// このコライダーを持っているプレイヤー
+	CPlayer          *pOthers         = pOwn->GetAnotherPlayer();								// その他のプレイヤー
+	CCapsuleCollider *pOthersCapColli = pOthers->GetCapCollider(CCharacter::COLLIPARTS_BODY);	//その他のプレイヤーのコライダー情報
+
+	// 2線分の最短距を求める
+
+
+	return false;
 }
 
 //-------------------------------------------------------------------------------------------------------------

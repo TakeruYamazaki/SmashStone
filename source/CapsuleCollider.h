@@ -114,6 +114,9 @@ public:
 
 	static CCapsuleCollider *Create(CScene *pScene,D3DXMATRIX *pMtxParent, int nTypeID);	// 生成
 	void InfoSetSync(float fRadius, float fLengthMax, float fLengthMin, D3DXVECTOR3 &diff);	// 情報の設定と同期
+
+	bool Collision(void);																	// 衝突判定
+
 private:
 	void MakeVertex(LPDIRECT3DDEVICE9 pDevice);		// 頂点の作成
 	void MakeIndex(LPDIRECT3DDEVICE9 pDevice);		// インデックスの作成
