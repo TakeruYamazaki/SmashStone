@@ -53,6 +53,7 @@ public:
 	int GetNumStone(void)	{ return m_nNumStone; }	// 取得したストーンの数を取得
 	int GetnPlayer(void) { return m_nPlayer; }		// プレイヤー番号取得
 	inline int GetBoxColliderID(void) { return m_nBoxColliderID; }
+	CPlayer*GetAnotherPlayer(void);					// 違うプレイヤーの取得
 protected:
 
 private:
@@ -64,7 +65,6 @@ private:
 
 	void CollisionAttack(void);						// 攻撃判定
 
-	CPlayer*GetAnotherPlayer(void);					// 違うプレイヤーの取得
 	static CHitPoint *m_pHitPoint;					// HP情報
 
 	void ControlGamepad(CInputGamepad *pGamepad);	// ゲームパッド操作

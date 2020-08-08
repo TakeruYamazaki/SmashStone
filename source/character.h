@@ -53,25 +53,26 @@ public:
 	void               Update(void);				// 更新
 	void               Draw(void);					// 描画
 
-	inline void        SetPos(const D3DXVECTOR3 & pos)			{ m_pos = pos; }			// 位置の設定
-	inline void        SetMove(const D3DXVECTOR3 & move)		{ m_move = move; }			// 移動値の設定
-	inline void        SetRot(const D3DXVECTOR3 & rot)			{ m_rot = rot; }			// 回転の設定
-	inline void        SetRotDest(const D3DXVECTOR3 & rotDest)	{ m_rotDest = rotDest; }	// 目的の回転の設定
-	inline void        SetbWalk(const bool &bWalk)				{ m_bWalk = bWalk; }		// 歩きの設定
-	inline void        SetbJump(const bool &bJump)				{ m_bJump = bJump; }		// ジャンプの設定
-	inline void        SetLife(const float nLife)				{ m_nLife = nLife; }		// ライフの設定
-	void               SetModelType(CHARACTER_TYPE type);									// モデルの設定
-	void               SetCylinderCoillider(void);											// シリンダーコライダーの設定
+	inline void        SetPos(const D3DXVECTOR3 & pos)			{ m_pos = pos; }					// 位置の設定
+	inline void        SetMove(const D3DXVECTOR3 & move)		{ m_move = move; }					// 移動値の設定
+	inline void        SetRot(const D3DXVECTOR3 & rot)			{ m_rot = rot; }					// 回転の設定
+	inline void        SetRotDest(const D3DXVECTOR3 & rotDest)	{ m_rotDest = rotDest; }			// 目的の回転の設定
+	inline void        SetbWalk(const bool &bWalk)				{ m_bWalk = bWalk; }				// 歩きの設定
+	inline void        SetbJump(const bool &bJump)				{ m_bJump = bJump; }				// ジャンプの設定
+	inline void        SetLife(const float nLife)				{ m_nLife = nLife; }				// ライフの設定
+	void               SetModelType(CHARACTER_TYPE type);											// モデルの設定
+	void               SetCylinderCoillider(void);													// シリンダーコライダーの設定
 
-	inline CHARACTER_TYPE GetCharaType(void) { return m_type; }			// キャラタイプの取得
-	inline D3DXVECTOR3 GetPos(void)		{ return m_pos; }				// 位置の取得
-	inline D3DXVECTOR3 GetMove(void)	{ return m_move; }				// 移動値の取得
-	inline D3DXVECTOR3 GetRot(void)		{ return m_rot; }				// 回転の取得
-	inline D3DXVECTOR3 GetRotDest(void)	{ return m_rotDest; }			// 回転先の取得
-	inline float       GetMaxLife(void)	{ return m_param.fMaxLife; }	// 最大ライフ取得
-	inline float       GetLife(void)	{ return m_nLife; }				// ライフ取得
-	inline bool		   GetbJump(void)	{ return m_bJump; }				// ジャンプ状態の取得
-	inline void        Damage(const int nDamage)	{ m_nLife -= nDamage; }	// ダメージ処理
+	inline CHARACTER_TYPE    GetCharaType(void)					{ return m_type; }					// キャラタイプの取得
+	inline D3DXVECTOR3       GetPos(void)						{ return m_pos; }					// 位置の取得
+	inline D3DXVECTOR3       GetMove(void)						{ return m_move; }					// 移動値の取得
+	inline D3DXVECTOR3       GetRot(void)						{ return m_rot; }					// 回転の取得
+	inline D3DXVECTOR3       GetRotDest(void)					{ return m_rotDest; }				// 回転先の取得
+	inline float             GetMaxLife(void)					{ return m_param.fMaxLife; }		// 最大ライフ取得
+	inline float             GetLife(void)						{ return m_nLife; }					// ライフ取得
+	inline bool              GetbJump(void)						{ return m_bJump; }					// ジャンプ状態の取得
+	inline void              Damage(const int nDamage)			{ m_nLife -= nDamage; }				// ダメージ処理
+	inline CCapsuleCollider* GetCapCollider(int nPartsIndex)	{ return m_pCapColi[nPartsIndex]; }	// カプセルコライダーの取得
 
 	void			   Daunted(const int nGap);						// 怯み処理
 	void			   VictoryAction(void);							// 勝利行動
