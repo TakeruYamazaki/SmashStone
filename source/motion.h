@@ -11,6 +11,7 @@
 // インクルードファイル
 //=============================================================================
 #include "main.h"
+#include "kananlibrary.h"
 
 //=============================================================================
 // クラス定義
@@ -71,22 +72,21 @@ public:
 	static HRESULT Load();						// モーションのロード
 	static void UnLoad();						// モーションのアンロード
 
-	static D3DXVECTOR3 GetRotDest(MOTION_TYPE motiontype, int nKey, int nIndex)
-		{ return m_pMotionInfo[motiontype].pKeyInfo[nKey].pKey[nIndex].rotDest; }	// モーションの回転のゴール取得
-	static D3DXVECTOR3 GetPosDest(MOTION_TYPE motiontype, int nKey, int nIndex)
-		{ return m_pMotionInfo[motiontype].pKeyInfo[nKey].pKey[nIndex].posDest; }	// モーションの回転のゴール取得
-	static int GetFrame(MOTION_TYPE motiontype, int nKey) 
-		{ return m_pMotionInfo[motiontype].pKeyInfo[nKey].nFrame; }					// モーションの総フレーム数の取得
-	static int GetNumKey(MOTION_TYPE motiontype) 
-		{ return m_pMotionInfo[motiontype].nNumKey; }								// モーションの総キー数の取得
-	static bool GetLoop(MOTION_TYPE motiontype) 
-		{ return m_pMotionInfo[motiontype].bLoop; }									// モーションがループするかどうか取得
+	static D3DXVECTOR3 GetRotDest(PARAM_TYPE charaType, MOTION_TYPE motiontype, int nKey, int nIndex)
+		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].pKey[nIndex].rotDest; }	// モーションの回転のゴール取得
+	static D3DXVECTOR3 GetPosDest(PARAM_TYPE charaType, MOTION_TYPE motiontype, int nKey, int nIndex)
+		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].pKey[nIndex].posDest; }	// モーションの回転のゴール取得
+	static int GetFrame(PARAM_TYPE charaType, MOTION_TYPE motiontype, int nKey)
+		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].nFrame; }					// モーションの総フレーム数の取得
+	static int GetNumKey(PARAM_TYPE charaType, MOTION_TYPE motiontype)
+		{ return m_pMotionInfo[charaType][motiontype].nNumKey; }								// モーションの総キー数の取得
+	static bool GetLoop(PARAM_TYPE charaType, MOTION_TYPE motiontype)
+		{ return m_pMotionInfo[charaType][motiontype].bLoop; }									// モーションがループするかどうか取得
 
 private:
-	static MOTION_INFO *m_pMotionInfo;					// モーション情報のポインタ
-	static HRESULT LoadMotion(MOTION_TYPE motiontype);	// モーション読み込み	
-	static int CheckCharacter(MOTION_TYPE motiontype);	// どのキャラクターか確認
+	static MOTION_INFO m_pMotionInfo[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX];		// モーション情報
+	static HRESULT LoadMotion(PARAM_TYPE charaType, MOTION_TYPE motiontype);	// モーション読み込み	
 
-	static char *m_apFileName[CMotion::MOTION_MAX];
+	static char m_apFileName[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX][MAX_TEXT];
 };
 #endif

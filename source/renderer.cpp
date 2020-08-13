@@ -259,7 +259,7 @@ void CRenderer::Uninit(void)
 	// ƒAƒ“ƒ[ƒh
 	for (int nCnt = 0; nCnt < 4; nCnt++)
 	{
-		CCharaParam::Save((CCharaParam::PARAM_TYPE)nCnt);
+		CCharaParam::Save((PARAM_TYPE)nCnt);
 	}
 	CModelCharacter::Unload();
 	CMotion::UnLoad();

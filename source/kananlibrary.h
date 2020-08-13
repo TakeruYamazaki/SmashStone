@@ -155,6 +155,15 @@ typedef enum
 } CHARACTER_TYPE;
 
 typedef enum
+{	// パラメーターのタイプ
+	PARAM_1YASU = 0,	// 1ヤス
+	PARAM_2YASU,		// 2ヤス
+	PARAM_3YASU,		// 3ヤス
+	PARAM_4YASU,		// 4ヤス
+	PARAM_MAX			// 最大数
+} PARAM_TYPE;
+
+typedef enum
 {	// プレイヤー数
 	PLAYER_NONE,	// いない
 	PLAYER_ONE = 0,	// 1P

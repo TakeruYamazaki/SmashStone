@@ -25,10 +25,10 @@
 //=============================================================================
 // 静的メンバ変数の初期化
 //=============================================================================
-CMotion::MOTION_INFO *CMotion::m_pMotionInfo = nullptr;
-char * CMotion::m_apFileName[CMotion::MOTION_MAX] =
+CMotion::MOTION_INFO CMotion::m_pMotionInfo[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX] = {};
+char CMotion::m_apFileName[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX][MAX_TEXT] =
 {
-	{ "data/MOTION/fokker/motion_neutral.txt" },
+	{{ "data/MOTION/fokker/motion_neutral.txt" },
 	{ "data/MOTION/fokker/motion_run.txt" },
 	{ "data/MOTION/fokker/motion_jump.txt" },
 	{ "data/MOTION/fokker/motion_fall.txt" },
@@ -42,7 +42,55 @@ char * CMotion::m_apFileName[CMotion::MOTION_MAX] =
 	{ "data/MOTION/fokker/motion_smash.txt" },
 	{ "data/MOTION/fokker/motion_daunted.txt" },
 	{ "data/MOTION/fokker/motion_blowAway.txt" },
-	{ "data/MOTION/fokker/motion_down.txt" }
+	{ "data/MOTION/fokker/motion_down.txt" }},
+
+	{ { "data/MOTION/niyasu/motion_neutral.txt" },
+	{ "data/MOTION/niyasu/motion_run.txt" },
+	{ "data/MOTION/niyasu/motion_jump.txt" },
+	{ "data/MOTION/niyasu/motion_fall.txt" },
+	{ "data/MOTION/niyasu/motion_lift.txt" },
+	{ "data/MOTION/niyasu/motion_throw.txt" },
+	{ "data/MOTION/niyasu/motion_attack_0.txt" },
+	{ "data/MOTION/niyasu/motion_attack_1.txt" },
+	{ "data/MOTION/niyasu/motion_attack_2.txt" },
+	{ "data/MOTION/niyasu/motion_attack_3.txt" },
+	{ "data/MOTION/niyasu/motion_smashCharge.txt" },
+	{ "data/MOTION/niyasu/motion_smash.txt" },
+	{ "data/MOTION/niyasu/motion_daunted.txt" },
+	{ "data/MOTION/niyasu/motion_blowAway.txt" },
+	{ "data/MOTION/niyasu/motion_down.txt" } },
+
+	{ { "data/MOTION/sanyasu/motion_neutral.txt" },
+	{ "data/MOTION/sanyasu/motion_run.txt" },
+	{ "data/MOTION/sanyasu/motion_jump.txt" },
+	{ "data/MOTION/sanyasu/motion_fall.txt" },
+	{ "data/MOTION/sanyasu/motion_lift.txt" },
+	{ "data/MOTION/sanyasu/motion_throw.txt" },
+	{ "data/MOTION/sanyasu/motion_attack_0.txt" },
+	{ "data/MOTION/sanyasu/motion_attack_1.txt" },
+	{ "data/MOTION/sanyasu/motion_attack_2.txt" },
+	{ "data/MOTION/sanyasu/motion_attack_3.txt" },
+	{ "data/MOTION/sanyasu/motion_smashCharge.txt" },
+	{ "data/MOTION/sanyasu/motion_smash.txt" },
+	{ "data/MOTION/sanyasu/motion_daunted.txt" },
+	{ "data/MOTION/sanyasu/motion_blowAway.txt" },
+	{ "data/MOTION/sanyasu/motion_down.txt" } },
+
+	{ { "data/MOTION/yonyasu/motion_neutral.txt" },
+	{ "data/MOTION/yonyasu/motion_run.txt" },
+	{ "data/MOTION/yonyasu/motion_jump.txt" },
+	{ "data/MOTION/yonyasu/motion_fall.txt" },
+	{ "data/MOTION/yonyasu/motion_lift.txt" },
+	{ "data/MOTION/yonyasu/motion_throw.txt" },
+	{ "data/MOTION/yonyasu/motion_attack_0.txt" },
+	{ "data/MOTION/yonyasu/motion_attack_1.txt" },
+	{ "data/MOTION/yonyasu/motion_attack_2.txt" },
+	{ "data/MOTION/yonyasu/motion_attack_3.txt" },
+	{ "data/MOTION/yonyasu/motion_smashCharge.txt" },
+	{ "data/MOTION/yonyasu/motion_smash.txt" },
+	{ "data/MOTION/yonyasu/motion_daunted.txt" },
+	{ "data/MOTION/yonyasu/motion_blowAway.txt" },
+	{ "data/MOTION/yonyasu/motion_down.txt" } }
 };
 
 //=============================================================================
@@ -50,7 +98,7 @@ char * CMotion::m_apFileName[CMotion::MOTION_MAX] =
 //=============================================================================
 CMotion::CMotion()
 {
-	m_pMotionInfo = nullptr;
+
 }
 
 //=============================================================================
@@ -66,18 +114,20 @@ CMotion::~CMotion()
 //=============================================================================
 HRESULT CMotion::Load()
 {
-	// メモリ確保
-	m_pMotionInfo = new CMotion::MOTION_INFO[MOTION_MAX];
-
 	// ブロックコメント
 	CKananLibrary::StartBlockComment("モーションファイルの読み込み開始");
 
-	for (int nCnt = 0; nCnt < MOTION_MAX; nCnt++)
+	for (int charaType = 0; charaType < MAX_CHARACTER_TYPE; charaType++)
 	{
-		// モデル読み込み
-		if (FAILED(LoadMotion((CMotion::MOTION_TYPE)nCnt)))
-			// 失敗
-			return E_FAIL;
+		char cText[32];
+		sprintf(cText, "[%d]番目のキャラクター", charaType);
+		std::cout << cText << std::endl;
+
+		for (int nCnt = 0; nCnt < MOTION_MAX; nCnt++)
+		{
+			// モデル読み込み
+			LoadMotion((PARAM_TYPE)charaType, (CMotion::MOTION_TYPE)nCnt);
+		}
 	}
 
 	// ブロックコメント
@@ -92,43 +142,37 @@ HRESULT CMotion::Load()
 //=============================================================================
 void CMotion::UnLoad()
 {
-	// モーション数回す
-	for (int nCntMotion = 0; nCntMotion < MOTION_MAX; nCntMotion++)
+	for (int charaType = 0; charaType < MAX_CHARACTER_TYPE; charaType++)
 	{
-		// キー数回す
-		for (int nCntKeyInfo = 0; nCntKeyInfo < m_pMotionInfo[nCntMotion].nNumKey; nCntKeyInfo++)
+		// モーション数回す
+		for (int nCntMotion = 0; nCntMotion < MOTION_MAX; nCntMotion++)
 		{
-			// nullcheck
-			if (m_pMotionInfo[nCntMotion].pKeyInfo[nCntKeyInfo].pKey)
+			// キー数回す
+			for (int nCntKeyInfo = 0; nCntKeyInfo < m_pMotionInfo[charaType][nCntMotion].nNumKey; nCntKeyInfo++)
 			{
-				// 現在のキーのメモリ開放
-				delete[] m_pMotionInfo[nCntMotion].pKeyInfo[nCntKeyInfo].pKey;
-				m_pMotionInfo[nCntMotion].pKeyInfo[nCntKeyInfo].pKey = nullptr;
+				// nullcheck
+				if (m_pMotionInfo[charaType][nCntMotion].pKeyInfo[nCntKeyInfo].pKey)
+				{
+					// 現在のキーのメモリ開放
+					delete[] m_pMotionInfo[charaType][nCntMotion].pKeyInfo[nCntKeyInfo].pKey;
+					m_pMotionInfo[charaType][nCntMotion].pKeyInfo[nCntKeyInfo].pKey = nullptr;
+				}
+			}
+			// nullcheck
+			if (m_pMotionInfo[charaType][nCntMotion].pKeyInfo)
+			{
+				// 現在のキーインフォのメモリ開放
+				delete[] m_pMotionInfo[charaType][nCntMotion].pKeyInfo;
+				m_pMotionInfo[charaType][nCntMotion].pKeyInfo = nullptr;
 			}
 		}
-		// nullcheck
-		if (m_pMotionInfo[nCntMotion].pKeyInfo)
-		{
-			// 現在のキーインフォのメモリ開放
-			delete[] m_pMotionInfo[nCntMotion].pKeyInfo;
-			m_pMotionInfo[nCntMotion].pKeyInfo = nullptr;
-		}
-	}
-
-	// nullcheck
-	if (m_pMotionInfo)
-	{
-		// メモリ開放
-		delete[] m_pMotionInfo;
-		m_pMotionInfo = nullptr;
-
 	}
 }
 
 //=============================================================================
 // テキストファイルからモーションロード
 //=============================================================================
-HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
+HRESULT CMotion::LoadMotion(PARAM_TYPE charaType, MOTION_TYPE motiontype)
 {
 	// 変数宣言
 	FILE *pFile;
@@ -141,13 +185,13 @@ HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
 	bool bInfo = false;	// なぜかキー数が二回入るので、この変数で一回にする
 
 	// ファイルを開く
-	pFile = fopen(m_apFileName[motiontype], "r");
+	pFile = fopen(m_apFileName[charaType][motiontype], "r");
 
 	// nullcheck
 	if (!pFile)
 	{
 		// ファイル読み込み失敗
-		std::cout << m_apFileName[motiontype] << " の読み込み失敗" << std::endl;
+		std::cout << m_apFileName[charaType][motiontype] << " の読み込み失敗 [×]" << std::endl;
 		return E_FAIL;
 	}
 
@@ -188,15 +232,15 @@ HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
 						sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &nLoop);
 
 						// 1か0でboolとして判断する
-						m_pMotionInfo[motiontype].bLoop = nLoop ? true : false;
+						m_pMotionInfo[charaType][motiontype].bLoop = nLoop ? true : false;
 					}
 					// キー数
 					else if (strcmp(cHeadText, "NUM_KEY") == 0 && !bInfo)
 					{
-						sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_pMotionInfo[motiontype].nNumKey);
+						sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_pMotionInfo[charaType][motiontype].nNumKey);
 
 						// キー数分メモリ確保
-						m_pMotionInfo[motiontype].pKeyInfo = new KEY_INFO[m_pMotionInfo[motiontype].nNumKey];
+						m_pMotionInfo[charaType][motiontype].pKeyInfo = new KEY_INFO[m_pMotionInfo[charaType][motiontype].nNumKey];
 
 						// キーセットを行うので、キー情報カウントを初期化する
 						nCntkeyInfo = 0;
@@ -207,10 +251,10 @@ HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
 					else if (strcmp(cHeadText, "KEYSET") == 0)
 					{
 						// パーツ数分のキーを宣言
-						int nKey = CModelCharacter::GetPartsNum((CHARACTER_TYPE)CheckCharacter(motiontype));
+						int nKey = CModelCharacter::GetPartsNum((CHARACTER_TYPE)(charaType * 2));
 
 						// キー数分メモリ確保
-						m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey = new KEY[nKey];
+						m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].pKey = new KEY[nKey];
 
 						// キーカウントを初期化する
 						nCntKey = 0;
@@ -223,7 +267,7 @@ HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
 							// フレーム数
 							if (strcmp(cHeadText, "FRAME") == 0)
 							{
-								sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].nFrame);
+								sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].nFrame);
 							}
 							// キー
 							if (strcmp(cHeadText, "KEY") == 0)
@@ -236,14 +280,14 @@ HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
 									// 位置
 									if (strcmp(cHeadText, "POS") == 0)
 									{
-										sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.x,
-											&m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.y, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.z);
+										sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.x,
+											&m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.y, &m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].posDest.z);
 									}
 									// 回転
 									if (strcmp(cHeadText, "ROT") == 0)
 									{
-										sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.x,
-											&m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.y, &m_pMotionInfo[motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.z);
+										sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.x,
+											&m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.y, &m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].pKey[nCntKey].rotDest.z);
 									}
 									// 終了
 									if (strcmp(cHeadText, "END_KEY") == 0)
@@ -270,35 +314,7 @@ HRESULT CMotion::LoadMotion(MOTION_TYPE motiontype)
 	fclose(pFile);
 
 	// デバッグコメント表示
-	std::cout << m_apFileName[motiontype] << " の読み込み完了" << std::endl;
+	std::cout << m_apFileName[charaType][motiontype] << " の読み込み完了" << std::endl;
 
 	return S_OK;
-}
-
-//=============================================================================
-// キャラクターがどれか確認
-//=============================================================================
-int CMotion::CheckCharacter(MOTION_TYPE type)
-{
-	// モデルの種類
-	CHARACTER_TYPE CharacterType = CHARACTER_NONE;
-
-	// モーションの種類で判断
-	/*switch (type)
-	{
-		// プレイヤー
-	case CMotion::PLAYER_NEUTRAL:
-	case CMotion::PLAYER_SWIM:
-	case CMotion::PLAYER_SWIM_BEGIN:
-		CharacterType = CHARACTER_PLAYER;
-		break;
-	case CMotion::FISH000_NEUTRAL:
-		CharacterType = CHARACTER_FISH;
-		break;
-		case CMotion::FISH001_NEUTRAL:
-		CharacterType = CHARACTER_FISH2;
-		break;
-	}*/
-
-	return CharacterType;
 }

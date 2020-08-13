@@ -338,7 +338,7 @@ void CCharaParam::UpdateImGui(void)
 //=============================================================================
 // キャラパラメーターの詳細
 //=============================================================================
-void CCharaParam::ShowCharaParam(const char cName[16], CCharaParam::PARAM_TYPE type)
+void CCharaParam::ShowCharaParam(const char cName[16], PARAM_TYPE type)
 {
 	// プレイヤー1の情報
 	if (ImGui::BeginTabItem(cName))

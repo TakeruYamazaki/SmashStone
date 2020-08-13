@@ -175,7 +175,7 @@ void CCharacter::SetModelType(CHARACTER_TYPE type)
 	m_typeTrans = (CHARACTER_TYPE)(type + 1);
 
 	// タイプごとに最大HP設定
-	m_param = CCharaParam::GetPlayerParam((CCharaParam::PARAM_TYPE)(m_type / 2));
+	m_param = CCharaParam::GetPlayerParam((PARAM_TYPE)(m_type / 2));
 	m_nLife = m_param.fMaxLife;
 
 	// ワールドマトリックスの設定

@@ -120,7 +120,7 @@ void CModelCharacter::Update()
 			// モデルのインデックスを取得
 			int nIndex = m_pModelParts[nCnt].GetIndex();
 			// モーションのフレーム数の取得
-			float fFrame = (float)(CMotion::GetFrame(m_motion, m_nKey));
+			float fFrame = (float)(CMotion::GetFrame((PARAM_TYPE)(m_type / 2) ,m_motion, m_nKey));
 
 			// 作業用の変数
 			D3DXVECTOR3 WorkPos = ZeroVector3;
@@ -143,13 +143,13 @@ void CModelCharacter::Update()
 			}*/
 			{
 				// 目的地までの移動量を計算
-				WorkPos = (CMotion::GetPosDest(m_motion, m_nKey, nIndex) + *m_pModelParts[nCnt].GetOffsetPos()) - *pPos;
+				WorkPos = (CMotion::GetPosDest((PARAM_TYPE)(m_type / 2), m_motion, m_nKey, nIndex) + *m_pModelParts[nCnt].GetOffsetPos()) - *pPos;
 				// 移動量をフレーム数で割る
 				m_pModelParts[nCnt].SetUpdatePos(WorkPos / fFrame);
 			}
 
 			// 目的地までの回転量を計算
-			WorkRot = (CMotion::GetRotDest(m_motion, m_nKey, nIndex) + *m_pModelParts[nCnt].GetOffsetRot()) - *pRot;
+			WorkRot = (CMotion::GetRotDest((PARAM_TYPE)(m_type / 2), m_motion, m_nKey, nIndex) + *m_pModelParts[nCnt].GetOffsetRot()) - *pRot;
 			// 回転量をフレーム数で割る
 			m_pModelParts[nCnt].SetUpdateRot(WorkRot / fFrame);
 		}
@@ -174,7 +174,7 @@ void CModelCharacter::Update()
 	m_nFrame++;
 
 	// フレームが一定値まで来た時
-	if (m_nFrame >= CMotion::GetFrame(m_motion, m_nKey))
+	if (m_nFrame >= CMotion::GetFrame((PARAM_TYPE)(m_type / 2), m_motion, m_nKey))
 	{
 		// フレーム初期化
 		m_nFrame = 0;
@@ -183,13 +183,13 @@ void CModelCharacter::Update()
 		m_nKey++;
 
 		// キーが一定値まで来た時
-		if (m_nKey >= CMotion::GetNumKey(m_motion))
+		if (m_nKey >= CMotion::GetNumKey((PARAM_TYPE)(m_type / 2), m_motion))
 		{
 			//フレームとキー初期化
 			ResetMotion();
 
 			// ループしない時
-			if (!CMotion::GetLoop(m_motion))
+			if (!CMotion::GetLoop((PARAM_TYPE)(m_type / 2), m_motion))
 			{
 				// ニュートラルに戻す
 				m_motion = CMotion::PLAYER_NEUTRAL;
@@ -366,10 +366,10 @@ void CModelCharacter::SetMotion(CMotion::MOTION_TYPE motiontype)
 	m_nAllFrame = 0;
 
 	// キー数分繰り返す
-	for (int nCnt = 0; nCnt < CMotion::GetNumKey(m_motion); nCnt++)
+	for (int nCnt = 0; nCnt < CMotion::GetNumKey((PARAM_TYPE)(m_type / 2), m_motion); nCnt++)
 	{
 		// フレーム数を加算する
-		m_nAllFrame += CMotion::GetFrame(m_motion, nCnt);
+		m_nAllFrame += CMotion::GetFrame((PARAM_TYPE)(m_type / 2), m_motion, nCnt);
 	}
 }
 

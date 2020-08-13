@@ -115,6 +115,12 @@ void CPlayer::Update(void)
 
 	// プレイヤーの番号設定
 	SetnPlayer(m_nPlayer);
+
+	char cText[8];
+	sprintf(cText, "%d / ", m_pModelCharacter->GetAllFrame() - m_nAttackFrame);
+	CDebugProc::Print(cText);
+	sprintf(cText, "%d\n", m_pModelCharacter->GetAllFrame());
+	CDebugProc::Print(cText);
 	 
 #ifdef _DEBUG
 	CDebugProc::Print("プレイヤーの位置 [%.4f][%.4f][%.4f]\n", m_pos.x, m_pos.y, m_pos.z);
@@ -299,8 +305,8 @@ void CPlayer::NormalAttack(void)
 	}
 	else if (m_bAttack)
 	{
-		if (AllFrame - m_nAttackFrame <= AllFrame &&
-			AllFrame - m_nAttackFrame >= m_param.motionParam[(CCharaParam::PLAYER_ATTACK_TYPE)m_nAttackFlow].CancelFrame.start)
+		if (AllFrame - m_nAttackFrame > AllFrame ||
+			AllFrame - m_nAttackFrame < m_param.motionParam[(CCharaParam::PLAYER_ATTACK_TYPE)m_nAttackFlow - 1].CancelFrame.start)
 			return;
 	}
 

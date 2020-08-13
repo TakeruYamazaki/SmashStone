@@ -13,6 +13,7 @@
 // インクルードファイル
 // ===================================================================
 #include "main.h"
+#include "kananlibrary.h"
 
 // ===================================================================
 // マクロ定義
@@ -24,15 +25,6 @@
 class CCharaParam
 {
 public:
-	typedef enum
-	{	// パラメーターのタイプ
-		PARAM_1YASU = 0,	// 1ヤス
-		PARAM_2YASU,		// 2ヤス
-		PARAM_3YASU,		// 3ヤス
-		PARAM_4YASU,		// 4ヤス
-		PARAM_MAX			// 最大数
-	} PARAM_TYPE;
-
 	typedef enum
 	{
 		ATTACK_NORMAL_1 = 0,	// 通常攻撃1
@@ -108,7 +100,7 @@ private:
 	static char m_aFileName[PARAM_MAX][64];	// 変身前キャラ数分のパラメーターファイル名
 
 #ifdef _DEBUG
-	static void ShowCharaParam(const char cName[16], CCharaParam::PARAM_TYPE type);
+	static void ShowCharaParam(const char cName[16], PARAM_TYPE type);
 	static bool m_bShowWindow;				// ImGuiウィンドウを表示するか
 #endif
 };
