@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "player.h"
 #include "game.h"
+#include "debugProc.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // ƒ}ƒNƒ’è‹`
@@ -36,12 +37,8 @@ CCapsuleCollider::READINFOFILEBUFFER	CCapsuleCollider::m_ReadInfoFileBuff;		// “
 //-------------------------------------------------------------------------------------------------------------
 CCapsuleCollider::CCapsuleCollider() : CScene(PRIORITY_COLLISION)
 {
-	m_ColliderInfo.fRdius = MYLIB_FLOAT_UNSET;			// ”¼Œa
 	m_ColliderInfo.fLength = MYLIB_FLOAT_UNSET;			// ’·‚³
 
-	m_ColliderInfo.TopPoint = MYLIB_VEC3_UNSET;			// ã–ÊˆÊ’u
-	m_ColliderInfo.BottomPoint = MYLIB_VEC3_UNSET;		// ’ê–ÊˆÊ’u
-	m_ColliderInfo.BottomNormal = MYLIB_VEC3_UNSET;		// ’ê–Ê‚Ì–@ü
 	m_ColliderInfo.Difference = MYLIB_VEC3_UNSET;		// ·•ª
 	m_ColliderInfo.TopTransVec = MYLIB_VEC3_UNSET;		// ã–Ê‚Ü‚Å‚Ì’·‚³‚ÆŒü‚«
 	m_ColliderInfo.BottomTransVec = MYLIB_VEC3_UNSET;	// ’ê–Ê‚Ü‚Å‚Ì’·‚³‚ÆŒü‚«
@@ -274,6 +271,9 @@ void CCapsuleCollider::Init(void)
 	MakeVertex(pDevice);
 	// ƒCƒ“ƒfƒbƒNƒX‚Ìì¬
 	MakeIndex(pDevice);
+
+	// ƒJƒvƒZƒ‹î•ñ‚Ì‰Šú‰»
+	InitCapsInfo();
 }
 //-------------------------------------------------------------------------------------------------------------
 // I—¹
@@ -364,6 +364,9 @@ void CCapsuleCollider::Draw(void)
 	// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ìİ’è
 	pDevice->SetTransform(D3DTS_WORLD, &m_ColliderInfo.trans.mtxWorld);
 
+	// ƒJƒvƒZƒ‹ˆÊ’u‚ÌŒvZ
+	CalCapPosition();
+
 	// ’¸“_ƒoƒbƒtƒ@‚ğƒf[ƒ^ƒXƒgƒŠ[ƒ€‚Éİ’è
 	pDevice->SetStreamSource(0, m_ColliderInfo.pVtexBuff, 0, sizeof(VERTEX_3D));
 
@@ -386,15 +389,6 @@ void CCapsuleCollider::Draw(void)
 	// ƒŒƒ“ƒ_ƒ‰[‚Ìİ’è
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);				// — –Ê(¶‰ñ‚è)‚ğƒJƒŠƒ“ƒO‚·‚é
 
-}
-
-//-------------------------------------------------------------------------------------------------------------
-// ‘å‚«‚³‚Ìİ’è
-//-------------------------------------------------------------------------------------------------------------
-void CCapsuleCollider::SetSize(float & fRadius, float & fLength)
-{
-	m_ColliderInfo.fRdius = fRadius;
-	m_ColliderInfo.fLength = fLength;
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -446,12 +440,20 @@ CCapsuleCollider * CCapsuleCollider::Create(CScene *pScene, D3DXMATRIX *pMtxPare
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::InfoSetSync(float fRadius, float fLengthMax, float fLengthMin, D3DXVECTOR3 & diff)
 {
-	m_ColliderInfo.fRdius = fRadius;		// ”¼Œa
-	m_ColliderInfo.TopTransVec.y = fLengthMax;	// ’·‚³Å‘å
+	m_ColliderInfo.TopTransVec.y = fLengthMax;		// ’·‚³Å‘å
 	m_ColliderInfo.BottomTransVec.y = fLengthMin;	// ’·‚³Å¬
-	m_ColliderInfo.TopPoint.y = fLengthMax;	// ã–Ê‚ÌˆÊ’u
-	m_ColliderInfo.BottomPoint.y = fLengthMin;	// ’ê–Ê‚ÌˆÊ’u
-	m_ColliderInfo.Difference = diff;			// ·•ª
+	m_ColliderInfo.Difference = diff;				// ·•ª
+
+	m_ColliderInfo.Capsule.fRadius = fRadius;
+	m_ColliderInfo.Capsule.Segment.Point.y = fLengthMax;
+	m_ColliderInfo.Capsule.Segment.Vec.y = fLengthMin - fLengthMax;
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// ƒJƒvƒZƒ‹î•ñ‚Ì‰Šú‰»
+//-------------------------------------------------------------------------------------------------------------
+void CCapsuleCollider::InitCapsInfo(void)
+{
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -459,15 +461,218 @@ void CCapsuleCollider::InfoSetSync(float fRadius, float fLengthMax, float fLengt
 //-------------------------------------------------------------------------------------------------------------
 bool CCapsuleCollider::Collision(void)
 {
+	if (m_ColliderInfo.enmTtpeID == COLLIPARTS_BODY)
+	{
+		return false;
+	}
 	// •Ï”éŒ¾
 	CPlayer          *pOwn            = (CPlayer *)m_ColliderInfo.pScene;						// ‚±‚ÌƒRƒ‰ƒCƒ_[‚ğ‚Á‚Ä‚¢‚éƒvƒŒƒCƒ„[
 	CPlayer          *pOthers         = pOwn->GetAnotherPlayer();								// ‚»‚Ì‘¼‚ÌƒvƒŒƒCƒ„[
-	CCapsuleCollider *pOthersCapColli = pOthers->GetCapCollider(CCharacter::COLLIPARTS_BODY);	//‚»‚Ì‘¼‚ÌƒvƒŒƒCƒ„[‚ÌƒRƒ‰ƒCƒ_[î•ñ
+	CCapsuleCollider *pOthersCapColli = pOthers->GetCapCollider(CCharacter::COLLIPARTS_BODY);	// ‚»‚Ì‘¼‚ÌƒvƒŒƒCƒ„[‚ÌƒRƒ‰ƒCƒ_[î•ñ
 
+	CDebugProc::Print("COLLIPARTS [%d]", m_ColliderInfo.enmTtpeID);
 	// 2ü•ª‚ÌÅ’Z‹—‚ğ‹‚ß‚é
-
+	colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule) ?
+		CDebugProc::Print("“–‚½‚Á‚Ä‚é\n"):
+		CDebugProc::Print("“–‚½‚Á‚Ä‚È‚¢\n");
 
 	return false;
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// ƒJƒvƒZƒ‹ˆÊ’u‚ÌŒvZ
+//-------------------------------------------------------------------------------------------------------------
+void CCapsuleCollider::CalCapPosition(void)
+{
+	// •Ï”éŒ¾
+	D3DXVECTOR3 BottomPoint;	// ’ê–Ê‚ÌˆÊ’u
+
+	// ã–Ê‚ÌˆÊ’u
+	D3DXVec3TransformCoord(&m_ColliderInfo.Capsule.Segment.Point, &m_ColliderInfo.TopTransVec, &m_ColliderInfo.trans.mtxWorld);
+	// ’ê–Ê‚ÌˆÊ’u
+	D3DXVec3TransformCoord(&BottomPoint, &m_ColliderInfo.BottomTransVec, &m_ColliderInfo.trans.mtxWorld);
+
+	m_ColliderInfo.Capsule.Segment.Vec = BottomPoint - m_ColliderInfo.Capsule.Segment.Point;
+}
+
+bool CCapsuleCollider::IsSharpAngle(CONST FLOAT3 & Point1, CONST FLOAT3 & Point2, CONST FLOAT3 & Point3)
+{
+	return VEC3(Point1 - Point2).IsSharpAngle(Point3 - Point2);
+}
+
+float CCapsuleCollider::calcPointLineDist(const FLOAT3 & Point, const LINE & Line, FLOAT3 & Perp, float & fVecCoeffi)
+{
+	// •Ï”éŒ¾
+	float fLenSqV = Line.Vec.LengthSq();		// ‚×‚«æ‚Ì’·‚³
+	// ƒxƒNƒgƒ‹ŒW”‚Ì‰Šú‰»
+	fVecCoeffi = MYLIB_FLOAT_UNSET;
+
+	// ‚×‚«æ‚Ì’·‚³‚ª0.0f‚æ‚è‘å‚«‚¢‚Æ‚«
+	if (fLenSqV > MYLIB_FLOAT_UNSET)
+	{// ƒxƒNƒgƒ‹ŒW”‚ğŒvZ‚·‚é
+		fVecCoeffi = Line.Vec.Dot(Point - Line.Point) / fLenSqV;
+	}
+
+	Perp = Line.Point + fVecCoeffi * Line.Vec;
+	return (Perp - Point).Length();
+}
+
+float CCapsuleCollider::calcPointSegmentDist(const FLOAT3 & Point, const SEGMENT & Seg, FLOAT3 & EndPtShortdist, float & EndPoint)
+{
+	// ü•ª‚ÌI“_‚Ìæ“¾
+	const FLOAT3 SegEndPoint = Seg.GetEndPoint();
+
+	// ‚ü‚Ì’·‚³A‚ü‚Ì‘«‚ÌÀ•W‹y‚Ñt‚ğZo
+	float fLength = calcPointLineDist(Point, LINE(Seg.Point, SegEndPoint - Seg.Point), EndPtShortdist, EndPoint);
+
+	// ‰sŠp‚¶‚á‚È‚¢
+	if (IsSharpAngle(Point, Seg.Point, SegEndPoint) == false) {
+		// n“_‘¤‚ÌŠO‘¤
+		EndPtShortdist = Seg.Point;
+		return (Seg.Point - Point).Length();
+	}
+	// ‰sŠp‚¶‚á‚È‚¢
+	else if (IsSharpAngle(Point, SegEndPoint, Seg.Point) == false) {
+		// I“_‘¤‚ÌŠO‘¤
+		EndPtShortdist = SegEndPoint;
+		return (SegEndPoint - Point).Length();
+	}
+
+	return fLength;
+}
+
+float CCapsuleCollider::calcLineLineDist(const LINE & Line1, const LINE & Line2, FLOAT3 & PerpendFoot1, FLOAT3 & PerpendFoot2, float & fVecCoeffi1, float & fVecCoeffi2)
+{
+	// 2’¼ü‚ª•½sH
+	if (Line1.Vec.IsParallel(Line2.Vec) == true)
+	{
+		// “_P11‚Æ’¼üL2‚ÌÅ’Z‹——£‚Ì–â‘è‚É‹A’…
+		float fLength = calcPointLineDist(Line1.Point, Line2, PerpendFoot2, fVecCoeffi2);
+		PerpendFoot1 = Line1.Point;
+		fVecCoeffi1 = 0.0f;
+
+		return fLength;
+	}
+
+	// 2’¼ü‚Í‚Ë‚¶‚êŠÖŒW
+	float fDistVec1Vec2 = Line1.Vec.Dot(Line2.Vec);	// ƒxƒNƒgƒ‹1‚Æ2‚Ì‚Ë‚¶‚ê
+	float fDistVec1Vec1 = Line1.Vec.LengthSq();		// ƒxƒNƒgƒ‹1‚Æ1‚Ì‚Ë‚¶‚ê
+	float fDistVec2Vec2 = Line2.Vec.LengthSq();		// ƒxƒNƒgƒ‹2‚Æ2‚Ì‚Ë‚¶‚ê
+	VEC3 VecPt2Pt1 = Line1.Point - Line2.Point;		// ’¼ü‚ÌˆÊ’u“¯m‚ÌƒxƒNƒgƒ‹
+	fVecCoeffi1 = (fDistVec1Vec2 * Line2.Vec.Dot(VecPt2Pt1) - fDistVec2Vec2 * Line1.Vec.Dot(VecPt2Pt1)) / (fDistVec1Vec1 * fDistVec2Vec2 - fDistVec1Vec2 * fDistVec1Vec2);
+	PerpendFoot1 = Line1.GetPoint(fVecCoeffi1);
+	fVecCoeffi2 = Line2.Vec.Dot(PerpendFoot1 - Line2.Point) / fDistVec2Vec2;
+	PerpendFoot2 = Line2.GetPoint(fVecCoeffi2);
+
+	return (PerpendFoot2 - PerpendFoot1).Length();
+}
+
+void CCapsuleCollider::Limit0to1(float & fValue)
+{
+	if (fValue < 0.0f)
+	{
+		fValue = 0.0f;
+	}
+	else if (fValue > 1.0f)
+	{
+		fValue = 1.0f;
+	}
+}
+
+float CCapsuleCollider::calcSegmentSegmentDist(const SEGMENT & Seg1, const SEGMENT & Seg2, FLOAT3 & PerpendFoot1, FLOAT3 & PerpendFoot2, float & fVecCoeffi1, float & fVecCoeffi2)
+{
+	// S1‚ªk‘Ş‚µ‚Ä‚¢‚éH
+	if (Seg1.Vec.LengthSq() < MYLIB_OX_EPSILON)
+	{// S2‚àk‘ŞH
+		if (Seg2.Vec.LengthSq() < MYLIB_OX_EPSILON)
+		{// “_‚Æ“_‚Ì‹——£‚Ì–â‘è‚É‹A’…
+			float fLength = (Seg2.Point - Seg1.Point).Length();
+			PerpendFoot1 = Seg1.Point;
+			PerpendFoot2 = Seg2.Point;
+			fVecCoeffi1 = fVecCoeffi2 = 0.0f;
+			return fLength;
+		}
+		else
+		{// S1‚Ìn“_‚ÆS2‚ÌÅ’Z–â‘è‚É‹A’…
+			float fLength = calcPointSegmentDist(Seg1.Point, Seg2, PerpendFoot2, fVecCoeffi2);
+			PerpendFoot1 = Seg1.Point;
+			fVecCoeffi1 = 0.0f;
+			Limit0to1(fVecCoeffi2);
+			return fLength;
+		}
+	}
+
+	// S2‚ªk‘Ş‚µ‚Ä‚¢‚éH
+	else if (Seg2.Vec.LengthSq() < MYLIB_OX_EPSILON)
+	{// S2‚Ìn“_‚ÆS1‚ÌÅ’Z–â‘è‚É‹A’…
+		float fLength = calcPointSegmentDist(Seg2.Point, Seg1, PerpendFoot1, fVecCoeffi1);
+		PerpendFoot2 = Seg2.Point;
+		Limit0to1(fVecCoeffi1);
+		fVecCoeffi2 = 0.0f;
+		return fLength;
+	}
+
+	// 2ü•ª‚ª•½s‚¾‚Á‚½‚ç‚ü‚Ì’[“_‚Ìˆê‚Â‚ğP1‚É‰¼Œˆ’è
+	if (Seg1.Vec.IsParallel(Seg2.Vec) == true)
+	{
+		fVecCoeffi1 = 0.0f;
+		PerpendFoot1 = Seg1.Point;
+		float fLength = calcPointSegmentDist(Seg1.Point, Seg2, PerpendFoot2, fVecCoeffi2);
+		if (0.0f <= fVecCoeffi2 && fVecCoeffi2 <= 1.0f)
+		{
+			return fLength;
+		}
+	}
+	else
+	{// ü•ª‚Í‚Ë‚¶‚ê‚ÌŠÖŒW
+		// 2’¼üŠÔ‚ÌÅ’Z‹——£‚ğ‹‚ß‚Ä‰¼‚ÌfVecCoeffi1,fVecCoeffi2‚ğ‹‚ß‚é
+		float fLength = calcLineLineDist(Seg1, Seg2, PerpendFoot1, PerpendFoot2, fVecCoeffi1, fVecCoeffi2);
+		if (0.0f <= fVecCoeffi1 && fVecCoeffi1 <= 1.0f &&
+			0.0f <= fVecCoeffi2 && fVecCoeffi2 <= 1.0f)
+		{
+			return fLength;
+		}
+	}
+
+	// ‚ü‚Ì‘«‚ªŠO‚É‚ ‚é–‚ª”»–¾
+	// S1‘¤‚ÌfVecCoeffi1‚ğ0`1‚ÌŠÔ‚ÉƒNƒ‰ƒ“ƒv‚µ‚Ä‚ü‚ğ~‚ë‚·
+	Limit0to1(fVecCoeffi1);
+	PerpendFoot1 = Seg1.GetPoint(fVecCoeffi1);
+	float fLength = calcPointSegmentDist(PerpendFoot1, Seg2, PerpendFoot2, fVecCoeffi2);
+	if (0.0f <= fVecCoeffi2 && fVecCoeffi2 <= 1.0f)
+	{
+		return fLength;
+	}
+
+	// S2‘¤‚ªŠO‚¾‚Á‚½‚Ì‚ÅS2‘¤‚ğƒNƒ‰ƒ“ƒvAS1‚É‚ü‚ğ~‚ë‚·
+	Limit0to1(fVecCoeffi2);
+	PerpendFoot2 = Seg2.GetPoint(fVecCoeffi2);
+	fLength = calcPointSegmentDist(PerpendFoot2, Seg1, PerpendFoot1, fVecCoeffi1);
+	if (0.0f <= fVecCoeffi1 && fVecCoeffi1 <= 1.0f)
+	{
+		return fLength;
+	}
+
+	// ‘o•û‚Ì’[“_‚ªÅ’Z‚Æ”»–¾
+	Limit0to1(fVecCoeffi1);
+	PerpendFoot1 = Seg1.GetPoint(fVecCoeffi1);
+	return (PerpendFoot2 - PerpendFoot1).Length();
+}
+
+bool CCapsuleCollider::colCapsuleCapsule(const CAPSULE & Cap1, const CAPSULE & Cap2)
+{
+	// •Ï”éŒ¾
+	FLOAT3 PerpendFoot1;	// ü•ª1‘¤‚Ì‚ü‚Ì‘«
+	FLOAT3 PerpendFoot2;	// ü•ª2‘¤‚Ì‚ü‚Ì‘«
+	float fVecCoeffi1;		// ü•ª1‘¤ƒxƒNƒgƒ‹‚ÌŒW”
+	float fVecCoeffi2;		// ü•ª2‘¤ƒxƒNƒgƒ‹‚ÌŒW”
+	float fDist;			// ü•ª“¯m‚Ì‹——£
+
+	// ü•ª“¯m‚Ì‹——£‚ÌŒvZ
+	fDist = calcSegmentSegmentDist(Cap1.Segment, Cap2.Segment, PerpendFoot1, PerpendFoot2, fVecCoeffi1, fVecCoeffi2);
+
+	// ü•ª“¯m‚Ì‹——£‚ª”¼ŒaˆÈ‰º‚ÌÕ“Ë‚µ‚Ä‚¢‚é
+	return (fDist <= Cap1.fRadius + Cap2.fRadius);
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -483,26 +688,28 @@ void CCapsuleCollider::MakeVertex(LPDIRECT3DDEVICE9 pDevice)
 		&m_ColliderInfo.pVtexBuff,
 		NULL);
 
-	// ’¸“_î•ñ‚Ìİ’è
-	VERTEX_3D *pVtx;
-
-	float fSlicesPI = (D3DX_PI * 2.0f) / m_ColliderInfo.nSlices;
-	float fStacksPI = (D3DX_PI * 2.0f) / m_ColliderInfo.nStacks_1_2;
-
-	// ’¸“_ƒf[ƒ^‚Ì”ÍˆÍƒƒbƒN‚µA’¸“_ƒoƒbƒtƒ@‚Ö‚Ìƒ|ƒCƒ“ƒ^æ“¾
-	m_ColliderInfo.pVtexBuff->Lock(0, 0, (void**)&pVtx, 0);
-
+	// •Ï”éŒ¾
+	D3DXVECTOR3 TopPoint = m_ColliderInfo.Capsule.Segment.Point;			// ã–Ê‚ÌˆÊ’u
+	D3DXVECTOR3 BottomPoint = m_ColliderInfo.Capsule.Segment.GetEndPoint();	// ’ê–Ê‚ÌˆÊ’u
+	float fSlicesPI = (D3DX_PI * 2.0f) / m_ColliderInfo.nSlices;			// •ªŠ„”‚É‘Î‰‚µ‚½‰~ü—¦
+	float fStacksPI = (D3DX_PI * 2.0f) / m_ColliderInfo.nStacks_1_2;		// •ªŠ„”‚É‘Î‰‚µ‚½‰~ü—¦
 	// c‚ğƒJƒEƒ“ƒg
 	int nCompSlices = (CAPCOLLI_SLICES / 2);
 	nCompSlices += (CAPCOLLI_SLICES % 2 == 0) ? 0 : 1;
+
+	// ’¸“_î•ñ‚Ìİ’è
+	VERTEX_3D *pVtx;
+	// ’¸“_ƒf[ƒ^‚Ì”ÍˆÍƒƒbƒN‚µA’¸“_ƒoƒbƒtƒ@‚Ö‚Ìƒ|ƒCƒ“ƒ^æ“¾
+	m_ColliderInfo.pVtexBuff->Lock(0, 0, (void**)&pVtx, 0);
+
 
 	for (int nCntSlices = 0; nCntSlices < m_ColliderInfo.nSlices + 1; nCntSlices++)
 	{
 		float fSlicesRadian = fSlicesPI * nCntSlices;
 		float fSlicesSinValue = sinf((fSlicesPI * nCntSlices));
-		float fPos_y = cosf(fSlicesRadian) * m_ColliderInfo.fRdius;
+		float fPos_y = cosf(fSlicesRadian) *  m_ColliderInfo.Capsule.fRadius;
 
-		D3DXVECTOR3 pos = (nCntSlices <  nCompSlices) ? m_ColliderInfo.TopPoint : m_ColliderInfo.BottomPoint;
+		D3DXVECTOR3 pos = (nCntSlices <  nCompSlices) ? TopPoint : BottomPoint;
 
 		// ‰¡‚ğƒJƒEƒ“ƒg
 		for (int nCntStacks = 0; nCntStacks < m_ColliderInfo.nStacks_1_2 + 1; nCntStacks++)
@@ -510,9 +717,9 @@ void CCapsuleCollider::MakeVertex(LPDIRECT3DDEVICE9 pDevice)
 			float fStacksRadian = fStacksPI * nCntStacks;
 
 			// ’¸“_À•W‚Ìİ’è
-			pVtx[0].pos.x = pos.x+ fSlicesSinValue * cosf(fStacksRadian) * m_ColliderInfo.fRdius;
+			pVtx[0].pos.x = pos.x+ fSlicesSinValue * cosf(fStacksRadian) * m_ColliderInfo.Capsule.fRadius;
 			pVtx[0].pos.y = pos.y+ fPos_y;
-			pVtx[0].pos.z = pos.z+ fSlicesSinValue * sinf(fStacksRadian) *m_ColliderInfo.fRdius;
+			pVtx[0].pos.z = pos.z+ fSlicesSinValue * sinf(fStacksRadian) * m_ColliderInfo.Capsule.fRadius;
 			// ’¸“_î•ñ‚É–@ü‚ÌŒvZŒ‹‰Ê‘ã“ü
 			pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
@@ -529,7 +736,6 @@ void CCapsuleCollider::MakeVertex(LPDIRECT3DDEVICE9 pDevice)
 
 	// ’¸“_ƒf[ƒ^‚ğƒAƒ“ƒƒbƒN‚·‚é
 	m_ColliderInfo.pVtexBuff->Unlock();
-
 }
 
 //-------------------------------------------------------------------------------------------------------------

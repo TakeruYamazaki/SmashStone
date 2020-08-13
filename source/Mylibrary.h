@@ -134,6 +134,8 @@ using namespace std;
 #define MYLIB_BRACKETS_M					"---------------------------------------------------------- \n"		// 区切りの括弧(中)
 #define MYLIB_BRACKETS_S					"#*\n"																// 区切りの括弧(小)
 
+#define MYLIB_OX_EPSILON			0.000001f							// 誤差
+
 //-------------------------------------------------------------------------------------------------------------
 // マクロ関数
 //-------------------------------------------------------------------------------------------------------------
@@ -205,6 +207,105 @@ typedef char *          STRING;			// 文字列
 
 typedef signed char     VSHORT;			// 符号あり1バイト分の変数
 typedef unsigned char   UNSIG_VSHORT;	// 符号なし1バイト分の変数
+
+
+// 3成分float
+struct FLOAT3 : public D3DXVECTOR3
+{
+	FLOAT3() {}																										// コンストラクタ
+	FLOAT3(float x, float y, float z) : D3DXVECTOR3(x, y, z) {}														// コンストラクタ
+	FLOAT3(CONST FLOAT3& rhs) : D3DXVECTOR3(rhs) {}																	// コンストラクタ
+	FLOAT3(CONST D3DXVECTOR3& rhs) : D3DXVECTOR3(rhs) {}															// コンストラクタ
+	~FLOAT3() {}																									// デストラクタ
+	inline FLOAT3        operator +(const FLOAT3 &rhs) const;														// 四則演算子+
+	inline FLOAT3        operator -(const FLOAT3 &rhs) const;														// 四則演算子-
+	inline FLOAT3        operator -(void) const;																	// 四則演算子-
+	inline FLOAT3        operator *(const FLOAT3 &rhs) const;														// 四則演算子*
+	inline FLOAT3        operator /(const FLOAT3 &rhs) const;														// 四則演算子/
+	inline FLOAT3        operator *(float rhs) const;																// 四則演算子*
+	inline FLOAT3        operator /(float rhs) const;																// 四則演算子/
+	inline friend FLOAT3 operator *(float l, const FLOAT3 &rhs) { return FLOAT3(rhs.x * l, rhs.y * l, rhs.z * l); }	// 四則演算子*フレンド関数
+	inline friend FLOAT3 operator /(float l, const FLOAT3 &rhs) { return FLOAT3(rhs.x / l, rhs.y / l, rhs.z / l); }	// 四則演算子/フレンド関数
+
+	//inline FLOAT3&       operator =(D3DXVECTOR3 &rhs);
+
+	inline float         Dot(const FLOAT3 &rhs) const;																// 内積
+	inline FLOAT3        Cross(const FLOAT3 &rhs) const;															// 外積
+	inline float         Length(void) const;																		// 長さ
+	inline float         LengthSq(void) const;																		// べき乗長さ
+	inline void          Norm(void);																				// 正規化
+	inline FLOAT3        GetNorm(void) const;																		// 正規化し取得
+};
+
+// ベクトル
+struct VEC3 : public FLOAT3
+{
+	VEC3() {}												// コンストラクタ
+	VEC3(float x, float y, float z) : FLOAT3(x, y, z) {}	// コンストラクタ
+	VEC3(const FLOAT3 &r) : FLOAT3(r) {}					// コンストラクタ
+	~VEC3() {}												// デストラクタ
+	inline VEC3& operator =(const FLOAT3 &r);				// 代入演算子
+	inline void  norm(void);								// 標準化
+	inline bool  IsVertical(const VEC3 &r) const;			// 垂直関係にある？
+	inline bool  IsParallel(const VEC3 &r) const;			// 平行関係にある？
+	inline bool  IsSharpAngle(const VEC3 &r) const;			// 鋭角関係？
+};
+
+// 直線
+struct LINE
+{
+	FLOAT3 Point;													// 位置
+	VEC3 Vec;														// 方向ベクトル
+	LINE() : Point(0.0f, 0.0f, 0.0f), Vec(1.0f, 0.0f, 0.0f) {}		// コンストラクタ
+	LINE(const FLOAT3 &p, const VEC3 &v) : Point(p), Vec(v) {}		// コンストラクタ
+	~LINE() {}														// デストラクタ
+	inline FLOAT3 GetPoint(float fCoffi) const;						// 点上の座標を取得
+};
+
+
+// 線分
+struct SEGMENT : public LINE
+{
+	SEGMENT() {}														// コンストラクタ
+	SEGMENT(const FLOAT3 &p, const VEC3 &v) : LINE(p, v) {}				// コンストラクタ
+	SEGMENT(const FLOAT3 &p1, const FLOAT3 &p2) : LINE(p1, p2 - p1) {}	// コンストラクタ
+	~SEGMENT() {}														// デストラクタ
+	inline FLOAT3 GetEndPoint(void) const;								// 終点を取得
+};
+
+// 球
+struct SPHERE
+{
+	FLOAT3 Point;														// 中心点
+	float fRadius;														// 半径
+	SPHERE() : Point(0.0f, 0.0f, 0.0f), fRadius(0.5f) {}				// コンストラクタ
+	SPHERE(const FLOAT3 &p, float r) : Point(p), fRadius(r) {}			// コンストラクタ
+	~SPHERE() {}														// デストラクタ
+};
+
+// カプセル
+struct CAPSULE
+{
+	SEGMENT Segment;																		// 線分
+	float fRadius;																			// 半径
+	CAPSULE() : fRadius(0.5f) {}															// コンストラクタ
+	CAPSULE(const SEGMENT &s, float r) : Segment(s), fRadius(r) {}							// コンストラクタ
+	CAPSULE(const FLOAT3 &p1, const FLOAT3 &p2, float r) : Segment(p1, p2), fRadius(r) {}	// コンストラクタ
+	~CAPSULE() {}																			// デストラクタ
+};
+
+// AABB
+struct AABB
+{
+	FLOAT3 Point;		// 中心点
+	FLOAT3 HalLength;	// 各軸の辺の長さの半分
+	AABB() {}																// コンストラクタ
+	AABB(const FLOAT3 &p, const FLOAT3 &hl) : Point(p), HalLength(hl) {}	// コンストラクタ
+	inline float LenX(void) const { return HalLength.x * 2.0f; };			// X軸辺の長さを取得
+	inline float LenY(void) const { return HalLength.y * 2.0f; };			// Y軸辺の長さを取得
+	inline float LenZ(void) const { return HalLength.z * 2.0f; };			// Z軸辺の長さを取得
+	inline float Len(int i)       { return *((&HalLength.x) + i) * 2.0f; }	// 辺の長さを取得
+};
 
 /* * 入力キーのセル */
 typedef struct _INPUTKEYCELL

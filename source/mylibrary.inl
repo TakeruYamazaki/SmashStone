@@ -13,6 +13,155 @@
 // 構造体のインライン関数
 */
 
+//----------------------------------------------------------------------------------------------------
+// 3成分float
+//----------------------------------------------------------------------------------------------------
+inline FLOAT3
+FLOAT3::operator +(const FLOAT3 &rhs) const
+{
+	return FLOAT3(x + rhs.x, y + rhs.y, z + rhs.z);
+}
+
+inline FLOAT3
+FLOAT3::operator -(const FLOAT3 &rhs) const
+{
+	return FLOAT3(x - rhs.x, y - rhs.y, z - rhs.z);
+}
+
+inline FLOAT3
+FLOAT3::operator -(void) const
+{
+	return FLOAT3(x * -1.0f, y * -1.0f, z * -1.0f);
+}
+
+inline FLOAT3
+FLOAT3::operator *(const FLOAT3 &r) const
+{
+	return FLOAT3(x * r.x, y * r.y, z * r.z);
+}
+
+inline FLOAT3
+FLOAT3::operator /(const FLOAT3 &r) const
+{
+	return FLOAT3(x / r.x, y / r.y, z / r.z);
+}
+
+inline FLOAT3
+FLOAT3::operator *(float r) const
+{
+	return FLOAT3(x * r, y * r, z * r);
+}
+
+inline FLOAT3
+FLOAT3::operator /(float r) const
+{
+	return FLOAT3(x / r, y / r, z / r);
+}
+
+//inline FLOAT3 &
+//FLOAT3::operator=(D3DXVECTOR3 & rhs)
+//{
+//	FLOAT3(rhs);
+//	return *this;
+//}
+
+inline float
+FLOAT3::Dot(const FLOAT3 &r) const {
+	return x * r.x + y * r.y + z * r.z;
+}
+
+inline FLOAT3
+FLOAT3::Cross(const FLOAT3 &r) const {
+	return FLOAT3(y * r.z - z * r.y, z * r.x - x * r.z, x * r.y - y * r.x);
+}
+
+inline float
+FLOAT3::Length() const {
+	return sqrtf(LengthSq());
+}
+
+inline float
+FLOAT3::LengthSq() const {
+	return x * x + y * y + z * z;
+}
+
+inline void
+FLOAT3::Norm() {
+	const float len = Length();
+	if (len > 0.0f) {
+		x /= len;
+		y /= len;
+		z /= len;
+	}
+}
+
+inline FLOAT3
+FLOAT3::GetNorm() const {
+	const float len = Length();
+	if (len > 0.0f) {
+		return FLOAT3(x / len, y / len, z / len);
+	}
+	return FLOAT3(0.0f, 0.0f, 0.0f);
+}
+
+//----------------------------------------------------------------------------------------------------
+// 3Dベクトル
+//----------------------------------------------------------------------------------------------------
+inline VEC3& VEC3::operator =(const FLOAT3 &r) {
+	x = r.x;
+	y = r.y;
+	z = r.z;
+	return *this;
+}
+
+inline void 
+VEC3::norm(void) {
+	const float len = Length();
+	if (len > 0.0f) {
+		x /= len;
+		y /= len;
+		z /= len;
+	}
+}
+
+inline bool
+VEC3::IsVertical(const VEC3 &r) const {
+	float DotValue = Dot(r);
+	return (-MYLIB_OX_EPSILON < DotValue && DotValue < MYLIB_OX_EPSILON);	// 誤差範囲内なら垂直と判定
+}
+
+inline bool
+VEC3::IsParallel(const VEC3 &r) const {
+	float CrossValue = Cross(r).LengthSq();
+	return (-MYLIB_OX_EPSILON < CrossValue && CrossValue < MYLIB_OX_EPSILON);	// 誤差範囲内なら平行と判定
+}
+
+inline bool
+VEC3::IsSharpAngle(const VEC3 &r) const {
+	return (Dot(r) >= 0.0f);
+}
+
+//----------------------------------------------------------------------------------------------------
+// 直線
+//----------------------------------------------------------------------------------------------------
+inline FLOAT3
+LINE::GetPoint(float fCoffi) const
+{
+	return Point + fCoffi * Vec;
+}
+
+//----------------------------------------------------------------------------------------------------
+// 線分
+//----------------------------------------------------------------------------------------------------
+inline FLOAT3
+SEGMENT::GetEndPoint() const
+{
+	return Point + Vec;
+}
+
+//----------------------------------------------------------------------------------------------------
+// 3Dの線分情報
+//----------------------------------------------------------------------------------------------------
 /* * コンストラクタ */
 inline
 LINESEGMENT3D::LINESEGMENT3D(D3DXVECTOR3 &start, D3DXVECTOR3 &vector)
