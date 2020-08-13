@@ -127,8 +127,8 @@ void CPlayer::Update(void)
 
 	ShowDebugInfo();
 
-	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_2))
-		m_bTrans = true;
+	/*if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_2))
+		m_bTrans = true;*/
 #endif
 }
 

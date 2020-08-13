@@ -573,11 +573,13 @@ void CGame::DecideCreateStone(void)
 	// カウンタを加算
 	m_nCntDecide++;
 
+#ifdef _DEBUG
 	// 所持数・出現数の合計が3未満
-	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_1) && 
+	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_1) && CManager::GetInputKeyboard()->GetKeyboardPress(DIK_LSHIFT) && 
 		m_nNumStone + GetPlayer(PLAYER_ONE)->GetNumStone() + GetPlayer(PLAYER_TWO)->GetNumStone() < 3)
 		// ストーン生成
 		AppearStone();
+#endif
 
 	// 時間以内
 	if (m_nCntDecide <= TIME_CREATE_STONE)

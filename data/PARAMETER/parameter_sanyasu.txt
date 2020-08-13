@@ -19,7 +19,7 @@ DEFENSE_POWER = 24.00000 # 防御力
 # モーションごとのパラメーター
 #============================================================
 SET_MOTIONPARAM	# 通常攻撃 1
-	CANCEL_FRAME = 10 - 30
+	CANCEL_FRAME = 0 - 0
 	BLOWAWAY_TYPE = 0
 END_MOTIONPARAM
 
