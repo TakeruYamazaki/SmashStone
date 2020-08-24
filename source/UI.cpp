@@ -90,6 +90,7 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/Ready.png" },		// 1Pキャラクター準備完了
 	{ "data/TEXTURE/Ready.png" },		// 2Pキャラクター準備完了
 	{ "data/TEXTURE/PlayerSelect.png" },// プレイヤーセレクトアイコン
+	{ "data/TEXTURE/scroll.png" },		// プレイヤーセレクトアイコン
 };
 
 //==================================================================================================================
@@ -175,6 +176,19 @@ void CUI::Init(void)
 				m_pScene2D[nCnt]->BindTex(m_pTexture[nCnt]);
 			}
 		}
+		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+		{// ゲームのとき
+			// ゲームで使うUIのとき
+			if (nCnt <= LOGOTYPE_SCROLL)
+			{
+				// 生成処理
+				m_pScene2D[nCnt] = CScene2D::Create();
+
+				// テクスチャを貼る
+				m_pScene2D[nCnt]->BindTex(m_pTexture[nCnt]);
+			}
+
+		}
 	}
 }
 
@@ -210,6 +224,8 @@ void CUI::Update(void)
 	// UIチュートリアル更新処理
 	TutorialUpdate(pInputKeyboard, pGamepad[0], pGamepad[1]);
 
+	// UIゲーム更新処理
+	GameUpdate();
 }
 
 //==================================================================================================================
@@ -266,6 +282,15 @@ HRESULT CUI::Load(void)
 				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
 			}
 		}
+		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+		{// モードがゲームのとき
+			// ゲームで使うUIのとき
+			if (nCnt <= LOGOTYPE_SCROLL)
+			{
+				// テクスチャの読み込み
+				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
+			}
+		}
 	}
 
 	// 値を返す
@@ -294,6 +319,15 @@ void CUI::Unload(void)
 		{// モードがチュートリアルのとき
 			// チュートリアルで使うUIのとき
 			if (nCnt <= LOGOTYPE_SELECTICON)
+			{
+				m_pTexture[nCnt]->Release();		// 開放
+				m_pTexture[nCnt] = NULL;			// NULLにする
+			}
+		}
+		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+		{// モードがゲームのとき
+			// ゲームで使うUIのとき
+			if (nCnt <= LOGOTYPE_SCROLL)
 			{
 				m_pTexture[nCnt]->Release();		// 開放
 				m_pTexture[nCnt] = NULL;			// NULLにする
@@ -689,6 +723,18 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 }
 
 //==================================================================================================================
+// ゲーム更新処理
+//==================================================================================================================
+void CUI::GameUpdate(void)
+{
+	// チュートリアルのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+	{
+
+	}
+}
+
+//==================================================================================================================
 // ゲームパッド操作
 //==================================================================================================================
 void CUI::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGamepad1)
@@ -927,7 +973,6 @@ void CUI::ControlKeyboard(CInputKeyboard * pKeyboard)
 				m_bCharaDecide[0] = false;
 			}
 		}
-
 
 		// 2Pのキャラクターが選ばれていないとき
 		if (!m_bCharaDecide[1])

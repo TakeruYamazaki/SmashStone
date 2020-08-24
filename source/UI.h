@@ -56,6 +56,7 @@ public:
 		LOGOTYPE_1PREADY,			// 1Pキャラクター準備完了
 		LOGOTYPE_2PREADY,			// 2Pキャラクター準備完了
 		LOGOTYPE_SELECTICON,		// プレイヤーセレクトアイコン
+		LOGOTYPE_SCROLL,			// 巻物
 		LOGOTYPE_MAX				// 最大
 	} UITYPE;
 
@@ -81,6 +82,7 @@ protected:
 private:
 	void TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *Gamepad0, CInputGamepad *pGamepad1);	// タイトルの更新処理
 	void TutorialUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInputGamepad *pGamepad1);// チュートリアルの更新処理
+	void GameUpdate(void);								// ゲームの更新処理
 	void ControlGamepad(CInputGamepad *pGamepad0, CInputGamepad *pGamepad1);// ゲームパッド操作
 	void ControlKeyboard(CInputKeyboard *pKeyboard);	// キーボード操作
 
