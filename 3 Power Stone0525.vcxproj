@@ -160,6 +160,7 @@
     <ClCompile Include="source\3DEffect.cpp" />
     <ClCompile Include="source\CapsuleCollider.cpp" />
     <ClCompile Include="source\charaParam.cpp" />
+    <ClCompile Include="source\mapSelect.cpp" />
     <ClCompile Include="source\polygon2D.cpp" />
     <ClCompile Include="source\3DBoxCollider.cpp" />
     <ClCompile Include="source\bar.cpp" />
@@ -250,6 +251,7 @@
     <ClInclude Include="source\light.h" />
     <ClInclude Include="source\main.h" />
     <ClInclude Include="source\manager.h" />
+    <ClInclude Include="source\mapSelect.h" />
     <ClInclude Include="source\meshField.h" />
     <ClInclude Include="source\meshSphere.h" />
     <ClInclude Include="source\modelCharacter.h" />

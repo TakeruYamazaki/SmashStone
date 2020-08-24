@@ -27,6 +27,7 @@ class CRanking;
 class CTutorial;
 class CRecord;
 class CSound;
+class CMapSelect;
 
 //==================================================================================================================
 //
@@ -44,6 +45,7 @@ public:
 		MODE_NONE = -1,
 		MODE_TITLE,				// タイトル
 		MODE_TUTORIAL,			// チュートリアル
+		MODE_MAPSELECT,			// ステージ選択
 		MODE_GAME,				// ゲーム
 		MODE_RESULT,			// リザルト
 		MODE_MAX				// 最大数
@@ -80,6 +82,7 @@ private:
 	static CTutorial *m_pTutorial;						// チュートリアル情報のポインタ
 	static MODE m_mode;									// モード情報のポインタ
 	static CSound *m_pSound;							// 音情報のポインタ
+	static CMapSelect *m_pMapSelect;					// マップ選択画面の情報ポインタ
 
 	LPDIRECT3DDEVICE9 m_pD3DDevice = NULL;
 	LPDIRECT3D9 m_pD3D = NULL;

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="source\sceneX.cpp">
@@ -178,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="source\CapsuleCollider.cpp">
       <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\mapSelect.cpp">
+      <Filter>mode</Filter>
     </ClCompile>
     <ClCompile Include="source\3DEffect.cpp" />
   </ItemGroup>
@@ -361,6 +364,9 @@
       <Filter>character</Filter>
     </ClInclude>
     <ClInclude Include="source\CapsuleCollider.h" />
+    <ClInclude Include="source\mapSelect.h">
+      <Filter>mode</Filter>
+    </ClInclude>
     <ClInclude Include="source\3DEffect.h" />
   </ItemGroup>
   <ItemGroup>
