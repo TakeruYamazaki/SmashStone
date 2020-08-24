@@ -340,9 +340,6 @@
     <ClInclude Include="source\object.h">
       <Filter>object</Filter>
     </ClInclude>
-    <ClInclude Include="source\ichiyasu.h">
-      <Filter>character</Filter>
-    </ClInclude>
     <ClInclude Include="source\PolygonCollider.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>

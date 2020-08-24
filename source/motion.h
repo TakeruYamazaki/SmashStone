@@ -52,6 +52,8 @@ public:
 		PLAYER_JUMP,			// プレイヤー ジャンプ
 		PLAYER_FALL,			// プレイヤー 落下
 		PLAYER_LIFT,			// プレイヤー もの持ち上げる
+		PLAYER_LIFT_NEUTRAL,	// プレイヤー 物持ちニュートラル
+		PLAYER_LIFT_WALK,		// プレイヤー 物持ち歩き
 		PLAYER_THROW,			// プレイヤー もの投げ
 		PLAYER_ATTACK_0,		// プレイヤー 攻撃1
 		PLAYER_ATTACK_1,		// プレイヤー 攻撃2

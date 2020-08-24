@@ -63,6 +63,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_bBlowAway			= false;
 	m_bSmashBlowAway	= false;
 	m_bDaunted			= false;
+	m_StateLift			= STATE_NONE;
 	
 	// 総数を加算
 	m_nNumCharacter++;
@@ -303,10 +304,27 @@ void CCharacter::Rot(void)
 //=============================================================================
 void CCharacter::Motion(void)
 {
-	if (!m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown)
+	if (!m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown && m_StateLift == STATE_NONE)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// ニュートラルモーション
-	if (m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown)
+	if (m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown && m_StateLift == STATE_NONE)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);	// 移動モーション
+
+	switch (m_StateLift)
+	{
+		// 持ち上げ
+	case STATE_LIFT:
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT);
+		break;
+	case STATE_LIFT_NEUTRAL:
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT_NEUTRAL);
+		break;
+	case STATE_WALK:
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT);
+		break;
+	case STATE_THROW:
+		break;
+	}
+
 	// ジャンプニュートラル
 	if (m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown)
 	{
@@ -418,8 +436,11 @@ void CCharacter::Trans(void)
 	{
 		// モデルを変身用にバインド
 		m_pModelCharacter->ModelRebind(m_typeTrans);
+		// モデルタイプを再設定
+		m_pModelCharacter->SetModelType(m_typeTrans);
 		return;
 	}
+
 	// ストーンの取得数を初期化
 	m_nNumStone = 0;
 	// ストーンの出現数を初期化
@@ -430,4 +451,6 @@ void CCharacter::Trans(void)
 	m_bTrans = false;
 	// モデルの再バインド
 	m_pModelCharacter->ModelRebind(m_type);
+	// モデルタイプを再設定
+	m_pModelCharacter->SetModelType(m_type);
 }

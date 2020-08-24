@@ -36,6 +36,7 @@ public:
 	static void Unload(void);										// モデルの破棄
 
 	void SetCharacterMtx(D3DXMATRIX *mtx);							// マトリックスの設定
+	void SetModelType(CHARACTER_TYPE type) { m_type = type; }							// キャラクターのタイプ
 	void SetMotion(CMotion::MOTION_TYPE motiontype);				// モーションを設定
 	void ResetMotion();												// モーションのリセット
 
