@@ -37,6 +37,7 @@
 #include "UI_KO.h"
 #include "UI_gameStart.h"
 #include "UI_gameResult.h"
+#include "UI.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -66,6 +67,7 @@ CPause				*CGame::m_pPause				= NULL;							// ポーズ情報
 CMeshSphere			*CGame::m_pMeshSphere			= NULL;							// メッシュ球の情報
 CTime				*CGame::m_pTime					= NULL;							// タイム情報
 CWall				*CGame::m_pWall					= NULL;							// 壁のポインタ
+CUI					*CGame::m_pUI					= NULL;							// UIポインタ
 CUIKO				*CGame::m_pUIKO					= nullptr;						// KOのポインタ
 CUI_GameStart		*CGame::m_pUIGameStart			= nullptr;						// ゲーム開始時のUIのポインタ
 CUI_GameResult		*CGame::m_pUIGameResult			= nullptr;						// ゲームリザルトのUIのポインタ
@@ -144,6 +146,7 @@ void CGame::Init(void)
 	m_pMeshField  = CMeshField::Create(INTEGER2(2, 2), D3DXVECTOR3(300.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 50.0f));// メッシュフィールド生成
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
+	m_pUI         = CUI::Create();									// UIの生成処理
 
 	// 緩やかな階段
 	m_pPolyColli[CPolygonCollider::POLYCOLLI_LONGSTAIRS] = CPolygonCollider::Create(CPolygonCollider::POLYCOLLI_LONGSTAIRS);

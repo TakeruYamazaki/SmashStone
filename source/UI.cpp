@@ -87,6 +87,9 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/FULLchara.png" },	// キャラクター全員
 	{ "data/TEXTURE/1Pchara.png" },		// 1Pキャラクター
 	{ "data/TEXTURE/2Pchara.png" },		// 2Pキャラクター
+	{ "data/TEXTURE/Ready.png" },		// 1Pキャラクター準備完了
+	{ "data/TEXTURE/Ready.png" },		// 2Pキャラクター準備完了
+	{ "data/TEXTURE/PlayerSelect.png" },// プレイヤーセレクトアイコン
 };
 
 //==================================================================================================================
@@ -163,7 +166,7 @@ void CUI::Init(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 		{// チュートリアルのとき
 			// チュートリアルで使うUIのとき
-			if (nCnt <= LOGOTYPE_2PCHARA_FREAM)
+			if (nCnt <= LOGOTYPE_SELECTICON)
 			{
 				// 生成処理
 				m_pScene2D[nCnt] = CScene2D::Create();
@@ -257,7 +260,7 @@ HRESULT CUI::Load(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 		{// モードがチュートリアルのとき
 			// チュートリアルで使うUIのとき
-			if (nCnt <= LOGOTYPE_2PCHARA_FREAM)
+			if (nCnt <= LOGOTYPE_SELECTICON)
 			{
 				// テクスチャの読み込み
 				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
@@ -290,7 +293,7 @@ void CUI::Unload(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 		{// モードがチュートリアルのとき
 			// チュートリアルで使うUIのとき
-			if (nCnt <= LOGOTYPE_2PCHARA_FREAM)
+			if (nCnt <= LOGOTYPE_SELECTICON)
 			{
 				m_pTexture[nCnt]->Release();		// 開放
 				m_pTexture[nCnt] = NULL;			// NULLにする
@@ -655,6 +658,33 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 		SetUI(D3DXVECTOR3(1080, 230, 0.0f), CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_2PCHARA, NORMAL_COLOR);
 		// テクスチャ設定
 		m_pScene2D[LOGOTYPE_2PCHARA]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1]);
+
+		// 1Pキャラクター選択されているとき
+		if (m_bCharaDecide[0])
+		{
+			// 1Pキャラクター準備完了
+			SetUI(D3DXVECTOR3(200, 400, 0.0f), 200, 160, LOGOTYPE_1PREADY, NORMAL_COLOR);
+		}
+		else
+		{// 1Pキャラクター選択されていないとき
+			// 1Pキャラクター準備完了
+			SetUI(D3DXVECTOR3(200, 400, 0.0f), 200, 160, LOGOTYPE_1PREADY, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		}
+
+		// 2Pキャラクター選択されているとき
+		if (m_bCharaDecide[1])
+		{
+			// 1PキャラクターUI
+			SetUI(D3DXVECTOR3(1080, 400, 0.0f), 200, 160, LOGOTYPE_2PREADY, NORMAL_COLOR);
+		}
+		else
+		{// 2Pキャラクター選択されていないとき
+			// 2Pキャラクター準備完了
+			SetUI(D3DXVECTOR3(1080, 400, 0.0f), 200, 160, LOGOTYPE_2PREADY, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		}
+
+		// キャラクター選択アイコン
+		SetUI(D3DXVECTOR3(640, 60, 0.0f), 400, 120, LOGOTYPE_SELECTICON, NORMAL_COLOR);
 	}
 }
 
@@ -749,6 +779,16 @@ void CUI::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGamepad1)
 				m_bStickReturn[0] = true;
 			}
 		}
+		else
+		{// 1Pが自分のキャラクターが選択されているとき
+			// 四角ボタンを押したとき
+			if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_X))
+			{
+				// キャラクターを選択していない状態にする
+				m_bCharaDecide[0] = false;
+			}
+		}
+
 
 		// 2Pのキャラクターが選ばれていないとき
 		if (!m_bCharaDecide[1])
@@ -799,6 +839,15 @@ void CUI::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGamepad1)
 			{
 				// スティックが戻っている状態にする
 				m_bStickReturn[1] = true;
+			}
+		}
+		else
+		{// 2Pが自分のキャラクターを選択しているとき
+			// 四角ボタンを押したとき
+			if (pGamepad1->GetTrigger(CInputGamepad::JOYPADKEY_X))
+			{
+				// キャラクターを選択していない状態にする
+				m_bCharaDecide[1] = false;
 			}
 		}
 	}
@@ -869,6 +918,16 @@ void CUI::ControlKeyboard(CInputKeyboard * pKeyboard)
 				m_bCharaDecide[0] = true;
 			}
 		}
+		else
+		{// 1Pが自分のキャラクターを選択しているとき
+			// 1Pが決定ボタンをおしたとき
+			if (pKeyboard->GetKeyboardTrigger(ONE_JUMP))
+			{
+				// キャラクターを選択していない状態にする
+				m_bCharaDecide[0] = false;
+			}
+		}
+
 
 		// 2Pのキャラクターが選ばれていないとき
 		if (!m_bCharaDecide[1])
@@ -902,6 +961,15 @@ void CUI::ControlKeyboard(CInputKeyboard * pKeyboard)
 			{
 				// キャラクターを選んだ状態にする
 				m_bCharaDecide[1] = true;
+			}
+		}
+		else
+		{// 2Pが自分のキャラクターを選択しているとき
+			// 2Pが決定ボタンをおしたとき
+			if (pKeyboard->GetKeyboardTrigger(TWO_JUMP))
+			{
+				// キャラクターを選択していない状態にする
+				m_bCharaDecide[1] = false;
 			}
 		}
 	}
