@@ -227,8 +227,6 @@ struct FLOAT3 : public D3DXVECTOR3
 	inline friend FLOAT3 operator *(float l, const FLOAT3 &rhs) { return FLOAT3(rhs.x * l, rhs.y * l, rhs.z * l); }	// 四則演算子*フレンド関数
 	inline friend FLOAT3 operator /(float l, const FLOAT3 &rhs) { return FLOAT3(rhs.x / l, rhs.y / l, rhs.z / l); }	// 四則演算子/フレンド関数
 
-	//inline FLOAT3&       operator =(D3DXVECTOR3 &rhs);
-
 	inline float         Dot(const FLOAT3 &rhs) const;																// 内積
 	inline FLOAT3        Cross(const FLOAT3 &rhs) const;															// 外積
 	inline float         Length(void) const;																		// 長さ
@@ -490,7 +488,7 @@ typedef struct
 
 typedef struct TRANSFORM
 {
-	TRANSFORM() {}
+	TRANSFORM() :pos(MYLIB_3DVECTOR_ZERO), rot(MYLIB_3DVECTOR_ZERO), scal(MYLIB_SCALE_UNSET) {}
 	TRANSFORM(D3DXVECTOR3 Possition, D3DXVECTOR3 Rotation, D3DXVECTOR3 scale)
 	{
 		pos = Possition;
@@ -977,6 +975,47 @@ private:
 class CMylibrary
 {
 public:
+	//* [contents] ∠p1p2p3は鋭角かどうか
+	//* [in] Point（点）, Line（直線）
+	//* [return] 鋭角かどうか（true : 鋭角, false : 鋭角ではない）
+	static bool IsSharpAngle(CONST FLOAT3 &Point1, CONST FLOAT3 &Point2, CONST FLOAT3 &Point3);
+
+	//----------------------------------------------------------------------------------------------------
+	// カプセル
+	//----------------------------------------------------------------------------------------------------
+
+	//* [contents] 点と直線の最短距離
+	//* [in] Point（点）, Line（直線）
+	//* [out] Perp（垂線）, fVecCoeffi（ベクトル係数）
+	//* [return] 最短距離
+	static float calcPointLineDist(const FLOAT3 &Point, const LINE &Line, FLOAT3 &Perp, float &fVecCoeffi);
+
+	//* [contents] 点と線分の最短距離
+	//* [in] Point（点）, Seg（線分）
+	//* [out] EndPtShortdist（最短距離となる端点）, EndPoint（端点）
+	//* [return] 最短距離
+	static float calcPointSegmentDist(const FLOAT3 &Point, const SEGMENT &Seg, FLOAT3 &EndPtShortdist, float &EndPoint);
+
+	//* [contents] 2直線の最短距離
+	//* [in] Line1（直線1）, Line2（直線2）
+	//* [out] PerpendFoot1（直線1側の垂線の足）,PerpendFoot2（直線2側の垂線の足）,fVecCoeffi1（直線1側のベクトル係数）, fVecCoeffi2（直線2側のベクトル係数）
+	//* [return] 最短距離
+	static float calcLineLineDist(const LINE &Line1, const LINE &Line2, FLOAT3 &PerpendFoot1, FLOAT3 &PerpendFoot2, float &fVecCoeffi1, float &fVecCoeffi2);
+
+	//* [contents] 0～1の間に制限する
+	//* [out] fValue（制限する値）
+	static void Limit0to1(float &fValue);
+	//* [contents] 2直線の最短距離
+	//* [in] Seg1（線分1）, Seg2（線分2）
+	//* [out] PerpendFoot1（線分1側の垂線の足）,PerpendFoot2（線分2側の垂線の足）,fVecCoeffi1（線分1側のベクトル係数）, fVecCoeffi2（線分2側のベクトル係数）
+	//* [return] 最短距離
+	static float calcSegmentSegmentDist(const SEGMENT &Seg1, const SEGMENT &Seg2, FLOAT3 &PerpendFoot1, FLOAT3 &PerpendFoot2, float &fVecCoeffi1, float &fVecCoeffi2);
+
+	//* [contents] カプセル同士の衝突判定
+	//* [in] Cap1（カプセル1）, Cap2（カプセル2）
+	//* [return] 衝突している時true
+	static bool colCapsuleCapsule(const CAPSULE &Cap1, const CAPSULE &Cap2);
+
 	//----------------------------------------------------------------------------------------------------
 	// 2D
 	//----------------------------------------------------------------------------------------------------

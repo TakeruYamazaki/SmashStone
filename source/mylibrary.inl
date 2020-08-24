@@ -58,13 +58,6 @@ FLOAT3::operator /(float r) const
 	return FLOAT3(x / r, y / r, z / r);
 }
 
-//inline FLOAT3 &
-//FLOAT3::operator=(D3DXVECTOR3 & rhs)
-//{
-//	FLOAT3(rhs);
-//	return *this;
-//}
-
 inline float
 FLOAT3::Dot(const FLOAT3 &r) const {
 	return x * r.x + y * r.y + z * r.z;

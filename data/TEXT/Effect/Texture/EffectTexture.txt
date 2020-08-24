@@ -1,0 +1,34 @@
+SCRIPT
+
+# 距離の最大値(int)
+MAXDIST = 20
+
+# 距離の縮小値(float)
+SCALEDIST = 0.1
+
+# 方向の最大値(int)
+MAXDIVIDIR = 3600
+
+# 方向の縮小値(float)
+SCALDIR = 0.1
+
+# ファイル名
+FILENAME = data/TEXTURE/Effect/nc155696.png
+FILENAME = data/TEXTURE/Effect/nc202888.png
+FILENAME = data/TEXTURE/Effect/nc202892.png
+FILENAME = data/TEXTURE/Effect/char_ー.png
+FILENAME = data/TEXTURE/Effect/char_キ.png
+FILENAME = data/TEXTURE/Effect/char_ギ.png
+FILENAME = data/TEXTURE/Effect/char_グ.png
+FILENAME = data/TEXTURE/Effect/char_ゲ.png
+FILENAME = data/TEXTURE/Effect/char_ゴ.png
+FILENAME = data/TEXTURE/Effect/char_ザ.png
+FILENAME = data/TEXTURE/Effect/char_ズ.png
+FILENAME = data/TEXTURE/Effect/char_タ.png
+FILENAME = data/TEXTURE/Effect/char_ダ.png
+FILENAME = data/TEXTURE/Effect/char_ツ.png
+FILENAME = data/TEXTURE/Effect/char_ド.png
+FILENAME = data/TEXTURE/Effect/char_ヤ.png
+FILENAME = data/TEXTURE/Effect/char_ン.png
+
+END_SCRIPT
