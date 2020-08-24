@@ -140,7 +140,7 @@ void CTutorial::Update(void)
 			CGame::SetPlayerType(PLAYER_TWO, m_pUI->GetCharaNum(PLAYER_TWO));
 
 			// フェードの設定
-			CFade::SetFade(CRenderer::MODE_GAME, DEFAULT_FADE_TIME);
+			CFade::SetFade(CRenderer::MODE_MAPSELECT, DEFAULT_FADE_TIME);
 		}
 	}
 }

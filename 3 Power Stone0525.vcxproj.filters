@@ -179,6 +179,9 @@
     <ClCompile Include="source\CapsuleCollider.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\mapSelect.cpp">
+      <Filter>mode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\sceneX.h">
@@ -360,6 +363,9 @@
       <Filter>character</Filter>
     </ClInclude>
     <ClInclude Include="source\CapsuleCollider.h" />
+    <ClInclude Include="source\mapSelect.h">
+      <Filter>mode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="scene">
