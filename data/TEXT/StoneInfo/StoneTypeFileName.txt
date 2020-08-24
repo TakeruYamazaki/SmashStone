@@ -4,9 +4,11 @@
 SCRIPT
 
 # å¬êî
-NUMBER = 1
+NUMBER = 3
 
 # ÉtÉ@ÉCÉãñº
-FILENAME = data/MODEL/stone/Stone000.x
+FILENAME = data/MODEL/stone/Stone_R.x
+FILENAME = data/MODEL/stone/Stone_G.x
+FILENAME = data/MODEL/stone/Stone_B.x
 
 END_SCRIPT

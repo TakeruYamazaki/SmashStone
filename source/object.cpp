@@ -39,6 +39,7 @@ CObject::CObject()
 	m_move			= ZeroVector3;
 	m_rot			= ZeroVector3;
 	m_rotBegin		= ZeroVector3;
+	m_scale			= OneVector3;
 	m_nColliderID	= -1;
 #ifdef _DEBUG
 	m_bRelease = false;
@@ -90,12 +91,20 @@ void CObject::Draw(void)
 	// マテリアル格納用
 	D3DMATERIAL9 matDef;
 	D3DXMATERIAL *pMat;
+	// スケール編集用
+	D3DXMATRIX mtxScale;
 
 	// ワールドマトリックスの計算
 	CKananLibrary::CalcMatrix(&m_mtxWorld, m_pos, m_rot);
 
+	// スケールの計算
+	D3DXMatrixScaling(&mtxScale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
+
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
+	pDevice->SetTexture(0, NULL);
 
 	// テクスチャの設定
 	if (m_pModelInfo.bTex)
@@ -133,12 +142,20 @@ void CObject::DrawAlpha(void)
 	// マテリアル格納用
 	D3DMATERIAL9 matDef;
 	D3DXMATERIAL *pMat;
+	// スケール編集用
+	D3DXMATRIX mtxScale;
 
 	// ワールドマトリックスの計算
 	CKananLibrary::CalcMatrix(&m_mtxWorld, m_pos, m_rot);
 
+	// スケールの計算
+	D3DXMatrixScaling(&mtxScale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
+
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
+	pDevice->SetTexture(0, NULL);
 
 	// テクスチャの設定
 	if (m_pModelInfo.bTex)
@@ -188,15 +205,15 @@ CObject * CObject::Create(void)
 //=============================================================================
 // オブジェクトの情報設定
 //=============================================================================
-void CObject::SetObjInfo(const D3DXVECTOR3 & pos, const D3DXVECTOR3 & rot, MODELINFO *pModelInfo, const int & type, const bool & bCollision)
+void CObject::SetObjInfo(const D3DXVECTOR3 & pos, const D3DXVECTOR3 & rot, const D3DXVECTOR3 & scale, MODELINFO *pModelInfo, const int & type)
 {
 	m_pos = pos;
 	m_posBegin = pos;
 	m_rot = rot;
 	m_rotBegin = rot;
+	m_scale = scale;
 	m_pModelInfo = *pModelInfo;
 	m_nType = type;
-	m_bCollision = bCollision;
 
 	// コライダーの設定
 	SetCollider();
@@ -277,7 +294,7 @@ void CObject::SetCollider(void)
 		return;
 	}
 	// コライダーIDの設定
-	m_nColliderID = C3DBoxCollider::SetColliderInfo(&m_pos, NULL, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::TOP_OBJECT + m_nType);
+	//m_nColliderID = C3DBoxCollider::SetColliderInfo(&m_pos, NULL, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::TOP_OBJECT + m_nType);
 }
 
 #ifdef _DEBUG
@@ -295,7 +312,9 @@ void CObject::ShowObjectInfo(char cPrintText[16])
 
 		ImGui::DragFloat3("pos", m_pos, 0.5f);
 		ImGui::DragFloat3("rot", m_rot, 0.05f, -D3DX_PI, D3DX_PI);
-		ImGui::Checkbox("Collision", &m_bCollision);
+		ImGui::DragFloat3("scale", m_scale, 0.05f, 0.0f, 100.0f);
+
+		//ImGui::Checkbox("Collision", &m_bCollision);
 
 		// 偽オブジェクト以外
 		if (cPrintText != "FakeObject")

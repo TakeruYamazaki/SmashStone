@@ -52,8 +52,8 @@
 
 #define TIME_FADE_NEXTROUND	(10)									// ラウンド切り替えのフェード時間
 
-#define DEFAULTPOS_1P		(D3DXVECTOR3(100.0f, 0.0f, 100.0f))	// 1Pプレイヤーの初期座標
-#define DEFAULTPOS_2P		(D3DXVECTOR3(100.0f, 0.0f, 100.0f))	// 2Pプレイヤーの初期座標
+#define DEFAULTPOS_1P		(D3DXVECTOR3(-160.0f, 0.0f, 100.0f))	// 1Pプレイヤーの初期座標
+#define DEFAULTPOS_2P		(D3DXVECTOR3(20.0f, 0.0f, -130.0f))		// 2Pプレイヤーの初期座標
 
 //==================================================================================================================
 //	静的メンバ変数宣言
@@ -141,9 +141,9 @@ void CGame::Init(void)
 	m_pPlayer[PLAYER_ONE] = CPlayer::Create(PLAYER_ONE, (CHARACTER_TYPE)m_nPlayerType[PLAYER_ONE]);	// プレイヤー生成
 	m_pPlayer[PLAYER_TWO] = CPlayer::Create(PLAYER_TWO, (CHARACTER_TYPE)m_nPlayerType[PLAYER_TWO]);	// プレイヤー生成
 	m_pPlayer[PLAYER_ONE]->SetPos(DEFAULTPOS_1P);
-	m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_1P);
+	m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_2P);
 
-	m_pMeshField  = CMeshField::Create(INTEGER2(2, 2), D3DXVECTOR3(300.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 50.0f));// メッシュフィールド生成
+	m_pMeshField  = CMeshField::Create(INTEGER2(4, 4), D3DXVECTOR3(600.0f, 0.0f, 600.0f), D3DXVECTOR3(0.0f, -40.0f, 50.0f));// メッシュフィールド生成
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
 	m_pUI         = CUI::Create();									// UIの生成処理

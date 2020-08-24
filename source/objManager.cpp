@@ -198,8 +198,8 @@ HRESULT CObjectManager::Load()
 		CKananLibrary::CreateModelInfo(&m_objInfo[nCnt].modelInfo);
 
 		// モデルの頂点座標の最大・最小を求める
-		m_objInfo[nCnt].modelVtx =
-			CKananLibrary::OutputModelVtxColl(m_objInfo[nCnt].modelInfo.mesh);
+		/*m_objInfo[nCnt].modelVtx =
+			CKananLibrary::OutputModelVtxColl(m_objInfo[nCnt].modelInfo.mesh);*/
 
 #ifdef _DEBUG
 		// モデルのパスを取得
@@ -239,6 +239,7 @@ HRESULT CObjectManager::LoadOffset(void)
 
 	D3DXVECTOR3 pos = ZeroVector3;
 	D3DXVECTOR3 rot = ZeroVector3;
+	D3DXVECTOR3 scale = OneVector3;
 	bool		bCollision = false;
 	int			nUseTex = 99;
 	int			nType = 0;
@@ -294,13 +295,16 @@ HRESULT CObjectManager::LoadOffset(void)
 					// 回転
 					if (strcmp(cHeadText, "ROT") == 0)
 						sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &rot.x, &rot.y, &rot.z);
+					// 拡大率
+					if (strcmp(cHeadText, "SCALE") == 0)
+						sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &scale.x, &scale.y, &scale.z);
 					// 当たり判定
 					if (strcmp(cHeadText, "COLLISION_ON") == 0)
 						bCollision = true;
 				}
 
 				// モデル情報格納
-				m_pObject[nModel]->SetObjInfo(pos, rot, &m_objInfo[nType].modelInfo, nType, bCollision);
+				m_pObject[nModel]->SetObjInfo(pos, rot, scale, &m_objInfo[nType].modelInfo, nType);
 
 
 
@@ -434,6 +438,7 @@ HRESULT CObjectManager::LoadFileName(void)
 						{
 							// テクスチャ名を保存
 							strcpy(m_objInfo[nModel].modelInfo.cTextureName, cFileName);
+							m_objInfo[nModel].modelInfo.bTex = true;
 							// モデル番号を保存
 							m_pModelIndex[nCntTex] = nModel;
 							// 読み込んだファイル名を表示
@@ -533,7 +538,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			m_pFakeObject->Init();
 
 			// 初期モデルを設定
-			m_pFakeObject->SetObjInfo(*pCamera->GetPosR(), ZeroVector3, &m_objInfo[0].modelInfo, 0, false);
+			m_pFakeObject->SetObjInfo(*pCamera->GetPosR(), ZeroVector3, OneVector3, &m_objInfo[0].modelInfo, 0);
 		}
 	}
 
@@ -555,16 +560,12 @@ void CObjectManager::ShowObjectManagerInfo(void)
 		{
 			// タイプが超えないよう
 			if (m_nFakeType < 0)
-			{
 				m_nFakeType = 0;
-			}
 			else if (m_nFakeType >= (int)m_objInfo.size())
-			{
 				m_nFakeType = (int)m_objInfo.size() - 1;
-			}
 
 			// モデル情報格納
-			m_pFakeObject->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), &m_objInfo[m_nFakeType].modelInfo, m_nFakeType, false);
+			m_pFakeObject->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), *m_pFakeObject->GetScale(), &m_objInfo[m_nFakeType].modelInfo, m_nFakeType);
 		}
 
 		// オブジェクトの生成
@@ -575,7 +576,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			// 初期化・情報設定
 			m_pObject[(int)m_pObject.size() - 1]->Init();
 			// モデル情報格納
-			m_pObject[(int)(m_pObject.size() - 1)]->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), &m_objInfo[m_nFakeType].modelInfo, m_nFakeType, false);
+			m_pObject[(int)(m_pObject.size() - 1)]->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), *m_pFakeObject->GetScale(), &m_objInfo[m_nFakeType].modelInfo, m_nFakeType);
 		}
 	}
 
@@ -716,13 +717,13 @@ HRESULT CObjectManager::SaveObject(void)
 			for (int nCntTex = 0; nCntTex < m_nNumTexture; nCntTex++)
 			{
 				strcpy(cHeadText, "TEXTURE_FILENAME");
-				sprintf(cWriteText, "%s %s %d : %s %s %s\n",
-					"MODEL",
-					&cEqual,
-					m_pModelIndex[nCntTex],
+				sprintf(cWriteText, "%s %s %s : %s %s %d\n",
 					&cHeadText,
 					&cEqual,
-					&m_objInfo[m_pModelIndex[nCntTex]].modelInfo.cTextureName[0]);
+					&m_objInfo[m_pModelIndex[nCntTex]].modelInfo.cTextureName[0],
+					"MODEL",
+					&cEqual,
+					m_pModelIndex[nCntTex]);
 				fputs(cWriteText, pFile);													// TEXTURE_FILENAME = m_pNameTexture
 			}
 			fputs(COMMENT_NEW_LINE, pFile);												// \n
@@ -778,6 +779,16 @@ HRESULT CObjectManager::SaveObject(void)
 				fputs(cWriteText, pFile);											//	ROT = GetRot()
 				fputs(COMMENT_NEW_LINE, pFile);											//	\n
 				
+				strcpy(cHeadText, "SCALE");
+				sprintf(cWriteText, "	%s %s %.3f %.3f %.3f",
+					&cHeadText,
+					&cEqual,
+					m_pObject[nCnt]->GetScale()->x,
+					m_pObject[nCnt]->GetScale()->y,
+					m_pObject[nCnt]->GetScale()->z);
+				fputs(cWriteText, pFile);											//	SCALE = GetScale()
+				fputs(COMMENT_NEW_LINE, pFile);											//	\n
+
 				if (m_pObject[nCnt]->GetbColl())
 				{
 					strcpy(cHeadText, "COLLISION_ON");

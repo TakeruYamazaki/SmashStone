@@ -189,7 +189,7 @@ void CCamera::SetCameraPos(const D3DXVECTOR3 posV, const D3DXVECTOR3 posR)
 	m_posVDest = posV;
 	m_posRDest = posR;
 	m_posU = AboveNormal;
-	m_rot = D3DXVECTOR3(0.6f, -0.8f, 0.0f);
+	m_rot = D3DXVECTOR3(0.3f, 0.7f, 0.0f);
 	m_fDistance = 0.0f;
 #ifdef _DEBUG
 	m_posDebug = ZeroVector3;
@@ -481,7 +481,7 @@ CCamera * CCamera::Create(void)
 	// ƒJƒƒ‰‚Ì‰Šú‰»
 	m_pCamera->Init();
 
-	m_pCamera->SetCameraPos(D3DXVECTOR3(280.0f, 280.0f, -280.0f),
+	m_pCamera->SetCameraPos(D3DXVECTOR3(350.0f, 300.0f, -300.0f),
 							D3DXVECTOR3(0.0f, 10.0f, 0.0f));
 
 	//m_posV = D3DXVECTOR3(0.0f, 150.0f, -500.0f);		// Ž‹“_
