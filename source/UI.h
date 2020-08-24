@@ -53,6 +53,9 @@ public:
 		LOGOTYPE_2PCHARA,			// 2Pキャラクター
 		LOGOTYPE_1PCHARA_FREAM,		// 1Pキャラクター枠線
 		LOGOTYPE_2PCHARA_FREAM,		// 2Pキャラクター枠線
+		LOGOTYPE_1PREADY,			// 1Pキャラクター準備完了
+		LOGOTYPE_2PREADY,			// 2Pキャラクター準備完了
+		LOGOTYPE_SELECTICON,		// プレイヤーセレクトアイコン
 		LOGOTYPE_MAX				// 最大
 	} UITYPE;
 
