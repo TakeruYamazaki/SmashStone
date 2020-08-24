@@ -134,7 +134,7 @@ public:
 	// 衝突したかだけ判定
 	static bool Collisionoverlap(int n3DBoxColliderID,int *pHitID, int nNoneColisitionID = -1);
 	// ブロック状の衝突判定
-	static bool CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVECTOR3 &move);
+	static bool CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVECTOR3 &move, D3DXVECTOR3 *pOut_intersect = NULL, D3DXVECTOR3 *pOut_nor = NULL, bool bReflection = false);
 	// 設定
 	static int Set(D3DXVECTOR3 &size, D3DXVECTOR3 &pos, D3DXVECTOR3 &rot, D3DXVECTOR3 &difference, COLLIDER_TYPE colliType, COLLIDER_SUBTYPE ColliderSubType, CScene * pScene);
 	// シーンのポインタを設定
