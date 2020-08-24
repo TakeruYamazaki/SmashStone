@@ -59,9 +59,10 @@ protected:
 private:
 	void Control(void);								// 操作関数
 	void Collision(void);							// 当たり判定関数
-	void Smash(void);
-	void NormalAttack(void);
-	void Jump(void);
+	void Smash(void);								// スマッシュ処理
+	void NormalAttack(void);						// 通常攻撃処理
+	void Jump(void);								// ジャンプ処理
+	void Lift(void);								// 物持ち処理
 
 	void CollisionAttack(void);						// 攻撃判定
 

@@ -225,7 +225,6 @@
     <ClInclude Include="source\CapsuleCollider.h" />
     <ClInclude Include="source\character.h" />
     <ClInclude Include="source\charaParam.h" />
-    <ClInclude Include="source\ichiyasu.h" />
     <ClInclude Include="source\charaKURURU.h" />
     <ClInclude Include="source\charaNYAS.h" />
     <ClInclude Include="source\charaZAVAEL.h" />

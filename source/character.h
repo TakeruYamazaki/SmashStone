@@ -45,6 +45,16 @@ public:
 		COLLIPARTS_MAX			// 最大
 	};
 
+	typedef enum
+	{	// 物持ちの状態
+		STATE_NONE = 0,			// 何もない
+		STATE_LIFT,				// 物持ち上げ
+		STATE_LIFT_NEUTRAL,		// 物持ちニュートラル
+		STATE_WALK,				// 物持ち歩き
+		STATE_THROW,			// 物投げ
+		STATE_LIFT_MAX			// 最大数
+	} STATE_LIFT_OBJET;
+
 	CCharacter(CScene::PRIORITY nPriority);			// コンストラクタ
 	~CCharacter();									// デストラクタ
 
@@ -64,6 +74,7 @@ public:
 	void               SetCylinderCoillider(void);													// シリンダーコライダーの設定
 
 	inline CHARACTER_TYPE    GetCharaType(void)					{ return m_type; }					// キャラタイプの取得
+	inline STATE_LIFT_OBJET  GetStateLift(void)					{ return m_StateLift; }				// 物持ち上げの状態取得
 	inline D3DXVECTOR3       GetPos(void)						{ return m_pos; }					// 位置の取得
 	inline D3DXVECTOR3       GetMove(void)						{ return m_move; }					// 移動値の取得
 	inline D3DXVECTOR3       GetRot(void)						{ return m_rot; }					// 回転の取得
@@ -94,7 +105,7 @@ protected:
 	D3DXVECTOR3 m_rotDest;								// 目的の回転
 	D3DXVECTOR3 m_rotDif;								// 回転の差
 	D3DXMATRIX	m_mtxWorld;								// ワールドマトリックス
-
+	STATE_LIFT_OBJET m_StateLift;						// 物持ち上げの状態
 	CCapsuleCollider* m_pCapColi[COLLIPARTS_MAX];	// シリンダーコライダーポインタ
 
 	CCharaParam::PLAYER_PARAM m_param;					// プレイヤーのパラメーター

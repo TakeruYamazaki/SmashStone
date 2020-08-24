@@ -337,6 +337,18 @@ void CPlayer::Jump(void)
 }
 
 //==================================================================================================================
+// •¨Ž‚¿ˆ—
+//==================================================================================================================
+void CPlayer::Lift(void)
+{
+	// Ž‚¿ã‚°‚Ä‚¢‚È‚¯‚ê‚ÎAˆ—‚µ‚È‚¢
+	if (m_StateLift == STATE_NONE)
+	{
+		return;
+	}
+}
+
+//==================================================================================================================
 // UŒ‚”»’è
 //==================================================================================================================
 void CPlayer::CollisionAttack(void)
@@ -523,8 +535,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			return;
 
 		// UŒ‚“ü—Í
-		if (((m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
-			m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_ATTACK))) &&
+		if ((((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
+			(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_ATTACK))) &&
 			m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
 			m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH))
 		{
@@ -534,6 +546,16 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			return;
 		}
 	}
+
+	if (m_StateLift == STATE_NONE &&
+		((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_LIFT)) ||
+		(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_LIFT))))
+	{
+		m_StateLift = STATE_LIFT;
+	}
+
+	// •¨Ž‚¿ã‚°‚Ìˆ—
+	Lift();
 
 	if (!m_bJump && !m_bAttack &&
 		(m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_JUMP)) ||
