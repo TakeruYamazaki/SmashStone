@@ -699,12 +699,12 @@ bool C3DBoxCollider::Collisionoverlap(int n3DBoxColliderID,int* pHitID, int nNon
 //-------------------------------------------------------------------------------------------------------------
 // ブロック状の衝突判定
 //-------------------------------------------------------------------------------------------------------------
-bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
+bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVECTOR3 &move, D3DXVECTOR3 *pOut_intersect, D3DXVECTOR3 *pOut_nor, bool bReflection)
 {
 	// 変数宣言
 	_3DBOXCOLLIDER		 *pOwnerCollider = &m_ColliderInfo[n3DBoxColliderID];	// 持ち主のポインタ
 	_3DBOXCOLLIDER		 *pOtherCollider = &m_ColliderInfo[0];					// その他のポインタ
-	bool				 bCollision	   = false;									// 衝突フラグ
+	bool				 bCollision = false;									// 衝突フラグ
 	VERTEX_3D *pVtx;													// 頂点情報ポインタ
 
 	// 頂点データの範囲ロックし、頂点バッファへのポインタ取得
@@ -741,6 +741,11 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 						pOwnerCollider->pos.x = pOtherCollider->pos.x - pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE - pOwnerCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE - 0.01f;
 						pos.x = pOwnerCollider->pos.x;
 						move.x = 0.0f;
+						if (bReflection == true)
+						{
+							*pOut_intersect = pos;
+							*pOut_nor = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+						}
 					}
 					// 右の当たり判定
 					else if (pOwnerCollider->pos.x - pOwnerCollider->size.x* _3DBOXCOLLIDER_HALF_SIZE < pOtherCollider->pos.x + pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE&&
@@ -749,6 +754,11 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 						pOwnerCollider->pos.x = pOtherCollider->pos.x + pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE + 0.01f;
 						pos.x = pOwnerCollider->pos.x;
 						move.x = 0.0f;
+						if (bReflection == true)
+						{
+							*pOut_intersect = pos;
+							*pOut_nor = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+						}
 					}
 				}
 				// X軸の範囲
@@ -762,6 +772,11 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 						pOwnerCollider->pos.z = pOtherCollider->pos.z - pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE - pOwnerCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE - 0.01f;
 						pos.z = pOwnerCollider->pos.z;
 						move.z = 0.0f;
+						if (bReflection == true)
+						{
+							*pOut_intersect = pos;
+							*pOut_nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+						}
 					}
 					// 右の当たり判定
 					else if (pOwnerCollider->pos.z - pOwnerCollider->size.z* _3DBOXCOLLIDER_HALF_SIZE < pOtherCollider->pos.z + pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE&&
@@ -770,6 +785,11 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 						pOwnerCollider->pos.z = pOtherCollider->pos.z + pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE + 0.01f;
 						pos.z = pOwnerCollider->pos.z;
 						move.z = 0.0f;
+						if (bReflection == true)
+						{
+							*pOut_intersect = pos;
+							*pOut_nor = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+						}
 					}
 				}
 			}
@@ -782,18 +802,28 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 					if (pOwnerCollider->pos.y + pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE > pOtherCollider->pos.y - pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE&&
 						pOwnerCollider->posOld.y + pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE <= pOtherCollider->pos.y - pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE)
 					{
-						pOwnerCollider->pos.y = pOwnerCollider->posOld.y;
-						pos.y = pOwnerCollider->pos.y;
+						pOwnerCollider->pos.y = pOtherCollider->pos.y - (pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE + 0.0001f);
+						pos.y = pOwnerCollider->pos.y - pOwnerCollider->difference.y;
+
 						move.y = 0.0f;
+						if (bReflection == true)
+						{
+							*pOut_intersect = pos;
+							*pOut_nor = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+						}
 					}
 					else if (pOwnerCollider->pos.y - pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE < pOtherCollider->pos.y + pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE&&
 						pOwnerCollider->posOld.y - pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE >= pOtherCollider->pos.y + pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE)
 					{
 						pOwnerCollider->pos.y = pOtherCollider->pos.y + pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE + 0.0001f;
 						pos.y = pOwnerCollider->pos.y - pOwnerCollider->difference.y;
-						// 移動量の初期化
 						move.y = 0.0f;
 						bCollision = true;
+						if (bReflection == true)
+						{
+							*pOut_intersect = pos;
+							*pOut_nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+						}
 					}
 				}
 			}
@@ -816,7 +846,6 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 					pOwnerCollider->pos.z = pOtherCollider->pos.z + cosf(radian)*(fRadius);
 					pos.x = pOwnerCollider->pos.x;
 					pos.z = pOwnerCollider->pos.z;
-					
 				}
 			}
 		}
@@ -864,6 +893,11 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 					// 移動量の初期化
 					move.y = 0.0f;
 					bCollision = true;
+					if (bReflection == true)
+					{
+						*pOut_intersect = pos;
+						*pOut_nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+					}
 				}
 			}
 			// Y軸が重なっているとき
@@ -878,10 +912,21 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 				{
 					// 角度を設定
 					float radian = atan2f(-diffPos.x, -diffPos.y);
-					pOwnerCollider->pos.x = pOtherCollider->pos.x + sinf(radian)*(fRadius);
-					pOwnerCollider->pos.z = pOtherCollider->pos.z + cosf(radian)*(fRadius);
+					float fSinValue = sinf(radian)*fRadius;
+					float fCosValue = cosf(radian)*fRadius;
+					pOwnerCollider->pos.x = pOtherCollider->pos.x + fSinValue;
+					pOwnerCollider->pos.z = pOtherCollider->pos.z + fCosValue;
 					pos.x = pOwnerCollider->pos.x;
 					pos.z = pOwnerCollider->pos.z;
+
+					if (bReflection == true)
+					{
+						D3DXVECTOR3 norm;	// 面そしてのベクトル
+						norm = D3DXVECTOR3(fSinValue, 0.0f, fCosValue);
+						CMylibrary::CreateUnitVector(&norm, &norm);
+						*pOut_intersect = pos;
+						*pOut_nor = norm;
+					}
 
 				}
 			}

@@ -20,6 +20,7 @@
 #include "motion.h"
 #include "charaParam.h"
 #include "inputKeyboard.h"
+#include "mapSelect.h"
 #include "ImGui/imgui.h"			// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"	// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"	// Imguiの実装に必要
@@ -41,6 +42,7 @@ CTitle *CRenderer::m_pTitle = NULL;						// タイトル情報
 CResult *CRenderer::m_pResult = NULL;					// リザルト情報
 CTutorial *CRenderer::m_pTutorial = NULL;				// チュートリアル情報
 CSound *CRenderer::m_pSound = NULL;						// 音情報
+CMapSelect *CRenderer::m_pMapSelect = NULL;				// マップ選択画面の情報
 CRenderer::MODE CRenderer::m_mode = MODE_GAME;			// 最初の画面
 
 //==================================================================================================================
@@ -190,6 +192,14 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMTUTORIAL);
 		break;
 
+		// マップ選択画面のとき
+	case MODE_MAPSELECT:
+		// マップ選択画面の生成
+		m_pMapSelect = CMapSelect::Create();
+		// BGM再生
+		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMTUTORIAL);
+		break;
+
 		// ゲームのとき
 	case MODE_GAME:
 		// ゲームの生成
@@ -282,6 +292,14 @@ void CRenderer::Uninit(void)
 		m_pTutorial = nullptr;	// ポインタNULL
 		break;
 
+		// マップ選択画面のとき
+	case MODE_MAPSELECT:
+		// マップ選択画面の終了処理
+		m_pMapSelect->Uninit();
+		delete m_pMapSelect;	// メモリの削除
+		m_pMapSelect = nullptr;	// ポインタNULL
+		break;
+
 		// ゲームのとき
 	case MODE_GAME:
 		// ゲームの終了処理
@@ -349,6 +367,12 @@ void CRenderer::Update(void)
 		m_pTutorial->Update();
 		break;
 
+		// マップ選択画面のとき
+	case MODE_MAPSELECT:
+		// 更新処理
+		m_pMapSelect->Update();
+		break;
+
 		// ゲームのとき
 	case MODE_GAME:
 		// 更新処理
@@ -396,6 +420,12 @@ void CRenderer::Draw(void)
 		case MODE_TUTORIAL:
 			// 描画処理
 			m_pTutorial->Draw();
+			break;
+
+			// マップ選択画面のとき
+		case MODE_MAPSELECT:
+			// 描画処理
+			m_pMapSelect->Draw();
 			break;
 
 			// ゲームのとき
@@ -472,6 +502,12 @@ void CRenderer::SetMode(MODE mode)
 		//m_pSound->StopSound(CSound::SOUND_LABEL_BGMTITLE);
 		break;
 
+		// マップ選択画面のとき
+	case MODE_MAPSELECT:
+		// 音を止める
+		//m_pSound->StopSound(CSound::SOUND_LABEL_BGMTITLE);
+		break;
+
 		// ゲームとき
 	case MODE_GAME:
 		// 音を止める
@@ -507,6 +543,16 @@ void CRenderer::SetMode(MODE mode)
 		delete m_pTutorial;
 		// NULLにする
 		m_pTutorial = nullptr;
+		break;
+
+		// マップ選択画面のとき
+	case MODE_MAPSELECT:
+		// 終了処理
+		m_pMapSelect->Uninit();
+		// 破棄
+		delete m_pMapSelect;
+		// NULLにする
+		m_pMapSelect = nullptr;
 		break;
 
 		// ゲームのとき
@@ -546,6 +592,13 @@ void CRenderer::SetMode(MODE mode)
 	case MODE_TUTORIAL:
 		// 生成処理
 		m_pTutorial = CTutorial::Create();
+		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMTUTORIAL);
+		break;
+
+		// マップ選択画面のとき
+	case MODE_MAPSELECT:
+		// 生成処理
+		m_pMapSelect = CMapSelect::Create();
 		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMTUTORIAL);
 		break;
 
