@@ -1,13 +1,13 @@
 SCRIPT
 
 # 距離の最大値(int)
-MAXDIST = 20
+MAXDIST = 200
 
 # 距離の縮小値(float)
-SCALEDIST = 0.1
+SCALEDIST = 0.01
 
 # 方向の最大値(int)
-MAXDIVIDIR = 3600
+MAXDIVIDIR = 36
 
 # 方向の縮小値(float)
 SCALDIR = 0.1

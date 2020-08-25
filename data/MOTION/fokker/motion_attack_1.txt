@@ -65,6 +65,8 @@ MOTIONSET
 
 	KEYSET			# ----- << KEY :  1 / 2 >> -----
 		FRAME = 15
+		ATTACK_ON
+		ATTACK_INDEX = 3
 		KEY # ----- [ 0 ] -----
 			POS = 0.00 -4.00 0.10
 			ROT = -0.23 -0.41 0.03

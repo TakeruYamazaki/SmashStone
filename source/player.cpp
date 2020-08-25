@@ -387,6 +387,67 @@ void CPlayer::CollisionAttack(void)
 }
 
 //==================================================================================================================
+// 攻撃当てる準備かできているか
+//==================================================================================================================
+bool CPlayer::ReadyToHit(const int &nCapColliID)
+{
+	// 違うプレイヤーが攻撃を当てたフラグが立ってない時
+	if (this->m_bAttakHit == false)
+	{
+		// 別のプレイヤーのモーションを比較
+		switch (this->m_pModelCharacter->GetMotion())
+		{
+		case CMotion::PLAYER_ATTACK_0: return HitConditionAttack0(nCapColliID);
+		case CMotion::PLAYER_ATTACK_1: return HitConditionAttack1(nCapColliID);
+		case CMotion::PLAYER_ATTACK_2: return HitConditionAttack2(nCapColliID);
+		case CMotion::PLAYER_ATTACK_3: return HitConditionAttack3(nCapColliID);
+		case CMotion::PLAYER_SMASH:    return HitConditionSmash(nCapColliID);
+		}
+	}
+	return false;
+}
+
+//==================================================================================================================
+//　攻撃0を当てる条件
+//==================================================================================================================
+bool CPlayer::HitConditionAttack0(const int &nCapColliID)
+{
+	return (nCapColliID == CCapsuleCollider::TYPEID_FOREARM_L) || (nCapColliID == CCapsuleCollider::TYPEID_UPPERARM_L);
+}
+
+//==================================================================================================================
+//　攻撃1を当てる条件
+//==================================================================================================================
+bool CPlayer::HitConditionAttack1(const int &nCapColliID)
+{
+	return (nCapColliID == CCapsuleCollider::TYPEID_FOREARM_R) || (nCapColliID == CCapsuleCollider::TYPEID_UPPERARM_R);
+}
+
+//==================================================================================================================
+//　攻撃2を当てる条件
+//==================================================================================================================
+bool CPlayer::HitConditionAttack2(const int &nCapColliID)
+{
+	return (nCapColliID == CCapsuleCollider::TYPEID_FOREARM_L) || (nCapColliID == CCapsuleCollider::TYPEID_UPPERARM_L);
+}
+
+//==================================================================================================================
+//　攻撃3を当てる条件
+//==================================================================================================================
+bool CPlayer::HitConditionAttack3(const int &nCapColliID)
+{
+	return (nCapColliID == CCapsuleCollider::TYPEID_FOREARM_R) || (nCapColliID == CCapsuleCollider::TYPEID_UPPERARM_R);
+}
+
+//==================================================================================================================
+//　スマッシュ攻を当てる条件
+//==================================================================================================================
+bool CPlayer::HitConditionSmash(const int &nCapColliID)
+{
+	return (nCapColliID == CCapsuleCollider::TYPEID_FOREARM_R) || (nCapColliID == CCapsuleCollider::TYPEID_UPPERARM_R);
+}
+
+//==================================================================================================================
 // 違うプレイヤーの取得
 //==================================================================================================================
 CPlayer * CPlayer::GetAnotherPlayer(void)

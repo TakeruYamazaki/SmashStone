@@ -227,6 +227,8 @@ public:
 
 	static void SameLineDummy(const float & fX, const float & fY);
 
+	static HRESULT CreateTexture(LPDIRECT3DTEXTURE9 *pTexture, char *cTextureName);
+
 #ifdef _DEBUG
 	static void ShowDebugInfo(void);					// ImGui‚ÌXV
 	static void ShowOffsetInfo(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &rot, const D3DXVECTOR3 &move);					// À•W‚È‚Ç‚Ìî•ñ

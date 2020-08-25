@@ -86,6 +86,7 @@ public:
 
 	void SetUI(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nCnt, D3DXCOLOR col);	// ロゴ設定処理
 
+	static int GetMapID(void) { return m_nMapID; }	// マップIDの取得
 	UITYPE GetType(void);			// ロゴタイプ取得処理
 	int GetCharaNum(int nPlayer) { return m_nCharaNum[nPlayer]; }	// プレイヤーのタイプを取得
 	bool GetCharaDecide(int nPlayer) { return m_bCharaDecide[nPlayer]; }
@@ -116,7 +117,7 @@ private:
 	int m_nCntWait[MAX_PLAYER];							// 待機時間用カウンタ
 	int m_nCntMove[MAX_PLAYER];							// 枠線移動用カウンタ
 	int m_nPlayer;										// プレイヤー番号
-	int m_nMapID;										// マップ番号
+	static int m_nMapID;								// マップ番号
 
 	float m_fCntUITitle0;								// タイトルUI用カウンタ0
 	float m_fCntUITitle1;								// タイトルUI用カウンタ1

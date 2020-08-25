@@ -122,6 +122,15 @@ void CCharacter::Update()
 	// モデルの更新
 	m_pModelCharacter->Update();
 
+	if (!GetbMotionAttack())
+	{
+		CDebugProc::Print("攻撃してない\n");
+	}
+	else
+	{
+		CDebugProc::Print("攻撃してる\n");
+	}
+
 	// ワールドマトリックスの計算
 	CKananLibrary::CalcMatrix(&m_mtxWorld, m_pos, m_rot);
 
@@ -184,7 +193,6 @@ void CCharacter::SetModelType(CHARACTER_TYPE type)
 
 	// シリンダーコライダーの設定
 	SetCylinderCoillider();
-
 }
 
 //=============================================================================
@@ -212,6 +220,17 @@ void CCharacter::SetCylinderCoillider(void)
 	m_pCapColi[CCharacter::COLLIPARTS_BODY] =
 		CCapsuleCollider::Create(this, &m_mtxWorld, CCharacter::COLLIPARTS_BODY);
 
+}
+
+//=============================================================================
+// モーションの攻撃判定の取得
+//=============================================================================
+inline bool CCharacter::GetbMotionAttack(void)
+{
+	// 現在のモーションのキーを取得
+	int nKey = m_pModelCharacter->GetNowKey();
+	// 現在のモーションキーが攻撃中かを取得
+	return CMotion::GetbAttack((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), nKey);
 }
 
 //=============================================================================

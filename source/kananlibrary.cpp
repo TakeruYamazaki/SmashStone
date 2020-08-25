@@ -240,6 +240,33 @@ void CKananLibrary::SameLineDummy(const float & fX, const float & fY)
 }
 
 //=============================================================================
+// テクスチャ生成
+//=============================================================================
+HRESULT CKananLibrary::CreateTexture(LPDIRECT3DTEXTURE9 * pTexture, char * cTextureName)
+{
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+	// デバッグテキスト用
+	char cText[MAX_TEXT];
+
+	// テクスチャ生成
+	if (SUCCEEDED(D3DXCreateTextureFromFile(pDevice,
+		cTextureName,
+		pTexture)))
+	{
+		// 成功
+		sprintf(cText, "テクスチャを生成 (%s)", cTextureName);
+		printf("%s\n", &cText[0]);
+		return S_OK;
+	}
+
+	// 失敗
+	sprintf(cText, "テクスチャの生成失敗 (%s)", cTextureName);
+	printf("%s\n", &cText[0]);
+	return E_FAIL;
+}
+
+//=============================================================================
 // ビルボード化処理
 //=============================================================================
 void CKananLibrary::Billboard(D3DXMATRIX *mtxWorld, const D3DXMATRIX mtxView)

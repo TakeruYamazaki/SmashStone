@@ -105,6 +105,8 @@ public:
 
 	void CalCapPosition(void);																// カプセル位置の計算
 
+	inline void SeteumTypeID(const int &nTypeID) { m_ColliderInfo.enmTtpeID = (TYPEID)nTypeID;}
+
 private:
 	void MakeVertex(LPDIRECT3DDEVICE9 pDevice);		// 頂点の作成
 	void MakeIndex(LPDIRECT3DDEVICE9 pDevice);		// インデックスの作成

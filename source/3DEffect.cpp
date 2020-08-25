@@ -10,6 +10,7 @@
 #include "3DEffect.h"
 #include "renderer.h"
 #include "manager.h"
+#include "debugProc.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -21,7 +22,7 @@
 // 静的メンバ変数の初期化
 //-------------------------------------------------------------------------------------------------------------
 LPDIRECT3DVERTEXBUFFER9     C3DEffect::m_pVtxBuff                        = nullptr;						// バッファ情報
-LPDIRECT3DTEXTURE9          C3DEffect::m_pTexInfo[C3DEffect::TYPE_MAX]   = MYLIB_INITSTRUCT_WITHCONST;	// テクスチャ情報
+LPDIRECT3DTEXTURE9          C3DEffect::m_pTexInfo[C3DEffect::TEXTYPE_MAX]= MYLIB_INITSTRUCT_WITHCONST;	// テクスチャ情報
 const float                 C3DEffect::m_cfBaseAngle                     = D3DX_PI * 0.25f;				// 基本角度
 int                         C3DEffect::m_nNumTextureMax                  = MYLIB_INT_UNSET;				// テクスチャの最大数
 C3DEffect::PARAMETER        C3DEffect::m_EffectPram[_3DEFFE_USEQUANTITY] = MYLIB_INITSTRUCT_WITHCONST;	// エフェクトのパラメータ
@@ -32,6 +33,10 @@ C3DEffect::VIBRATION_OPTION C3DEffect::m_VibrationOption                 = MYLIB
 //-------------------------------------------------------------------------------------------------------------
 void C3DEffect::Load(void)
 {
+#ifdef _DEBUG
+	DWORD start = timeGetTime();			// 計測スタート時間
+#endif // _DEBUG
+
 	// 変数宣言
 	FILE *pFile;						// ファイルポインタ
 	char aRead[MYLIB_STRINGSIZE];		// 読み込み用
@@ -62,6 +67,7 @@ void C3DEffect::Load(void)
 		// 読み込んど文字列代入
 		sscanf(aRead, "%s", &aComp);
 
+		// ファイル名
 		if (sscanf(aRead, "FILENAME = %s", aWork) == 1)
 		{
 			// テクスチャの作成
@@ -69,18 +75,22 @@ void C3DEffect::Load(void)
 			// 情報カウントを進める
 			nCntInfo++;
 		}
+		// 距離の最大数
 		else if (sscanf(aRead, "MAXDIST = %d", &SetingOption.nMaxDist) == 1)
 		{
 			m_VibrationOption.nMaxDist = SetingOption.nMaxDist;
 		}
+		// 距離の縮小値
 		else if (sscanf(aRead, "SCALEDIST = %f", &SetingOption.fScalDistValue) == 1)
 		{
 			m_VibrationOption.fScalDistValue = SetingOption.fScalDistValue;
 		}
+		// 方向の最大値
 		else if (sscanf(aRead, "MAXDIVIDIR = %d", &SetingOption.nMaxDiviDir) == 1)
 		{
 			m_VibrationOption.nMaxDiviDir = SetingOption.nMaxDiviDir;
 		}
+		// 方向の縮小値
 		else if (sscanf(aRead, "SCALDIR = %f", &SetingOption.fScalDirValue) == 1)
 		{
 			m_VibrationOption.fScalDirValue = SetingOption.fScalDirValue;
@@ -92,6 +102,15 @@ void C3DEffect::Load(void)
 			break;
 		}
 	}
+
+	fclose(pFile);
+#ifdef _DEBUG
+	DWORD end = timeGetTime();			// 計測スタート時間
+
+	cout << "\nC3DEffect::Load テクスチャ情報の読み込み終了\n";
+	cout << "C3DEffect::Load テクスチャ情報の読み込み 処理速度 = " << (end - start) << "　[" << (end - start) * 0.001f << "sec.]\n";
+#endif // _DEBUG
+
 };
 
 //-------------------------------------------------------------------------------------------------------------
@@ -137,13 +156,14 @@ void C3DEffect::Init(void)
 	for (int nCntPrame = 0; nCntPrame < _3DEFFE_USEQUANTITY; nCntPrame++)
 	{
 		pEffePram[nCntPrame].bUse             = false;								// 使用フラグ
-		pEffePram[nCntPrame].bDisp            = false;								// 描画フラグ
+		pEffePram[nCntPrame].bDisp            = true;								// 描画フラグ
 		pEffePram[nCntPrame].bBillBoard       = true;								// ビルボードフラグ
 		pEffePram[nCntPrame].Trans            = TRANSFORM();						// トランス情報
+		pEffePram[nCntPrame].pParent          = nullptr;							// 親の位置
 		pEffePram[nCntPrame].move             = MYLIB_VEC3_UNSET;					// 移動量
 		pEffePram[nCntPrame].col              = MYLIB_D3DXCOR_UNSET;				// 色
 		pEffePram[nCntPrame].fRadius          = MYLIB_FLOAT_UNSET;					// 半径
-		pEffePram[nCntPrame].fAngle           = MYLIB_FLOAT_UNSET;					// 角度
+		pEffePram[nCntPrame].fAngle           = D3DX_PI * 0.5f;						// 角度
 		pEffePram[nCntPrame].fRadiusValue     = MYLIB_FLOAT_UNSET;					// 半径の変化値
 		pEffePram[nCntPrame].fAlphaValue      = MYLIB_FLOAT_UNSET;					// アルファ値の変化値
 		pEffePram[nCntPrame].nLife            = MYLIB_INT_UNSET;					// 持ち時間
@@ -152,6 +172,7 @@ void C3DEffect::Init(void)
 		pEffePram[nCntPrame].type             = TYPE_NONE;							// 種類
 		pEffePram[nCntPrame].Vibrat           = VIBRATION();						// 振動
 
+		
 		if (pEffePram[nCntPrame].Vibrat.bRandDist == false)
 		{
 			pEffePram[nCntPrame].Vibrat.fDist = m_VibrationOption.nMaxDist * m_VibrationOption.fScalDistValue;
@@ -215,6 +236,8 @@ void C3DEffect::Update(void)
 		{
 			// 振動の更新処理
 			pEffePram[nCntPrame].Vibrat.Update();
+			CDebugProc::Print("エフェクト振動した\n");
+
 		}
 
 		// 半径を変化させる
@@ -228,8 +251,6 @@ void C3DEffect::Update(void)
 			pEffePram[nCntPrame].bUse = false;
 			// 頂点サイズの設定
 			SetVartexSize(pVtx, pEffePram[nCntPrame]);
-			// 処理をスキップ
-			continue;
 		}
 		// 頂点サイズの設定
 		SetVartexSize(pVtx, pEffePram[nCntPrame]);
@@ -245,11 +266,14 @@ void C3DEffect::Update(void)
 			pEffePram[nCntPrame].bUse = false;
 			// 頂点カラーの設定
 			SetVetexColor(pVtx, pEffePram[nCntPrame]);
-			// 処理を抜ける
-			continue;
 		}
 		// 頂点カラーの設定
 		SetVetexColor(pVtx, pEffePram[nCntPrame]);
+
+		CDebugProc::Print("エフェクト生きている == [%d]\n", nCntPrame);
+		CDebugProc::Print("エフェクトアルファ値 == [%.4f]\n", pEffePram[nCntPrame].col.a);
+		CDebugProc::Print("エフェクト半径 == [%.4f]\n", pEffePram[nCntPrame].fRadius);
+		CDebugProc::Print("エフェクト振動 == [%.4f][%.4f][%.4f]\n", pEffePram[nCntPrame].Vibrat.Pos.x, pEffePram[nCntPrame].Vibrat.Pos.y, pEffePram[nCntPrame].Vibrat.Pos.z);
 	}
 
 	// 頂点データをアンロックする
@@ -263,7 +287,7 @@ void C3DEffect::Draw(void)
 {
 	// 変数宣言
 	LPDIRECT3DDEVICE9 pDevice;						// デバイスのポインタ
-	D3DXMATRIX mtxTrans, mtxView;					// 計算用マトリックス
+	D3DXMATRIX mtxTrans, mtxParent;					// 計算用マトリックス
 	PARAMETER* pEffePram;							// パラメータポインタ
 
 	pDevice = CManager::GetRenderer()->GetDevice();	// デバイスの取得
@@ -276,9 +300,9 @@ void C3DEffect::Draw(void)
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, D3DZB_FALSE);
 
 	// レンダーステート(加算合成処理)
-	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+	//pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	//pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	//pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 	// 裏面(左回り)をカリングする
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
@@ -294,11 +318,29 @@ void C3DEffect::Draw(void)
 		// ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&pEffePram[nCntPrame].Trans.mtxWorld);
 		
-		// ビルボードフラグが立っていた時
-		if (pEffePram[nCntPrame].bBillBoard == true)
-		{// ビルボードの設定
-			CMylibrary::SetBillboard(pDevice, &pEffePram[nCntPrame].Trans.mtxWorld);
+		if (pEffePram[nCntPrame].bBillBoard == true &&
+			pEffePram[nCntPrame].pParent != nullptr)
+		{
+			// ワールドマトリックスの初期化
+			D3DXMatrixIdentity(&mtxParent);
+			// ビルボードの設定
+			CMylibrary::SetBillboard(pDevice, &mtxParent);
+
+			// 位置を反映
+			D3DXMatrixTranslation(&mtxTrans
+				, pEffePram[nCntPrame].pParent->x
+				, pEffePram[nCntPrame].pParent->y
+				, pEffePram[nCntPrame].pParent->z);
+
+			D3DXMatrixMultiply(&mtxParent
+				, &mtxParent
+				, &mtxTrans);
 		}
+		// ビルボードフラグが立っていた時
+		else if (pEffePram[nCntPrame].bBillBoard == true)
+			{// ビルボードの設定
+				CMylibrary::SetBillboard(pDevice, &pEffePram[nCntPrame].Trans.mtxWorld);
+			}
 
 		// 位置を反映
 		D3DXMatrixTranslation(
@@ -306,10 +348,19 @@ void C3DEffect::Draw(void)
 			pEffePram[nCntPrame].Trans.pos.x,
 			pEffePram[nCntPrame].Trans.pos.y,
 			pEffePram[nCntPrame].Trans.pos.z);
+
 		D3DXMatrixMultiply(
 			&pEffePram[nCntPrame].Trans.mtxWorld,
 			&pEffePram[nCntPrame].Trans.mtxWorld,
 			&mtxTrans);
+
+		if (pEffePram[nCntPrame].pParent != nullptr)
+		{
+			// マトリックスのずれと掛ける
+			D3DXMatrixMultiply(&pEffePram[nCntPrame].Trans.mtxWorld
+				, &pEffePram[nCntPrame].Trans.mtxWorld
+				, &mtxParent);
+		}
 
 		// ワールドマトリックスの設定
 		pDevice->SetTransform(D3DTS_WORLD, &pEffePram[nCntPrame].Trans.mtxWorld);
@@ -339,6 +390,84 @@ void C3DEffect::Draw(void)
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// 設定
+//-------------------------------------------------------------------------------------------------------------
+void C3DEffect::Set(SETINGPARAM & Seting)
+{
+	// 変数宣言
+	PARAMETER* pEffePram;							// パラメータポインタ
+	pEffePram = &m_EffectPram[0];					// ポインタの初期化
+
+	// 最大数ループ
+	for (int nCntEffect = 0; nCntEffect < _3DEFFE_USEQUANTITY; nCntEffect++)
+	{
+		// 使用フラグオンの個体の時
+		if (pEffePram[nCntEffect].bUse == true)
+		{// 処理をスキップ
+			continue;
+		}
+		// 変数定義
+		VERTEX_3D *pVtx;		// 頂点ポインタ
+		//頂点データの範囲をロックし、頂点バッファへのポインタを取得
+		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+		// 頂点ポインタの更新
+		pVtx += nCntEffect * 4;
+
+		// 親の位置の設定
+		pEffePram[nCntEffect].pParent = Seting.pParent;
+		// 描画フラグを立てる
+		pEffePram[nCntEffect].bDisp = true;
+		// ビルボードの設定
+		pEffePram[nCntEffect].bBillBoard = Seting.bBillBoard;
+		// 重力の設定
+		pEffePram[nCntEffect].fGravity = Seting.fGravity;
+		// ライフの設定
+		pEffePram[nCntEffect].nLife = Seting.nLife;
+		// テクスチャ種類の設定
+		pEffePram[nCntEffect].nTexType = Seting.nTexType;
+		// エフェクト種類の設定
+		pEffePram[nCntEffect].type = (C3DEffect::TYPE)Seting.type;
+		// 移動量の設定
+		pEffePram[nCntEffect].move = Seting.move;
+		// 半径の設定
+		pEffePram[nCntEffect].fRadius = Seting.fRadius;
+		// 位置の設定
+		pEffePram[nCntEffect].Trans.pos = Seting.pos;
+
+
+		// 色の設定
+		pEffePram[nCntEffect].col = Seting.col;
+
+
+		if (pEffePram[nCntEffect].type == TYPE_CHAR)
+		{
+			pEffePram[nCntEffect].Vibrat.bRandDist = true;
+			// 半径変化値の設定
+			pEffePram[nCntEffect].fRadiusValue = 0.0f;
+			// アルファ変化値の設定
+			pEffePram[nCntEffect].fAlphaValue = 0.0f;
+		}
+		else
+		{
+			pEffePram[nCntEffect].Vibrat.bRandDist = false;
+			// アルファ変化値の設定
+			pEffePram[nCntEffect].fAlphaValue = pEffePram[nCntEffect].col.a / pEffePram[nCntEffect].nLife;
+
+			// 半径変化値の設定
+			pEffePram[nCntEffect].fRadiusValue = pEffePram[nCntEffect].fRadius / pEffePram[nCntEffect].nLife;
+		}
+		SetVartexSize(pVtx, pEffePram[nCntEffect]);
+		SetVetexColor(pVtx, pEffePram[nCntEffect]);
+
+		// 使用フラグをオン
+		pEffePram[nCntEffect].bUse = true;
+		//頂点データをアンロック
+		m_pVtxBuff->Unlock();
+		break;
+	}
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -456,7 +585,6 @@ void C3DEffect::VIBRATION::GetVecDir(void)
 
 	this->VecDir.x = ((rand() % nOffsetting) - m_VibrationOption.nMaxDiviDir)*m_VibrationOption.fScalDirValue;
 	this->VecDir.y = ((rand() % nOffsetting) - m_VibrationOption.nMaxDiviDir)*m_VibrationOption.fScalDirValue;
-	this->VecDir.z = ((rand() % nOffsetting) - m_VibrationOption.nMaxDiviDir)*m_VibrationOption.fScalDirValue;
 
 	// 正規化する
 	CMylibrary::CreateUnitVector(&VecDir, &VecDir);

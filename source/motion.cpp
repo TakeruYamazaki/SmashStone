@@ -263,6 +263,8 @@ HRESULT CMotion::LoadMotion(PARAM_TYPE charaType, MOTION_TYPE motiontype)
 
 						// キー数分メモリ確保
 						m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].pKey = new KEY[nKey];
+						// 攻撃しない
+						m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].bAttack = false;
 
 						// キーカウントを初期化する
 						nCntKey = 0;
@@ -276,6 +278,11 @@ HRESULT CMotion::LoadMotion(PARAM_TYPE charaType, MOTION_TYPE motiontype)
 							if (strcmp(cHeadText, "FRAME") == 0)
 							{
 								sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].nFrame);
+							}
+							// 攻撃
+							if (strcmp(cHeadText, "ATTACK_ON") == 0)
+							{
+								m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].bAttack = true;
 							}
 							// キー
 							if (strcmp(cHeadText, "KEY") == 0)

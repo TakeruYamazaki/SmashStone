@@ -38,6 +38,8 @@
 #include "UI_gameStart.h"
 #include "UI_gameResult.h"
 #include "UI.h"
+#include "3DEffect.h"
+#include "CharEffectOffset.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -81,6 +83,7 @@ NUM_PLAYER			CGame::m_winPlayer				= NUM_PLAYER::PLAYER_NONE;		// 勝利したプレイ
 NUM_PLAYER			CGame::m_losePlayer				= NUM_PLAYER::PLAYER_NONE;		// 負けたプレイヤー
 CObjectManager		*CGame::m_pObjMana				= nullptr;						// オブジェクトマネージャーのポインタ
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ストーンの生成場所に生成されているか
+int					CGame::m_nStageType				= 0;							// ステージのタイプ
 D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
 {
 	D3DXVECTOR3(0.0f, 20.0f, 0.0f),
@@ -132,9 +135,16 @@ void CGame::Init(void)
 	CUI_GameResult::Load();
 	CUI::Load();							// UIロード
 
+	// 3Dエフェクトの作成
+	C3DEffect *p3DEffect;
+	// 生成
+	p3DEffect = new C3DEffect;
+	// 作成
+	p3DEffect->Make();
+
 	/* 生成 */
 	C3DBoxCollider::Create();										// ボックスコライダーの生成
-	m_pObjMana    = CObjectManager::Create();						// オブジェクトマネージャーの生成
+	m_pObjMana    = CObjectManager::Create((CObjectManager::STAGETYPE)m_nStageType);// オブジェクトマネージャーの生成
 	m_pWall       = CWall::Create(CWall::WALLTEX_FIELD);			// 壁の生成
 	m_pCamera     = CCamera::Create();								// カメラの生成処理
 	m_pLight      = CLight::Create();								// ライトの生成処理
@@ -280,6 +290,11 @@ void CGame::Update(void)
 		if (fade == CFade::FADE_NONE)
 			// フェードを設定する
 			CFade::SetFade(CRenderer::MODE_TITLE, DEFAULT_FADE_TIME);
+	}
+
+	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_LSHIFT))
+	{
+		//CCharEffectOffset::Set(&m_pPlayer[PLAYER_ONE]->GetPos(), CCharEffectOffset::STR_ドンッ);
 	}
 #endif // _DEBUG
 }
@@ -572,9 +587,6 @@ void CGame::GameResult(void)
 //==================================================================================================================
 void CGame::DecideCreateStone(void)
 {
-	// 乱数化
-	srand((unsigned int)time(NULL));
-
 	// カウンタを加算
 	m_nCntDecide++;
 
