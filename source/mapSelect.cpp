@@ -116,6 +116,7 @@ void CMapSelect::Update(void)
 		// フェードが何もない時
 		if (fade == CFade::FADE_NONE)
 		{
+			CGame::SetStageType(CUI::GetMapID());
 			// フェードの設定
 			CFade::SetFade(CRenderer::MODE_GAME, DEFAULT_FADE_TIME);
 		}
