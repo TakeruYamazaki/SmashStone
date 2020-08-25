@@ -131,6 +131,7 @@ void CGame::Init(void)
 	CUIKO::Load();							// KOのロード
 	CUI_GameStart::Load();					// 開始UIのロード
 	CUI_GameResult::Load();
+	CUI::Load();							// UIロード
 
 	/* 生成 */
 	C3DBoxCollider::Create();										// ボックスコライダーの生成
@@ -145,9 +146,9 @@ void CGame::Init(void)
 	m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_2P);
 
 	m_pMeshField  = CMeshField::Create(INTEGER2(4, 4), D3DXVECTOR3(600.0f, 0.0f, 600.0f), D3DXVECTOR3(0.0f, -40.0f, 50.0f));// メッシュフィールド生成
+	m_pUI         = CUI::Create();									// UIの生成処理
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
-	m_pUI         = CUI::Create();									// UIの生成処理
 
 	// 緩やかな階段
 	m_pPolyColli[CPolygonCollider::POLYCOLLI_LONGSTAIRS] = CPolygonCollider::Create(CPolygonCollider::POLYCOLLI_LONGSTAIRS);
@@ -196,6 +197,7 @@ void CGame::Uninit(void)
 	CUIKO::Unload();					// KOのアンロード
 	CUI_GameStart::Unload();			// 開始時のUIのアンロード
 	CUI_GameResult::Unload();
+	CUI::Unload();						// UIアンロード
 
 	// 万が一残っていた場合
 	if (m_pUIGameStart)
