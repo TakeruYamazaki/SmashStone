@@ -13,6 +13,7 @@
 #include "player.h"
 #include "game.h"
 #include "debugProc.h"
+#include "CharEffectOffset.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -415,6 +416,7 @@ CCapsuleCollider * CCapsuleCollider::Create(CScene *pScene, D3DXMATRIX *pMtxPare
 	int nID = CCapsuleCollider::m_ReadInfoFileBuff.pSetThisID[nTypeID];	// IDの取得
 	READINFOFILE_CELL *pCell = &CCapsuleCollider::m_ReadInfoFileBuff.pCell[nID];			// セルのポインタ
 
+	pCollider->SeteumTypeID(nID);
 	// 情報の設定と同期
 	pCollider->InfoSetSync(
 		pCell->pSizeInfo->fRadius,		// 半径
@@ -468,13 +470,20 @@ bool CCapsuleCollider::Collision(void)
 	CPlayer          *pOthers         = pOwn->GetAnotherPlayer();								// その他のプレイヤー
 	CCapsuleCollider *pOthersCapColli = pOthers->GetCapCollider(CCharacter::COLLIPARTS_BODY);	// その他のプレイヤーのコライダー情報
 
+	if (pOwn->ReadyToHit(m_ColliderInfo.enmTtpeID) == false)
+	{
+		return false;
+	}
+
 	CDebugProc::Print("COLLIPARTS [%d]", m_ColliderInfo.enmTtpeID);
 
 
 #ifdef _DEBUG
 	// 2線分の最短距を求める
 	CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule) ?
-		CDebugProc::Print("当たってる\n"):
+		CDebugProc::Print("当たってる\n"),
+		CCharEffectOffset::Set(&pOthers->GetPos(), CCharEffectOffset::STR_ドンッ),
+		pOwn->SetAttakHit(true) :
 		CDebugProc::Print("当たってない\n");
 #else
 	// 2線分の最短距を求める
