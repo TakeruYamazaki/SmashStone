@@ -70,12 +70,14 @@ public:
 	inline void        SetbWalk(const bool &bWalk)				{ m_bWalk = bWalk; }				// 歩きの設定
 	inline void        SetbJump(const bool &bJump)				{ m_bJump = bJump; }				// ジャンプの設定
 	inline void        SetLife(const float nLife)				{ m_nLife = nLife; }				// ライフの設定
+	inline void        SetAttakHit(const bool bAttackHit)		{ m_bAttakHit = m_bAttack; }		// 攻撃を当てたフラグ
 	void               SetModelType(CHARACTER_TYPE type);											// モデルの設定
 	void               SetCylinderCoillider(void);													// シリンダーコライダーの設定
 
+
 	inline CHARACTER_TYPE    GetCharaType(void)					{ return m_type; }					// キャラタイプの取得
 	inline STATE_LIFT_OBJET  GetStateLift(void)					{ return m_StateLift; }				// 物持ち上げの状態取得
-	inline D3DXVECTOR3       GetPos(void)						{ return m_pos; }					// 位置の取得
+	inline D3DXVECTOR3       &GetPos(void)						{ return m_pos; }					// 位置の取得
 	inline D3DXVECTOR3       GetMove(void)						{ return m_move; }					// 移動値の取得
 	inline D3DXVECTOR3       GetRot(void)						{ return m_rot; }					// 回転の取得
 	inline D3DXVECTOR3       GetRotDest(void)					{ return m_rotDest; }				// 回転先の取得

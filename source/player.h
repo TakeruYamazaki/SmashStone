@@ -54,6 +54,14 @@ public:
 	int GetnPlayer(void) { return m_nPlayer; }		// プレイヤー番号取得
 	inline int GetBoxColliderID(void) { return m_nBoxColliderID; }
 	CPlayer*GetAnotherPlayer(void);					// 違うプレイヤーの取得
+
+
+	bool ReadyToHit(const int &nCapColliID);			// 攻撃当てる準備かできているか
+	bool HitConditionAttack0(const int &nCapColliID);	// 攻撃0を当てる条件
+	bool HitConditionAttack1(const int &nCapColliID);	// 攻撃1を当てる条件
+	bool HitConditionAttack2(const int &nCapColliID);	// 攻撃2を当てる条件
+	bool HitConditionAttack3(const int &nCapColliID);	// 攻撃3を当てる条件
+	bool HitConditionSmash(const int &nCapColliID);		// スマッシュ攻を当てる条件
 protected:
 
 private:
@@ -65,6 +73,8 @@ private:
 	void Lift(void);								// 物持ち処理
 
 	void CollisionAttack(void);						// 攻撃判定
+
+
 
 	static CHitPoint *m_pHitPoint;					// HP情報
 

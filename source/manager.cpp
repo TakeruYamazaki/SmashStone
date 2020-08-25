@@ -14,6 +14,8 @@
 #include "kananlibrary.h"
 #include "objManager.h"
 #include "charaParam.h"
+#include "3DEffect.h"
+#include "CharEffectOffset.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -84,6 +86,11 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 
 	m_pMouse->Init(hInstance, hWnd);
 
+	// 3Dエフェクト情報の読み込み
+	C3DEffect::Load();
+	// 文字エフェクトの読み込み
+	CCharEffectOffset::Load();
+
 	// ImGui情報のロード
 	LoadImGuiInfo();
 	
@@ -96,8 +103,15 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 //==================================================================================================================
 void CManager::Uninit(void)
 {
+
 	// 全てを破棄
 	CScene::ReleaseAll();
+
+	// 文字エフェクトの開放
+	CCharEffectOffset::Unload();
+	// 3Dエフェクト情報の開放
+	C3DEffect::Unload();
+
 
 	// レンダラーがあるとき
 	if (m_pRenderer != NULL)
