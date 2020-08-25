@@ -92,7 +92,7 @@ void CCamera::Init(void)
 	m_rotDest	= ZeroVector3;
 	m_mousePos	= ZeroVector3;
 	m_fDistance = 0.0f;
-	m_fDisScale = 1.4f;
+	m_fDisScale = 0.8f;
 	nCntRot = 0;										// 回転を始めるカウンタ
 	m_nCntTitleFade = 0;								// タイトルフェードカウンタ
 	m_bCameraMode = false;								// カメラモードかどうか
@@ -225,13 +225,15 @@ void CCamera::ShowDebugInfo(void)
 //==================================================================================================================
 void CCamera::MoveCamera(void)
 {
-	CPlayer *pPlayer0, *pPlayer1;
-	D3DXVECTOR3 pos0, pos1;
 	D3DXVECTOR3 difposR, difposV;	// posとposDestの差分格納用
 
 	// ゲームのとき
 	if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 	{
+		CPlayer *pPlayer0, *pPlayer1;
+		D3DXVECTOR3 pos0, pos1;
+		float fDistans;
+
 		// プレイヤーの情報取得
 		pPlayer0 = CGame::GetPlayer(0);
 		pPlayer1 = CGame::GetPlayer(1);
@@ -245,6 +247,11 @@ void CCamera::MoveCamera(void)
 
 			// 1Pと2Pの間の位置計算
 			m_posRDest = ((pos0 - pos1) * -1 / 2) + pos0;
+
+			// 二点間の距離計算
+			fDistans = CKananLibrary::OutputSqrt(pos0 - pos1);
+
+			m_fDistance = fDistans;
 		}
 	}
 
@@ -258,10 +265,21 @@ void CCamera::MoveCamera(void)
 	// 注視点を追いかける速度
 	m_posR += difposR / SPEED_INERTIA;
 
+	// 注視点とカメラの距離が規定値より小さくなるとき
+	if (m_fDistance * 0.8f <= 300)
+	{
+		m_fDistance = 300 / 0.8f;
+	}
+
+	//// 目的の視点の計算
+	//m_posVDest.x = -cosf(m_rot.x) * sinf(m_rot.y) * m_fDistance * 0.8f;
+	//m_posVDest.y = sinf(m_rot.x) * m_fDistance * 1.2f;
+	//m_posVDest.z = -cosf(m_rot.x) * cosf(m_rot.y) * m_fDistance * 0.8f;
+
 	// 目的の視点の計算
-	m_posVDest.x = -cosf(m_rot.x) * sinf(m_rot.y) * m_fDistance * m_fDisScale;
-	m_posVDest.y = sinf(m_rot.x) * m_fDistance * m_fDisScale;
-	m_posVDest.z = -cosf(m_rot.x) * cosf(m_rot.y) * m_fDistance * m_fDisScale;
+	m_posVDest.x = m_posR.x + -cosf(m_rot.x) * sinf(m_rot.y) * m_fDistance * m_fDisScale;
+	m_posVDest.y = m_posR.y + sinf(m_rot.x) * m_fDistance * m_fDisScale;
+	m_posVDest.z = m_posR.z + -cosf(m_rot.x) * cosf(m_rot.y) * m_fDistance * m_fDisScale;
 
 #ifdef _DEBUG
 	m_posVDest += m_posDebug;
@@ -279,7 +297,6 @@ void CCamera::MoveCamera(void)
 
 	// 視点が注視点に追いつく速度
 	m_posV += difposV / SPEED_INERTIA;
-
 
 	if (this->m_mode == CAMERA_GAME)
 	{
