@@ -6,44 +6,9 @@
 #============================================================
 SCRIPT
 
-#============================================================
-# オブジェクトタイプ数
-#============================================================
-NUM_TYPE = 14
-
-#============================================================
-# モデルファイル名
-#============================================================
-MODEL_FILENAME = data/OBJECT/floor_down.x
-MODEL_FILENAME = data/OBJECT/floor_up.x
-MODEL_FILENAME = data/OBJECT/stairs.x
-MODEL_FILENAME = data/OBJECT/stairs_slope.x
-MODEL_FILENAME = data/OBJECT/stairs_wide.x
-MODEL_FILENAME = data/OBJECT/building_left.x
-MODEL_FILENAME = data/OBJECT/building_right.x
-MODEL_FILENAME = data/OBJECT/roof.x
-MODEL_FILENAME = data/OBJECT/fence.x
-MODEL_FILENAME = data/OBJECT/rail_left.x
-MODEL_FILENAME = data/OBJECT/rail_right.x
-MODEL_FILENAME = data/OBJECT/railing.x
-MODEL_FILENAME = data/OBJECT/Fountain_Down.x
-MODEL_FILENAME = data/OBJECT/Fountain_Up.x
-
-#============================================================
-# オブジェクトテクスチャ数
-#============================================================
-NUM_TEXTURE = 2
-
-#============================================================
-# テクスチャファイル名
-#============================================================
-TEXTURE_FILENAME = data/TEXTURE/ground000.jpg : MODEL = 0
-TEXTURE_FILENAME = data/TEXTURE/ground000.jpg : MODEL = 1
-
-#============================================================
 # オブジェクト総数
 #============================================================
-NUM_OBJECT = 15
+NUM_OBJECT = 19
 
 #============================================================
 # オブジェクト情報
@@ -151,6 +116,34 @@ OBJECTSET
 	POS = -201.191 29.702 -69.412
 	ROT = 0.000 0.000 0.000
 	SCALE = 1.000 1.000 1.200
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 0
+	POS = -93.315 0.309 341.901
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.550 1.000 1.600
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 6
+	POS = -302.481 0.309 409.877
+	ROT = 0.000 -1.600 0.000
+	SCALE = 1.000 1.000 1.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 0
+	POS = 418.500 0.215 -23.000
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 6
+	POS = 301.652 -53.970 -62.167
+	ROT = 0.000 -0.008 0.000
+	SCALE = 1.000 1.000 1.000
 END_OBJECTSET
 
 

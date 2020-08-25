@@ -53,6 +53,8 @@ CMapSelect::~CMapSelect()
 //==================================================================================================================
 void CMapSelect::Init(void)
 {
+	m_bSelectMap = false;			// マップが選択されているかどうか
+
 	CUI::Load();					// UIテクスチャロード
 
 	// カメラの生成処理
@@ -93,8 +95,14 @@ void CMapSelect::Update(void)
 	// キーボード取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
 
+	// ゲームパッド取得
+	CInputGamepad *pGamepad = CManager::GetInputGamepad(0);
+
 	// フェード取得
 	CFade::FADE fade = CFade::GetFade();
+
+	// マップの選択状況取得
+	m_bSelectMap = m_pUI->GetSelectMap();
 
 	// カメラの更新処理
 	m_pCamera->Update();
@@ -102,11 +110,29 @@ void CMapSelect::Update(void)
 	// ライトの更新処理
 	m_pLight->Update();
 
-	// フェードが何もない時
-	if (fade == CFade::FADE_NONE)
+	// マップが選択されているとき
+	if (m_bSelectMap)
 	{
-		// フェードの設定
-		CFade::SetFade(CRenderer::MODE_GAME, DEFAULT_FADE_TIME);
+		// フェードが何もない時
+		if (fade == CFade::FADE_NONE)
+		{
+			CGame::SetStageType(CUI::GetMapID());
+			// フェードの設定
+			CFade::SetFade(CRenderer::MODE_GAME, DEFAULT_FADE_TIME);
+		}
+	}
+	else
+	{
+		// 1Pが戻るボタンを押したとき
+		if (pInputKeyboard->GetKeyboardPress(ONE_JUMP) || pGamepad->GetPress(CInputGamepad::JOYPADKEY_B))
+		{
+			// フェードが何もない時
+			if (fade == CFade::FADE_NONE)
+			{
+				// フェードの設定
+				CFade::SetFade(CRenderer::MODE_TUTORIAL, DEFAULT_FADE_TIME);
+			}
+		}
 	}
 }
 

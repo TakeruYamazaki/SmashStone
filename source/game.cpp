@@ -83,6 +83,7 @@ NUM_PLAYER			CGame::m_winPlayer				= NUM_PLAYER::PLAYER_NONE;		// 勝利したプレイ
 NUM_PLAYER			CGame::m_losePlayer				= NUM_PLAYER::PLAYER_NONE;		// 負けたプレイヤー
 CObjectManager		*CGame::m_pObjMana				= nullptr;						// オブジェクトマネージャーのポインタ
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ストーンの生成場所に生成されているか
+int					CGame::m_nStageType				= 0;							// ステージのタイプ
 D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
 {
 	D3DXVECTOR3(0.0f, 20.0f, 0.0f),
@@ -132,6 +133,7 @@ void CGame::Init(void)
 	CUIKO::Load();							// KOのロード
 	CUI_GameStart::Load();					// 開始UIのロード
 	CUI_GameResult::Load();
+	CUI::Load();							// UIロード
 
 	// 3Dエフェクトの作成
 	C3DEffect *p3DEffect;
@@ -142,7 +144,7 @@ void CGame::Init(void)
 
 	/* 生成 */
 	C3DBoxCollider::Create();										// ボックスコライダーの生成
-	m_pObjMana    = CObjectManager::Create();						// オブジェクトマネージャーの生成
+	m_pObjMana    = CObjectManager::Create((CObjectManager::STAGETYPE)m_nStageType);// オブジェクトマネージャーの生成
 	m_pWall       = CWall::Create(CWall::WALLTEX_FIELD);			// 壁の生成
 	m_pCamera     = CCamera::Create();								// カメラの生成処理
 	m_pLight      = CLight::Create();								// ライトの生成処理
@@ -153,9 +155,9 @@ void CGame::Init(void)
 	m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_2P);
 
 	m_pMeshField  = CMeshField::Create(INTEGER2(4, 4), D3DXVECTOR3(600.0f, 0.0f, 600.0f), D3DXVECTOR3(0.0f, -40.0f, 50.0f));// メッシュフィールド生成
+	m_pUI         = CUI::Create();									// UIの生成処理
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
-	m_pUI         = CUI::Create();									// UIの生成処理
 
 	// 緩やかな階段
 	m_pPolyColli[CPolygonCollider::POLYCOLLI_LONGSTAIRS] = CPolygonCollider::Create(CPolygonCollider::POLYCOLLI_LONGSTAIRS);
@@ -204,6 +206,7 @@ void CGame::Uninit(void)
 	CUIKO::Unload();					// KOのアンロード
 	CUI_GameStart::Unload();			// 開始時のUIのアンロード
 	CUI_GameResult::Unload();
+	CUI::Unload();						// UIアンロード
 
 	// 万が一残っていた場合
 	if (m_pUIGameStart)

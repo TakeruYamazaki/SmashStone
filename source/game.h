@@ -79,6 +79,7 @@ public:
 
 	static void SetPlayerType(const int nPlayer, const int type)
 		{ m_nPlayerType[nPlayer] = type * 2; }									// プレイヤータイプを保存
+	static void SetStageType(const int type)	{ m_nStageType = type; }		// ステージタイプの設定
 	static void SetGameState(GAMESTATE state)	{ m_gameState = state; }		// ゲームの状態設定
 	static void RemoveNumStone(int nIndexPos)	{ m_nNumStone--; m_bSetPos[nIndexPos] = false; }			// ストーンの数を減算
 	static void SetNumStone(const int &nStone)	{ m_nNumStone = nStone; }		// ストーンの数の設定
@@ -138,6 +139,7 @@ private:
 	INTEGER2 m_roundPoint;							// ラウンドのポイント数
 	static int m_nRound;							// 現在のラウンド
 	static int m_nRoundAll;							// 全ラウンド数
+	static int m_nStageType;						// ステージのタイプ
 	int m_nCntAny;									// モード毎の様々な状況で使う(主に時間管理)
 };
 #endif
