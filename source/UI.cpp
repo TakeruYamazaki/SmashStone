@@ -52,14 +52,35 @@
 #define MODEUI_SIZE_Y 120							// モードUI大きさY
 #define CLOCKUI0_POS_X 290							// 時計UI位置X
 #define CLOCKUI1_POS_X 990							// 時計UI位置X
+#define CLOCKHANDSUI_WAITTIME 30					// 時計の針UI待機時間
 #define CHARATEX_SISE_X 350							// キャラテクスチャ大きさX
 #define CHARATEX_SISE_Y 450							// キャラテクスチャ大きさY
 #define CHARAUI_POS_Y 600							// 全員キャラUI位置Y
 #define CHARAFULLUI_SIZE_X 720						// 全員キャラUI大きさX
 #define CHARAFULLUI_SIZE_Y 200						// 全員キャラUI大きさY
 #define CHARAFREAMUI_SIZE_X 180						// キャラUI大きさX
+#define CHARA1PUI_POS D3DXVECTOR3(200, 230, 0)		// 1PキャラUIの位置
+#define CHARA2PUI_POS D3DXVECTOR3(1080, 230, 0)		// 2PキャラUIの位置
 #define GEAR_POS_Y 530								// 歯車の位置Y
 #define CLOCK_HANDS_DIFF 0.1f						// 回転の初期値
+#define READY1PUI_POS D3DXVECTOR3(200, 400, 0)		// 1P準備完了位置
+#define READY2PUI_POS D3DXVECTOR3(1080, 400, 0)		// 2P準備完了位置
+#define READYUI_SIZE_X 200							// 準備完了大きさX
+#define READYUI_SIZE_Y 160							// 準備完了大きさX
+#define CHARA_SELECTUI_POS D3DXVECTOR3(640, 60, 0)	// キャラクター選択UI位置
+#define CHARA_SELECTUI_SIZE_X 400					// キャラクター選択UI大きさX
+#define CHARA_SELECTUI_SIZE_Y 120					// キャラクター選択UI大きさY
+#define MAPUI_SIZE_X 300							// マップUI大きさX
+#define MAPUI_SIZE_Y 250							// マップUI大きさY
+#define MAPUI_POS_X0 650							// マップUI縦の位置0列目
+#define MAPUI_POS_X1 1050							// マップUI縦の位置1列目
+#define MAPUI_POS_Y0 200							// マップUI横の位置0列目
+#define MAPUI_POS_Y1 500							// マップUI横の位置1列目
+#define MAPFRAMEUI_SIZE_X 360						// マップ枠線大きさX
+#define MAPFRAMEUI_SIZE_Y 290						// マップ枠線大きさY
+#define MAPEXPLANATION_POS D3DXVECTOR3(250, SCREEN_HEIGHT / 2, 0)// マップ説明UI位置
+#define MAPEXPLANATION_SIZE_X 400					// マップ説明UI大きさX
+#define MAPEXPLANATION_SIZE_Y 600					// マップ説明UI大きさY
 
 //==================================================================================================================
 // 静的メンバー変数の初期化
@@ -90,7 +111,17 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/Ready.png" },		// 1Pキャラクター準備完了
 	{ "data/TEXTURE/Ready.png" },		// 2Pキャラクター準備完了
 	{ "data/TEXTURE/PlayerSelect.png" },// プレイヤーセレクトアイコン
-	{ "data/TEXTURE/scroll.png" },		// プレイヤーセレクトアイコン
+	{ "data/TEXTURE/worldMap.jpg" },	// 世界地図
+	{ "data/TEXTURE/MapFrame.jpg" },	// マップ選択枠
+	{ "data/TEXTURE/map1.jpg" },		// マップ1
+	{ "data/TEXTURE/map2.jpg" },		// マップ2
+	{ "data/TEXTURE/coming soon.jpg" },	// マップ3(coming soon)
+	{ "data/TEXTURE/coming soon.jpg" },	// マップ4(coming soon)
+	{ "data/TEXTURE/MapExplanation.jpg" },	// マップ説明
+	{ "data/TEXTURE/MapExplanation.jpg" },	// マップ説明
+	{ "data/TEXTURE/MapExplanation.jpg" },	// マップ説明
+	{ "data/TEXTURE/MapExplanation.jpg" },	// マップ説明
+	{ "data/TEXTURE/scroll.png" },		// 巻物
 };
 
 //==================================================================================================================
@@ -126,6 +157,7 @@ void CUI::Init(void)
 	m_nCntRot[MAX_PLAYER] = 0;	// 時計の針の回転用カウンタ
 	m_nCntWait[MAX_PLAYER] = 0;	// 待機時間用カウンタ
 	m_nCntMove[MAX_PLAYER] = 0;	// 移動用カウンタ
+	m_nMapID = 0;				// マップ番号
 	m_fCntUITitle0 = 0;			// タイトルUI用カウンタ0
 	m_fCntUITitle1 = 0;			// タイトルUI用カウンタ1
 	m_fCntEnter = 0;			// エンター用カウンタ
@@ -147,6 +179,7 @@ void CUI::Init(void)
 	m_bUIClockHands[MAX_PLAYER] = false;// 時計の針が動いたかどうか0
 	m_bCharaDecide[MAX_PLAYER] = false;// 自分のキャラクターを選択したかどうか
 	m_bStickReturn[MAX_PLAYER] = false;// パッドスティックを戻したかどうか
+	m_bMapSelect = false;		// マップを選択したかどうか
 
 	// ロゴの最大枚数カウント
 	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
@@ -168,6 +201,18 @@ void CUI::Init(void)
 		{// チュートリアルのとき
 			// チュートリアルで使うUIのとき
 			if (nCnt <= LOGOTYPE_SELECTICON)
+			{
+				// 生成処理
+				m_pScene2D[nCnt] = CScene2D::Create();
+
+				// テクスチャを貼る
+				m_pScene2D[nCnt]->BindTex(m_pTexture[nCnt]);
+			}
+		}
+		else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
+		{// マップ選択画面のとき
+			// マップ選択画面で使うUIのとき
+			if (nCnt <= LOGOTYPE_MAPEXPLANATION4)
 			{
 				// 生成処理
 				m_pScene2D[nCnt] = CScene2D::Create();
@@ -223,6 +268,9 @@ void CUI::Update(void)
 
 	// UIチュートリアル更新処理
 	TutorialUpdate(pInputKeyboard, pGamepad[0], pGamepad[1]);
+
+	// UIマップ選択画面更新処理
+	MapSelectUpdate(pInputKeyboard, pGamepad[0], pGamepad[1]);
 
 	// UIゲーム更新処理
 	GameUpdate();
@@ -282,6 +330,15 @@ HRESULT CUI::Load(void)
 				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
 			}
 		}
+		else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
+		{// モードがマップ選択画面のとき
+			// マップ選択画面で使うUIのとき
+			if (nCnt <= LOGOTYPE_MAPEXPLANATION4)
+			{
+				// テクスチャの読み込み
+				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
+			}
+		}
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// モードがゲームのとき
 			// ゲームで使うUIのとき
@@ -319,6 +376,15 @@ void CUI::Unload(void)
 		{// モードがチュートリアルのとき
 			// チュートリアルで使うUIのとき
 			if (nCnt <= LOGOTYPE_SELECTICON)
+			{
+				m_pTexture[nCnt]->Release();		// 開放
+				m_pTexture[nCnt] = NULL;			// NULLにする
+			}
+		}
+		else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
+		{// モードがマップ選択画面のとき
+			// マップ選択画面で使うUIのとき
+			if (nCnt <= LOGOTYPE_MAPEXPLANATION4)
 			{
 				m_pTexture[nCnt]->Release();		// 開放
 				m_pTexture[nCnt] = NULL;			// NULLにする
@@ -543,7 +609,7 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 				m_nCntWait[0]++;
 
 				// 待機時間が0.5秒経ったとき
-				if (m_nCntWait[0] >= 30)
+				if (m_nCntWait[0] >= CLOCKHANDSUI_WAITTIME)
 				{
 					m_bUIClockHands[0] = false;
 				}
@@ -588,7 +654,7 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 				m_nCntWait[1]++;
 
 				// 待機時間が0.5秒経ったとき
-				if (m_nCntWait[1] >= 30)
+				if (m_nCntWait[1] >= CLOCKHANDSUI_WAITTIME)
 				{
 					m_bUIClockHands[1] = false;
 				}
@@ -685,11 +751,11 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 
 		}
 		// 1PキャラクターUI
-		SetUI(D3DXVECTOR3(200, 230, 0.0f), CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_1PCHARA, NORMAL_COLOR);
+		SetUI(CHARA1PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_1PCHARA, NORMAL_COLOR);
 		// テクスチャ設定
 		m_pScene2D[LOGOTYPE_1PCHARA]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[0]);
 		// 2PキャラクターUI
-		SetUI(D3DXVECTOR3(1080, 230, 0.0f), CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_2PCHARA, NORMAL_COLOR);
+		SetUI(CHARA2PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_2PCHARA, NORMAL_COLOR);
 		// テクスチャ設定
 		m_pScene2D[LOGOTYPE_2PCHARA]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1]);
 
@@ -697,28 +763,104 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 		if (m_bCharaDecide[0])
 		{
 			// 1Pキャラクター準備完了
-			SetUI(D3DXVECTOR3(200, 400, 0.0f), 200, 160, LOGOTYPE_1PREADY, NORMAL_COLOR);
+			SetUI(READY1PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, LOGOTYPE_1PREADY, NORMAL_COLOR);
 		}
 		else
 		{// 1Pキャラクター選択されていないとき
 			// 1Pキャラクター準備完了
-			SetUI(D3DXVECTOR3(200, 400, 0.0f), 200, 160, LOGOTYPE_1PREADY, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+			SetUI(READY1PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, LOGOTYPE_1PREADY, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 		}
 
 		// 2Pキャラクター選択されているとき
 		if (m_bCharaDecide[1])
 		{
-			// 1PキャラクターUI
-			SetUI(D3DXVECTOR3(1080, 400, 0.0f), 200, 160, LOGOTYPE_2PREADY, NORMAL_COLOR);
+			// 2PキャラクターUI
+			SetUI(READY2PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, LOGOTYPE_2PREADY, NORMAL_COLOR);
 		}
 		else
 		{// 2Pキャラクター選択されていないとき
 			// 2Pキャラクター準備完了
-			SetUI(D3DXVECTOR3(1080, 400, 0.0f), 200, 160, LOGOTYPE_2PREADY, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+			SetUI(READY2PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, LOGOTYPE_2PREADY, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 		}
 
 		// キャラクター選択アイコン
-		SetUI(D3DXVECTOR3(640, 60, 0.0f), 400, 120, LOGOTYPE_SELECTICON, NORMAL_COLOR);
+		SetUI(CHARA_SELECTUI_POS, CHARA_SELECTUI_SIZE_X, CHARA_SELECTUI_SIZE_Y, LOGOTYPE_SELECTICON, NORMAL_COLOR);
+	}
+}
+
+//==================================================================================================================
+// マップ選択画面の更新処理
+//==================================================================================================================
+void CUI::MapSelectUpdate(CInputKeyboard * pKeyboard, CInputGamepad * pGamepad0, CInputGamepad * pGamepad1)
+{
+	// マップ選択画面のとき
+	if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
+	{
+		// 世界地図
+		SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), SCREEN_WIDTH, SCREEN_HEIGHT, LOGOTYPE_WORLDMAP, NORMAL_COLOR);
+
+		// マップ1
+		SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y0, 0.0f), MAPUI_SIZE_X, MAPUI_SIZE_Y, LOGOTYPE_MAP1, NORMAL_COLOR);
+
+		// マップ2
+		SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y0, 0.0f), MAPUI_SIZE_X, MAPUI_SIZE_Y, LOGOTYPE_MAP2, NORMAL_COLOR);
+
+		// マップ3
+		SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y1, 0.0f), MAPUI_SIZE_X, MAPUI_SIZE_Y, LOGOTYPE_MAP3, NORMAL_COLOR);
+
+		// マップ4
+		SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y1, 0.0f), MAPUI_SIZE_X, MAPUI_SIZE_Y, LOGOTYPE_MAP4, NORMAL_COLOR);
+
+		// マップIDが0より小さい時
+		if (m_nMapID < 0)
+		{
+			// 0にする
+			m_nMapID = 0;
+		}
+
+		// まっぷIDが3より大きい時
+		if (m_nMapID > 3)
+		{
+			// 3にする
+			m_nMapID = 3;
+		}
+
+		switch (m_nMapID)
+		{
+		case 0:
+			// マップ枠線
+			SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y0, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, NORMAL_COLOR);
+			// マップ説明
+			SetUI(MAPEXPLANATION_POS, MAPEXPLANATION_SIZE_X, MAPEXPLANATION_SIZE_Y, LOGOTYPE_MAPEXPLANATION1, NORMAL_COLOR);
+			break;
+		case 1:
+			// マップ枠線
+			SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y0, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, NORMAL_COLOR);
+			// マップ説明
+			SetUI(MAPEXPLANATION_POS, MAPEXPLANATION_SIZE_X, MAPEXPLANATION_SIZE_Y, LOGOTYPE_MAPEXPLANATION2, NORMAL_COLOR);
+			break;
+		case 2:
+			// マップ枠線
+			SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y1, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, NORMAL_COLOR);
+			// マップ説明
+			SetUI(MAPEXPLANATION_POS, MAPEXPLANATION_SIZE_X, MAPEXPLANATION_SIZE_Y, LOGOTYPE_MAPEXPLANATION3, NORMAL_COLOR);
+			break;
+		case 3:
+			// マップ枠線
+			SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y1, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, NORMAL_COLOR);
+			// マップ説明
+			SetUI(MAPEXPLANATION_POS, MAPEXPLANATION_SIZE_X, MAPEXPLANATION_SIZE_Y, LOGOTYPE_MAPEXPLANATION4, NORMAL_COLOR);
+			break;
+		}
+
+		// ゲームパッド有効時
+		if (pGamepad0->GetbConnect() || pGamepad1->GetbConnect())
+			// ゲームパッド操作
+			ControlGamepad(pGamepad0, pGamepad1);
+		// ゲームパッド無効時
+		else
+			// キーボード操作
+			ControlKeyboard(pKeyboard);
 	}
 }
 
@@ -727,7 +869,7 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 //==================================================================================================================
 void CUI::GameUpdate(void)
 {
-	// チュートリアルのとき
+	// ゲームのとき
 	if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 	{
 
@@ -770,10 +912,8 @@ void CUI::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGamepad1)
 			m_nMode = 1;
 		}
 	}
-
-	// チュートリアルのとき
 	else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
-	{
+	{// チュートリアルのとき
 		// 自分のキャラクターを選択してないとき
 		if (!m_bCharaDecide[0])
 		{
@@ -810,8 +950,8 @@ void CUI::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGamepad1)
 					m_bStickReturn[0] = false;
 				}
 
-				// 四角ボタンを押したとき
-				if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_X))
+				// 決定ボタンを押したとき
+				if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_B))
 				{
 					// キャラクターを選択した状態にする
 					m_bCharaDecide[0] = true;
@@ -827,8 +967,8 @@ void CUI::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGamepad1)
 		}
 		else
 		{// 1Pが自分のキャラクターが選択されているとき
-			// 四角ボタンを押したとき
-			if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_X))
+			// 戻るボタンを押したとき
+			if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_A))
 			{
 				// キャラクターを選択していない状態にする
 				m_bCharaDecide[0] = false;
@@ -872,8 +1012,8 @@ void CUI::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGamepad1)
 					m_bStickReturn[1] = false;
 				}
 
-				// 四角ボタンを押したとき
-				if (pGamepad1->GetTrigger(CInputGamepad::JOYPADKEY_X))
+				// 決定ボタンを押したとき
+				if (pGamepad1->GetTrigger(CInputGamepad::JOYPADKEY_B))
 				{
 					// キャラクターを選択した状態にする
 					m_bCharaDecide[1] = true;
@@ -889,11 +1029,48 @@ void CUI::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGamepad1)
 		}
 		else
 		{// 2Pが自分のキャラクターを選択しているとき
-			// 四角ボタンを押したとき
-			if (pGamepad1->GetTrigger(CInputGamepad::JOYPADKEY_X))
+			// 戻るボタンを押したとき
+			if (pGamepad1->GetTrigger(CInputGamepad::JOYPADKEY_A))
 			{
 				// キャラクターを選択していない状態にする
 				m_bCharaDecide[1] = false;
+			}
+		}
+	}
+	else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
+	{// マップ選択画面のとき
+		// マップが選択されていないとき
+		if (!m_bMapSelect)
+		{
+			// 左に傾けたとき
+			if (fValueX0 < 0)
+			{
+				// マップ番号1減算
+				m_nMapID -= 1;
+			}
+			else if (fValueX0 > 0)
+			{// 右に傾けたとき
+				// マップ番号1加算
+				m_nMode += 1;
+			}
+
+			// 上に傾けたとき
+			if (fValueY0 < 0)
+			{
+				// マップ番号-2
+				m_nMapID -= 2;
+			}
+			else if (fValueY0 > 0)
+			{// 下に傾けたとき
+				// マップ番号+2
+				m_nMapID += 2;
+			}
+
+			// 決定ボタンを押したとき
+			if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_B))
+			{
+				// マップを選択した状態にする
+				m_bMapSelect = true;
 			}
 		}
 	}
@@ -926,7 +1103,6 @@ void CUI::ControlKeyboard(CInputKeyboard * pKeyboard)
 			m_nMode = 0;
 		}
 	}
-
 	else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 	{// チュートリアルのとき
 
@@ -958,7 +1134,7 @@ void CUI::ControlKeyboard(CInputKeyboard * pKeyboard)
 			}
 
 			// 1Pが決定ボタンをおしたとき
-			if (pKeyboard->GetKeyboardTrigger(ONE_JUMP))
+			if (pKeyboard->GetKeyboardTrigger(ONE_ATTACK))
 			{
 				// キャラクターを選択した状態にする
 				m_bCharaDecide[0] = true;
@@ -1002,7 +1178,7 @@ void CUI::ControlKeyboard(CInputKeyboard * pKeyboard)
 			}
 
 			// 2Pが決定ボタンをおしたとき
-			if (pKeyboard->GetKeyboardTrigger(TWO_JUMP))
+			if (pKeyboard->GetKeyboardTrigger(TWO_ATTACK))
 			{
 				// キャラクターを選んだ状態にする
 				m_bCharaDecide[1] = true;
@@ -1018,7 +1194,42 @@ void CUI::ControlKeyboard(CInputKeyboard * pKeyboard)
 			}
 		}
 	}
+	else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
+	{// マップ選択画面のとき
 
+		// マップが選択されていないとき
+		if (!m_bMapSelect)
+		{
+			// 1Pが左入力をしたとき
+			if (pKeyboard->GetKeyboardTrigger(ONE_LEFT))
+			{
+				// マップID小さくなる
+				m_nMapID -= 1;
+			}
+			else if (pKeyboard->GetKeyboardTrigger(ONE_RIGHT))
+			{// 1Pが右入力をしたとき
+				// マップID大きくなる
+				m_nMapID += 1;
+			}
+			else if (pKeyboard->GetKeyboardTrigger(ONE_UP))
+			{// 1Pが上入力をしたとき
+				// マップID-2する
+				m_nMapID -= 2;
+			}
+			else if (pKeyboard->GetKeyboardTrigger(ONE_DOWN))
+			{// 1Pがした入力をしたとき
+				// まっぷID+2する
+				m_nMapID += 2;
+			}
+
+			// 1Pが決定ボタンを押したとき
+			if (pKeyboard->GetKeyboardTrigger(ONE_ATTACK))
+			{
+				// マップを選んだ状態にする
+				m_bMapSelect = true;
+			}
+		}
+	}
 }
 
 //==================================================================================================================

@@ -56,6 +56,16 @@ public:
 		LOGOTYPE_1PREADY,			// 1Pキャラクター準備完了
 		LOGOTYPE_2PREADY,			// 2Pキャラクター準備完了
 		LOGOTYPE_SELECTICON,		// プレイヤーセレクトアイコン
+		LOGOTYPE_WORLDMAP,			// 世界地図
+		LOGOTYPE_MAPFRAME,			// マップ選択枠
+		LOGOTYPE_MAP1,				// マップ1
+		LOGOTYPE_MAP2,				// マップ2
+		LOGOTYPE_MAP3,				// マップ3
+		LOGOTYPE_MAP4,				// マップ4
+		LOGOTYPE_MAPEXPLANATION1,	// マップ説明
+		LOGOTYPE_MAPEXPLANATION2,	// マップ説明
+		LOGOTYPE_MAPEXPLANATION3,	// マップ説明
+		LOGOTYPE_MAPEXPLANATION4,	// マップ説明
 		LOGOTYPE_SCROLL,			// 巻物
 		LOGOTYPE_MAX				// 最大
 	} UITYPE;
@@ -76,12 +86,14 @@ public:
 	UITYPE GetType(void);			// ロゴタイプ取得処理
 	int GetCharaNum(int nPlayer) { return m_nCharaNum[nPlayer]; }	// プレイヤーのタイプを取得
 	bool GetCharaDecide(int nPlayer) { return m_bCharaDecide[nPlayer]; }
+	bool GetSelectMap(void) { return m_bMapSelect; }	// マップの選択状況を取得
 
 protected:
 
 private:
 	void TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *Gamepad0, CInputGamepad *pGamepad1);	// タイトルの更新処理
 	void TutorialUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInputGamepad *pGamepad1);// チュートリアルの更新処理
+	void MapSelectUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInputGamepad *pGamepad1);// マップ選択画面の更新処理
 	void GameUpdate(void);								// ゲームの更新処理
 	void ControlGamepad(CInputGamepad *pGamepad0, CInputGamepad *pGamepad1);// ゲームパッド操作
 	void ControlKeyboard(CInputKeyboard *pKeyboard);	// キーボード操作
@@ -101,6 +113,7 @@ private:
 	int m_nCntWait[MAX_PLAYER];							// 待機時間用カウンタ
 	int m_nCntMove[MAX_PLAYER];							// 枠線移動用カウンタ
 	int m_nPlayer;										// プレイヤー番号
+	int m_nMapID;										// マップ番号
 
 	float m_fCntUITitle0;								// タイトルUI用カウンタ0
 	float m_fCntUITitle1;								// タイトルUI用カウンタ1
@@ -122,5 +135,6 @@ private:
 	bool m_bUIClockHands[MAX_PLAYER];					// 時計の針が動いているかどうか
 	bool m_bCharaDecide[MAX_PLAYER];					// 自分のキャラクターを選択したかどうか
 	bool m_bStickReturn[MAX_PLAYER];					// パッドのスティックを戻したかどうか
+	bool m_bMapSelect;									// マップを選択したかどうか
 };
 #endif
