@@ -33,6 +33,7 @@ public:
 	{
 		KEY *pKey;					// キーのポインタ
 		int nFrame;					// フレーム数
+		bool bAttack;				// 攻撃するか
 	} KEY_INFO;
 
 	// モーションの情報
@@ -84,6 +85,8 @@ public:
 		{ return m_pMotionInfo[charaType][motiontype].nNumKey; }								// モーションの総キー数の取得
 	static bool GetLoop(PARAM_TYPE charaType, MOTION_TYPE motiontype)
 		{ return m_pMotionInfo[charaType][motiontype].bLoop; }									// モーションがループするかどうか取得
+	static bool GetbAttack(PARAM_TYPE charaType, MOTION_TYPE motiontype, int nKey)
+		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].bAttack; }					// モーションの攻撃判定の取得
 
 private:
 	static MOTION_INFO m_pMotionInfo[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX];		// モーション情報
