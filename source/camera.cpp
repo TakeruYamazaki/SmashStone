@@ -10,6 +10,7 @@
 #include "inputKeyboard.h"
 #include "debugProc.h"
 #include "player.h"
+#include "character.h"
 #include "game.h"
 #include "tutorial.h"
 #include "title.h"
@@ -224,12 +225,28 @@ void CCamera::ShowDebugInfo(void)
 //==================================================================================================================
 void CCamera::MoveCamera(void)
 {
+	CPlayer *pPlayer0, *pPlayer1;
+	D3DXVECTOR3 pos0, pos1;
 	D3DXVECTOR3 difposR, difposV;	// posとposDestの差分格納用
 
-	// 目的の注視点の計算
-	m_posRDest.x = sinf(m_rot.y);
-	m_posRDest.y = tanf(m_rot.x);
-	m_posRDest.z = cosf(m_rot.y);
+	// ゲームのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+	{
+		// プレイヤーの情報取得
+		pPlayer0 = CGame::GetPlayer(0);
+		pPlayer1 = CGame::GetPlayer(1);
+
+		// 1Pと2Pがいるとき
+		if (pPlayer0 != NULL && pPlayer1 != NULL)
+		{
+			// 各プレイヤーの位置取得
+			pos0 = pPlayer0->GetPos();
+			pos1 = pPlayer1->GetPos();
+
+			// 1Pと2Pの間の位置計算
+			m_posRDest = ((pos0 - pos1) * -1 / 2) + pos0;
+		}
+	}
 
 #ifdef _DEBUG
 	m_posRDest += m_posDebug;

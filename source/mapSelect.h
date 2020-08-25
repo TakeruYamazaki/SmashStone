@@ -48,5 +48,7 @@ private:
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVertexBuff;		// 頂点バッファ
 
+	bool m_bSelectMap;							// マップが選択されているか
+
 };
 #endif
