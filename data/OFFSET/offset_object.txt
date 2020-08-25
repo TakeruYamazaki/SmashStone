@@ -9,101 +9,148 @@ SCRIPT
 #============================================================
 # オブジェクトタイプ数
 #============================================================
-NUM_TYPE = 8
+NUM_TYPE = 14
 
 #============================================================
 # モデルファイル名
 #============================================================
-MODEL_FILENAME = data/OBJECT/flower.x
-MODEL_FILENAME = data/OBJECT/Roof.x
-MODEL_FILENAME = data/OBJECT/Stairs.x
-MODEL_FILENAME = data/OBJECT/WoodenBox.x
-MODEL_FILENAME = data/OBJECT/LooseStairs.x
+MODEL_FILENAME = data/OBJECT/floor_down.x
+MODEL_FILENAME = data/OBJECT/floor_up.x
+MODEL_FILENAME = data/OBJECT/stairs.x
+MODEL_FILENAME = data/OBJECT/stairs_slope.x
+MODEL_FILENAME = data/OBJECT/stairs_wide.x
+MODEL_FILENAME = data/OBJECT/building_left.x
+MODEL_FILENAME = data/OBJECT/building_right.x
+MODEL_FILENAME = data/OBJECT/roof.x
+MODEL_FILENAME = data/OBJECT/fence.x
+MODEL_FILENAME = data/OBJECT/rail_left.x
+MODEL_FILENAME = data/OBJECT/rail_right.x
+MODEL_FILENAME = data/OBJECT/railing.x
 MODEL_FILENAME = data/OBJECT/Fountain_Down.x
-MODEL_FILENAME = data/OBJECT/Fountain_w_Up.x
-MODEL_FILENAME = data/OBJECT/Iron.x
+MODEL_FILENAME = data/OBJECT/Fountain_Up.x
 
 #============================================================
 # オブジェクトテクスチャ数
 #============================================================
-NUM_TEXTURE = 0
+NUM_TEXTURE = 2
 
 #============================================================
 # テクスチャファイル名
 #============================================================
+TEXTURE_FILENAME = data/TEXTURE/ground000.jpg : MODEL = 0
+TEXTURE_FILENAME = data/TEXTURE/ground000.jpg : MODEL = 1
 
 #============================================================
 # オブジェクト総数
 #============================================================
-NUM_OBJECT = 11
+NUM_OBJECT = 15
 
 #============================================================
 # オブジェクト情報
 #============================================================
 OBJECTSET
-	TYPE = 0
-	POS = 138.000 0.000 179.500
-	ROT = 0.000 0.000 0.000
-END_OBJECTSET
-
-OBJECTSET
-	TYPE = 0
-	POS = 138.500 0.000 128.000
-	ROT = 0.000 0.000 0.000
-END_OBJECTSET
-
-OBJECTSET
 	TYPE = 4
-	POS = -0.500 -19.000 -206.000
+	POS = 0.679 0.759 -92.266
 	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
 END_OBJECTSET
 
 OBJECTSET
-	TYPE = 2
-	POS = 210.000 -2.500 -95.000
-	ROT = 0.000 1.570 0.000
+	TYPE = 0
+	POS = -1.821 0.759 -23.766
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 1
-	POS = 221.000 68.500 146.000
-	ROT = 0.000 1.570 0.000
-END_OBJECTSET
-
-OBJECTSET
-	TYPE = 0
-	POS = 60.000 -11.000 -277.500
+	POS = -113.821 12.259 -20.766
 	ROT = 0.000 0.000 0.000
-END_OBJECTSET
-
-OBJECTSET
-	TYPE = 0
-	POS = 60.000 0.000 -201.000
-	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 5
-	POS = -124.700 0.000 64.700
+	POS = -75.181 1.049 220.573
 	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 6
-	POS = -124.700 0.000 64.700
-	ROT = 0.000 2.450 0.000
+	POS = 156.819 1.049 41.073
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
 END_OBJECTSET
 
 OBJECTSET
 	TYPE = 7
-	POS = 201.479 0.000 -11.796
-	ROT = 0.000 1.570 0.000
+	POS = 30.819 1.049 74.573
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
 END_OBJECTSET
 
 OBJECTSET
-	TYPE = 7
-	POS = 201.479 0.000 -181.296
-	ROT = 0.000 1.570 0.000
+	TYPE = 8
+	POS = 73.819 16.549 -172.927
+	ROT = 0.000 3.142 0.000
+	SCALE = 1.000 1.000 1.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 9
+	POS = -200.677 14.072 -84.932
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 10
+	POS = -202.677 -0.428 -177.932
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 11
+	POS = 63.823 12.072 -10.932
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 2
+	POS = 65.823 11.572 -50.932
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 11
+	POS = 63.000 12.000 -85.932
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 12
+	POS = -128.677 11.072 38.068
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 13
+	POS = -129.177 0.572 39.068
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.000
+END_OBJECTSET
+
+OBJECTSET
+	TYPE = 3
+	POS = -201.191 29.702 -69.412
+	ROT = 0.000 0.000 0.000
+	SCALE = 1.000 1.000 1.200
 END_OBJECTSET
 
 

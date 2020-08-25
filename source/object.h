@@ -39,9 +39,9 @@ public:
 
 	void SetObjInfo(const D3DXVECTOR3 & pos,
 		const D3DXVECTOR3 & rot,
+		const D3DXVECTOR3 & scale,
 		MODELINFO *pModelInfo,
-		const int & type,
-		const bool & bCollision);					// オブジェクトの情報設定
+		const int & type);					// オブジェクトの情報設定
 
 	bool CollObject(D3DXVECTOR3 *pos,
 		const D3DXVECTOR3 & posOld,
@@ -55,6 +55,7 @@ public:
 	D3DXVECTOR3 *GetPosOld(void)	{ return &m_posOld; }		// 前回の入りの取得
 	D3DXVECTOR3 *GetRot(void)		{ return &m_rot; }			// 向きの取得
 	D3DXVECTOR3 *GetMove(void)		{ return &m_move; }			// 前回の向きの取得
+	D3DXVECTOR3 *GetScale(void)		{ return &m_scale; }		// 拡大率の取得
 	D3DXMATRIX	*GetMtx(void)		{ return &m_mtxWorld; }		// ワールドマトリックスの取得
 	bool GetbColl(void)				{ return m_bCollision; }	// 当たり判定を行うか
 	int	 GetType(void)				{ return m_nType; }			// タイプ取得
@@ -71,6 +72,7 @@ private:
 	D3DXVECTOR3 m_move;			// 移動量
 	D3DXVECTOR3 m_rot;			// 向き
 	D3DXVECTOR3 m_rotBegin;		// 開始向き
+	D3DXVECTOR3 m_scale;		// モデルの拡大率
 	D3DXMATRIX	m_mtxWorld;		// ワールドマトリックス
 	MODELINFO	m_pModelInfo;	// モデル情報
 	int			m_nType;		// オブジェクトタイプ

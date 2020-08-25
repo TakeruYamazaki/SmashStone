@@ -23,7 +23,7 @@
 #define MASS_DEPTH		(2)								// 縦のマス
 
 #define FIELD_ALPHA		1.0f							// メッシュフィールドアルファ
-#define FIELD_TEXTUE	"data/TEXTURE/ground000.jpg"	// 読み込むテクスチャのソース先
+#define FIELD_TEXTUE	"data/TEXTURE/water4.png"	// 読み込むテクスチャのソース先
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -105,7 +105,7 @@ void CMeshField::Init(void)
 
 			// 頂点座標の設定
 			m_pVtx[0].pos.x = (-m_size.x * m_nWidth) / 2 + m_size.x * nWide;
-			m_pVtx[0].pos.y = 0.0f;
+			m_pVtx[0].pos.y = m_pos.y;
 			m_pVtx[0].pos.z = (m_size.z / 2 * m_nDepth) - m_size.z * nDepth;
 
 			// 頂点カラー

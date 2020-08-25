@@ -19,6 +19,193 @@
 // [out]      出力の簡単な説明
 // [return]   返り値の簡単な説明
 */
+
+
+bool CMylibrary::IsSharpAngle(CONST FLOAT3 & Point1, CONST FLOAT3 & Point2, CONST FLOAT3 & Point3)
+{
+	return VEC3(Point1 - Point2).IsSharpAngle(Point3 - Point2);
+}
+
+//----------------------------------------------------------------------------------------------------
+// カプセル
+//----------------------------------------------------------------------------------------------------
+float CMylibrary::calcPointLineDist(const FLOAT3 & Point, const LINE & Line, FLOAT3 & Perp, float & fVecCoeffi)
+{
+	// 変数宣言
+	float fLenSqV = Line.Vec.LengthSq();		// べき乗の長さ
+												// ベクトル係数の初期化
+	fVecCoeffi = MYLIB_FLOAT_UNSET;
+
+	// べき乗の長さが0.0fより大きいとき
+	if (fLenSqV > MYLIB_FLOAT_UNSET)
+	{// ベクトル係数を計算する
+		fVecCoeffi = Line.Vec.Dot(Point - Line.Point) / fLenSqV;
+	}
+
+	Perp = Line.Point + fVecCoeffi * Line.Vec;
+	return (Perp - Point).Length();
+}
+
+float CMylibrary::calcPointSegmentDist(const FLOAT3 & Point, const SEGMENT & Seg, FLOAT3 & EndPtShortdist, float & EndPoint)
+{
+	// 線分の終点の取得
+	const FLOAT3 SegEndPoint = Seg.GetEndPoint();
+
+	// 垂線の長さ、垂線の足の座標及びtを算出
+	float fLength = calcPointLineDist(Point, LINE(Seg.Point, SegEndPoint - Seg.Point), EndPtShortdist, EndPoint);
+
+	// 鋭角じゃない時
+	if (IsSharpAngle(Point, Seg.Point, SegEndPoint) == false) {
+		// 始点側の外側
+		EndPtShortdist = Seg.Point;
+		return (Seg.Point - Point).Length();
+	}
+	// 鋭角じゃない時
+	else if (IsSharpAngle(Point, SegEndPoint, Seg.Point) == false) {
+		// 終点側の外側
+		EndPtShortdist = SegEndPoint;
+		return (SegEndPoint - Point).Length();
+	}
+
+	return fLength;
+}
+
+float CMylibrary::calcLineLineDist(const LINE & Line1, const LINE & Line2, FLOAT3 & PerpendFoot1, FLOAT3 & PerpendFoot2, float & fVecCoeffi1, float & fVecCoeffi2)
+{
+	// 2直線が平行？
+	if (Line1.Vec.IsParallel(Line2.Vec) == true)
+	{
+		// 点P11と直線L2の最短距離の問題に帰着
+		float fLength = calcPointLineDist(Line1.Point, Line2, PerpendFoot2, fVecCoeffi2);
+		PerpendFoot1 = Line1.Point;
+		fVecCoeffi1 = 0.0f;
+
+		return fLength;
+	}
+
+	// 2直線はねじれ関係
+	float fDistVec1Vec2 = Line1.Vec.Dot(Line2.Vec);	// ベクトル1と2のねじれ
+	float fDistVec1Vec1 = Line1.Vec.LengthSq();		// ベクトル1と1のねじれ
+	float fDistVec2Vec2 = Line2.Vec.LengthSq();		// ベクトル2と2のねじれ
+	VEC3 VecPt2Pt1 = Line1.Point - Line2.Point;		// 直線の位置同士のベクトル
+	fVecCoeffi1 = (fDistVec1Vec2 * Line2.Vec.Dot(VecPt2Pt1) - fDistVec2Vec2 * Line1.Vec.Dot(VecPt2Pt1)) / (fDistVec1Vec1 * fDistVec2Vec2 - fDistVec1Vec2 * fDistVec1Vec2);
+	PerpendFoot1 = Line1.GetPoint(fVecCoeffi1);
+	fVecCoeffi2 = Line2.Vec.Dot(PerpendFoot1 - Line2.Point) / fDistVec2Vec2;
+	PerpendFoot2 = Line2.GetPoint(fVecCoeffi2);
+
+	return (PerpendFoot2 - PerpendFoot1).Length();
+}
+
+void CMylibrary::Limit0to1(float & fValue)
+{
+	if (fValue < 0.0f)
+	{
+		fValue = 0.0f;
+	}
+	else if (fValue > 1.0f)
+	{
+		fValue = 1.0f;
+	}
+}
+
+float CMylibrary::calcSegmentSegmentDist(const SEGMENT & Seg1, const SEGMENT & Seg2, FLOAT3 & PerpendFoot1, FLOAT3 & PerpendFoot2, float & fVecCoeffi1, float & fVecCoeffi2)
+{
+	// S1が縮退している？
+	if (Seg1.Vec.LengthSq() < MYLIB_OX_EPSILON)
+	{// S2も縮退？
+		if (Seg2.Vec.LengthSq() < MYLIB_OX_EPSILON)
+		{// 点と点の距離の問題に帰着
+			float fLength = (Seg2.Point - Seg1.Point).Length();
+			PerpendFoot1 = Seg1.Point;
+			PerpendFoot2 = Seg2.Point;
+			fVecCoeffi1 = fVecCoeffi2 = 0.0f;
+			return fLength;
+		}
+		else
+		{// S1の始点とS2の最短問題に帰着
+			float fLength = calcPointSegmentDist(Seg1.Point, Seg2, PerpendFoot2, fVecCoeffi2);
+			PerpendFoot1 = Seg1.Point;
+			fVecCoeffi1 = 0.0f;
+			Limit0to1(fVecCoeffi2);
+			return fLength;
+		}
+	}
+
+	// S2が縮退している？
+	else if (Seg2.Vec.LengthSq() < MYLIB_OX_EPSILON)
+	{// S2の始点とS1の最短問題に帰着
+		float fLength = calcPointSegmentDist(Seg2.Point, Seg1, PerpendFoot1, fVecCoeffi1);
+		PerpendFoot2 = Seg2.Point;
+		Limit0to1(fVecCoeffi1);
+		fVecCoeffi2 = 0.0f;
+		return fLength;
+	}
+
+	// 2線分が平行だったら垂線の端点の一つをP1に仮決定
+	if (Seg1.Vec.IsParallel(Seg2.Vec) == true)
+	{
+		fVecCoeffi1 = 0.0f;
+		PerpendFoot1 = Seg1.Point;
+		float fLength = calcPointSegmentDist(Seg1.Point, Seg2, PerpendFoot2, fVecCoeffi2);
+		if (0.0f <= fVecCoeffi2 && fVecCoeffi2 <= 1.0f)
+		{
+			return fLength;
+		}
+	}
+	else
+	{// 線分はねじれの関係
+	 // 2直線間の最短距離を求めて仮のfVecCoeffi1,fVecCoeffi2を求める
+		float fLength = calcLineLineDist(Seg1, Seg2, PerpendFoot1, PerpendFoot2, fVecCoeffi1, fVecCoeffi2);
+		if (0.0f <= fVecCoeffi1 && fVecCoeffi1 <= 1.0f &&
+			0.0f <= fVecCoeffi2 && fVecCoeffi2 <= 1.0f)
+		{
+			return fLength;
+		}
+	}
+
+	// 垂線の足が外にある事が判明
+	// S1側のfVecCoeffi1を0～1の間にクランプして垂線を降ろす
+	Limit0to1(fVecCoeffi1);
+	PerpendFoot1 = Seg1.GetPoint(fVecCoeffi1);
+	float fLength = calcPointSegmentDist(PerpendFoot1, Seg2, PerpendFoot2, fVecCoeffi2);
+	if (0.0f <= fVecCoeffi2 && fVecCoeffi2 <= 1.0f)
+	{
+		return fLength;
+	}
+
+	// S2側が外だったのでS2側をクランプ、S1に垂線を降ろす
+	Limit0to1(fVecCoeffi2);
+	PerpendFoot2 = Seg2.GetPoint(fVecCoeffi2);
+	fLength = calcPointSegmentDist(PerpendFoot2, Seg1, PerpendFoot1, fVecCoeffi1);
+	if (0.0f <= fVecCoeffi1 && fVecCoeffi1 <= 1.0f)
+	{
+		return fLength;
+	}
+
+	// 双方の端点が最短と判明
+	Limit0to1(fVecCoeffi1);
+	PerpendFoot1 = Seg1.GetPoint(fVecCoeffi1);
+	return (PerpendFoot2 - PerpendFoot1).Length();
+}
+
+bool CMylibrary::colCapsuleCapsule(const CAPSULE & Cap1, const CAPSULE & Cap2)
+{
+	// 変数宣言
+	FLOAT3 PerpendFoot1;	// 線分1側の垂線の足
+	FLOAT3 PerpendFoot2;	// 線分2側の垂線の足
+	float fVecCoeffi1;		// 線分1側ベクトルの係数
+	float fVecCoeffi2;		// 線分2側ベクトルの係数
+	float fDist;			// 線分同士の距離
+
+	// 線分同士の距離の計算
+	fDist = calcSegmentSegmentDist(Cap1.Segment, Cap2.Segment, PerpendFoot1, PerpendFoot2, fVecCoeffi1, fVecCoeffi2);
+
+	// 線分同士の距離が半径以下の時衝突している
+	return (fDist <= Cap1.fRadius + Cap2.fRadius);
+}
+
+
+
 //----------------------------------------------------------------------------------------------------
 // 2D
 //----------------------------------------------------------------------------------------------------
