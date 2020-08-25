@@ -16,6 +16,7 @@
 #include "mouse.h"
 #include "camera.h"
 #include "game.h"
+#include <iostream>
 #include "ImGui/imgui.h"				// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
@@ -23,22 +24,34 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
+#define MODEL_PASS_CUT	(25)	// モデルのパスを切り取る数
 
 //=============================================================================
 // 静的メンバ変数の初期化
 //=============================================================================
-char					CObjectManager::m_aFileName[MAX_TEXT] = "data/OFFSET/offset_object.txt";
-std::vector<CObject*>	CObjectManager::m_pObject = {};
-std::vector<OBJINFO>	CObjectManager::m_objInfo = {};
-int						CObjectManager::m_nNumTexture = 0;
-int						*CObjectManager::m_pModelIndex = {};
+char						CObjectManager::m_cModelFile[MAX_TEXT] =
+{
+	"data/OBJECT/object_model.txt",
+};
+
+char						CObjectManager::m_aFileName[STAGE_MAX][MAX_TEXT] = 
+{ 
+	"data/OBJECT/offset_stage1.txt",
+	"data/OBJECT/offset_stage2.txt",
+};
+
+CObjectManager::STAGETYPE	CObjectManager::m_stageType				= STAGE_1;
+CObjectManager::STAGEINFO	CObjectManager::m_stageInfo[STAGE_MAX]	= {};
+std::vector<OBJINFO>		CObjectManager::m_objInfo				= {};
+int							CObjectManager::m_nNumTexture			= 0;
+int							*CObjectManager::m_pModelIndex			= {};
 
 #ifdef _DEBUG
-int						CObjectManager::m_nFakeType = 0;
-int						CObjectManager::m_stateMode = CObjectManager::MODE_GAME;
-bool					CObjectManager::m_bObjUse = false;
-bool					CObjectManager::m_bShowAnother = false;
-std::string				*CObjectManager::m_pObjName = {};
+int							CObjectManager::m_nFakeType = 0;
+int							CObjectManager::m_stateMode = CObjectManager::MODE_GAME;
+bool						CObjectManager::m_bObjUse = false;
+bool						CObjectManager::m_bShowAnother = false;
+std::string					*CObjectManager::m_pObjName = {};
 #endif
 
 //=============================================================================
@@ -62,8 +75,7 @@ CObjectManager::~CObjectManager()
 //=============================================================================
 void CObjectManager::Init()
 {
-	// パーツのオフセット取得
-	LoadOffset();
+
 }
 
 //=============================================================================
@@ -79,19 +91,16 @@ void CObjectManager::Uninit()
 		m_pFakeObject = nullptr;
 	}
 
-	// 破棄
-	delete[] m_pObjName;
-	m_pObjName = nullptr;
 #endif
 
 	// サイズ分繰り返す (size_t = unsigned, vector.size()でメモリ数を返す)
-	for (size_t nCnt = 0; nCnt < m_pObject.size(); nCnt++)
+	for (size_t nCnt = 0; nCnt < m_stageInfo[m_stageType].pObject.size(); nCnt++)
 	{
 		// メモリ削除
-		delete m_pObject[nCnt];
+		delete m_stageInfo[m_stageType].pObject[nCnt];
 	}
 	// 中身をなくす
-	m_pObject.clear();
+	m_stageInfo[m_stageType].pObject.clear();
 }
 
 //=============================================================================
@@ -100,11 +109,11 @@ void CObjectManager::Uninit()
 void CObjectManager::Update()
 {
 	// モデル数分繰り返す
-	for (size_t nCnt = 0; nCnt < m_pObject.size(); nCnt++)
+	for (size_t nCnt = 0; nCnt < m_stageInfo[m_stageType].pObject.size(); nCnt++)
 	{
 		// nullcheck
-		if (m_pObject[nCnt])
-			m_pObject[nCnt]->Update();
+		if (m_stageInfo[m_stageType].pObject[nCnt])
+			m_stageInfo[m_stageType].pObject[nCnt]->Update();
 	}
 
 #ifdef _DEBUG
@@ -123,11 +132,11 @@ void CObjectManager::Update()
 void CObjectManager::Draw()
 {
 	// モデル数分繰り返す
-	for (size_t nCnt = 0; nCnt < m_pObject.size(); nCnt++)
+	for (size_t nCnt = 0; nCnt < m_stageInfo[m_stageType].pObject.size(); nCnt++)
 	{
 		// nullcheck
-		if (m_pObject[nCnt])
-			m_pObject[nCnt]->Draw();
+		if (m_stageInfo[m_stageType].pObject[nCnt])
+			m_stageInfo[m_stageType].pObject[nCnt]->Draw();
 	}
 
 #ifdef _DEBUG
@@ -139,7 +148,7 @@ void CObjectManager::Draw()
 //=============================================================================
 // 生成
 //=============================================================================
-CObjectManager *CObjectManager::Create(void)
+CObjectManager *CObjectManager::Create(STAGETYPE type)
 {
 	// メモリ確保
 	CObjectManager *pMana = new CObjectManager();
@@ -154,6 +163,10 @@ CObjectManager *CObjectManager::Create(void)
 
 	// 初期化
 	pMana->Init();
+	// タイプを保存
+	pMana->m_stageType = type;
+	// ステージ配置
+	pMana->SetOffset();
 
 	// 成功
 	return pMana;
@@ -168,46 +181,17 @@ HRESULT CObjectManager::Load()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// モデル名取得
-	LoadFileName();
+	LoadModel();
 
-	// テクスチャ数分回す
-	for (int nCnt = 0; nCnt < m_nNumTexture; nCnt++)
-	{
-		// テクスチャ生成
-		if (FAILED(D3DXCreateTextureFromFile(pDevice,
-			m_objInfo[m_pModelIndex[nCnt]].modelInfo.cTextureName,
-			&m_objInfo[m_pModelIndex[nCnt]].modelInfo.pTexture)))
-		{
-			// できなければ失敗
-			char cText[MAX_TEXT];
-			sprintf(cText, "オブジェクトテクスチャ生成失敗 (%s)", &m_objInfo[m_pModelIndex[nCnt]].modelInfo.cTextureName[0]);
-			printf("%s\n", &cText[0]);
-			return E_FAIL;
-		}
-	}
+	// オフセット読み込み
+	LoadOffset();
 
-#ifdef _DEBUG
-	// オブジェクト名のメモリ確保
-	m_pObjName = new std::string[(int)m_objInfo.size()];
-#endif
+	// テクスチャ生成
+	CreateTexture();
 
-	// 種類数分回す
-	for (size_t nCnt = 0; nCnt < m_objInfo.size(); nCnt++)
-	{
-		// モデル情報の生成
-		CKananLibrary::CreateModelInfo(&m_objInfo[nCnt].modelInfo);
+	// オブジェクト情報生成
+	CreateObjInfo();
 
-		// モデルの頂点座標の最大・最小を求める
-		/*m_objInfo[nCnt].modelVtx =
-			CKananLibrary::OutputModelVtxColl(m_objInfo[nCnt].modelInfo.mesh);*/
-
-#ifdef _DEBUG
-		// モデルのパスを取得
-		std::string modelName = m_objInfo[nCnt].modelInfo.cModelName;
-		// モデル名のみ保存
-		m_pObjName[nCnt] = modelName.substr(12);
-#endif
-	}
 	// 成功
 	return S_OK;
 }
@@ -224,110 +208,58 @@ void CObjectManager::Unload(void)
 		delete m_pModelIndex;
 		m_pModelIndex = nullptr;
 	}
+
+	for (int nCnt = 0; nCnt < (int)m_objInfo.size(); nCnt++)
+	{
+		m_pObjName[nCnt].erase(m_pObjName[nCnt].begin(), m_pObjName[nCnt].end());
+		m_pObjName[nCnt].clear();
+	}
+
+	if (m_pObjName)
+	{
+		delete[] m_pObjName;
+		m_pObjName = nullptr;
+	}
+
+	for (int nCnt = 0; nCnt < STAGE_MAX; nCnt++)
+	{
+		// nullcheck
+		if (m_stageInfo[nCnt].objOffset)
+		{
+			// 破棄
+			delete[] m_stageInfo[nCnt].objOffset;
+			m_stageInfo[nCnt].objOffset = nullptr;
+		}
+	}
 }
 
 //=============================================================================
-// オフセット読み込み
+// モデル配置
 //=============================================================================
-HRESULT CObjectManager::LoadOffset(void)
+HRESULT CObjectManager::SetOffset(void)
 {
-	// 変数宣言
-	FILE *pFile = nullptr;
-	char cReadText[MAX_TEXT] = "";
-	char cHeadText[MAX_TEXT] = "";
-	char cDieText[MAX_TEXT] = "";
-
-	D3DXVECTOR3 pos = ZeroVector3;
-	D3DXVECTOR3 rot = ZeroVector3;
-	D3DXVECTOR3 scale = OneVector3;
-	bool		bCollision = false;
-	int			nUseTex = 99;
-	int			nType = 0;
-	int			nModel = 0;
-
-	// ファイルを開く
-	pFile = fopen(&m_aFileName[0], "r");
-
-	CKananLibrary::StartBlockComment("オブジェクトファイルの読み込み開始。");
-
-	// nullcheck
-	if (!pFile)
+	for (int nCnt = 0; nCnt < m_stageInfo[m_stageType].nNumObject; nCnt++)
 	{
-		// ブロックコメント
-		CKananLibrary::EndBlockComment("オブジェクトファイルを開けませんでした。");
-		// 失敗
-		return E_FAIL;
+		m_stageInfo[m_stageType].pObject.push_back(CObject::Create());
 	}
 
-	// スクリプトがくるまで繰り返す
-	while (strcmp(cHeadText, "SCRIPT") != 0)
+	for (int nCnt = 0; nCnt < (int)m_stageInfo[m_stageType].pObject.size(); nCnt++)
 	{
-		fgets(cReadText, sizeof(cReadText), pFile);
-		sscanf(cReadText, "%s", &cHeadText);
-	}
-	// スクリプトが来たら
-	if (strcmp(cHeadText, "SCRIPT") == 0)
-	{
-		// エンドスクリプトがくるまで繰り返す
-		while (strcmp(cHeadText, "END_SCRIPT") != 0)
-		{
-			fgets(cReadText, sizeof(cReadText), pFile);
-			sscanf(cReadText, "%s", &cHeadText);
-			// 改行
-			if (strcmp(cHeadText, "\n") == 0)
-			{
-			}
-			// オブジェクトセットが来たら
-			if (strcmp(cHeadText, "OBJECTSET") == 0)
-			{
-				// エンドオブジェクトセットがくるまで繰り返す
-				while (strcmp(cHeadText, "END_OBJECTSET") != 0)
-				{
-					bCollision = false;
-					fgets(cReadText, sizeof(cReadText), pFile);
-					sscanf(cReadText, "%s", &cHeadText);
-					// 種類
-					if (strcmp(cHeadText, "TYPE") == 0)
-						sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &nType);
-					// 位置
-					if (strcmp(cHeadText, "POS") == 0)
-						sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &pos.x, &pos.y, &pos.z);
-					// 回転
-					if (strcmp(cHeadText, "ROT") == 0)
-						sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &rot.x, &rot.y, &rot.z);
-					// 拡大率
-					if (strcmp(cHeadText, "SCALE") == 0)
-						sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, &scale.x, &scale.y, &scale.z);
-					// 当たり判定
-					if (strcmp(cHeadText, "COLLISION_ON") == 0)
-						bCollision = true;
-				}
-
-				// モデル情報格納
-				m_pObject[nModel]->SetObjInfo(pos, rot, scale, &m_objInfo[nType].modelInfo, nType);
-
-
-
-				// モデル数を加算
-				nModel++;
-			}
-		}
+		// オブジェクト情報の設定
+		m_stageInfo[m_stageType].pObject[nCnt]->SetObjInfo(m_stageInfo[m_stageType].objOffset[nCnt].pos,
+			m_stageInfo[m_stageType].objOffset[nCnt].rot,
+			m_stageInfo[m_stageType].objOffset[nCnt].scale,
+			&m_objInfo[m_stageInfo[m_stageType].objOffset[nCnt].nType].modelInfo,
+			m_stageInfo[m_stageType].objOffset[nCnt].nType);
 	}
 
-	// ファイルを閉じる
-	fclose(pFile);
-
-	// ブロックコメント
-	CKananLibrary::EndBlockComment("オブジェクトファイルの読み込み成功。");
-
-	// 成功
 	return S_OK;
 }
 
 //=============================================================================
-// オブジェクトファイル読み込み
+// モデル読み込み
 //=============================================================================
-HRESULT CObjectManager::LoadFileName(void)
+HRESULT CObjectManager::LoadModel(void)
 {
 	// 変数宣言
 	FILE *pFile = nullptr;
@@ -335,10 +267,9 @@ HRESULT CObjectManager::LoadFileName(void)
 	char cHeadText[MAX_TEXT] = "";
 	char cDieText[MAX_TEXT] = "";
 	int nNumType = 0;
-	int nNumObj = 0;
 
 	// ファイルを開く
-	pFile = fopen(&m_aFileName[0], "r");
+	pFile = fopen(&m_cModelFile[0], "r");
 
 	CKananLibrary::StartBlockComment("オブジェクトファイルの読み込み開始。");
 
@@ -346,7 +277,7 @@ HRESULT CObjectManager::LoadFileName(void)
 	if (!pFile)
 	{
 		// ブロックコメント
-		CKananLibrary::EndBlockComment("オブジェクトファイルを開けませんでした。");
+		CKananLibrary::EndBlockComment("ファイルを開けませんでした。");
 		// 失敗
 		return E_FAIL;
 	}
@@ -449,25 +380,121 @@ HRESULT CObjectManager::LoadFileName(void)
 					}
 				}
 			}
-			// キャラクターセットが来たら
-			else if (strcmp(cHeadText, "NUM_OBJECT") == 0)
-				// モデルタイプ数の取得
-				sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &nNumObj);
 		}
 	}
 
 	// ファイルを閉じる
 	fclose(pFile);
 
-	// オブジェクト総数を表示
-	printf("読み込んだオブジェクト総数 %d\n", nNumObj);
-	// モデル数分繰り返す
-	for (int nCntModel = 0; nCntModel < nNumObj; nCntModel++)
-		// 総数分のメモリ確保
-		m_pObject.push_back(CObject::Create());
+	CKananLibrary::EndBlockComment("ファイルの読み込み終了成功");
 
-	CKananLibrary::EndBlockComment("オブジェクトファイルの読み込み終了成功");
+	// 成功
+	return S_OK;
+}
 
+//=============================================================================
+// オブジェクトファイル読み込み
+//=============================================================================
+HRESULT CObjectManager::LoadOffset(void)
+{
+	// 変数宣言
+	FILE *pFile = nullptr;
+	char cReadText[MAX_TEXT] = "";
+	char cHeadText[MAX_TEXT] = "";
+	char cDieText[MAX_TEXT] = "";
+	int nNumType = 0;
+
+	for (int nCnt = 0; nCnt < STAGE_MAX; nCnt++)
+	{
+		// 読み込んだモデル数格納用
+		int nModel = 0;
+
+		// ファイルを開く
+		pFile = fopen(&m_aFileName[nCnt][0], "r");
+
+		CKananLibrary::StartBlockComment("ステージファイルの読み込み開始。");
+
+		// nullcheck
+		if (!pFile)
+		{
+			// ブロックコメント
+			CKananLibrary::EndBlockComment("ファイルを開けませんでした。");
+			// 失敗
+			return E_FAIL;
+		}
+
+		// スクリプトがくるまで繰り返す
+		while (strcmp(cHeadText, "SCRIPT") != 0)
+		{
+			fgets(cReadText, sizeof(cReadText), pFile);
+			sscanf(cReadText, "%s", &cHeadText);
+		}
+		// スクリプトが来たら
+		if (strcmp(cHeadText, "SCRIPT") == 0)
+		{
+			// エンドスクリプトが来るまで繰り返す
+			while (strcmp(cHeadText, "END_SCRIPT") != 0)
+			{
+				fgets(cReadText, sizeof(cReadText), pFile);
+				sscanf(cReadText, "%s", &cHeadText);
+				// 改行
+				if (strcmp(cHeadText, "\n") == 0)
+					continue;
+				// オブジェクト数
+				if (strcmp(cHeadText, "NUM_OBJECT") == 0)
+				{
+					// モデル数の取得
+					sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_stageInfo[nCnt].nNumObject);
+					// オフセットのメモリ確保
+					if (!m_stageInfo[nCnt].objOffset)
+						m_stageInfo[nCnt].objOffset = new OBJECT_OFFSET[m_stageInfo[nCnt].nNumObject];
+				}
+				// セットが来たら
+				else if (strcmp(cHeadText, "OBJECTSET") == 0)
+				{
+					// エンドセットがくるまで繰り返す
+					while (strcmp(cHeadText, "END_OBJECTSET") != 0)
+					{
+						fgets(cReadText, sizeof(cReadText), pFile);
+						sscanf(cReadText, "%s", &cHeadText);
+						// 種類
+						if (strcmp(cHeadText, "TYPE") == 0)
+							sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_stageInfo[nCnt].objOffset[nModel].nType);
+						// 位置
+						if (strcmp(cHeadText, "POS") == 0)
+							sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, 
+								&m_stageInfo[nCnt].objOffset[nModel].pos.x, 
+								&m_stageInfo[nCnt].objOffset[nModel].pos.y,
+								&m_stageInfo[nCnt].objOffset[nModel].pos.z);
+						// 回転
+						if (strcmp(cHeadText, "ROT") == 0)
+							sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, 
+								&m_stageInfo[nCnt].objOffset[nModel].rot.x,
+								&m_stageInfo[nCnt].objOffset[nModel].rot.y,
+								&m_stageInfo[nCnt].objOffset[nModel].rot.z);
+						// 拡大率
+						if (strcmp(cHeadText, "SCALE") == 0)
+							sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText,
+								&m_stageInfo[nCnt].objOffset[nModel].scale.x,
+								&m_stageInfo[nCnt].objOffset[nModel].scale.y,
+								&m_stageInfo[nCnt].objOffset[nModel].scale.z);
+					}
+
+					// モデル数を加算
+					nModel++;
+				}
+			}
+		}
+
+		// ファイルを閉じる
+		fclose(pFile);
+
+		// オブジェクト総数を表示
+		printf("読み込んだオブジェクト総数 %d\n", m_stageInfo[nCnt].nNumObject);
+
+		CKananLibrary::EndBlockComment("ファイルの読み込み終了成功");
+
+	}
 	// 成功
 	return S_OK;
 }
@@ -490,6 +517,8 @@ void CObjectManager::ShowObjectManagerInfo(void)
 	// ImGuiの更新開始
 	ImGui::Begin("object window", &m_bShowAnother);
 
+	ImGui::Text("stage %d", m_stageType);
+
 	// カメラの取得
 	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();
 
@@ -497,7 +526,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 	if (ImGui::Button("save object offset"))
 	{
 		// セーブしたら
-		if (SaveObject() == S_OK)
+		if (SaveOffset() == S_OK)
 		{
 			// マウスの取得
 			CMouse *pMouse = CManager::GetMouse();
@@ -538,7 +567,11 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			m_pFakeObject->Init();
 
 			// 初期モデルを設定
-			m_pFakeObject->SetObjInfo(*pCamera->GetPosR(), ZeroVector3, OneVector3, &m_objInfo[0].modelInfo, 0);
+			m_pFakeObject->SetObjInfo(*pCamera->GetPosR(), 
+				ZeroVector3, 
+				OneVector3, 
+				&m_objInfo[0].modelInfo, 
+				0);
 		}
 	}
 
@@ -565,47 +598,55 @@ void CObjectManager::ShowObjectManagerInfo(void)
 				m_nFakeType = (int)m_objInfo.size() - 1;
 
 			// モデル情報格納
-			m_pFakeObject->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), *m_pFakeObject->GetScale(), &m_objInfo[m_nFakeType].modelInfo, m_nFakeType);
+			m_pFakeObject->SetObjInfo(*m_pFakeObject->GetPos(), 
+				*m_pFakeObject->GetRot(), 
+				*m_pFakeObject->GetScale(), 
+				&m_objInfo[m_nFakeType].modelInfo,
+				m_nFakeType);
 		}
 
 		// オブジェクトの生成
 		if (ImGui::Button("Create"))
 		{
 			// メモリ確保
-			m_pObject.push_back(CObject::Create());
+			m_stageInfo[m_stageType].pObject.push_back(CObject::Create());
 			// 初期化・情報設定
-			m_pObject[(int)m_pObject.size() - 1]->Init();
+			m_stageInfo[m_stageType].pObject[(int)m_stageInfo[m_stageType].pObject.size() - 1]->Init();
 			// モデル情報格納
-			m_pObject[(int)(m_pObject.size() - 1)]->SetObjInfo(*m_pFakeObject->GetPos(), *m_pFakeObject->GetRot(), *m_pFakeObject->GetScale(), &m_objInfo[m_nFakeType].modelInfo, m_nFakeType);
+			m_stageInfo[m_stageType].pObject[(int)(m_stageInfo[m_stageType].pObject.size() - 1)]->SetObjInfo(*m_pFakeObject->GetPos(),
+				*m_pFakeObject->GetRot(), 
+				*m_pFakeObject->GetScale(), 
+				&m_objInfo[m_nFakeType].modelInfo,
+				m_nFakeType);
 		}
 	}
 
 	// モデル数分繰り返す
-	for (int nCnt = (int)m_pObject.size() - 1; nCnt > -1; nCnt--)
+	for (int nCnt = (int)m_stageInfo[m_stageType].pObject.size() - 1; nCnt > -1; nCnt--)
 	{
 		// nullcheck
-		if (m_pObject[nCnt])
+		if (m_stageInfo[m_stageType].pObject[nCnt])
 		{
 			// パスをcharにキャスト
-			char *cObjName = new char[m_pObjName[m_pObject[nCnt]->GetType()].size() + 1];
+			char *cObjName = new char[m_pObjName[m_stageInfo[m_stageType].pObject[nCnt]->GetType()].size() + 1];
 			// 文字列を複製
-			strcpy(cObjName, m_pObjName[m_pObject[nCnt]->GetType()].c_str());
+			strcpy(cObjName, m_pObjName[m_stageInfo[m_stageType].pObject[nCnt]->GetType()].c_str());
 			// ツリー名の設定
 			char cText[32] = {};
 			sprintf(cText, "Object : %d (%s)", nCnt, cObjName);
 			// ImGuiの更新
-			m_pObject[nCnt]->ShowObjectInfo(cText);
+			m_stageInfo[m_stageType].pObject[nCnt]->ShowObjectInfo(cText);
 			// メモリを破棄
 			delete cObjName;
 		}
 
 		// リリースが有効
-		if (m_pObject[nCnt]->GetRelease())
+		if (m_stageInfo[m_stageType].pObject[nCnt]->GetRelease())
 		{
-			m_pObject[nCnt]->Uninit();
-			delete m_pObject[nCnt];
+			m_stageInfo[m_stageType].pObject[nCnt]->Uninit();
+			delete m_stageInfo[m_stageType].pObject[nCnt];
 			// 指定した番号のオブジェクトを削除 : vector.erase( vectorの始まり + 指定した番号 )
-			m_pObject.erase(m_pObject.begin() + nCnt);
+			m_stageInfo[m_stageType].pObject.erase(m_stageInfo[m_stageType].pObject.begin() + nCnt);
 		}
 	}
 
@@ -618,9 +659,52 @@ void CObjectManager::ShowObjectManagerInfo(void)
 }
 
 //=============================================================================
+// テクスチャ生成
+//=============================================================================
+void CObjectManager::CreateTexture()
+{
+	// テクスチャ数分回す
+	for (int nCnt = 0; nCnt < m_nNumTexture; nCnt++)
+	{
+		// テクスチャを生成
+		CKananLibrary::CreateTexture(&m_objInfo[m_pModelIndex[nCnt]].modelInfo.pTexture,
+										m_objInfo[m_pModelIndex[nCnt]].modelInfo.cTextureName);
+	}
+}
+
+//=============================================================================
+// オブジェクト情報生成
+//=============================================================================
+void CObjectManager::CreateObjInfo()
+{
+#ifdef _DEBUG
+	// オブジェクト名のメモリ確保
+	m_pObjName = new std::string[(int)m_objInfo.size()];
+#endif
+
+	// 種類数分回す
+	for (size_t nCnt = 0; nCnt < m_objInfo.size(); nCnt++)
+	{
+		// モデル情報の生成
+		CKananLibrary::CreateModelInfo(&m_objInfo[nCnt].modelInfo);
+
+		// モデルの頂点座標の最大・最小を求める
+		m_objInfo[nCnt].modelVtx =
+		CKananLibrary::OutputModelVtxColl(m_objInfo[nCnt].modelInfo.mesh);
+
+#ifdef _DEBUG
+		// モデルのパスを取得
+		std::string modelName = m_objInfo[nCnt].modelInfo.cModelName;
+		// モデル名のみ保存
+		m_pObjName[nCnt] = modelName.substr(MODEL_PASS_CUT);
+#endif
+	}
+}
+
+//=============================================================================
 // オブジェクト情報のセーブ
 //=============================================================================
-HRESULT CObjectManager::SaveObject(void)
+HRESULT CObjectManager::SaveOffset(void)
 {
 	// 変数宣言
 	FILE *pFile;
@@ -637,116 +721,48 @@ HRESULT CObjectManager::SaveObject(void)
 	D3DXVECTOR3 rot;
 
 	// ファイルを開く
-	pFile = fopen(&m_aFileName[0], "w");
+	pFile = fopen(&m_aFileName[m_stageType][0], "w");
 
 	// nullcheck
 	if (pFile)
 	{
-		fputs(COMMENT_BLOCK, pFile);													// #=====================================================
+		fputs(COMMENT_BLOCK, pFile);														// #=====================================================
 		fputs(COMMENT_BLOCK_LINE, pFile);													// #
 
 		strcpy(cWriteText, "# オブジェクトのオフセット\n");
-		fputs(cWriteText, pFile);													// # オブジェクトのオフセット
+		fputs(cWriteText, pFile);															// # オブジェクトのオフセット
 
 		strcpy(cWriteText, COMMENT_AUTHOR);
-		fputs(cWriteText, pFile);													// # Author : KANAN NAGANAWA
+		fputs(cWriteText, pFile);															// # Author : KANAN NAGANAWA
 		fputs(COMMENT_BLOCK_LINE, pFile);													// #
-		fputs(COMMENT_BLOCK, pFile);													// #=====================================================
+		fputs(COMMENT_BLOCK, pFile);														// #=====================================================
 
 		strcpy(cHeadText, "SCRIPT");
-		fputs(cHeadText, pFile);													// SCRIPT
-		fputs(COMMENT_NEW_LINE, pFile);													// \n
-		fputs(COMMENT_NEW_LINE, pFile);													// \n
+		fputs(cHeadText, pFile);															// SCRIPT
+		fputs(COMMENT_NEW_LINE, pFile);														// \n
+		fputs(COMMENT_NEW_LINE, pFile);														// \n
 
-																						// スクリプトが来たら続ける
+		// スクリプトが来たら続ける
 		if (strcmp(cHeadText, "SCRIPT") == 0)
 		{
-			fputs(COMMENT_BLOCK, pFile);													// #=====================================================
-
-			strcpy(cWriteText, "# オブジェクトタイプ数\n");
-			fputs(cWriteText, pFile);													// #オブジェクトタイプ数
-			fputs(COMMENT_BLOCK, pFile);													// #=====================================================
-
-			strcpy(cHeadText, "NUM_TYPE");
-			sprintf(cWriteText, "%s %s %d\n",
-				&cHeadText,
-				&cEqual,
-				(int)m_objInfo.size());
-
-			fputs(cWriteText, pFile);												// NUM_TYPE = m_nNumType
-			fputs(COMMENT_NEW_LINE, pFile);												// \n
-			fputs(COMMENT_BLOCK, pFile);												// #=====================================================
-
-			strcpy(cWriteText, "# モデルファイル名\n");
-			fputs(cWriteText, pFile);													// # モデルファイル名
-			fputs(COMMENT_BLOCK, pFile);													// #=====================================================
-
-																							// タイプ数分繰り返す
-			for (size_t nCnt = 0; nCnt < m_objInfo.size(); nCnt++)
-			{
-				strcpy(cHeadText, "MODEL_FILENAME");
-				sprintf(cWriteText, "%s %s %s\n",
-					&cHeadText,
-					&cEqual,
-					&m_objInfo[nCnt].modelInfo.cModelName[0]);
-				fputs(cWriteText, pFile);												// MODEL_FILENAME = cModelName
-			}
-			fputs(COMMENT_NEW_LINE, pFile);												// \n
-			fputs(COMMENT_BLOCK, pFile);												// #=====================================================
-
-			strcpy(cWriteText, "# オブジェクトテクスチャ数\n");
-			fputs(cWriteText, pFile);													// # オブジェクトテクスチャ数
-			fputs(COMMENT_BLOCK, pFile);													// #=====================================================
-
-																							// コメント設定
-			strcpy(cHeadText, "NUM_TEXTURE");
-			sprintf(cWriteText, "%s %s %d\n",
-				&cHeadText,
-				&cEqual,
-				m_nNumTexture);
-
-			fputs(cWriteText, pFile);												// NUM_TEXTURE = m_nNumTexture
-			fputs(COMMENT_NEW_LINE, pFile);												// \n
-
-			fputs(COMMENT_BLOCK, pFile);												// #=====================================================
-
-			strcpy(cWriteText, "# テクスチャファイル名\n");
-			fputs(cWriteText, pFile);													// # テクスチャファイル名
-			fputs(COMMENT_BLOCK, pFile);													// #=====================================================
-
-			for (int nCntTex = 0; nCntTex < m_nNumTexture; nCntTex++)
-			{
-				strcpy(cHeadText, "TEXTURE_FILENAME");
-				sprintf(cWriteText, "%s %s %s : %s %s %d\n",
-					&cHeadText,
-					&cEqual,
-					&m_objInfo[m_pModelIndex[nCntTex]].modelInfo.cTextureName[0],
-					"MODEL",
-					&cEqual,
-					m_pModelIndex[nCntTex]);
-				fputs(cWriteText, pFile);													// TEXTURE_FILENAME = m_pNameTexture
-			}
-			fputs(COMMENT_NEW_LINE, pFile);												// \n
-			fputs(COMMENT_BLOCK, pFile);												// #=====================================================
-
 			strcpy(cWriteText, "# オブジェクト総数\n");
-			fputs(cWriteText, pFile);													// # オブジェクト総数
+			fputs(cWriteText, pFile);														// # オブジェクト総数
 			fputs(COMMENT_BLOCK, pFile);													// #=====================================================
 
 			strcpy(cHeadText, "NUM_OBJECT");
 			sprintf(cWriteText, "%s %s %d\n",
 				&cHeadText,
 				&cEqual,
-				(int)m_pObject.size());
+				(int)m_stageInfo[m_stageType].pObject.size());
 			fputs(cWriteText, pFile);														// NUM_OBJECT = m_nNumObject
-			fputs(COMMENT_NEW_LINE, pFile);												// \n
-			fputs(COMMENT_BLOCK, pFile);												// #=====================================================
-
-			strcpy(cWriteText, "# オブジェクト情報\n");
-			fputs(cWriteText, pFile);													// # オブジェクト情報
+			fputs(COMMENT_NEW_LINE, pFile);													// \n
 			fputs(COMMENT_BLOCK, pFile);													// #=====================================================
 
-			for (size_t nCnt = 0; nCnt < m_pObject.size(); nCnt++)
+			strcpy(cWriteText, "# オブジェクト情報\n");
+			fputs(cWriteText, pFile);														// # オブジェクト情報
+			fputs(COMMENT_BLOCK, pFile);													// #=====================================================
+
+			for (size_t nCnt = 0; nCnt < m_stageInfo[m_stageType].pObject.size(); nCnt++)
 			{
 				strcpy(cWriteText, "OBJECTSET\n");
 				fputs(cWriteText, pFile);													// OBJECTSET
@@ -755,7 +771,7 @@ HRESULT CObjectManager::SaveObject(void)
 				sprintf(cWriteText, "	%s %s %d",
 					&cHeadText,
 					&cEqual,
-					(int)m_pObject[nCnt]->GetType());
+					(int)m_stageInfo[m_stageType].pObject[nCnt]->GetType());
 				fputs(cWriteText, pFile);													//	TYPE = GetType()
 				fputs(COMMENT_NEW_LINE, pFile);												//	\n
 
@@ -763,9 +779,9 @@ HRESULT CObjectManager::SaveObject(void)
 				sprintf(cWriteText, "	%s %s %.3f %.3f %.3f",
 					&cHeadText,
 					&cEqual,
-					m_pObject[nCnt]->GetPos()->x,
-					m_pObject[nCnt]->GetPos()->y,
-					m_pObject[nCnt]->GetPos()->z);
+					m_stageInfo[m_stageType].pObject[nCnt]->GetPos()->x,
+					m_stageInfo[m_stageType].pObject[nCnt]->GetPos()->y,
+					m_stageInfo[m_stageType].pObject[nCnt]->GetPos()->z);
 				fputs(cWriteText, pFile);											//	POS = GetPos()
 				fputs(COMMENT_NEW_LINE, pFile);											//	\n
 
@@ -773,9 +789,9 @@ HRESULT CObjectManager::SaveObject(void)
 				sprintf(cWriteText, "	%s %s %.3f %.3f %.3f",
 					&cHeadText,
 					&cEqual,
-					m_pObject[nCnt]->GetRot()->x,
-					m_pObject[nCnt]->GetRot()->y,
-					m_pObject[nCnt]->GetRot()->z);
+					m_stageInfo[m_stageType].pObject[nCnt]->GetRot()->x,
+					m_stageInfo[m_stageType].pObject[nCnt]->GetRot()->y,
+					m_stageInfo[m_stageType].pObject[nCnt]->GetRot()->z);
 				fputs(cWriteText, pFile);											//	ROT = GetRot()
 				fputs(COMMENT_NEW_LINE, pFile);											//	\n
 				
@@ -783,20 +799,11 @@ HRESULT CObjectManager::SaveObject(void)
 				sprintf(cWriteText, "	%s %s %.3f %.3f %.3f",
 					&cHeadText,
 					&cEqual,
-					m_pObject[nCnt]->GetScale()->x,
-					m_pObject[nCnt]->GetScale()->y,
-					m_pObject[nCnt]->GetScale()->z);
+					m_stageInfo[m_stageType].pObject[nCnt]->GetScale()->x,
+					m_stageInfo[m_stageType].pObject[nCnt]->GetScale()->y,
+					m_stageInfo[m_stageType].pObject[nCnt]->GetScale()->z);
 				fputs(cWriteText, pFile);											//	SCALE = GetScale()
 				fputs(COMMENT_NEW_LINE, pFile);											//	\n
-
-				if (m_pObject[nCnt]->GetbColl())
-				{
-					strcpy(cHeadText, "COLLISION_ON");
-					sprintf(cWriteText, "	%s",
-						&cHeadText);
-					fputs(cWriteText, pFile);											//	COLLISION_ON
-					fputs(COMMENT_NEW_LINE, pFile);											//	\n
-				}
 
 				strcpy(cWriteText, "END_OBJECTSET\n");
 				fputs(cWriteText, pFile);													// END_OBJECTSET

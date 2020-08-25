@@ -25,22 +25,46 @@ class CObject;
 class CObjectManager : public CScene
 {
 public:
+	typedef enum
+	{	// ステージの種類
+		STAGE_1 = 0,	// ステージ1
+		STAGE_2,		// ステージ2
+		STAGE_MAX		// 最大数
+	} STAGETYPE;
+
+	typedef struct
+	{	// オブジェクトオフセット
+		int nType;			// タイプ
+		D3DXVECTOR3 pos;	// 位置
+		D3DXVECTOR3 rot;	// 回転
+		D3DXVECTOR3 scale;	// 拡縮
+	} OBJECT_OFFSET;
+
+	typedef struct
+	{
+		int nNumObject;					// 配置するオブジェクト数
+		OBJECT_OFFSET *objOffset;		// オブジェクトオフセット格納用
+		std::vector<CObject*> pObject;	// オブジェクト情報
+	} STAGEINFO;
+
 	CObjectManager(CScene::PRIORITY nPriority);	// コンストラクタ
 	~CObjectManager();	// デストラクタ
 
-	void Init();								// 初期化
-	void Uninit();								// 終了
-	void Update();								// 更新
-	void Draw();								// 描画
-	static CObjectManager *Create(void);		// 生成
+	void Init();									// 初期化
+	void Uninit();									// 終了
+	void Update();									// 更新
+	void Draw();									// 描画
+	static CObjectManager *Create(STAGETYPE type);	// 生成
 
 	static HRESULT Load(void);					// モデルのロード
 	static void Unload(void);					// モデルの破棄
 
 	static MODEL_VTX GetModelVtx(const int & nType) { return m_objInfo[nType].modelVtx; }	// タイプごとのモデル頂点情報の取得
+	static STAGETYPE GetStageType(void) { return m_stageType; }								// ステージのタイプ取得
+	static STAGEINFO GetStageInfo(void) { return m_stageInfo[m_stageType]; }				// ステージの情報取得
 
-	std::vector<CObject*> GetObj(void) { return m_pObject; }					// オブジェクトの取得
-	int		GetNumObject(void) { return (int)m_pObject.size(); }		// オブジェクト総数の取得
+	std::vector<CObject*> GetObj(void) { return m_stageInfo[m_stageType].pObject; }			// オブジェクトの取得
+	int		GetNumObject(void) { return (int)m_stageInfo[m_stageType].pObject.size(); }		// オブジェクト総数の取得
 
 #ifdef _DEBUG
 	void ShowObjectManagerInfo(void);			// ImGuiの更新
@@ -49,14 +73,20 @@ public:
 #endif
 
 private:
-	HRESULT LoadOffset(void);					// オフセット読み込み
-	static HRESULT LoadFileName(void);			// モデル名読み込み
+	static void CreateTexture();	// テクスチャ生成
+	static void CreateObjInfo();	// オブジェクト情報生成
 
-	static std::vector<CObject*>	m_pObject;				// オブジェクトのポインタ
-	static std::vector<OBJINFO>		m_objInfo;				// モデルの詳細
-	static char						m_aFileName[MAX_TEXT];	// モデル配置のファイル名
-	static int	m_nNumTexture;					// テクスチャの総数
-	static int  *m_pModelIndex;					// テクスチャを割り当てるモデルの番号
+	static HRESULT LoadModel(void);				// モデル読み込み
+	static HRESULT LoadOffset(void);			// オフセット読み込み
+	static HRESULT SetOffset(void);				// オフセット設定
+
+	static char					m_cModelFile[MAX_TEXT];				// モデル情報のファイル名
+	static char					m_aFileName[STAGE_MAX][MAX_TEXT];	// モデル配置のファイル名
+	static STAGEINFO			m_stageInfo[STAGE_MAX];				// ステージの情報
+	static STAGETYPE			m_stageType;						// ステージのタイプ
+	static std::vector<OBJINFO>	m_objInfo;							// オブジェクトのモデル情報
+	static int					m_nNumTexture;						// テクスチャ総数
+	static int					*m_pModelIndex;						// テクスチャを割り当てるモデル番号
 
 #ifdef _DEBUG
 	// デバッグモードの構造体
@@ -66,7 +96,7 @@ private:
 		MODE_DEBUG		// デバッグ
 	} DEBUG_MODE;
 
-	HRESULT SaveObject(void);						// オブジェクト情報のセーブ
+	HRESULT SaveOffset(void);						// オフセット情報のセーブ
 
 	static int	m_stateMode;						// モードの状態
 	static bool m_bShowAnother;						// 別のウィンドウ

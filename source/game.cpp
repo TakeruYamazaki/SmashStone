@@ -81,6 +81,7 @@ NUM_PLAYER			CGame::m_winPlayer				= NUM_PLAYER::PLAYER_NONE;		// 勝利したプレイ
 NUM_PLAYER			CGame::m_losePlayer				= NUM_PLAYER::PLAYER_NONE;		// 負けたプレイヤー
 CObjectManager		*CGame::m_pObjMana				= nullptr;						// オブジェクトマネージャーのポインタ
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ストーンの生成場所に生成されているか
+int					CGame::m_nStageType				= 0;							// ステージのタイプ
 D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
 {
 	D3DXVECTOR3(0.0f, 20.0f, 0.0f),
@@ -133,7 +134,7 @@ void CGame::Init(void)
 
 	/* 生成 */
 	C3DBoxCollider::Create();										// ボックスコライダーの生成
-	m_pObjMana    = CObjectManager::Create();						// オブジェクトマネージャーの生成
+	m_pObjMana    = CObjectManager::Create((CObjectManager::STAGETYPE)m_nStageType);// オブジェクトマネージャーの生成
 	m_pWall       = CWall::Create(CWall::WALLTEX_FIELD);			// 壁の生成
 	m_pCamera     = CCamera::Create();								// カメラの生成処理
 	m_pLight      = CLight::Create();								// ライトの生成処理

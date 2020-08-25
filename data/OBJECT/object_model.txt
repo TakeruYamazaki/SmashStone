@@ -1,0 +1,50 @@
+#============================================================
+#
+# オブジェクトのモデル情報
+# Author : KANAN NAGANAWA
+#
+#============================================================
+SCRIPT
+
+#============================================================
+# オブジェクトタイプ数
+#============================================================
+NUM_TYPE = 21
+
+#============================================================
+# モデルファイル名
+#============================================================
+MODEL_FILENAME = data/OBJECT/model/stage1/floor_down.x
+MODEL_FILENAME = data/OBJECT/model/stage1/floor_up.x
+MODEL_FILENAME = data/OBJECT/model/stage1/stairs.x
+MODEL_FILENAME = data/OBJECT/model/stage1/stairs_slope.x
+MODEL_FILENAME = data/OBJECT/model/stage1/stairs_wide.x
+MODEL_FILENAME = data/OBJECT/model/stage1/building_left.x
+MODEL_FILENAME = data/OBJECT/model/stage1/building_right.x
+MODEL_FILENAME = data/OBJECT/model/stage1/roof.x
+MODEL_FILENAME = data/OBJECT/model/stage1/fence.x
+MODEL_FILENAME = data/OBJECT/model/stage1/rail_left.x
+MODEL_FILENAME = data/OBJECT/model/stage1/rail_right.x
+MODEL_FILENAME = data/OBJECT/model/stage1/railing.x
+MODEL_FILENAME = data/OBJECT/model/stage1/Fountain_Down.x
+MODEL_FILENAME = data/OBJECT/model/stage1/Fountain_Up.x
+MODEL_FILENAME = data/OBJECT/model/stage2/Block.x
+MODEL_FILENAME = data/OBJECT/model/stage2/Buil01.x
+MODEL_FILENAME = data/OBJECT/model/stage2/Buil02.x
+MODEL_FILENAME = data/OBJECT/model/stage2/Stairs01.x
+MODEL_FILENAME = data/OBJECT/model/stage2/Stairs02.x
+MODEL_FILENAME = data/OBJECT/model/stage2/Stairs03.x
+MODEL_FILENAME = data/OBJECT/model/stage2/Stairs04.x
+
+#============================================================
+# オブジェクトテクスチャ数
+#============================================================
+NUM_TEXTURE = 2
+
+#============================================================
+# テクスチャファイル名
+#============================================================
+TEXTURE_FILENAME = data/TEXTURE/ground000.jpg : MODEL = 0
+TEXTURE_FILENAME = data/TEXTURE/ground000.jpg : MODEL = 1
+
+END_SCRIPT
