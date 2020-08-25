@@ -117,11 +117,14 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/map2.jpg" },		// マップ2
 	{ "data/TEXTURE/coming soon.jpg" },	// マップ3(coming soon)
 	{ "data/TEXTURE/coming soon.jpg" },	// マップ4(coming soon)
-	{ "data/TEXTURE/MapExplanation.jpg" },	// マップ説明
-	{ "data/TEXTURE/MapExplanation.jpg" },	// マップ説明
-	{ "data/TEXTURE/MapExplanation.jpg" },	// マップ説明
-	{ "data/TEXTURE/MapExplanation.jpg" },	// マップ説明
-	{ "data/TEXTURE/scroll.png" },		// 巻物
+	{ "data/TEXTURE/MapExplanation.jpg" },// マップ説明
+	{ "data/TEXTURE/MapExplanation.jpg" },// マップ説明
+	{ "data/TEXTURE/MapExplanation.jpg" },// マップ説明
+	{ "data/TEXTURE/MapExplanation.jpg" },// マップ説明
+	{ "data/TEXTURE/gameBG.png" },		// ゲーム背景
+	{ "data/TEXTURE/jewelryBule.png" },	// 宝石青
+	{ "data/TEXTURE/jewelryRed.png" },	// 宝石赤
+	{ "data/TEXTURE/jewelryYellow.png" },// 宝石黄
 };
 
 //==================================================================================================================
@@ -200,7 +203,7 @@ void CUI::Init(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 		{// チュートリアルのとき
 			// チュートリアルで使うUIのとき
-			if (nCnt <= LOGOTYPE_SELECTICON)
+			if (nCnt > LOGOTYPE_MODEFREAM && nCnt <= LOGOTYPE_SELECTICON)
 			{
 				// 生成処理
 				m_pScene2D[nCnt] = CScene2D::Create();
@@ -212,7 +215,7 @@ void CUI::Init(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
 		{// マップ選択画面のとき
 			// マップ選択画面で使うUIのとき
-			if (nCnt <= LOGOTYPE_MAPEXPLANATION4)
+			if (nCnt > LOGOTYPE_SELECTICON && nCnt <= LOGOTYPE_MAPEXPLANATION4)
 			{
 				// 生成処理
 				m_pScene2D[nCnt] = CScene2D::Create();
@@ -224,7 +227,7 @@ void CUI::Init(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// ゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt <= LOGOTYPE_SCROLL)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_JEWELRYYELLOW)
 			{
 				// 生成処理
 				m_pScene2D[nCnt] = CScene2D::Create();
@@ -324,7 +327,7 @@ HRESULT CUI::Load(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 		{// モードがチュートリアルのとき
 			// チュートリアルで使うUIのとき
-			if (nCnt <= LOGOTYPE_SELECTICON)
+			if (nCnt > LOGOTYPE_MODEFREAM && nCnt <= LOGOTYPE_SELECTICON)
 			{
 				// テクスチャの読み込み
 				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
@@ -333,7 +336,7 @@ HRESULT CUI::Load(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
 		{// モードがマップ選択画面のとき
 			// マップ選択画面で使うUIのとき
-			if (nCnt <= LOGOTYPE_MAPEXPLANATION4)
+			if (nCnt > LOGOTYPE_SELECTICON && nCnt <= LOGOTYPE_MAPEXPLANATION4)
 			{
 				// テクスチャの読み込み
 				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
@@ -342,7 +345,7 @@ HRESULT CUI::Load(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// モードがゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt <= LOGOTYPE_SCROLL)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_JEWELRYYELLOW)
 			{
 				// テクスチャの読み込み
 				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
@@ -375,7 +378,7 @@ void CUI::Unload(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 		{// モードがチュートリアルのとき
 			// チュートリアルで使うUIのとき
-			if (nCnt <= LOGOTYPE_SELECTICON)
+			if (nCnt > LOGOTYPE_MODEFREAM && nCnt <= LOGOTYPE_SELECTICON)
 			{
 				m_pTexture[nCnt]->Release();		// 開放
 				m_pTexture[nCnt] = NULL;			// NULLにする
@@ -384,7 +387,7 @@ void CUI::Unload(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
 		{// モードがマップ選択画面のとき
 			// マップ選択画面で使うUIのとき
-			if (nCnt <= LOGOTYPE_MAPEXPLANATION4)
+			if (nCnt > LOGOTYPE_SELECTICON && nCnt <= LOGOTYPE_MAPEXPLANATION4)
 			{
 				m_pTexture[nCnt]->Release();		// 開放
 				m_pTexture[nCnt] = NULL;			// NULLにする
@@ -393,7 +396,7 @@ void CUI::Unload(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// モードがゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt <= LOGOTYPE_SCROLL)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_JEWELRYYELLOW)
 			{
 				m_pTexture[nCnt]->Release();		// 開放
 				m_pTexture[nCnt] = NULL;			// NULLにする
@@ -872,7 +875,8 @@ void CUI::GameUpdate(void)
 	// ゲームのとき
 	if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 	{
-
+		// ゲーム背景
+		SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), SCREEN_WIDTH, SCREEN_HEIGHT, LOGOTYPE_GAMEBG, NORMAL_COLOR);
 	}
 }
 
