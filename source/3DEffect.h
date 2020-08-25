@@ -71,7 +71,7 @@ public:
 
 	typedef struct VIBRATION
 	{
-		VIBRATION() :VecDir(MYLIB_3DVECTOR_ZERO), fDist(MYLIB_FLOAT_UNSET), bRandDist(false), Pos(MYLIB_3DVECTOR_ZERO){}		// コンストラクタ
+		VIBRATION() :VecDir(MYLIB_3DVECTOR_ZERO), fDist(MYLIB_FLOAT_UNSET), bRandDist(false),Pos(MYLIB_3DVECTOR_ZERO){}		// コンストラクタ
 		~VIBRATION() {}		// デストラクタ
 
 		D3DXVECTOR3 VecDir;				// 方向ベクトル
@@ -84,6 +84,34 @@ public:
 		void        CalPos(void);		// 位置の計算
 	}VIBRATION;
 
+	typedef struct SETINGPARAM
+	{
+		SETINGPARAM() :
+			bBillBoard(false),
+			type(MYLIB_INT_UNSET),
+			nTexType(MYLIB_INT_UNSET),
+			pos(MYLIB_3DVECTOR_ZERO),
+			pParent(nullptr),
+			move(MYLIB_3DVECTOR_ZERO),
+			col(MYLIB_D3DXCOR_UNSET),
+			fRadius(MYLIB_FLOAT_UNSET),
+			nLife(MYLIB_INT_UNSET),
+			fGravity(MYLIB_FLOAT_UNSET),
+			fRadiusValue(MYLIB_FLOAT_UNSET) {}
+
+		bool        bBillBoard;		// ビルボードフラグ
+		int         type;			// エフェクトの種類
+		int         nTexType;		// テクスチャの種類
+		D3DXVECTOR3 pos;			// 位置
+		D3DXVECTOR3 *pParent;		// 親の位置
+		D3DXVECTOR3 move;			// 移動量
+		D3DXCOLOR   col;			// 色
+		float       fRadius;		// 半径
+		int         nLife;			// ライフ
+		float       fGravity;		// 重力
+		float       fRadiusValue;	// 半径の変化値
+	} SETINGPARAM;
+
 	// 構造体定義
 	typedef struct PARAMETER
 	{
@@ -91,6 +119,7 @@ public:
 		bool        bDisp;			// 描画フラグ
 		bool        bBillBoard;		// ビルボードフラグ
 		TRANSFORM   Trans;			// トランス情報
+		D3DXVECTOR3 *pParent;		// 親の位置
 		D3DXVECTOR3 move;			// 移動量
 		D3DXCOLOR   col;			// 色
 		float       fRadius;		// 半径
@@ -114,15 +143,18 @@ public:
 	void Uninit(void);							// 終了
 	void Update(void);							// 更新
 	void Draw(void);							// 描画
+
+	static void Set(SETINGPARAM &Seting);		// 位置の設定
 private:
 	/* メンバ関数 */
 	static void CreateTexture(CONST_STRING SetingStr,const int &nCntInfo, LPDIRECT3DDEVICE9 pDevice);	// テクスチャの作成
 	HRESULT     MakeVertex(LPDIRECT3DDEVICE9 pDevice);													// 頂点情報の作成
-	void        SetVartexSize(VERTEX_3D *pVtx, PARAMETER &Effect);										// 頂点サイズの設定
-	void        SetVetexColor(VERTEX_3D *pVtx, PARAMETER &Effect);										// 頂点カラーの設定
+	static void SetVartexSize(VERTEX_3D *pVtx, PARAMETER &Effect);										// 頂点サイズの設定
+	static void SetVetexColor(VERTEX_3D *pVtx, PARAMETER &Effect);										// 頂点カラーの設定
+
 	/* メンバ変数 */
 	static LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;							// バッファ情報
-	static LPDIRECT3DTEXTURE9      m_pTexInfo[TYPE_MAX];				// テクスチャ情報
+	static LPDIRECT3DTEXTURE9      m_pTexInfo[TEXTYPE_MAX];				// テクスチャ情報
 	static const float             m_cfBaseAngle;						// 基本角度
 	static int                     m_nNumTextureMax;					// テクスチャの最大数
 	static PARAMETER               m_EffectPram[_3DEFFE_USEQUANTITY];	// エフェクトのパラメータ

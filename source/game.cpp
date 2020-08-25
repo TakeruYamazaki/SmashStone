@@ -38,6 +38,8 @@
 #include "UI_gameStart.h"
 #include "UI_gameResult.h"
 #include "UI.h"
+#include "3DEffect.h"
+#include "CharEffectOffset.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -130,6 +132,13 @@ void CGame::Init(void)
 	CUIKO::Load();							// KOのロード
 	CUI_GameStart::Load();					// 開始UIのロード
 	CUI_GameResult::Load();
+
+	// 3Dエフェクトの作成
+	C3DEffect *p3DEffect;
+	// 生成
+	p3DEffect = new C3DEffect;
+	// 作成
+	p3DEffect->Make();
 
 	/* 生成 */
 	C3DBoxCollider::Create();										// ボックスコライダーの生成
@@ -278,6 +287,11 @@ void CGame::Update(void)
 		if (fade == CFade::FADE_NONE)
 			// フェードを設定する
 			CFade::SetFade(CRenderer::MODE_TITLE, DEFAULT_FADE_TIME);
+	}
+
+	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_LSHIFT))
+	{
+		//CCharEffectOffset::Set(&m_pPlayer[PLAYER_ONE]->GetPos(), CCharEffectOffset::STR_ドンッ);
 	}
 #endif // _DEBUG
 }
@@ -570,9 +584,6 @@ void CGame::GameResult(void)
 //==================================================================================================================
 void CGame::DecideCreateStone(void)
 {
-	// 乱数化
-	srand((unsigned int)time(NULL));
-
 	// カウンタを加算
 	m_nCntDecide++;
 
