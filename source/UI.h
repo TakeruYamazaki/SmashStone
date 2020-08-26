@@ -72,6 +72,8 @@ public:
 		LOGOTYPE_JEWELRYYELLOW,		// 宝石黄
 		LOGOTYPE_PLAYER1,			// プレイヤーアイコン1P
 		LOGOTYPE_PLAYER2,			// プレイヤーアイコン2P
+		LOGOTYPE_CHARANAME0,		// 1Pのキャラクターネーム
+		LOGOTYPE_CHARANAME1,		// 2Pのキャラクターネーム
 		LOGOTYPE_MAX				// 最大
 	} UITYPE;
 

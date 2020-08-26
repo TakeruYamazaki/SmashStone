@@ -127,6 +127,8 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/jewelryYellow.png" },// 宝石黄
 	{ "data/TEXTURE/FULLchara.png" },	// 宝石黄
 	{ "data/TEXTURE/FULLchara.png" },	// 宝石黄
+	{ "data/TEXTURE/charaName0.png" },	// 1Pのキャラクターネーム
+	{ "data/TEXTURE/charaName1.png" },	// 2Pのキャラクターネーム
 };
 
 int CUI::m_nMapID = 0;	// マップID
@@ -231,7 +233,7 @@ void CUI::Init(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// ゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_PLAYER2)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_CHARANAME1)
 			{
 				// 生成処理
 				m_pScene2D[nCnt] = CScene2D::Create();
@@ -349,7 +351,7 @@ HRESULT CUI::Load(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// モードがゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_PLAYER2)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_CHARANAME1)
 			{
 				// テクスチャの読み込み
 				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
@@ -400,7 +402,7 @@ void CUI::Unload(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// モードがゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_PLAYER2)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_CHARANAME1)
 			{
 				m_pTexture[nCnt]->Release();		// 開放
 				m_pTexture[nCnt] = NULL;			// NULLにする
@@ -904,6 +906,15 @@ void CUI::GameUpdate(void)
 		SetUI(D3DXVECTOR3(1225, 70, 0), 110, 130, LOGOTYPE_PLAYER2, NORMAL_COLOR);
 		// テクスチャ設定
 		m_pScene2D[LOGOTYPE_PLAYER2]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1] / 2);
+
+		// 1PキャラクターネームUI
+		SetUI(D3DXVECTOR3(205, 155, 0), 400, 50, LOGOTYPE_CHARANAME0, NORMAL_COLOR);
+		// テクスチャ設定
+		m_pScene2D[LOGOTYPE_CHARANAME0]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[0] / 2) * 0.25f, 0.0f + (m_nCharaNum[0] / 2) * 0.25f, 0);
+		// 2PキャラクターネームUI
+		SetUI(D3DXVECTOR3(1075, 155, 0), 400, 50, LOGOTYPE_CHARANAME1, NORMAL_COLOR);
+		// テクスチャ設定
+		m_pScene2D[LOGOTYPE_CHARANAME1]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[1] / 2) * 0.25f, 0.0f + (m_nCharaNum[1] / 2) * 0.25f, 0);
 	}
 }
 
