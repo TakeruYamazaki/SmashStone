@@ -63,8 +63,8 @@
 #define CHARA2PUI_POS D3DXVECTOR3(1080, 230, 0)		// 2PキャラUIの位置
 #define GEAR_POS_Y 530								// 歯車の位置Y
 #define CLOCK_HANDS_DIFF 0.1f						// 回転の初期値
-#define READY1PUI_POS D3DXVECTOR3(200, 400, 0)		// 1P準備完了位置
-#define READY2PUI_POS D3DXVECTOR3(1080, 400, 0)		// 2P準備完了位置
+#define READY1PUI_POS D3DXVECTOR3(200, 450, 0)		// 1P準備完了位置
+#define READY2PUI_POS D3DXVECTOR3(1080, 450, 0)		// 2P準備完了位置
 #define READYUI_SIZE_X 200							// 準備完了大きさX
 #define READYUI_SIZE_Y 160							// 準備完了大きさX
 #define CHARA_SELECTUI_POS D3DXVECTOR3(640, 60, 0)	// キャラクター選択UI位置
@@ -108,6 +108,8 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/FULLchara.png" },	// 2Pキャラクター
 	{ "data/TEXTURE/1Pchara.png" },		// 1Pキャラクター枠
 	{ "data/TEXTURE/2Pchara.png" },		// 2Pキャラクター枠
+	{ "data/TEXTURE/charaName.png" },	// 1Pキャラクターネーム
+	{ "data/TEXTURE/charaName.png" },	// 2Pキャラクターネーム
 	{ "data/TEXTURE/Ready.png" },		// 1Pキャラクター準備完了
 	{ "data/TEXTURE/Ready.png" },		// 2Pキャラクター準備完了
 	{ "data/TEXTURE/PlayerSelect.png" },// プレイヤーセレクトアイコン
@@ -759,6 +761,7 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 			m_fPosOld[nCnt] = m_fPos[nCnt] + m_fPosCul[nCnt];
 
 		}
+
 		// 1PキャラクターUI
 		SetUI(CHARA1PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_1PCHARA, NORMAL_COLOR);
 		// テクスチャ設定
@@ -767,6 +770,15 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 		SetUI(CHARA2PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_2PCHARA, NORMAL_COLOR);
 		// テクスチャ設定
 		m_pScene2D[LOGOTYPE_2PCHARA]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1]);
+
+		// 1PキャラクターネームUI
+		SetUI(READY1PUI_POS, 400, 120, LOGOTYPE_1PCHARA_NAME, NORMAL_COLOR);
+		// テクスチャ設定
+		m_pScene2D[LOGOTYPE_1PCHARA_NAME]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[0]) * 0.25f, 0.0f + (m_nCharaNum[0]) * 0.25f, 0);
+		// 2PキャラクターネームUI
+		SetUI(READY2PUI_POS, 400, 120, LOGOTYPE_2PCHARA_NAME, NORMAL_COLOR);
+		// テクスチャ設定
+		m_pScene2D[LOGOTYPE_2PCHARA_NAME]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[1]) * 0.25f, 0.0f + (m_nCharaNum[1]) * 0.25f, 0);
 
 		// 1Pキャラクター選択されているとき
 		if (m_bCharaDecide[0])
