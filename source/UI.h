@@ -70,6 +70,8 @@ public:
 		LOGOTYPE_JEWELRYBULE,		// 宝石青
 		LOGOTYPE_JEWELRYRED,		// 宝石赤
 		LOGOTYPE_JEWELRYYELLOW,		// 宝石黄
+		LOGOTYPE_PLAYER1,			// プレイヤーアイコン1P
+		LOGOTYPE_PLAYER2,			// プレイヤーアイコン2P
 		LOGOTYPE_MAX				// 最大
 	} UITYPE;
 
