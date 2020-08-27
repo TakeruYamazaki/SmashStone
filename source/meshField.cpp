@@ -23,7 +23,8 @@
 #define MASS_DEPTH		(2)								// 縦のマス
 
 #define FIELD_ALPHA		1.0f							// メッシュフィールドアルファ
-#define FIELD_TEXTUE	"data/TEXTURE/water4.png"	// 読み込むテクスチャのソース先
+#define FIELD_TEXTUE_TITLE	"data/TEXTURE/worldMap.jpg"	// 読み込むテクスチャのソース先
+#define FIELD_TEXTUE_GAME	"data/TEXTURE/water4.png"	// 読み込むテクスチャのソース先
 #define MESH_ANIM_MAX	(10000)							// アニメーション時間の最大
 
 //==================================================================================================================
@@ -310,10 +311,21 @@ HRESULT CMeshField::Load(void)
 	CRenderer *pRenderer = CManager::GetRenderer();						// レンダラーの情報取得
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();					// デバイスを取得する
 
-	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,			// デバイスへのポインタ
-		FIELD_TEXTUE,							// ファイルの名前
-		&m_pTexture);							// 読み込むメモリー
+	// タイトルのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
+	{
+		// テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice,			// デバイスへのポインタ
+			FIELD_TEXTUE_TITLE,						// ファイルの名前
+			&m_pTexture);							// 読み込むメモリー
+	}
+	else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+	{
+		// テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice,			// デバイスへのポインタ
+			FIELD_TEXTUE_GAME,						// ファイルの名前
+			&m_pTexture);							// 読み込むメモリー
+	}
 
 	// 値を返す
 	return S_OK;
