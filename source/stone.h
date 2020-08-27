@@ -111,10 +111,14 @@ public:
 
 	// 入手する
 	void Catch(void);
+	// ストーンへのダメージ
+	void Damege(int nDamege) { m_nLife -= nDamege; }
 	// 生成位置の取得
 	int GetIndexPos(void) { return m_nIndexPos; }
 	// ストーンのIDの取得
 	int GetStoneID(void) { return m_enmStoneID; }
+	// ライフの取得
+	int GetLife(void) { return m_nLife; }
 
 private:
 	/* メンバ関数 */
@@ -133,6 +137,8 @@ private:
 	MODELINFO          m_pModelInfo;			// モデルを参照するための情報
 	int                m_nBoxClliderID;			// ボックスコライダーID
 	int				   m_nIndexPos;				// 生成座標の番号
+	int				   m_nLife;					// ライフ
+
 #ifdef CSTONE_DEBUG_DRAW
 	static int         m_nNumAll;				// 全ての個数
 	int                m_nNumID;				// 個数ID(何個目)

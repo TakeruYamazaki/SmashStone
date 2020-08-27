@@ -12,6 +12,7 @@
 #include "kananlibrary.h"
 #include "player.h"
 #include "game.h"
+#include "mouse.h"
 #include "ImGui/imgui.h"				// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"		// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"		// Imguiの実装に必要
@@ -373,6 +374,21 @@ void CCharaParam::ShowCharaParam(const char cName[16], PARAM_TYPE type)
 			ImGui::InputInt2(cMotionName[nCnt], &m_playerParam[type].motionParam[nCnt].CancelFrame.start);
 			ImGui::Dummy(ImVec2(0.0f, 2.0f));
 		}
+
+		if (ImGui::Button("Save"))
+		{
+			// セーブ
+			if (Save(type) == S_OK)
+			{
+				// マウスの取得
+				CMouse *pMouse = CManager::GetMouse();
+				// ウィンドウハンドルの取得
+				HWND hWnd = pMouse->GetWnd();
+				// 確認のメッセージ
+				MessageBox(hWnd, "パラメーターファイルをセーブしました", "確認", MB_OK);
+			}
+		}
+
 		// タブの終了に必ず書く
 		ImGui::EndTabItem();
 	}

@@ -408,6 +408,7 @@ HRESULT CObjectManager::LoadOffset(void)
 	{
 		// 読み込んだモデル数格納用
 		int nModel = 0;
+		int nCntStonePos = 0;
 
 		// ファイルを開く
 		pFile = fopen(&m_aFileName[nCnt][0], "r");
@@ -462,13 +463,13 @@ HRESULT CObjectManager::LoadOffset(void)
 							sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &m_stageInfo[nCnt].objOffset[nModel].nType);
 						// 位置
 						if (strcmp(cHeadText, "POS") == 0)
-							sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, 
-								&m_stageInfo[nCnt].objOffset[nModel].pos.x, 
+							sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText,
+								&m_stageInfo[nCnt].objOffset[nModel].pos.x,
 								&m_stageInfo[nCnt].objOffset[nModel].pos.y,
 								&m_stageInfo[nCnt].objOffset[nModel].pos.z);
 						// 回転
 						if (strcmp(cHeadText, "ROT") == 0)
-							sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText, 
+							sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText,
 								&m_stageInfo[nCnt].objOffset[nModel].rot.x,
 								&m_stageInfo[nCnt].objOffset[nModel].rot.y,
 								&m_stageInfo[nCnt].objOffset[nModel].rot.z);
@@ -482,6 +483,24 @@ HRESULT CObjectManager::LoadOffset(void)
 
 					// モデル数を加算
 					nModel++;
+				}
+				else if (strcmp(cHeadText, "SET_STONEPOS") == 0)
+				{
+					// エンドセットがくるまで繰り返す
+					while (strcmp(cHeadText, "END_STONEPOS") != 0)
+					{
+						fgets(cReadText, sizeof(cReadText), pFile);
+						sscanf(cReadText, "%s", &cHeadText);
+						// 位置
+						if (strcmp(cHeadText, "POS") == 0)
+							sscanf(cReadText, "%s %s %f %f %f", &cDieText, &cDieText,
+								&m_stageInfo[nCnt].stonePos[nCntStonePos].x,
+								&m_stageInfo[nCnt].stonePos[nCntStonePos].y,
+								&m_stageInfo[nCnt].stonePos[nCntStonePos].z);
+
+						// 位置数を加算
+						nCntStonePos++;
+					}
 				}
 			}
 		}
@@ -809,6 +828,24 @@ HRESULT CObjectManager::SaveOffset(void)
 				fputs(cWriteText, pFile);													// END_OBJECTSET
 				fputs(COMMENT_NEW_LINE, pFile);												// \n
 			}
+			fputs(COMMENT_NEW_LINE, pFile);													// \n
+
+			strcpy(cWriteText, "SET_STONEPOS\n");
+			fputs(cWriteText, pFile);														// SET_STONEPOS
+			for (size_t nCnt = 0; nCnt < 5; nCnt++)
+			{
+				strcpy(cHeadText, "POS");
+				sprintf(cWriteText, "	%s %s %.3f %.3f %.3f\n",
+					&cHeadText,
+					&cEqual,
+					m_stageInfo[m_stageType].stonePos[nCnt].x,
+					m_stageInfo[m_stageType].stonePos[nCnt].y,
+					m_stageInfo[m_stageType].stonePos[nCnt].z);
+				fputs(cWriteText, pFile);													//	POS = pos
+			}
+			strcpy(cWriteText, "END_STONEPOS\n");
+			fputs(cWriteText, pFile);														// END_STONEPOS
+
 			fputs(COMMENT_NEW_LINE, pFile);													// \n
 
 			strcpy(cWriteText, "END_SCRIPT\n");

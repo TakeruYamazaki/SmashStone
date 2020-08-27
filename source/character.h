@@ -72,6 +72,7 @@ public:
 	inline void        SetbJump(const bool &bJump)				{ m_bJump = bJump; }				// ジャンプの設定
 	inline void        SetLife(const float &nLife)				{ m_nLife = nLife; }				// ライフの設定
 	inline void        SetAttakHit(const bool &bAttackHit)		{ m_bAttakHit = m_bAttack; }		// 攻撃を当てたフラグ
+	inline void        SetAttakHitStone(const bool &bAttackHit)	{ m_bAttakHitStone = m_bAttack; }	// ストーンに攻撃を当てたフラグ
 	void               SetModelType(CHARACTER_TYPE type);											// モデルの設定
 	void               SetCylinderCoillider(void);													// シリンダーコライダーの設定
 
@@ -133,6 +134,7 @@ protected:
 	int						  m_nCntDown;				// ダウンしている時間
 
 	bool		m_bAttakHit;							// 攻撃を当てたフラグ
+	bool		m_bAttakHitStone;						// ストーンに攻撃を当てたフラグ
 	bool m_bGetStoneType[CStone::STONE_ID_MAX];	// 取得したストーンのタイプ
 
 private:

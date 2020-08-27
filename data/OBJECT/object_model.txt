@@ -9,7 +9,7 @@ SCRIPT
 #============================================================
 # オブジェクトタイプ数
 #============================================================
-NUM_TYPE = 22
+NUM_TYPE = 23
 
 #============================================================
 # モデルファイル名
@@ -36,6 +36,7 @@ MODEL_FILENAME = data/OBJECT/model/stage2/Stairs02.x
 MODEL_FILENAME = data/OBJECT/model/stage2/Stairs03.x
 MODEL_FILENAME = data/OBJECT/model/stage2/Stairs04.x
 MODEL_FILENAME = data/OBJECT/model/stage2/floor.x
+MODEL_FILENAME = data/OBJECT/model/stage2/BackGround.x
 
 #============================================================
 # オブジェクトテクスチャ数
