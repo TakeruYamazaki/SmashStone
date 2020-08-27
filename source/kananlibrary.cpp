@@ -766,6 +766,45 @@ HRESULT CKananLibrary::GetMoveByGamepad(CInputGamepad * pGamepad)
 	return S_OK;
 }
 
+//=============================================================================
+// 選択肢の中からランダムな値を返す
+//=============================================================================
+int CKananLibrary::DecideRandomValue(int nMaxValue, bool * bSelect)
+{
+	// ランダムの範囲
+	int RandRange = nMaxValue;
+
+	// 選択肢の数を減らす
+	for (int nCnt = 0; nCnt < nMaxValue; nCnt++)
+	{
+		if (bSelect[nCnt])
+			RandRange--;
+	}
+
+	// 選択肢の数だけメモリ確保
+	int *RandType = new int[RandRange];
+	// 番号カウンタ
+	int nCntRand = 0;
+
+	// 生成されていない番号を配列に保存
+	for (int nCnt = 0; nCnt < nMaxValue; nCnt++)
+	{
+		if (!bSelect[nCnt])
+		{
+			RandType[nCntRand] = nCnt;
+			nCntRand++;
+		}
+	}
+
+	// 出力用
+	int outValue = RandType[rand() % RandRange];
+	// ポインタの破棄
+	delete[] RandType;
+
+	// 値を返す
+	return outValue;
+}
+
 #ifdef _DEBUG
 //=============================================================================
 // ImGuiの更新

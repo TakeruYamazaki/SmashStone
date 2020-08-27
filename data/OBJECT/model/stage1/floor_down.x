@@ -168,7 +168,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\game312\\Desktop\\äwâÄç’ìWé¶\\data\\TEXTURE\\ground000.jpg";
+     "\\..\\texture\\ground000.jpg";
    }
   }
  }

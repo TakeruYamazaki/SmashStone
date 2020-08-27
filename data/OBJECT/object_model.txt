@@ -9,7 +9,7 @@ SCRIPT
 #============================================================
 # オブジェクトタイプ数
 #============================================================
-NUM_TYPE = 21
+NUM_TYPE = 22
 
 #============================================================
 # モデルファイル名
@@ -35,16 +35,21 @@ MODEL_FILENAME = data/OBJECT/model/stage2/Stairs01.x
 MODEL_FILENAME = data/OBJECT/model/stage2/Stairs02.x
 MODEL_FILENAME = data/OBJECT/model/stage2/Stairs03.x
 MODEL_FILENAME = data/OBJECT/model/stage2/Stairs04.x
+MODEL_FILENAME = data/OBJECT/model/stage2/floor.x
 
 #============================================================
 # オブジェクトテクスチャ数
 #============================================================
-NUM_TEXTURE = 2
+NUM_TEXTURE = 6
 
 #============================================================
 # テクスチャファイル名
 #============================================================
-TEXTURE_FILENAME = data/TEXTURE/ground000.jpg : MODEL = 0
-TEXTURE_FILENAME = data/TEXTURE/ground000.jpg : MODEL = 1
+TEXTURE_FILENAME = data/OBJECT/texture/ground000.jpg : MODEL = 0
+TEXTURE_FILENAME = data/OBJECT/texture/ground000.jpg : MODEL = 1
+TEXTURE_FILENAME = data/OBJECT/texture/SH010_L.jpg : MODEL = 14
+TEXTURE_FILENAME = data/OBJECT/texture/Brick02.jpg : MODEL = 15
+TEXTURE_FILENAME = data/OBJECT/texture/Brick02.jpg : MODEL = 16
+TEXTURE_FILENAME = data/OBJECT/texture/wall000.jpg : MODEL = 21
 
 END_SCRIPT
