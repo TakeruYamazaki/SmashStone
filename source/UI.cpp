@@ -24,14 +24,11 @@
 #define ENTER_SIZEY 150.0f							// エンターロゴY
 #define TITLE_ENTER_POSY 600.0f						// タイトルエンターロゴ位置Y
 #define NORMAL_COLOR D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)// 画像のままの色
-#define TITLEUI_BEGIN_X 2000						// タイトルUI最初の横の大きさ
-#define TITLEUI_BEGIN_Y 1200						// タイトルUI最初の縦の大きさ
-#define TITLEUI_SMALL_SPEED 15						// タイトルUIの小さくする速度
-#define TITLEUI_VALUE_Y	350							// 減少サイズの値Y
-#define TITLEUI_LAST_X 1135							// タイトルUI最後の値X
-#define TITLEUI_BOUND_SPEED 5						// タイトルUIのバウンド速度
-#define TITLEUI_MAXSIZE_VALUE_Y 370					// タイトルUI最大サイズ縦
-#define TITLEUI_MINSIZE_VALUE_Y 330					// タイトルUI最大サイズ縦
+#define TITLEUI_BEGIN_X 1760						// タイトルUI最初の横の大きさ
+#define TITLEUI_BEGIN_Y 1600						// タイトルUI最初の縦の大きさ
+#define TITLEUI_SMALL_SPEED 30						// タイトルUIの小さくする速度
+#define TITLEUI_VALUE_Y	700							// 減少サイズの値Y
+#define TITLEUI_BOUND_SPEED 10						// タイトルUIのバウンド速度
 #define TITLEUI_BOUND_COUNT 60						// タイトルUIバウンドカウンタ
 #define TITLEUI_FINISH_Y 250						// タイトルUIの最後の位置Y
 #define TITLEUI_UP_SPEED 2							// タイトルUI上がる速度
@@ -63,8 +60,8 @@
 #define CHARA2PUI_POS D3DXVECTOR3(1080, 230, 0)		// 2PキャラUIの位置
 #define GEAR_POS_Y 530								// 歯車の位置Y
 #define CLOCK_HANDS_DIFF 0.1f						// 回転の初期値
-#define READY1PUI_POS D3DXVECTOR3(200, 400, 0)		// 1P準備完了位置
-#define READY2PUI_POS D3DXVECTOR3(1080, 400, 0)		// 2P準備完了位置
+#define READY1PUI_POS D3DXVECTOR3(200, 450, 0)		// 1P準備完了位置
+#define READY2PUI_POS D3DXVECTOR3(1080, 450, 0)		// 2P準備完了位置
 #define READYUI_SIZE_X 200							// 準備完了大きさX
 #define READYUI_SIZE_Y 160							// 準備完了大きさX
 #define CHARA_SELECTUI_POS D3DXVECTOR3(640, 60, 0)	// キャラクター選択UI位置
@@ -108,6 +105,8 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/FULLchara.png" },	// 2Pキャラクター
 	{ "data/TEXTURE/1Pchara.png" },		// 1Pキャラクター枠
 	{ "data/TEXTURE/2Pchara.png" },		// 2Pキャラクター枠
+	{ "data/TEXTURE/charaName.png" },	// 1Pキャラクターネーム
+	{ "data/TEXTURE/charaName.png" },	// 2Pキャラクターネーム
 	{ "data/TEXTURE/Ready.png" },		// 1Pキャラクター準備完了
 	{ "data/TEXTURE/Ready.png" },		// 2Pキャラクター準備完了
 	{ "data/TEXTURE/PlayerSelect.png" },// プレイヤーセレクトアイコン
@@ -127,6 +126,8 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/jewelryYellow.png" },// 宝石黄
 	{ "data/TEXTURE/FULLchara.png" },	// 宝石黄
 	{ "data/TEXTURE/FULLchara.png" },	// 宝石黄
+	{ "data/TEXTURE/charaName0.png" },	// 1Pのキャラクターネーム
+	{ "data/TEXTURE/charaName1.png" },	// 2Pのキャラクターネーム
 };
 
 int CUI::m_nMapID = 0;	// マップID
@@ -231,7 +232,7 @@ void CUI::Init(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// ゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_PLAYER2)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_CHARANAME1)
 			{
 				// 生成処理
 				m_pScene2D[nCnt] = CScene2D::Create();
@@ -349,7 +350,7 @@ HRESULT CUI::Load(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// モードがゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_PLAYER2)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_CHARANAME1)
 			{
 				// テクスチャの読み込み
 				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
@@ -400,7 +401,7 @@ void CUI::Unload(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// モードがゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_PLAYER2)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_CHARANAME1)
 			{
 				m_pTexture[nCnt]->Release();		// 開放
 				m_pTexture[nCnt] = NULL;			// NULLにする
@@ -445,6 +446,9 @@ void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInpu
 					{
 						// タイトルを動かす状態にする
 						m_bUITitle0 = true;
+
+						// タイトルUI縦幅を規定値にする
+						m_fCntUITitle0 = TITLEUI_VALUE_Y - TITLEUI_BEGIN_Y;
 					}
 					else
 					{
@@ -454,16 +458,16 @@ void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInpu
 				}
 				else
 				{// タイトルを動かしていいとき
-				 // タイトルUIの縦の長さが[360]以上のとき
-					if (TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1 >= TITLEUI_MAXSIZE_VALUE_Y)
+					// タイトルUIの縦の長さが[370]以上のとき
+					if (TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1 >= TITLEUI_VALUE_Y + 40)
 					{
 						// タイトルを最大まで拡大させた
 						m_bUITitle1 = true;
 
 					}
-					else if (TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1 <= TITLEUI_MINSIZE_VALUE_Y)
+					else if (TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1 <= TITLEUI_VALUE_Y - 40)
 					{// タイトルUIの縦の長さが[330]以下のとき
-					 // タイトルを最小まで拡小させた
+						// タイトルを最小まで拡小させた
 						m_bUITitle1 = false;
 					}
 
@@ -475,7 +479,7 @@ void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInpu
 					}
 					else
 					{// タイトルを最小まで拡小させたとき
-					 // タイトルカウンタ減算
+						// タイトルカウンタ減算
 						m_fCntUITitle1 += TITLEUI_BOUND_SPEED;
 					}
 
@@ -485,7 +489,7 @@ void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInpu
 			}
 			else
 			{// バウンドカウントが規定値を超えたとき
-			 // タイトルUIの位置Yが規定値以下のとき
+				// タイトルUIの位置Yが規定値以下のとき
 				if (SCREEN_HEIGHT / 2 + TitlePos.y < TITLEUI_FINISH_Y)
 				{
 					// エンターUI
@@ -526,8 +530,8 @@ void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInpu
 		else
 		{
 			// タイトルUI
-			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, TITLEUI_FINISH_Y + m_fCntUISign / 5, 0.0f), TITLEUI_LAST_X,
-				TITLEUI_VALUE_Y, LOGOTYPE_TITLE, NORMAL_COLOR);
+			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, TITLEUI_FINISH_Y + m_fCntUISign / 5, 0.0f), TITLEUI_BEGIN_X + m_fCntUITitle0 - m_fCntUITitle1,
+				TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1, LOGOTYPE_TITLE, NORMAL_COLOR);
 
 			// エンターUI
 			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, ENTERUI_POS_Y, 0.0f), ENTERUI_SIZE_X, ENTERUI_SIZE_Y,
@@ -757,6 +761,7 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 			m_fPosOld[nCnt] = m_fPos[nCnt] + m_fPosCul[nCnt];
 
 		}
+
 		// 1PキャラクターUI
 		SetUI(CHARA1PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_1PCHARA, NORMAL_COLOR);
 		// テクスチャ設定
@@ -765,6 +770,15 @@ void CUI::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, C
 		SetUI(CHARA2PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_2PCHARA, NORMAL_COLOR);
 		// テクスチャ設定
 		m_pScene2D[LOGOTYPE_2PCHARA]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1]);
+
+		// 1PキャラクターネームUI
+		SetUI(READY1PUI_POS, 400, 120, LOGOTYPE_1PCHARA_NAME, NORMAL_COLOR);
+		// テクスチャ設定
+		m_pScene2D[LOGOTYPE_1PCHARA_NAME]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[0]) * 0.25f, 0.0f + (m_nCharaNum[0]) * 0.25f, 0);
+		// 2PキャラクターネームUI
+		SetUI(READY2PUI_POS, 400, 120, LOGOTYPE_2PCHARA_NAME, NORMAL_COLOR);
+		// テクスチャ設定
+		m_pScene2D[LOGOTYPE_2PCHARA_NAME]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[1]) * 0.25f, 0.0f + (m_nCharaNum[1]) * 0.25f, 0);
 
 		// 1Pキャラクター選択されているとき
 		if (m_bCharaDecide[0])
@@ -904,6 +918,15 @@ void CUI::GameUpdate(void)
 		SetUI(D3DXVECTOR3(1225, 70, 0), 110, 130, LOGOTYPE_PLAYER2, NORMAL_COLOR);
 		// テクスチャ設定
 		m_pScene2D[LOGOTYPE_PLAYER2]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1] / 2);
+
+		// 1PキャラクターネームUI
+		SetUI(D3DXVECTOR3(205, 155, 0), 400, 50, LOGOTYPE_CHARANAME0, NORMAL_COLOR);
+		// テクスチャ設定
+		m_pScene2D[LOGOTYPE_CHARANAME0]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[0] / 2) * 0.25f, 0.0f + (m_nCharaNum[0] / 2) * 0.25f, 0);
+		// 2PキャラクターネームUI
+		SetUI(D3DXVECTOR3(1075, 155, 0), 400, 50, LOGOTYPE_CHARANAME1, NORMAL_COLOR);
+		// テクスチャ設定
+		m_pScene2D[LOGOTYPE_CHARANAME1]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[1] / 2) * 0.25f, 0.0f + (m_nCharaNum[1] / 2) * 0.25f, 0);
 	}
 }
 

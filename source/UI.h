@@ -53,6 +53,8 @@ public:
 		LOGOTYPE_2PCHARA,			// 2Pキャラクター
 		LOGOTYPE_1PCHARA_FREAM,		// 1Pキャラクター枠線
 		LOGOTYPE_2PCHARA_FREAM,		// 2Pキャラクター枠線
+		LOGOTYPE_1PCHARA_NAME,		// 1Pキャラクターネーム
+		LOGOTYPE_2PCHARA_NAME,		// 2Pキャラクターネーム
 		LOGOTYPE_1PREADY,			// 1Pキャラクター準備完了
 		LOGOTYPE_2PREADY,			// 2Pキャラクター準備完了
 		LOGOTYPE_SELECTICON,		// プレイヤーセレクトアイコン
@@ -72,6 +74,8 @@ public:
 		LOGOTYPE_JEWELRYYELLOW,		// 宝石黄
 		LOGOTYPE_PLAYER1,			// プレイヤーアイコン1P
 		LOGOTYPE_PLAYER2,			// プレイヤーアイコン2P
+		LOGOTYPE_CHARANAME0,		// 1Pのキャラクターネーム
+		LOGOTYPE_CHARANAME1,		// 2Pのキャラクターネーム
 		LOGOTYPE_MAX				// 最大
 	} UITYPE;
 
