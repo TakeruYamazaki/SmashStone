@@ -16,14 +16,16 @@
 //==================================================================================================================
 // マクロ定義
 //==================================================================================================================
-#define WhileX			250.0f							// イチマスの長さ横
-#define WhileY			250.0f							// イチマスの長さ高さ
-#define WhileZ			250.0f							// イチマスの長さ縦
+#define WhileX			30.0f							// イチマスの長さ横
+#define WhileY			15.0f							// イチマスの長さ高さ
+#define WhileZ			30.0f							// イチマスの長さ縦
 #define MASS_WIDTH		(2)								// 横のマス
 #define MASS_DEPTH		(2)								// 縦のマス
 
 #define FIELD_ALPHA		1.0f							// メッシュフィールドアルファ
-#define FIELD_TEXTUE	"data/TEXTURE/water4.png"	// 読み込むテクスチャのソース先
+#define FIELD_TEXTUE_TITLE	"data/TEXTURE/worldMap.jpg"	// 読み込むテクスチャのソース先
+#define FIELD_TEXTUE_GAME	"data/TEXTURE/water4.png"	// 読み込むテクスチャのソース先
+#define MESH_ANIM_MAX	(10000)							// アニメーション時間の最大
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -65,6 +67,7 @@ void CMeshField::Init(void)
 	StartBox	= m_nWidth + 1;		// 始まる箱
 	EndBox		= 0;				// 引かれる箱
 	fDivide		= 0;				// sinの中身を割る変数
+	m_nCntAnim	= 0;
 
 	m_aVecA = new D3DXVECTOR3[m_nWidth * m_nDepth * 2];		// 法線ベクトルを面の数分一時的に格納
 	m_aVecB = new D3DXVECTOR3[m_nWidth * m_nDepth * 2];		// 法線ベクトルを面の数分一時的に格納
@@ -199,7 +202,60 @@ void CMeshField::Uninit(void)
 //==================================================================================================================
 void CMeshField::Update(void)
 {
+	m_nCntAnim++;
+	if (m_nCntAnim > MESH_ANIM_MAX)
+	{
+		m_nCntAnim = 0;
+	}
 
+	// 頂点データの範囲をロックし、頂点バッファへのポインタ取得
+	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
+
+	// タイトルのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
+	{
+		// 動かす
+		fDivide -= 0.05f;
+
+		// 縦をカウント
+		for (int nDepth = 0; nDepth < m_nDepth + 1; nDepth++)
+		{
+			// 横をカウント
+			for (int nWide = 0; nWide < m_nWidth + 1; nWide++)
+			{
+				// 頂点座標の設定
+				m_pVtx[0].pos = D3DXVECTOR3((-WhileX * m_nWidth) / 2 + WhileX * nWide, 
+					cosf(D3DX_PI / 3 * nDepth + fDivide) * WhileY, 
+					(WhileZ / 2 * m_nDepth) - WhileZ * nDepth);
+
+				// テクスチャ描写の位置
+				m_pVtx[0].tex = D3DXVECTOR2((1.0f / m_nWidth) * nWide, (1.0f / m_nDepth) * nDepth);
+
+				m_pVtx++;
+			}
+		}
+
+		// 法線の設定
+		SetNor();
+	}
+	else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+	{// ゲームのとき
+		// 縦をカウント
+		for (int nDepth = 0; nDepth < m_nDepth + 1; nDepth++)
+		{
+			// 横をカウント
+			for (int nWide = 0; nWide < m_nWidth + 1; nWide++)
+			{
+				// テクスチャ描写の位置
+				m_pVtx[0].tex = D3DXVECTOR2(1.0f * nWide + (0.0001f * m_nCntAnim), 1.0f * nDepth + (0.0001f * m_nCntAnim));
+
+				m_pVtx++;
+			}
+		}
+	}
+
+	// 頂点データをアンロック
+	m_pVtxBuff->Unlock();
 }
 
 //==================================================================================================================
@@ -285,10 +341,21 @@ HRESULT CMeshField::Load(void)
 	CRenderer *pRenderer = CManager::GetRenderer();						// レンダラーの情報取得
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();					// デバイスを取得する
 
-	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,			// デバイスへのポインタ
-		FIELD_TEXTUE,							// ファイルの名前
-		&m_pTexture);							// 読み込むメモリー
+	// タイトルのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
+	{
+		// テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice,			// デバイスへのポインタ
+			FIELD_TEXTUE_TITLE,						// ファイルの名前
+			&m_pTexture);							// 読み込むメモリー
+	}
+	else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+	{
+		// テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice,			// デバイスへのポインタ
+			FIELD_TEXTUE_GAME,						// ファイルの名前
+			&m_pTexture);							// 読み込むメモリー
+	}
 
 	// 値を返す
 	return S_OK;
@@ -467,6 +534,10 @@ void CMeshField::SetMove(D3DXVECTOR3 move)
 //==================================================================================================================
 void CMeshField::SetNor(void)
 {
+	nNumber = 0;									// 配列の番号
+	StartBox = m_nWidth + 1;						// 始まる箱
+	EndBox = 0;										// 引かれる箱
+
 	// 頂点データの範囲をロックし、頂点バッファへのポインタ取得
 	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
 
@@ -491,7 +562,7 @@ void CMeshField::SetNor(void)
 				D3DXVec3Cross(&m_aVecB[nNumber], &m_vectorB, &m_vectorC);									// 二つのベクトルの直交ベクトル
 				D3DXVec3Normalize(&m_aVecB[nNumber], &m_aVecB[nNumber]);									// 正規化する
 
-																											// 配列の番号1プラスする
+				// 配列の番号1プラスする
 				StartBox++;
 				EndBox++;
 				nNumber++;

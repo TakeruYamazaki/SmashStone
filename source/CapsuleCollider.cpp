@@ -14,6 +14,8 @@
 #include "game.h"
 #include "debugProc.h"
 #include "CharEffectOffset.h"
+#include "stone.h"
+#include "3DBoxCollider.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -494,6 +496,56 @@ bool CCapsuleCollider::Collision(void)
 
 	return false;
 }
+
+//-------------------------------------------------------------------------------------------------------------
+// ストーンとの衝突判定
+//-------------------------------------------------------------------------------------------------------------
+/*bool CCapsuleCollider::CollisionStone(void)
+{
+	// 体の時
+	if (m_ColliderInfo.enmTtpeID == COLLIPARTS_BODY)
+	{// 処理しない
+		return false;
+	}
+
+	for (int nCnt = 0; nCnt < _3DBOXCOLLIDER_MAX; nCnt++)
+	{
+		CScene *pScene = C3DBoxCollider::GetInfo(nCnt)->pScene;
+		// 取得に失敗したとき
+		if (pScene == NULL)
+		{
+			return;
+		}
+
+		if (pScene->GetPriority() != CScene::PRIORITY_STONE)
+		{
+			return;
+		}
+
+		// 変数宣言
+		CPlayer *pOwn = (CPlayer *)m_ColliderInfo.pScene;	// このコライダーを持っているプレイヤー
+		CStone *pOthers = (CStone *)pScene;								// ストーン
+
+		if (pOwn->ReadyToHit(m_ColliderInfo.enmTtpeID) == false)
+		{
+			return false;
+		}
+
+#ifdef _DEBUG
+		// 2線分の最短距を求める
+		CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule) ?
+			CDebugProc::Print("当たってる\n"),
+			CCharEffectOffset::Set(pOthers->GetPos(), CCharEffectOffset::STR_ドンッ),
+			pOwn->SetAttakHitStone(true) :
+			CDebugProc::Print("当たってない\n");
+#else
+																		// 2線分の最短距を求める
+		CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule);
+#endif // _DEBUG
+	}
+
+	return false;
+}*/
 
 //-------------------------------------------------------------------------------------------------------------
 // カプセル位置の計算

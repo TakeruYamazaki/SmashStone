@@ -70,6 +70,10 @@ void CPlayer::Init(void)
 {
 	// 要素の初期化
 	m_bTrans = false;
+	for (int nCnt = 0; nCnt < CStone::STONE_ID_MAX; nCnt++)
+	{
+		m_bGetStoneType[nCnt] = false;
+	}
 
 	// 初期化
 	CCharacter::Init();
@@ -769,6 +773,9 @@ void CPlayer::CatchStone(void)
 	{
 		// 出現ストーン数を減算
 		CGame::RemoveNumStone(((CStone *)pScene)->GetIndexPos());
+		// 取得ストーンのタイプを有効
+		int nStoneID = ((CStone *)pScene)->GetStoneID();
+		m_bGetStoneType[nStoneID] = true;
 		// ストーンの取得
 		((CStone *)pScene)->Catch();
 
@@ -907,8 +914,10 @@ void CPlayer::TakeAttack3Damage(CPlayer * pAnother)
 		m_bBlowAway = true;
 		if (m_nNumStone > 0)
 		{
-			// 所持ストーンを一つ減らすn
+			// 所持ストーンを一つ減らす
 			m_nNumStone--;
+			// 再配置できるようストーンを使用されていない状態にする
+			CGame::RemoveTypeStone(CKananLibrary::DecideRandomValue(m_nNumStone + 1, m_bGetStoneType));
 			// 減らしたストーンを即生成
 			CGame::AppearStone();
 		}

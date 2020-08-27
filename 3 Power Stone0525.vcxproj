@@ -163,6 +163,7 @@
     <ClCompile Include="source\charaParam.cpp" />
     <ClCompile Include="source\CharEffectOffset.cpp" />
     <ClCompile Include="source\mapSelect.cpp" />
+    <ClCompile Include="source\objectLift.cpp" />
     <ClCompile Include="source\polygon2D.cpp" />
     <ClCompile Include="source\3DBoxCollider.cpp" />
     <ClCompile Include="source\bar.cpp" />
@@ -266,6 +267,7 @@
     <ClInclude Include="source\Mylibrary.h" />
     <ClInclude Include="source\number.h" />
     <ClInclude Include="source\object.h" />
+    <ClInclude Include="source\objectLift.h" />
     <ClInclude Include="source\objManager.h" />
     <ClInclude Include="source\pause.h" />
     <ClInclude Include="source\player.h" />

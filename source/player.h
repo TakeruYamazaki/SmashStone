@@ -74,8 +74,6 @@ private:
 
 	void CollisionAttack(void);						// 攻撃判定
 
-
-
 	static CHitPoint *m_pHitPoint;					// HP情報
 
 	void ControlGamepad(CInputGamepad *pGamepad);	// ゲームパッド操作

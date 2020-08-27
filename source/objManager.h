@@ -12,6 +12,7 @@
 //=============================================================================
 #include "main.h"
 #include "object.h"
+#include "objectLift.h"
 #include "scene.h"
 #include <vector>
 #include <memory>							// スマートポインタの使用に必要
@@ -42,9 +43,11 @@ public:
 
 	typedef struct
 	{
-		int nNumObject;					// 配置するオブジェクト数
-		OBJECT_OFFSET *objOffset;		// オブジェクトオフセット格納用
-		std::vector<CObject*> pObject;	// オブジェクト情報
+		int nNumObject;							// 配置するオブジェクト数
+		OBJECT_OFFSET *objOffset;				// オブジェクトオフセット格納用
+		std::vector<CObject*> pObject;			// オブジェクト情報
+		std::vector<CObjectLift*> pObjLift;	// 持てるオブジェクト情報
+		D3DXVECTOR3 stonePos[5]; // ストーンを配置する位置
 	} STAGEINFO;
 
 	CObjectManager(CScene::PRIORITY nPriority);	// コンストラクタ
@@ -63,8 +66,15 @@ public:
 	static STAGETYPE GetStageType(void) { return m_stageType; }								// ステージのタイプ取得
 	static STAGEINFO GetStageInfo(void) { return m_stageInfo[m_stageType]; }				// ステージの情報取得
 
-	std::vector<CObject*> GetObj(void) { return m_stageInfo[m_stageType].pObject; }			// オブジェクトの取得
+	std::vector<CObject*> GetObjAll(void) { return m_stageInfo[m_stageType].pObject; }		// オブジェクトの取得
+	CObject* GetObj(int nIndex) { return m_stageInfo[m_stageType].pObject[nIndex]; }		// オブジェクトの取得
 	int		GetNumObject(void) { return (int)m_stageInfo[m_stageType].pObject.size(); }		// オブジェクト総数の取得
+
+	std::vector<CObjectLift*> GetObjLiftAll(void) { return m_stageInfo[m_stageType].pObjLift; }	// 持てるオブジェクトの取得
+	CObjectLift* GetObjLift(int nIndex) { return m_stageInfo[m_stageType].pObjLift[nIndex]; }	// 持てるオブジェクトの取得
+	int		GetNumObjLift(void) { return (int)m_stageInfo[m_stageType].pObjLift.size(); }		// 持てるオブジェクト総数の取得
+
+	static D3DXVECTOR3 GetDefaultStonePos(int nPos) { return m_stageInfo[m_stageType].stonePos[nPos]; }	// ストーンの配置位置の取得
 
 #ifdef _DEBUG
 	void ShowObjectManagerInfo(void);			// ImGuiの更新

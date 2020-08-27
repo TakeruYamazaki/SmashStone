@@ -104,6 +104,8 @@ void CCharacter::Uninit()
 //=============================================================================
 void CCharacter::Update()
 {
+	m_param = CCharaParam::GetPlayerParam((PARAM_TYPE)(m_type / 2));
+	
 	// 移動処理
 	Move();
 
@@ -227,10 +229,10 @@ void CCharacter::SetCylinderCoillider(void)
 //=============================================================================
 inline bool CCharacter::GetbMotionAttack(void)
 {
-	// 現在のモーションのキーを取得
-	int nKey = m_pModelCharacter->GetNowKey();
 	// 現在のモーションキーが攻撃中かを取得
-	return CMotion::GetbAttack((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), nKey);
+	bool bMotionAttack = CMotion::GetbAttack((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());
+	// 値を返す
+	return bMotionAttack;
 }
 
 //=============================================================================
@@ -463,7 +465,13 @@ void CCharacter::Trans(void)
 	// ストーンの取得数を初期化
 	m_nNumStone = 0;
 	// ストーンの出現数を初期化
-	CGame::SetNumStone(0);
+	CGame::SetNumStone(0);	
+	for (int nCnt = 0; nCnt < CStone::STONE_ID_MAX; nCnt++)
+	{
+		m_bGetStoneType[nCnt] = false;
+		// 再配置できるようストーンを使用されていない状態にする
+		CGame::RemoveTypeStone(nCnt);
+	}
 	// 変身時間を初期化
 	m_nCntTrans = 0;
 	// 変身を解除

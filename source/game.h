@@ -13,6 +13,7 @@
 #include "main.h"
 #include "Mylibrary.h"
 #include "kananlibrary.h"
+#include "stone.h"
 #include <memory>	// スマートポインタの使用に必要
 
 //==================================================================================================================
@@ -82,6 +83,7 @@ public:
 	static void SetStageType(const int type)	{ m_nStageType = type; }		// ステージタイプの設定
 	static void SetGameState(GAMESTATE state)	{ m_gameState = state; }		// ゲームの状態設定
 	static void RemoveNumStone(int nIndexPos)	{ m_nNumStone--; m_bSetPos[nIndexPos] = false; }			// ストーンの数を減算
+	static void RemoveTypeStone(int nType)		{ m_bGetType[nType] = false; }			// ストーンの取得を無効
 	static void SetNumStone(const int &nStone)	{ m_nNumStone = nStone; }		// ストーンの数の設定
 	static void SetNextMode(const int nextMode);								// 次のモードへ移行
 
@@ -98,6 +100,7 @@ public:
 	static int GetAllRound(void)				{ return m_nRoundAll; }			// 全ラウンド数の取得
 	static NUM_PLAYER GetLosePlayer(void)		{ return m_losePlayer; }		// 負けたプレイヤーの取得
 	static void AppearStone(void);				// どこからでも呼び出せるストーン出現
+	static bool GetbGetType(int nType)			{ return m_bGetType[nType]; }	// 取得されたタイプの取得
 
 protected:
 
@@ -111,7 +114,6 @@ private:
 	void NextRound(void);							// 次のラウンドへ
 	void GameResult(void);							// ゲームのリザルト
 	void DecideCreateStone(void);					// ストーンを生成するか決める
-	static int DecideRandomPos(void);				// 生成位置をランダムで決める
 	static GAMESTATE m_gameState;					// ゲーム状態
 	static int m_nPlayerType[MAX_PLAYER];			// キャラクターセレクト時のタイプを保存
 	static CPlayer *m_pPlayer[MAX_PLAYER];			// プレイヤーの配列ポインタ
@@ -127,8 +129,8 @@ private:
 	static int m_nCounterGameState;					// ゲームの状態管理カウンター
 	static int m_nNumStone;							// 生成したストーンの数
 	static int m_nCntDecide;						// ストーン生成のタイミングを決めるカウンタ
-	static D3DXVECTOR3 m_stonePos[STONE_POS];		// ストーンの生成場所
 	static bool m_bSetPos[STONE_POS];				// ストーンが生成されているか
+	static bool m_bGetType[CStone::STONE_ID_MAX];		// ストーンが取得されているか
 	static CObjectManager *m_pObjMana;				// オブジェクトマネージャーのポインタ
 	static CPolygonCollider* m_pPolyColli[POLYCOLLI_USE_TYPE];		// ポリゴンコライダーのポインタ
 	static CUIKO *m_pUIKO;							// KOのポインタ
