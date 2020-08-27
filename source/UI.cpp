@@ -24,14 +24,11 @@
 #define ENTER_SIZEY 150.0f							// エンターロゴY
 #define TITLE_ENTER_POSY 600.0f						// タイトルエンターロゴ位置Y
 #define NORMAL_COLOR D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)// 画像のままの色
-#define TITLEUI_BEGIN_X 2000						// タイトルUI最初の横の大きさ
-#define TITLEUI_BEGIN_Y 1200						// タイトルUI最初の縦の大きさ
-#define TITLEUI_SMALL_SPEED 15						// タイトルUIの小さくする速度
-#define TITLEUI_VALUE_Y	350							// 減少サイズの値Y
-#define TITLEUI_LAST_X 1135							// タイトルUI最後の値X
-#define TITLEUI_BOUND_SPEED 5						// タイトルUIのバウンド速度
-#define TITLEUI_MAXSIZE_VALUE_Y 370					// タイトルUI最大サイズ縦
-#define TITLEUI_MINSIZE_VALUE_Y 330					// タイトルUI最大サイズ縦
+#define TITLEUI_BEGIN_X 1760						// タイトルUI最初の横の大きさ
+#define TITLEUI_BEGIN_Y 1600						// タイトルUI最初の縦の大きさ
+#define TITLEUI_SMALL_SPEED 30						// タイトルUIの小さくする速度
+#define TITLEUI_VALUE_Y	700							// 減少サイズの値Y
+#define TITLEUI_BOUND_SPEED 10						// タイトルUIのバウンド速度
 #define TITLEUI_BOUND_COUNT 60						// タイトルUIバウンドカウンタ
 #define TITLEUI_FINISH_Y 250						// タイトルUIの最後の位置Y
 #define TITLEUI_UP_SPEED 2							// タイトルUI上がる速度
@@ -449,6 +446,9 @@ void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInpu
 					{
 						// タイトルを動かす状態にする
 						m_bUITitle0 = true;
+
+						// タイトルUI縦幅を規定値にする
+						m_fCntUITitle0 = TITLEUI_VALUE_Y - TITLEUI_BEGIN_Y;
 					}
 					else
 					{
@@ -458,16 +458,16 @@ void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInpu
 				}
 				else
 				{// タイトルを動かしていいとき
-				 // タイトルUIの縦の長さが[360]以上のとき
-					if (TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1 >= TITLEUI_MAXSIZE_VALUE_Y)
+					// タイトルUIの縦の長さが[370]以上のとき
+					if (TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1 >= TITLEUI_VALUE_Y + 40)
 					{
 						// タイトルを最大まで拡大させた
 						m_bUITitle1 = true;
 
 					}
-					else if (TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1 <= TITLEUI_MINSIZE_VALUE_Y)
+					else if (TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1 <= TITLEUI_VALUE_Y - 40)
 					{// タイトルUIの縦の長さが[330]以下のとき
-					 // タイトルを最小まで拡小させた
+						// タイトルを最小まで拡小させた
 						m_bUITitle1 = false;
 					}
 
@@ -479,7 +479,7 @@ void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInpu
 					}
 					else
 					{// タイトルを最小まで拡小させたとき
-					 // タイトルカウンタ減算
+						// タイトルカウンタ減算
 						m_fCntUITitle1 += TITLEUI_BOUND_SPEED;
 					}
 
@@ -489,7 +489,7 @@ void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInpu
 			}
 			else
 			{// バウンドカウントが規定値を超えたとき
-			 // タイトルUIの位置Yが規定値以下のとき
+				// タイトルUIの位置Yが規定値以下のとき
 				if (SCREEN_HEIGHT / 2 + TitlePos.y < TITLEUI_FINISH_Y)
 				{
 					// エンターUI
@@ -530,8 +530,8 @@ void CUI::TitleUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInpu
 		else
 		{
 			// タイトルUI
-			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, TITLEUI_FINISH_Y + m_fCntUISign / 5, 0.0f), TITLEUI_LAST_X,
-				TITLEUI_VALUE_Y, LOGOTYPE_TITLE, NORMAL_COLOR);
+			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, TITLEUI_FINISH_Y + m_fCntUISign / 5, 0.0f), TITLEUI_BEGIN_X + m_fCntUITitle0 - m_fCntUITitle1,
+				TITLEUI_BEGIN_Y + m_fCntUITitle0 + m_fCntUITitle1, LOGOTYPE_TITLE, NORMAL_COLOR);
 
 			// エンターUI
 			SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, ENTERUI_POS_Y, 0.0f), ENTERUI_SIZE_X, ENTERUI_SIZE_Y,
