@@ -104,10 +104,10 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/Clock hands.png" },	// 時計の針1
 	{ "data/TEXTURE/clock gear.png" },	// 時計の歯車1
 	{ "data/TEXTURE/FULLchara.png" },	// キャラクター全員
-	{ "data/TEXTURE/FULLchara.png" },	// キャラクター全員
-	{ "data/TEXTURE/FULLchara.png" },	// キャラクター全員
-	{ "data/TEXTURE/1Pchara.png" },		// 1Pキャラクター
-	{ "data/TEXTURE/2Pchara.png" },		// 2Pキャラクター
+	{ "data/TEXTURE/FULLchara.png" },	// 1Pキャラクター
+	{ "data/TEXTURE/FULLchara.png" },	// 2Pキャラクター
+	{ "data/TEXTURE/1Pchara.png" },		// 1Pキャラクター枠
+	{ "data/TEXTURE/2Pchara.png" },		// 2Pキャラクター枠
 	{ "data/TEXTURE/Ready.png" },		// 1Pキャラクター準備完了
 	{ "data/TEXTURE/Ready.png" },		// 2Pキャラクター準備完了
 	{ "data/TEXTURE/PlayerSelect.png" },// プレイヤーセレクトアイコン
@@ -125,6 +125,8 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/jewelryBule.png" },	// 宝石青
 	{ "data/TEXTURE/jewelryRed.png" },	// 宝石赤
 	{ "data/TEXTURE/jewelryYellow.png" },// 宝石黄
+	{ "data/TEXTURE/FULLchara.png" },	// 宝石黄
+	{ "data/TEXTURE/FULLchara.png" },	// 宝石黄
 };
 
 int CUI::m_nMapID = 0;	// マップID
@@ -229,7 +231,7 @@ void CUI::Init(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// ゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_JEWELRYYELLOW)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_PLAYER2)
 			{
 				// 生成処理
 				m_pScene2D[nCnt] = CScene2D::Create();
@@ -347,7 +349,7 @@ HRESULT CUI::Load(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// モードがゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_JEWELRYYELLOW)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_PLAYER2)
 			{
 				// テクスチャの読み込み
 				D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
@@ -398,7 +400,7 @@ void CUI::Unload(void)
 		else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 		{// モードがゲームのとき
 			// ゲームで使うUIのとき
-			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_JEWELRYYELLOW)
+			if (nCnt > LOGOTYPE_MAPEXPLANATION4 && nCnt <= LOGOTYPE_PLAYER2)
 			{
 				m_pTexture[nCnt]->Release();		// 開放
 				m_pTexture[nCnt] = NULL;			// NULLにする
@@ -877,8 +879,31 @@ void CUI::GameUpdate(void)
 	// ゲームのとき
 	if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 	{
+		CPlayer *pPlayer0, *pPlayer1;
+
+		// プレイヤー情報取得
+		pPlayer0 = CGame::GetPlayer(0);
+		pPlayer1 = CGame::GetPlayer(1);
+
+		// プレイヤーが2体いるとき
+		if (pPlayer0 != NULL && pPlayer1 != NULL)
+		{
+			// プレイヤー番号取得
+			m_nCharaNum[0] = pPlayer0->GetCharaType();
+			m_nCharaNum[1] = pPlayer1->GetCharaType();
+		}
+
 		// ゲーム背景
 		SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), SCREEN_WIDTH, SCREEN_HEIGHT, LOGOTYPE_GAMEBG, NORMAL_COLOR);
+
+		// 1PキャラクターUI
+		SetUI(D3DXVECTOR3(55, 70, 0), 110, 130, LOGOTYPE_PLAYER1, NORMAL_COLOR);
+		// テクスチャ設定
+		m_pScene2D[LOGOTYPE_PLAYER1]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[0] / 2);
+		// 2PキャラクターUI
+		SetUI(D3DXVECTOR3(1225, 70, 0), 110, 130, LOGOTYPE_PLAYER2, NORMAL_COLOR);
+		// テクスチャ設定
+		m_pScene2D[LOGOTYPE_PLAYER2]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1] / 2);
 	}
 }
 
