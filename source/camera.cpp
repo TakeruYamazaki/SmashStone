@@ -83,14 +83,14 @@ CCamera::~CCamera()
 void CCamera::Init(void)
 {
 	// 変数の初期化
-	m_posV		= ZeroVector3;
-	m_posR		= ZeroVector3;
-	m_posVDest	= ZeroVector3;
-	m_posRDest	= ZeroVector3;
-	m_posU		= ZeroVector3;
-	m_rot		= ZeroVector3;
-	m_rotDest	= ZeroVector3;
-	m_mousePos	= ZeroVector3;
+	m_posV = ZeroVector3;
+	m_posR = ZeroVector3;
+	m_posVDest = ZeroVector3;
+	m_posRDest = ZeroVector3;
+	m_posU = ZeroVector3;
+	m_rot = ZeroVector3;
+	m_rotDest = ZeroVector3;
+	m_mousePos = ZeroVector3;
 	m_fDistance = 0.0f;
 	m_fDisScale = 0.8f;
 	nCntRot = 0;										// 回転を始めるカウンタ
@@ -182,7 +182,7 @@ void CCamera::SetCamera(void)
 //==================================================================================================================
 // カメラの位置設定
 //==================================================================================================================
-void CCamera::SetCameraPos(const D3DXVECTOR3 posV, const D3DXVECTOR3 posR)
+void CCamera::SetCameraPos(const D3DXVECTOR3 posV, const D3DXVECTOR3 posR, const D3DXVECTOR3 rot)
 {
 	// 情報の初期化
 	m_posV = posV;
@@ -190,7 +190,7 @@ void CCamera::SetCameraPos(const D3DXVECTOR3 posV, const D3DXVECTOR3 posR)
 	m_posVDest = posV;
 	m_posRDest = posR;
 	m_posU = AboveNormal;
-	m_rot = D3DXVECTOR3(0.3f, 0.7f, 0.0f);
+	m_rot = rot;
 	m_fDistance = 0.0f;
 #ifdef _DEBUG
 	m_posDebug = ZeroVector3;
@@ -252,6 +252,12 @@ void CCamera::MoveCamera(void)
 			fDistans = CKananLibrary::OutputSqrt(pos0 - pos1);
 
 			m_fDistance = fDistans;
+
+			// 注視点とカメラの距離が規定値より小さくなるとき
+			if (m_fDistance * 0.8f <= 300)
+			{
+				m_fDistance = 300 / 0.8f;
+			}
 		}
 	}
 
@@ -265,22 +271,15 @@ void CCamera::MoveCamera(void)
 	// 注視点を追いかける速度
 	m_posR += difposR / SPEED_INERTIA;
 
-	// 注視点とカメラの距離が規定値より小さくなるとき
-	if (m_fDistance * 0.8f <= 300)
+	// ゲームのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_GAME ||
+		CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
 	{
-		m_fDistance = 300 / 0.8f;
+		// 目的の視点の計算
+		m_posVDest.x = m_posR.x + -cosf(m_rot.x) * sinf(m_rot.y) * m_fDistance * m_fDisScale;
+		m_posVDest.y = m_posR.y + sinf(m_rot.x) * m_fDistance * m_fDisScale;
+		m_posVDest.z = m_posR.z + -cosf(m_rot.x) * cosf(m_rot.y) * m_fDistance * m_fDisScale;
 	}
-
-	//// 目的の視点の計算
-	//m_posVDest.x = -cosf(m_rot.x) * sinf(m_rot.y) * m_fDistance * 0.8f;
-	//m_posVDest.y = sinf(m_rot.x) * m_fDistance * 1.2f;
-	//m_posVDest.z = -cosf(m_rot.x) * cosf(m_rot.y) * m_fDistance * 0.8f;
-
-	// 目的の視点の計算
-	m_posVDest.x = m_posR.x + -cosf(m_rot.x) * sinf(m_rot.y) * m_fDistance * m_fDisScale;
-	m_posVDest.y = m_posR.y + sinf(m_rot.x) * m_fDistance * m_fDisScale;
-	m_posVDest.z = m_posR.z + -cosf(m_rot.x) * cosf(m_rot.y) * m_fDistance * m_fDisScale;
-
 #ifdef _DEBUG
 	m_posVDest += m_posDebug;
 #endif
@@ -515,15 +514,31 @@ CCamera * CCamera::Create(void)
 	// カメラの初期化
 	m_pCamera->Init();
 
-	m_pCamera->SetCameraPos(D3DXVECTOR3(350.0f, 300.0f, -300.0f),
-							D3DXVECTOR3(0.0f, 10.0f, 0.0f));
-
-	//m_posV = D3DXVECTOR3(0.0f, 150.0f, -500.0f);		// 視点
-	//m_posVDest = D3DXVECTOR3(0.0f, 150.0f, -500.0f);	// 視点の目標地点
-	//m_posR = D3DXVECTOR3(0.0f, 10.0f, 0.0f);			// 注視点
-	//m_posRDest = D3DXVECTOR3(0.0f, 10.0f, 0.0f);		// 注視点の目標地点
-	//m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				// 上方向ベクトル
-	//m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 回転の目標地点
+	// タイトルのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
+	{
+		// カメラの位置設定
+		m_pCamera->SetCameraPos(D3DXVECTOR3(1.0f, 150.0f, 1.0f),
+			D3DXVECTOR3(0.0f, 10.0f, 0.0f), ZeroVector3);
+	}
+	else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
+	{// チュートリアルのとき
+		// カメラの位置設定
+		m_pCamera->SetCameraPos(D3DXVECTOR3(350.0f, 150.0f, -300.0f),
+			D3DXVECTOR3(0.0f, 10.0f, 0.0f), ZeroVector3);
+	}
+	else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
+	{// マップ選択画面のとき
+		// カメラの位置設定
+		m_pCamera->SetCameraPos(D3DXVECTOR3(350.0f, 300.0f, -300.0f),
+			D3DXVECTOR3(0.0f, 10.0f, 0.0f), D3DXVECTOR3(0.3f, 0.7f, 0.0f));
+	}
+	else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+	{// ゲームのとき
+		// カメラの位置設定
+		m_pCamera->SetCameraPos(D3DXVECTOR3(350.0f, 300.0f, -300.0f),
+			D3DXVECTOR3(0.0f, 10.0f, 0.0f), D3DXVECTOR3(0.3f, 0.7f, 0.0f));
+	}
 
 	// 値を返す
 	return m_pCamera;
