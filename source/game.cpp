@@ -83,6 +83,7 @@ NUM_PLAYER			CGame::m_winPlayer				= NUM_PLAYER::PLAYER_NONE;		// 勝利したプレイ
 NUM_PLAYER			CGame::m_losePlayer				= NUM_PLAYER::PLAYER_NONE;		// 負けたプレイヤー
 CObjectManager		*CGame::m_pObjMana				= nullptr;						// オブジェクトマネージャーのポインタ
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ストーンの生成場所に生成されているか
+bool				CGame::m_bGetType[CStone::STONE_ID_MAX] = {};					// ストーンの生成場所に生成されているか
 int					CGame::m_nStageType				= 0;							// ステージのタイプ
 D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ストーンの生成場所
 {
@@ -178,6 +179,11 @@ void CGame::Init(void)
 	for (int nCnt = 0; nCnt < STONE_POS; nCnt++)
 	{
 		m_bSetPos[nCnt] = false;
+	}
+
+	for (int nCnt = 0; nCnt < CStone::STONE_ID_MAX; nCnt++)
+	{
+		m_bGetType[nCnt] = false;
 	}
 }
 
@@ -372,11 +378,15 @@ void CGame::SetNextMode(const int nextMode)
 void CGame::AppearStone(void)
 {
 	// ランダムでポイントを決める
-	int RandValue = DecideRandomPos();
+	int RandValue = CKananLibrary::DecideRandomValue(STONE_POS, m_bSetPos);
+	// ランダムでポイントを決める
+	int RandType = CKananLibrary::DecideRandomValue(CStone::STONE_ID_MAX, m_bGetType);
 	// 決められた位置からランダムで生成
-	CStone::Create(RandValue, CStone::STONE_ID_DEFAULT, m_stonePos[RandValue]);
+	CStone::Create(RandValue, (CStone::STONE_ID)RandType, m_stonePos[RandValue]);
 	// 生成された
 	m_bSetPos[RandValue] = true;
+	// 生成された
+	m_bGetType[RandType] = true;
 	// 出現数を加算
 	m_nNumStone++;
 }
@@ -610,43 +620,4 @@ void CGame::DecideCreateStone(void)
 
 	// カウンタを初期化
 	m_nCntDecide = 0;
-}
-
-//==================================================================================================================
-//	生成位置をランダムで決める
-//==================================================================================================================
-int CGame::DecideRandomPos(void)
-{
-	// ランダムの範囲
-	int RandRange = STONE_POS;
-	
-	// 生成された数分範囲を減らす
-	for (int nCnt = 0; nCnt < STONE_POS; nCnt++)
-	{
-		if (m_bSetPos[nCnt])
-			RandRange--;
-	}
-
-	// 範囲の分だけメモリ確保
-	int *RandPos = new int[RandRange];
-	// 番号カウンタ
-	int nCntRand = 0;
-
-	// 生成されていない番号を配列に保存
-	for (int nCnt = 0; nCnt < STONE_POS; nCnt++)
-	{
-		if (!m_bSetPos[nCnt])
-		{
-			RandPos[nCntRand] = nCnt;
-			nCntRand++;
-		}
-	}
-
-	// 出力用
-	int outValue = RandPos[rand() % RandRange];
-	// ポインタの破棄
-	delete[] RandPos;
-
-	// 値を返す
-	return outValue;
 }

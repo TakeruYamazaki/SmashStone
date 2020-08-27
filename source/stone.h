@@ -58,7 +58,9 @@ public:
 	typedef enum
 	{
 		STONE_ID_NONE = -1,
-		STONE_ID_DEFAULT,
+		STONE_ID_RED,
+		STONE_ID_BLUE,
+		STONE_ID_GREEN,
 		STONE_ID_MAX
 	} STONE_ID;
 
@@ -111,6 +113,8 @@ public:
 	void Catch(void);
 	// 生成位置の取得
 	int GetIndexPos(void) { return m_nIndexPos; }
+	// ストーンのIDの取得
+	int GetStoneID(void) { return m_enmStoneID; }
 
 private:
 	/* メンバ関数 */

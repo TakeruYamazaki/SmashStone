@@ -17,6 +17,7 @@
 #include "motion.h"
 #include "charaParam.h"
 #include "kananlibrary.h"
+#include "stone.h"
 
 // ===================================================================
 // マクロ定義
@@ -69,21 +70,20 @@ public:
 	inline void        SetRotDest(const D3DXVECTOR3 & rotDest)	{ m_rotDest = rotDest; }			// 目的の回転の設定
 	inline void        SetbWalk(const bool &bWalk)				{ m_bWalk = bWalk; }				// 歩きの設定
 	inline void        SetbJump(const bool &bJump)				{ m_bJump = bJump; }				// ジャンプの設定
-	inline void        SetLife(const float nLife)				{ m_nLife = nLife; }				// ライフの設定
-	inline void        SetAttakHit(const bool bAttackHit)		{ m_bAttakHit = m_bAttack; }		// 攻撃を当てたフラグ
+	inline void        SetLife(const float &nLife)				{ m_nLife = nLife; }				// ライフの設定
+	inline void        SetAttakHit(const bool &bAttackHit)		{ m_bAttakHit = m_bAttack; }		// 攻撃を当てたフラグ
 	void               SetModelType(CHARACTER_TYPE type);											// モデルの設定
 	void               SetCylinderCoillider(void);													// シリンダーコライダーの設定
-
 
 	inline CHARACTER_TYPE    GetCharaType(void)					{ return m_type; }					// キャラタイプの取得
 	inline STATE_LIFT_OBJET  GetStateLift(void)					{ return m_StateLift; }				// 物持ち上げの状態取得
 	inline D3DXVECTOR3       &GetPos(void)						{ return m_pos; }					// 位置の取得
-	inline D3DXVECTOR3       GetMove(void)						{ return m_move; }					// 移動値の取得
-	inline D3DXVECTOR3       GetRot(void)						{ return m_rot; }					// 回転の取得
-	inline D3DXVECTOR3       GetRotDest(void)					{ return m_rotDest; }				// 回転先の取得
-	inline float             GetMaxLife(void)					{ return m_param.fMaxLife; }		// 最大ライフ取得
-	inline float             GetLife(void)						{ return m_nLife; }					// ライフ取得
-	inline bool              GetbJump(void)						{ return m_bJump; }					// ジャンプ状態の取得
+	inline D3DXVECTOR3       &GetMove(void)						{ return m_move; }					// 移動値の取得
+	inline D3DXVECTOR3       &GetRot(void)						{ return m_rot; }					// 回転の取得
+	inline D3DXVECTOR3       &GetRotDest(void)					{ return m_rotDest; }				// 回転先の取得
+	inline float             &GetMaxLife(void)					{ return m_param.fMaxLife; }		// 最大ライフ取得
+	inline float             &GetLife(void)						{ return m_nLife; }					// ライフ取得
+	inline bool              &GetbJump(void)					{ return m_bJump; }					// ジャンプ状態の取得
 	inline void              Damage(const int nDamage)			{ m_nLife -= nDamage; }				// ダメージ処理
 	inline CCapsuleCollider* GetCapCollider(int nPartsIndex)	{ return m_pCapColi[nPartsIndex]; }	// カプセルコライダーの取得
 
@@ -133,6 +133,7 @@ protected:
 	int						  m_nCntDown;				// ダウンしている時間
 
 	bool		m_bAttakHit;							// 攻撃を当てたフラグ
+	bool m_bGetStoneType[CStone::STONE_ID_MAX];	// 取得したストーンのタイプ
 
 private:
 	void Move(void);									// 移動関数

@@ -89,7 +89,7 @@ private:
 	int nNumber;											// 三角形の配列の番号
 	int StartBox;											// 始まる箱
 	int EndBox;												// 引かれる箱
-
+	int m_nCntAnim;											// アニメーションのカウンタ
 	float fDivide;											// sinの中身を割る変数
 };
 #endif

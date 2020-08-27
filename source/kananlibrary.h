@@ -222,6 +222,8 @@ public:
 	static HRESULT GetMoveByKeyboard(CInputKeyboard *pKey, int nPlayer);	// キーボードで移動入力しているか取得
 	static HRESULT GetMoveByGamepad(CInputGamepad *pGamepad);					// ゲームパッドで相殺しているか取得
 
+	static int DecideRandomValue(int nMaxValue, bool *bSelect); // 選択肢の中からランダムの値を返す
+
 	static float OutputSqrt(D3DXVECTOR3 difpos);				// 平方根計算
 	static float OutputDistance(D3DXVECTOR3 difpos);			// 距離計算
 
