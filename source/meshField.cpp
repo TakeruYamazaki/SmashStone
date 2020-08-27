@@ -16,9 +16,9 @@
 //==================================================================================================================
 // マクロ定義
 //==================================================================================================================
-#define WhileX			250.0f							// イチマスの長さ横
-#define WhileY			250.0f							// イチマスの長さ高さ
-#define WhileZ			250.0f							// イチマスの長さ縦
+#define WhileX			30.0f							// イチマスの長さ横
+#define WhileY			15.0f							// イチマスの長さ高さ
+#define WhileZ			30.0f							// イチマスの長さ縦
 #define MASS_WIDTH		(2)								// 横のマス
 #define MASS_DEPTH		(2)								// 縦のマス
 
@@ -211,16 +211,46 @@ void CMeshField::Update(void)
 	// 頂点データの範囲をロックし、頂点バッファへのポインタ取得
 	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
 
-	// 縦をカウント
-	for (int nDepth = 0; nDepth < m_nDepth + 1; nDepth++)
+	// タイトルのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
 	{
-		// 横をカウント
-		for (int nWide = 0; nWide < m_nWidth + 1; nWide++)
-		{
-			// テクスチャ描写の位置
-			m_pVtx[0].tex = D3DXVECTOR2(1.0f * nWide + (0.0001f * m_nCntAnim), 1.0f * nDepth + (0.0001f * m_nCntAnim));
+		// 動かす
+		fDivide -= 0.05f;
 
-			m_pVtx++;
+		// 縦をカウント
+		for (int nDepth = 0; nDepth < m_nDepth + 1; nDepth++)
+		{
+			// 横をカウント
+			for (int nWide = 0; nWide < m_nWidth + 1; nWide++)
+			{
+				// 頂点座標の設定
+				m_pVtx[0].pos = D3DXVECTOR3((-WhileX * m_nWidth) / 2 + WhileX * nWide, 
+					cosf(D3DX_PI / 3 * nDepth + fDivide) * WhileY, 
+					(WhileZ / 2 * m_nDepth) - WhileZ * nDepth);
+
+				// テクスチャ描写の位置
+				m_pVtx[0].tex = D3DXVECTOR2((1.0f / m_nWidth) * nWide, (1.0f / m_nDepth) * nDepth);
+
+				m_pVtx++;
+			}
+		}
+
+		// 法線の設定
+		SetNor();
+	}
+	else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+	{// ゲームのとき
+		// 縦をカウント
+		for (int nDepth = 0; nDepth < m_nDepth + 1; nDepth++)
+		{
+			// 横をカウント
+			for (int nWide = 0; nWide < m_nWidth + 1; nWide++)
+			{
+				// テクスチャ描写の位置
+				m_pVtx[0].tex = D3DXVECTOR2(1.0f * nWide + (0.0001f * m_nCntAnim), 1.0f * nDepth + (0.0001f * m_nCntAnim));
+
+				m_pVtx++;
+			}
 		}
 	}
 
@@ -504,6 +534,10 @@ void CMeshField::SetMove(D3DXVECTOR3 move)
 //==================================================================================================================
 void CMeshField::SetNor(void)
 {
+	nNumber = 0;									// 配列の番号
+	StartBox = m_nWidth + 1;						// 始まる箱
+	EndBox = 0;										// 引かれる箱
+
 	// 頂点データの範囲をロックし、頂点バッファへのポインタ取得
 	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
 
@@ -528,7 +562,7 @@ void CMeshField::SetNor(void)
 				D3DXVec3Cross(&m_aVecB[nNumber], &m_vectorB, &m_vectorC);									// 二つのベクトルの直交ベクトル
 				D3DXVec3Normalize(&m_aVecB[nNumber], &m_aVecB[nNumber]);									// 正規化する
 
-																											// 配列の番号1プラスする
+				// 配列の番号1プラスする
 				StartBox++;
 				EndBox++;
 				nNumber++;
