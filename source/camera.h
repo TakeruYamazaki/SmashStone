@@ -41,7 +41,7 @@ public:
 	static CCamera *Create(void);		// 生成処理
 
 	void SetCamera(void);				// カメラの設定処理
-	void SetCameraPos(const D3DXVECTOR3 posV, const D3DXVECTOR3 posR);	// カメラの位置設定
+	void SetCameraPos(const D3DXVECTOR3 posV, const D3DXVECTOR3 posR, const D3DXVECTOR3 rot);	// カメラの位置設定
 	void SetRot(const D3DXVECTOR3 &rot)		{ m_rot = rot; }		// 回転設定処理
 	void SetPosV(const D3DXVECTOR3 &posV)	{ m_posV = posV; }		// 視点位置設定処理
 	void SetPosR(const D3DXVECTOR3 &posR)	{ m_posR = posR; }		// 注視点の設定
