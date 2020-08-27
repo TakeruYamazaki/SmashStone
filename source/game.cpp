@@ -40,6 +40,7 @@
 #include "UI.h"
 #include "3DEffect.h"
 #include "CharEffectOffset.h"
+#include "3DParticle.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -292,7 +293,7 @@ void CGame::Update(void)
 
 	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_LSHIFT))
 	{
-		//CCharEffectOffset::Set(&m_pPlayer[PLAYER_ONE]->GetPos(), CCharEffectOffset::STR_ドンッ);
+		C3DParticle::Set(&m_pPlayer[PLAYER_ONE]->GetPos(), &m_pPlayer[PLAYER_ONE]->GetRot(), C3DParticle::HIT);
 	}
 #endif // _DEBUG
 }

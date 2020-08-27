@@ -17,7 +17,7 @@ SETPARAM
 	// エフェクトの種類
 	TYPE = 1
 	// テクスチャの種類
-	TEXTYPE = 14
+	TEXTYPE = 16
 	// 位置
 	POS = -30.0 60.0 0.0
 	// 移動量
@@ -42,7 +42,7 @@ SETPARAM
 	// エフェクトの種類
 	TYPE = 1
 	// テクスチャの種類
-	TEXTYPE = 16
+	TEXTYPE = 18
 	// 位置
 	POS = 0.0 70.0 0.0
 	// 移動量
@@ -67,7 +67,7 @@ SETPARAM
 	// エフェクトの種類
 	TYPE = 1
 	// テクスチャの種類
-	TEXTYPE = 13
+	TEXTYPE = 15
 	// 位置
 	POS = 30.0 60.0 0.0
 	// 移動量
