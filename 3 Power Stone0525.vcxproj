@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\3DEffect.cpp" />
+    <ClCompile Include="source\3DParticle.cpp" />
     <ClCompile Include="source\CapsuleCollider.cpp" />
     <ClCompile Include="source\charaParam.cpp" />
     <ClCompile Include="source\CharEffectOffset.cpp" />
@@ -224,6 +225,7 @@
   <ItemGroup>
     <ClInclude Include="source\3DBoxCollider.h" />
     <ClInclude Include="source\3DEffect.h" />
+    <ClInclude Include="source\3DParticle.h" />
     <ClInclude Include="source\bar.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\CapsuleCollider.h" />

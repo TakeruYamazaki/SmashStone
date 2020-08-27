@@ -232,7 +232,7 @@ void C3DEffect::Update(void)
 		pEffePram[nCntPrame].Trans.pos += pEffePram[nCntPrame].move;
 
 		// 文字タイプの時
-		if (pEffePram[nCntPrame].type == TYPE_CHAR)
+		if (pEffePram[nCntPrame].type == TYPE::CHAR)
 		{
 			// 振動の更新処理
 			pEffePram[nCntPrame].Vibrat.Update();
@@ -241,7 +241,7 @@ void C3DEffect::Update(void)
 		}
 
 		// 半径を変化させる
-		pEffePram[nCntPrame].fRadius -= pEffePram[nCntPrame].fRadiusValue;
+		pEffePram[nCntPrame].fRadius += pEffePram[nCntPrame].fRadiusValue;
 
 		// 半径が0.0f以下の時
 		if (pEffePram[nCntPrame].fRadius <= 0.0f)
@@ -269,15 +269,25 @@ void C3DEffect::Update(void)
 		}
 		// 頂点カラーの設定
 		SetVetexColor(pVtx, pEffePram[nCntPrame]);
-
-		CDebugProc::Print("エフェクト生きている == [%d]\n", nCntPrame);
-		CDebugProc::Print("エフェクトアルファ値 == [%.4f]\n", pEffePram[nCntPrame].col.a);
-		CDebugProc::Print("エフェクト半径 == [%.4f]\n", pEffePram[nCntPrame].fRadius);
-		CDebugProc::Print("エフェクト振動 == [%.4f][%.4f][%.4f]\n", pEffePram[nCntPrame].Vibrat.Pos.x, pEffePram[nCntPrame].Vibrat.Pos.y, pEffePram[nCntPrame].Vibrat.Pos.z);
 	}
 
 	// 頂点データをアンロックする
 	m_pVtxBuff->Unlock();
+
+#ifdef _DEBUG
+	pEffePram = &m_EffectPram[0];	// ポインタの初期化
+	int nCntUse = 0;
+	for (int nCntPrame = 0; nCntPrame < _3DEFFE_USEQUANTITY; nCntPrame++)
+	{
+		// 使用されていない時
+		if (pEffePram[nCntPrame].bUse == true)
+		{// 処理をスキップ
+			nCntUse++;
+		}
+	}
+	CDebugProc::Print("生きているエフェクト数 == [%d]\n", nCntUse);
+
+#endif
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -300,9 +310,9 @@ void C3DEffect::Draw(void)
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, D3DZB_FALSE);
 
 	// レンダーステート(加算合成処理)
-	//pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	//pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	//pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 	// 裏面(左回り)をカリングする
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
@@ -318,7 +328,16 @@ void C3DEffect::Draw(void)
 		// ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&pEffePram[nCntPrame].Trans.mtxWorld);
 		
-		if (pEffePram[nCntPrame].bBillBoard == true &&
+		if (pEffePram[nCntPrame].type == C3DEffect::TYPE::CHAR)
+		{
+			// 通常ブレンド
+			pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		}
+
+		if (pEffePram[nCntPrame].type == C3DEffect::TYPE::CHAR &&
+			pEffePram[nCntPrame].bBillBoard == true &&
 			pEffePram[nCntPrame].pParent != nullptr)
 		{
 			// ワールドマトリックスの初期化
@@ -354,7 +373,8 @@ void C3DEffect::Draw(void)
 			&pEffePram[nCntPrame].Trans.mtxWorld,
 			&mtxTrans);
 
-		if (pEffePram[nCntPrame].pParent != nullptr)
+		if (pEffePram[nCntPrame].type == C3DEffect::TYPE::CHAR &&
+			pEffePram[nCntPrame].pParent != nullptr)
 		{
 			// マトリックスのずれと掛ける
 			D3DXMatrixMultiply(&pEffePram[nCntPrame].Trans.mtxWorld
@@ -375,6 +395,14 @@ void C3DEffect::Draw(void)
 		pDevice->SetTexture(0, m_pTexInfo[pEffePram[nCntPrame].nTexType]);
 		// ポリゴンの描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntPrame * _3DEFFE_USEVERTEX, 2);
+
+		if (pEffePram[nCntPrame].type == C3DEffect::TYPE::CHAR)
+		{
+			// レンダーステート(加算合成処理)
+			pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+		}
 	}
 
 	//アルファテスト戻す
@@ -436,13 +464,10 @@ void C3DEffect::Set(SETINGPARAM & Seting)
 		pEffePram[nCntEffect].fRadius = Seting.fRadius;
 		// 位置の設定
 		pEffePram[nCntEffect].Trans.pos = Seting.pos;
-
-
 		// 色の設定
 		pEffePram[nCntEffect].col = Seting.col;
 
-
-		if (pEffePram[nCntEffect].type == TYPE_CHAR)
+		if (pEffePram[nCntEffect].type == TYPE::CHAR)
 		{
 			pEffePram[nCntEffect].Vibrat.bRandDist = true;
 			// 半径変化値の設定
@@ -457,7 +482,8 @@ void C3DEffect::Set(SETINGPARAM & Seting)
 			pEffePram[nCntEffect].fAlphaValue = pEffePram[nCntEffect].col.a / pEffePram[nCntEffect].nLife;
 
 			// 半径変化値の設定
-			pEffePram[nCntEffect].fRadiusValue = pEffePram[nCntEffect].fRadius / pEffePram[nCntEffect].nLife;
+			pEffePram[nCntEffect].fRadiusValue = -(pEffePram[nCntEffect].fRadius / pEffePram[nCntEffect].nLife);
+			pEffePram[nCntEffect].fRadiusValue = Seting.fRadiusValue;
 		}
 		SetVartexSize(pVtx, pEffePram[nCntEffect]);
 		SetVetexColor(pVtx, pEffePram[nCntEffect]);

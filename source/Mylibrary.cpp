@@ -798,6 +798,10 @@ void CMylibrary::Get3DClossLength(float * resulut, D3DXVECTOR3 *posA, D3DXVECTOR
 void CMylibrary::CreateUnitVector(D3DXVECTOR3 * Output, D3DXVECTOR3 *Vec)
 {
 	float fLength = CMylibrary::Get3DVecLength(Vec);
+	if (fLength == MYLIB_FLOAT_UNSET)
+	{
+		return;
+	}
 	D3DXVECTOR3 Unit =
 	{
 		Vec->x / fLength,

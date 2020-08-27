@@ -17,7 +17,7 @@
 //-------------------------------------------------------------------------------------------------------------
 // 静的メンバ変数の初期化
 //-------------------------------------------------------------------------------------------------------------
-CCharEffectOffset::OFFSET CCharEffectOffset::OffSet[CCharEffectOffset::OFFSETNAME::MAX] = {};		// オフセット情報
+CCharEffectOffset::OFFSET CCharEffectOffset::m_OffSet[CCharEffectOffset::OFFSETNAME::OFFSET_MAX] = {};		// オフセット情報
 
 //-------------------------------------------------------------------------------------------------------------
 // 読み込み
@@ -29,11 +29,11 @@ void CCharEffectOffset::Load(void)
 #endif // _DEBUG
 
 	// ファイル名
-	CONST_STRING pFileName[OFFSETNAME::MAX] = {
+	CONST_STRING pFileName[OFFSETNAME::OFFSET_MAX] = {
 		{ "data/TEXT/Effect/CharEffectOffset/Offset_ドンッ.txt" },
 	};
 
-	for (int nCntOffSet = 0; nCntOffSet < OFFSETNAME::MAX; nCntOffSet++)
+	for (int nCntOffSet = 0; nCntOffSet < OFFSETNAME::OFFSET_MAX; nCntOffSet++)
 	{
 		// ファイルから読み込む
 		LoadFromFile(pFileName[nCntOffSet], nCntOffSet);
@@ -71,7 +71,6 @@ void CCharEffectOffset::LoadFromFile(CONST_STRING pFileName, const int & nCntOff
 	nParent  = MYLIB_INT_UNSET;
 
 
-
 	// ファイルを開く
 	if ((pFile = fopen(pFileName, CHAREFFEOFF_OPNEMODE)) == NULL)
 	{// 失敗した時
@@ -98,12 +97,12 @@ void CCharEffectOffset::LoadFromFile(CONST_STRING pFileName, const int & nCntOff
 		
 		if (sscanf(aRead, "NUMPARAM = %d", &nNumParam) == 1)
 		{
-			OffSet[nCntOffSet].nNumParam = nNumParam;
-			OffSet[nCntOffSet].pCell = new PARAMCELL[OffSet[nCntOffSet].nNumParam];
+			m_OffSet[nCntOffSet].nNumParam = nNumParam;
+			m_OffSet[nCntOffSet].pCell = new PARAMCELL[m_OffSet[nCntOffSet].nNumParam];
 		}
 		else if (sscanf(aRead, "PARENT = %d", &nParent) == 1)
 		{
-			OffSet[nCntOffSet].bParent = (nParent != 0);
+			m_OffSet[nCntOffSet].bParent = (nParent != 0);
 		}
 		else if (strcmp(aComp, "SETPARAM") == 0)
 		{
@@ -148,47 +147,47 @@ void CCharEffectOffset::LoadParamFromFile(FILE * pFile, const int & nCntOffSet, 
 
 		if (sscanf(pFIleRead, "TIME = %d", &Seting.nTime) == 1)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].nTime = Seting.nTime;
+			m_OffSet[nCntOffSet].pCell[nCntParam].nTime = Seting.nTime;
 		}
 		else if (sscanf(pFIleRead, "BILLBOARD = %d", &nBillBoard) == 1)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].bBillBoard = (nBillBoard != 0);
+			m_OffSet[nCntOffSet].pCell[nCntParam].bBillBoard = (nBillBoard != 0);
 		}
 		else if (sscanf(pFIleRead, "TYPE = %d", &Seting.type) == 1)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].type = Seting.type;
+			m_OffSet[nCntOffSet].pCell[nCntParam].type = Seting.type;
 		}
 		else if (sscanf(pFIleRead, "TEXTYPE = %d", &Seting.nTexType) == 1)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].nTexType = Seting.nTexType;
+			m_OffSet[nCntOffSet].pCell[nCntParam].nTexType = Seting.nTexType;
 		}
 		else if (sscanf(pFIleRead, "POS = %f %f %f", &Seting.pos.x, &Seting.pos.y, &Seting.pos.z) == 3)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].pos = Seting.pos;
+			m_OffSet[nCntOffSet].pCell[nCntParam].pos = Seting.pos;
 		}
 		else if (sscanf(pFIleRead, "MOVE = %f %f %f", &Seting.move.x, &Seting.move.y, &Seting.move.z) == 3)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].move = Seting.move;
+			m_OffSet[nCntOffSet].pCell[nCntParam].move = Seting.move;
 		}
 		else if (sscanf(pFIleRead, "COL = %f %f %f %f", &Seting.col.r, &Seting.col.g, &Seting.col.b, &Seting.col.a) == 4)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].col = Seting.col;
+			m_OffSet[nCntOffSet].pCell[nCntParam].col = Seting.col;
 		}
 		else if (sscanf(pFIleRead, "RADIUS = %f", &Seting.fRadius) == 1)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].fRadius = Seting.fRadius;
+			m_OffSet[nCntOffSet].pCell[nCntParam].fRadius = Seting.fRadius;
 		}
 		else if (sscanf(pFIleRead, "LIFE = %d", &Seting.nLife) == 1)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].nLife = Seting.nLife;
+			m_OffSet[nCntOffSet].pCell[nCntParam].nLife = Seting.nLife;
 		}
 		else if (sscanf(pFIleRead, "GRAVITY = %f", &Seting.fGravity) == 1)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].fGravity = Seting.fGravity;
+			m_OffSet[nCntOffSet].pCell[nCntParam].fGravity = Seting.fGravity;
 		}
 		else if (sscanf(pFIleRead, "RADIUSVALUE = %f", &Seting.fRadiusValue) == 1)
 		{
-			OffSet[nCntOffSet].pCell[nCntParam].fRadiusValue = Seting.fRadiusValue;
+			m_OffSet[nCntOffSet].pCell[nCntParam].fRadiusValue = Seting.fRadiusValue;
 		}
 	}
 }
@@ -198,12 +197,12 @@ void CCharEffectOffset::LoadParamFromFile(FILE * pFile, const int & nCntOffSet, 
 //-------------------------------------------------------------------------------------------------------------
 void CCharEffectOffset::Unload(void)
 {
-	for (int nCntOffSet = 0; nCntOffSet < OFFSETNAME::MAX; nCntOffSet++)
+	for (int nCntOffSet = 0; nCntOffSet < OFFSETNAME::OFFSET_MAX; nCntOffSet++)
 	{
-		if (OffSet[nCntOffSet].pCell != nullptr)
+		if (m_OffSet[nCntOffSet].pCell != nullptr)
 		{
-			delete[] OffSet[nCntOffSet].pCell;
-			OffSet[nCntOffSet].pCell = nullptr;
+			delete[] m_OffSet[nCntOffSet].pCell;
+			m_OffSet[nCntOffSet].pCell = nullptr;
 		}
 	}
 }
@@ -229,9 +228,9 @@ void CCharEffectOffset::Uninit(void)
 void CCharEffectOffset::Update(void)
 {
 	// 変数宣言
-	PARAMCELL* pParamCell = &OffSet[m_Name].pCell[0];		// パラメータ単体のポインタ
+	PARAMCELL* pParamCell = &m_OffSet[m_Name].pCell[0];		// パラメータ単体のポインタ
 
-	for (int nCntParam = 0; nCntParam < OffSet[m_Name].nNumParam; nCntParam++)
+	for (int nCntParam = 0; nCntParam < m_OffSet[m_Name].nNumParam; nCntParam++)
 	{
 		if (pParamCell[nCntParam].nTime != m_nFlame)
 		{
@@ -294,15 +293,15 @@ bool CCharEffectOffset::ReleaseCheck(void)
 {
 	// 出現カウント
 	int nCntApea = MYLIB_INT_UNSET;
-	for (int nCntParam = 0; nCntParam < OffSet[m_Name].nNumParam; nCntParam++)
+	for (int nCntParam = 0; nCntParam < m_OffSet[m_Name].nNumParam; nCntParam++)
 	{
-		if (OffSet[m_Name].pCell[nCntParam].nTime < m_nFlame)
+		if (m_OffSet[m_Name].pCell[nCntParam].nTime < m_nFlame)
 		{
 			nCntApea++;
 		}
 	}
 
-	if (nCntApea == OffSet[m_Name].nNumParam)
+	if (nCntApea == m_OffSet[m_Name].nNumParam)
 	{
 		return true;
 	}
@@ -314,7 +313,7 @@ bool CCharEffectOffset::ReleaseCheck(void)
 //-------------------------------------------------------------------------------------------------------------
 void CCharEffectOffset::SetPos(D3DXVECTOR3 * pParent)
 {
-	if (OffSet[m_Name].bParent == true)
+	if (m_OffSet[m_Name].bParent == true)
 	{
 		m_pParent = pParent;
 		m_pos = MYLIB_VEC3_UNSET;

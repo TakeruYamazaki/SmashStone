@@ -184,6 +184,7 @@
     </ClCompile>
     <ClCompile Include="source\3DEffect.cpp" />
     <ClCompile Include="source\CharEffectOffset.cpp" />
+    <ClCompile Include="source\3DParticle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\sceneX.h">
@@ -370,6 +371,7 @@
     </ClInclude>
     <ClInclude Include="source\3DEffect.h" />
     <ClInclude Include="source\CharEffectOffset.h" />
+    <ClInclude Include="source\3DParticle.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="scene">

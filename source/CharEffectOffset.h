@@ -21,9 +21,9 @@ public:
 	// 列挙型定義
 	typedef enum
 	{
-		NONE = -1,
+		OFFSET_NONE = -1,
 		STR_ドンッ,
-		MAX
+		OFFSET_MAX
 	} OFFSETNAME;
 
 	typedef struct PARAMCELL : public C3DEffect::SETINGPARAM
@@ -58,11 +58,10 @@ public:
 private:
 	bool ReleaseCheck(void);
 
-	static OFFSET OffSet[OFFSETNAME::MAX];		// オフセット情報
-
 	void SetPos(D3DXVECTOR3* pParent);
 	void SetName(CONST OFFSETNAME& name);
 
+	static OFFSET m_OffSet[OFFSETNAME::OFFSET_MAX];		// オフセット情報
 	D3DXVECTOR3* m_pParent;		// 親の位置
 	D3DXVECTOR3  m_pos;			// 位置
 	OFFSETNAME   m_Name;		// オフセット名
