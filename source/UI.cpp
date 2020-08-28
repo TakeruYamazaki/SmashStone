@@ -78,6 +78,9 @@
 #define MAPEXPLANATION_POS D3DXVECTOR3(250, SCREEN_HEIGHT / 2, 0)// マップ説明UI位置
 #define MAPEXPLANATION_SIZE_X 400					// マップ説明UI大きさX
 #define MAPEXPLANATION_SIZE_Y 600					// マップ説明UI大きさY
+#define STONE_POS_Y 620								// 石位置縦
+#define STONE_SIZE_X 60								// 石大きさX
+#define STONE_SIZE_Y 50								// 石大きさY
 
 //==================================================================================================================
 // 静的メンバー変数の初期化
@@ -121,11 +124,13 @@ char *CUI::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/MapExplanation.jpg" },// マップ説明
 	{ "data/TEXTURE/MapExplanation.jpg" },// マップ説明
 	{ "data/TEXTURE/gameBG.png" },		// ゲーム背景
-	{ "data/TEXTURE/jewelryBule.png" },	// 宝石青
+	{ "data/TEXTURE/jewelryBG.png" },	// 宝石背景1P
+	{ "data/TEXTURE/jewelryBG.png" },	// 宝石背景2P
 	{ "data/TEXTURE/jewelryRed.png" },	// 宝石赤
-	{ "data/TEXTURE/jewelryYellow.png" },// 宝石黄
-	{ "data/TEXTURE/FULLchara.png" },	// 宝石黄
-	{ "data/TEXTURE/FULLchara.png" },	// 宝石黄
+	{ "data/TEXTURE/jewelryBule.png" },	// 宝石青
+	{ "data/TEXTURE/jewelryGreen.png" },// 宝石緑
+	{ "data/TEXTURE/FULLchara.png" },	// キャラ1P
+	{ "data/TEXTURE/FULLchara.png" },	// キャラ2P
 	{ "data/TEXTURE/charaName0.png" },	// 1Pのキャラクターネーム
 	{ "data/TEXTURE/charaName1.png" },	// 2Pのキャラクターネーム
 };
@@ -188,6 +193,8 @@ void CUI::Init(void)
 	m_bCharaDecide[MAX_PLAYER] = false;// 自分のキャラクターを選択したかどうか
 	m_bStickReturn[MAX_PLAYER] = false;// パッドスティックを戻したかどうか
 	m_bMapSelect = false;		// マップを選択したかどうか
+	m_bTransform[MAX_PLAYER] = false;// 変身したかどうか
+	m_bStoneID[MAX_PLAYER][CStone::STONE_ID_MAX] = false;// ストーンを取得したかどうか
 
 	// ロゴの最大枚数カウント
 	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
@@ -240,7 +247,6 @@ void CUI::Init(void)
 				// テクスチャを貼る
 				m_pScene2D[nCnt]->BindTex(m_pTexture[nCnt]);
 			}
-
 		}
 	}
 }
@@ -905,10 +911,73 @@ void CUI::GameUpdate(void)
 			// プレイヤー番号取得
 			m_nCharaNum[0] = pPlayer0->GetCharaType();
 			m_nCharaNum[1] = pPlayer1->GetCharaType();
+
+			// 最大石までカウント
+			for (int nCntStone = 0; nCntStone < CStone::STONE_ID_MAX; nCntStone++)
+			{
+				// 各プレイヤーがどの種類の石を獲得したか
+				m_bStoneID[0][nCntStone] = pPlayer0->GetStoneType(nCntStone);
+				m_bStoneID[1][nCntStone] = pPlayer1->GetStoneType(nCntStone);
+			}
 		}
 
 		// ゲーム背景
 		SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), SCREEN_WIDTH, SCREEN_HEIGHT, LOGOTYPE_GAMEBG, NORMAL_COLOR);
+
+		if (!m_bTransform[0])
+		{
+			// 宝石背景1P
+			SetUI(D3DXVECTOR3(200, STONE_POS_Y, 0), 210, STONE_SIZE_Y, LOGOTYPE_JEWELRYBG1P, NORMAL_COLOR);
+
+			// 1Pが赤石を取ったとき
+			if (m_bStoneID[0][0])
+			{
+				// 宝石赤
+				SetUI(D3DXVECTOR3(125, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, NORMAL_COLOR);
+			}
+
+			// 1Pが緑石を取ったとき
+			if (m_bStoneID[0][1])
+			{
+				// 宝石青
+				SetUI(D3DXVECTOR3(200, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, NORMAL_COLOR);
+			}
+
+			// 1Pが青石を取ったとき
+			if (m_bStoneID[0][2])
+			{
+				// 宝石緑
+				SetUI(D3DXVECTOR3(275, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, NORMAL_COLOR);
+			}
+		}
+
+		if (!m_bTransform[1])
+		{
+			// 宝石背景2P
+			SetUI(D3DXVECTOR3(1080, STONE_POS_Y, 0), 210, STONE_SIZE_Y, LOGOTYPE_JEWELRYBG2P, NORMAL_COLOR);
+
+			// 2Pが赤石を取ったとき
+			if (m_bStoneID[1][0])
+			{
+				// 宝石赤
+				SetUI(D3DXVECTOR3(1005, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, NORMAL_COLOR);
+			}
+
+			// 2Pが緑石を取ったとき
+			if (m_bStoneID[1][1])
+			{
+				// 宝石青
+				SetUI(D3DXVECTOR3(1080, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, NORMAL_COLOR);
+			}
+
+			// 2Pが青石を取ったとき
+			if (m_bStoneID[1][2])
+			{
+				// 宝石緑
+				SetUI(D3DXVECTOR3(1155, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, NORMAL_COLOR);
+			}
+
+		}
 
 		// 1PキャラクターUI
 		SetUI(D3DXVECTOR3(55, 70, 0), 110, 130, LOGOTYPE_PLAYER1, NORMAL_COLOR);
