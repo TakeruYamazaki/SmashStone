@@ -277,7 +277,7 @@ void CCamera::MoveCamera(void)
 	{
 		// 目的の視点の計算
 		m_posVDest.x = m_posR.x + -cosf(m_rot.x) * sinf(m_rot.y) * m_fDistance * m_fDisScale;
-		m_posVDest.y = m_posR.y + sinf(m_rot.x) * m_fDistance * m_fDisScale;
+		m_posVDest.y = m_posR.y + sinf(m_rot.x) * m_fDistance * 1.2f;
 		m_posVDest.z = m_posR.z + -cosf(m_rot.x) * cosf(m_rot.y) * m_fDistance * m_fDisScale;
 	}
 #ifdef _DEBUG
@@ -524,7 +524,7 @@ CCamera * CCamera::Create(void)
 	else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 	{// チュートリアルのとき
 		// カメラの位置設定
-		m_pCamera->SetCameraPos(D3DXVECTOR3(350.0f, 150.0f, -300.0f),
+		m_pCamera->SetCameraPos(D3DXVECTOR3(1.0f, 150.0f, 1.0f),
 			D3DXVECTOR3(0.0f, 10.0f, 0.0f), ZeroVector3);
 	}
 	else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)

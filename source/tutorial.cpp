@@ -76,8 +76,8 @@ void CTutorial::Init(void)
 	// メッシュ球の生成処理
 	m_pMeshSphere = CMeshSphere::Create();
 
-	//// メッシュフィールド生成処理
-	//m_pMeshField = CMeshField::Create(INTEGER2(2, 2), D3DXVECTOR3(250.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	// メッシュフィールド生成処理
+	m_pMeshField = CMeshField::Create(INTEGER2(10, 10), D3DXVECTOR3(250.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	// UI生成処理
 	m_pUI = CUI::Create();
