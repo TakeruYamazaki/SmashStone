@@ -40,6 +40,7 @@
 #include "UI.h"
 #include "3DEffect.h"
 #include "CharEffectOffset.h"
+#include "3DParticle.h"
 
 //==================================================================================================================
 //	ƒ}ƒNƒ’è‹`
@@ -85,14 +86,6 @@ CObjectManager		*CGame::m_pObjMana				= nullptr;						// ƒIƒuƒWƒFƒNƒgƒ}ƒl[ƒWƒƒ
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ƒXƒg[ƒ“‚Ì¶¬êŠ‚É¶¬‚³‚ê‚Ä‚¢‚é‚©
 bool				CGame::m_bGetType[CStone::STONE_ID_MAX] = {};					// ƒXƒg[ƒ“‚Ì¶¬êŠ‚É¶¬‚³‚ê‚Ä‚¢‚é‚©
 int					CGame::m_nStageType				= 0;							// ƒXƒe[ƒW‚Ìƒ^ƒCƒv
-D3DXVECTOR3			CGame::m_stonePos[STONE_POS] = 									// ƒXƒg[ƒ“‚Ì¶¬êŠ
-{
-	D3DXVECTOR3(0.0f, 20.0f, 0.0f),
-	D3DXVECTOR3(100.0f, 20.0f, 100.0f),
-	D3DXVECTOR3(100.0f, 20.0f, -100.0f),
-	D3DXVECTOR3(200.0f, 90.0f, 155.0f),
-	D3DXVECTOR3(-100.0f, 20.0f, -100.0f)
-};
 
 int					CGame::m_nPlayerType[MAX_PLAYER] = {};	// ƒLƒƒƒ‰ƒNƒ^[ƒZƒŒƒNƒg‚Ìƒ^ƒCƒv‚ğ•Û‘¶
 
@@ -287,7 +280,7 @@ void CGame::Update(void)
 
 #ifdef _DEBUG
 	// ƒL[ƒ{[ƒh‚Ì[0]‚ğ‰Ÿ‚µ‚½‚Æ‚«
-	if (m_gameState != GAMESTATE_RESULT && CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_RETURN))
+	if (m_gameState != GAMESTATE_RESULT && CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_RETURN) && CManager::GetInputKeyboard()->GetKeyboardPress(DIK_LSHIFT))
 	{
 		// ƒtƒF[ƒhæ“¾
 		CFade::FADE fade = CFade::GetFade();
@@ -300,7 +293,7 @@ void CGame::Update(void)
 
 	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_LSHIFT))
 	{
-		//CCharEffectOffset::Set(&m_pPlayer[PLAYER_ONE]->GetPos(), CCharEffectOffset::STR_ƒhƒ“ƒb);
+		C3DParticle::Set(&m_pPlayer[PLAYER_ONE]->GetPos(), &m_pPlayer[PLAYER_ONE]->GetRot(), C3DParticle::HIT);
 	}
 #endif // _DEBUG
 }
@@ -378,13 +371,13 @@ void CGame::SetNextMode(const int nextMode)
 void CGame::AppearStone(void)
 {
 	// ƒ‰ƒ“ƒ_ƒ€‚Åƒ|ƒCƒ“ƒg‚ğŒˆ‚ß‚é
-	int RandValue = CKananLibrary::DecideRandomValue(STONE_POS, m_bSetPos);
+	int RandPos = CKananLibrary::DecideRandomValue(STONE_POS, m_bSetPos);
 	// ƒ‰ƒ“ƒ_ƒ€‚Åƒ|ƒCƒ“ƒg‚ğŒˆ‚ß‚é
 	int RandType = CKananLibrary::DecideRandomValue(CStone::STONE_ID_MAX, m_bGetType);
 	// Œˆ‚ß‚ç‚ê‚½ˆÊ’u‚©‚çƒ‰ƒ“ƒ_ƒ€‚Å¶¬
-	CStone::Create(RandValue, (CStone::STONE_ID)RandType, m_stonePos[RandValue]);
+	CStone::Create(RandPos, (CStone::STONE_ID)RandType, CObjectManager::GetDefaultStonePos(RandPos));
 	// ¶¬‚³‚ê‚½
-	m_bSetPos[RandValue] = true;
+	m_bSetPos[RandPos] = true;
 	// ¶¬‚³‚ê‚½
 	m_bGetType[RandType] = true;
 	// oŒ»”‚ğ‰ÁZ

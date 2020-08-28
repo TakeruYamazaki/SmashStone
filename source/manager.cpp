@@ -16,6 +16,7 @@
 #include "charaParam.h"
 #include "3DEffect.h"
 #include "CharEffectOffset.h"
+#include "3DParticle.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -90,6 +91,8 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 	C3DEffect::Load();
 	// 文字エフェクトの読み込み
 	CCharEffectOffset::Load();
+	// パーティクルの読み込み
+	C3DParticle::Load();
 
 	// ImGui情報のロード
 	LoadImGuiInfo();
@@ -106,7 +109,8 @@ void CManager::Uninit(void)
 
 	// 全てを破棄
 	CScene::ReleaseAll();
-
+	// パーティクルの読み込み
+	C3DParticle::Unload();
 	// 文字エフェクトの開放
 	CCharEffectOffset::Unload();
 	// 3Dエフェクト情報の開放

@@ -105,6 +105,8 @@ void CCharacter::Uninit()
 //=============================================================================
 void CCharacter::Update()
 {
+	m_param = CCharaParam::GetPlayerParam((PARAM_TYPE)(m_type / 2));
+	
 	// ˆÚ“®ˆ—
 	Move();
 

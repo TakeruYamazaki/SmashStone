@@ -29,32 +29,34 @@ public:
 	typedef enum TYPE
 	{
 		TYPE_NONE = -1,		// 無し
-		TYPE_NORMAL,		// 通常
-		TYPE_CHAR,			// 文字
+		NORMAL,				// 通常
+		CHAR,				// 文字
 		TYPE_MAX			// 最大
 	}TYPE;
 
 	typedef enum TEXTURETYPE
 	{
 		TEXTYPE_NONE = -1,		// 無し
-		TEXTYPE_SPARKLE1,		// キラキラ1
-		TEXTYPE_SPARKLE2,		// キラキラ2
-		TEXTYPE_SPARKLE3,		// キラキラ3
-		TEXTYPE_char_ー,		// 文字ー
-		TEXTYPE_char_キ,		// 文字キ
-		TEXTYPE_char_ギ,		// 文字ギ
-		TEXTYPE_char_グ,		// 文字グ
-		TEXTYPE_char_ゲ,		// 文字ゲ
-		TEXTYPE_char_ゴ,		// 文字ゴ
-		TEXTYPE_char_ザ,		// 文字ザ
-		TEXTYPE_char_ズ,		// 文字ズ
-		TEXTYPE_char_タ,		// 文字タ
-		TEXTYPE_char_ダ,		// 文字ダ
-		TEXTYPE_char_ツ,		// 文字ツ
-		TEXTYPE_char_ド,		// 文字ド
-		TEXTYPE_char_ヤ,		// 文字ヤ
-		TEXTYPE_char_ン,		// 文字ン
-		TEXTYPE_MAX				// 最大
+		DEFAULT_1,				// デフォルト
+		DEFAULT_2,				// デフォルト
+		SPARKLE1,				// キラキラ1
+		SPARKLE2,				// キラキラ2
+		SPARKLE3,				// キラキラ3
+		CHAR_ー,				// 文字ー
+		CHAR_キ,				// 文字キ
+		CHAR_ギ,				// 文字ギ
+		CHAR_グ,				// 文字グ
+		CHAR_ゲ,				// 文字ゲ
+		CHAR_ゴ,				// 文字ゴ
+		CHAR_ザ,				// 文字ザ
+		CHAR_ズ,				// 文字ズ
+		CHAR_タ,				// 文字タ
+		CHAR_ダ,				// 文字ダ
+		CHAR_ツ,				// 文字ツ
+		CHAR_ド,				// 文字ド
+		CHAR_ヤ,				// 文字ヤ
+		CHAR_ン,				// 文字ン
+		TEXTYPE_MAX			// 最大
 	}TEXTURETYPE;
 
 	typedef struct VIBRATION_OPTION

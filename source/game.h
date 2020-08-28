@@ -129,7 +129,6 @@ private:
 	static int m_nCounterGameState;					// ゲームの状態管理カウンター
 	static int m_nNumStone;							// 生成したストーンの数
 	static int m_nCntDecide;						// ストーン生成のタイミングを決めるカウンタ
-	static D3DXVECTOR3 m_stonePos[STONE_POS];		// ストーンの生成場所
 	static bool m_bSetPos[STONE_POS];				// ストーンが生成されているか
 	static bool m_bGetType[CStone::STONE_ID_MAX];		// ストーンが取得されているか
 	static CObjectManager *m_pObjMana;				// オブジェクトマネージャーのポインタ

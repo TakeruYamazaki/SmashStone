@@ -47,6 +47,7 @@ public:
 		OBJECT_OFFSET *objOffset;				// オブジェクトオフセット格納用
 		std::vector<CObject*> pObject;			// オブジェクト情報
 		std::vector<CObjectLift*> pObjLift;	// 持てるオブジェクト情報
+		D3DXVECTOR3 stonePos[5]; // ストーンを配置する位置
 	} STAGEINFO;
 
 	CObjectManager(CScene::PRIORITY nPriority);	// コンストラクタ
@@ -72,6 +73,8 @@ public:
 	std::vector<CObjectLift*> GetObjLiftAll(void) { return m_stageInfo[m_stageType].pObjLift; }	// 持てるオブジェクトの取得
 	CObjectLift* GetObjLift(int nIndex) { return m_stageInfo[m_stageType].pObjLift[nIndex]; }	// 持てるオブジェクトの取得
 	int		GetNumObjLift(void) { return (int)m_stageInfo[m_stageType].pObjLift.size(); }		// 持てるオブジェクト総数の取得
+
+	static D3DXVECTOR3 GetDefaultStonePos(int nPos) { return m_stageInfo[m_stageType].stonePos[nPos]; }	// ストーンの配置位置の取得
 
 #ifdef _DEBUG
 	void ShowObjectManagerInfo(void);			// ImGuiの更新

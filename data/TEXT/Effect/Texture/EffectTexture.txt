@@ -13,6 +13,8 @@ MAXDIVIDIR = 36
 SCALDIR = 0.1
 
 # ƒtƒ@ƒCƒ‹–¼
+FILENAME = data/TEXTURE/Effect/Effect000.jpg
+FILENAME = data/TEXTURE/Effect/Effect001.jpg
 FILENAME = data/TEXTURE/Effect/nc155696.png
 FILENAME = data/TEXTURE/Effect/nc202888.png
 FILENAME = data/TEXTURE/Effect/nc202892.png

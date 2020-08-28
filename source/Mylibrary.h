@@ -206,8 +206,89 @@ typedef const char *    CONST_STRING;	// 変更不可文字列
 typedef char *          STRING;			// 文字列
 
 typedef signed char     VSHORT;			// 符号あり1バイト分の変数
-typedef unsigned char   UNSIG_VSHORT;	// 符号なし1バイト分の変数
+typedef unsigned char   UNVSHORT;		// 符号なし1バイト分の変数
 
+// ビットフィールド
+typedef struct BITS_12
+{
+	unsigned char _1 : 1;
+	unsigned char _2 : 1;
+	unsigned char _3 : 1;
+	unsigned char _4 : 1;
+	unsigned char _5 : 1;
+	unsigned char _6 : 1;
+	unsigned char _7 : 1;
+	unsigned char _8 : 1;
+	unsigned char _9 : 1;
+	unsigned char _10 : 1;
+	unsigned char _11 : 1;
+	unsigned char _12 : 1;
+}BITS_12;
+
+typedef union UBITS_12
+{
+	// max 4095
+	UBITS_12() {}
+	UBITS_12(unsigned char c) : cValue(c) {}
+	unsigned short cValue;
+	BITS_12 Bits;
+	inline unsigned char operator[] (int nIndex)
+	{
+		return (cValue & (1 << nIndex));
+	}
+	inline bool comp(int nIndex)
+	{
+		return (cValue & (1 << nIndex)) != 0;
+	}
+	inline void clear(int nIndex)
+	{
+		cValue &= ~(1 << nIndex);
+	}
+	inline void set(int nIndex)
+	{
+		cValue |= (1 << nIndex);
+	}
+} UBITS_12;
+// ビットフィールド
+typedef struct BITS_8
+{
+	unsigned char _1 : 1;
+	unsigned char _2 : 1;
+	unsigned char _3 : 1;
+	unsigned char _4 : 1;
+	unsigned char _5 : 1;
+	unsigned char _6 : 1;
+	unsigned char _7 : 1;
+	unsigned char _8 : 1;
+
+}BITS_8;
+
+typedef union UBITS_8
+{
+	UBITS_8() {}
+	UBITS_8(unsigned char c) : cValue (c){}
+	unsigned char cValue;
+	BITS_8 Bits;
+	inline bool operator[] (int nIndex)
+	{
+		return (cValue & (1 << nIndex)) != 0;
+	}
+} UBITS_8;
+
+// ビットフィールド
+typedef struct BITS_4
+{
+	unsigned char _1 : 1;
+	unsigned char _2 : 1;
+	unsigned char _3 : 1;
+	unsigned char _4 : 1;
+}BITS_4;
+
+typedef union
+{
+	unsigned char cValue;
+	BITS_4 Bits;
+} UBITS_4;
 
 // 3成分float
 struct FLOAT3 : public D3DXVECTOR3
@@ -537,17 +618,17 @@ typedef struct GAGE_INFO
 
 typedef struct
 {
-	UNSIG_VSHORT b;	// 青
-	UNSIG_VSHORT g;	// 緑
-	UNSIG_VSHORT r;	// 赤
+	UNVSHORT b;	// 青
+	UNVSHORT g;	// 緑
+	UNVSHORT r;	// 赤
 } BGR;
 
 typedef struct
 {
-	UNSIG_VSHORT b;	// 青
-	UNSIG_VSHORT g;	// 緑
-	UNSIG_VSHORT r;	// 赤
-	UNSIG_VSHORT a;	// 透明度
+	UNVSHORT b;	// 青
+	UNVSHORT g;	// 緑
+	UNVSHORT r;	// 赤
+	UNVSHORT a;	// 透明度
 } BGRA;
 
 //-------------------------------------------------------------------------------------------------------------

@@ -102,6 +102,7 @@ public:
 	void InfoSetSync(float fRadius, float fLengthMax, float fLengthMin, D3DXVECTOR3 &diff);	// 情報の設定と同期
 	void InitCapsInfo(void);																// カプセル情報の初期化
 	bool Collision(void);																	// 衝突判定
+	bool CollisionStone(void);																// ストーンとの衝突判定
 
 	void CalCapPosition(void);																// カプセル位置の計算
 

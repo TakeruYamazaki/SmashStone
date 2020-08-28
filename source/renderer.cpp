@@ -228,11 +228,6 @@ void CRenderer::Uninit(void)
 		m_pSound = nullptr;
 	}
 
-	// ƒAƒ“ƒ[ƒh
-	for (int nCnt = 0; nCnt < 4; nCnt++)
-	{
-		CCharaParam::Save((PARAM_TYPE)nCnt);
-	}
 	CModelCharacter::Unload();
 	CMotion::UnLoad();
 

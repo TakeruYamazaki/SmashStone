@@ -87,7 +87,12 @@ void CDebugProc::Print(char * fmt, ...)
 	int nCount;
 	char * cp;
 	int nLengh = strlen(m_aStr);	// 文字の個数を数える
-
+	int nFmtLengh = strlen(fmt);	
+	if ((nLengh + nFmtLengh) > MAX_CHARACTER)
+	{
+		cout << "超えた\n";
+		return;
+	}
 	// ①可変引数にアクセスする前の初期処理
 	// 第２引数に指定するargcは、vararg_func引数"..."の直ぐ左側でなければならない
 	va_start(list, fmt);

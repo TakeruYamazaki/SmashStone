@@ -23,6 +23,8 @@
 #define CSTONE_SHAKECOEFF			0.02f			// ゆれる係数
 #define CSTONE_ROTSPEED				0.02f			// 回転速度
 
+#define STONE_DEFAULT_LIFE			3				// ストーンの初期ライフ
+
 #define CSTONE_SOPENFILENAME		"data/TEXT/StoneInfo/StoneTypeFileName.txt"
 
 //-------------------------------------------------------------------------------------------------------------
@@ -312,6 +314,8 @@ CStone * CStone::Create(CONST int nIndexPos, CONST STONE_ID eumID, CONST D3DXVEC
 	pStone->m_pos = pos;
 	// 生成位置の設定
 	pStone->m_nIndexPos = nIndexPos;
+	// ライフの設定
+	pStone->m_nLife = STONE_DEFAULT_LIFE;
 	// ボックスコライダーの設定
 	pStone->m_nBoxClliderID = C3DBoxCollider::SetColliderInfo(&pStone->m_pos, pStone, C3DBoxCollider::COLLIDER_SUB_OVERRAP , C3DBoxCollider::ID_STONE);
 

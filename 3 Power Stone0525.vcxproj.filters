@@ -184,9 +184,13 @@
     </ClCompile>
     <ClCompile Include="source\3DEffect.cpp" />
     <ClCompile Include="source\CharEffectOffset.cpp" />
+<<<<<<< HEAD
+    <ClCompile Include="source\3DParticle.cpp" />
+=======
     <ClCompile Include="source\objectLift.cpp">
       <Filter>object</Filter>
     </ClCompile>
+>>>>>>> fdbba7ed3b383ac2fdd5546b7ab86609f13e9494
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\sceneX.h">
@@ -373,9 +377,13 @@
     </ClInclude>
     <ClInclude Include="source\3DEffect.h" />
     <ClInclude Include="source\CharEffectOffset.h" />
+<<<<<<< HEAD
+    <ClInclude Include="source\3DParticle.h" />
+=======
     <ClInclude Include="source\objectLift.h">
       <Filter>object</Filter>
     </ClInclude>
+>>>>>>> fdbba7ed3b383ac2fdd5546b7ab86609f13e9494
   </ItemGroup>
   <ItemGroup>
     <Filter Include="scene">
