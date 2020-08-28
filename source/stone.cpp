@@ -12,7 +12,6 @@
 #include "renderer.h"
 #include "debugProc.h"
 #include "3DBoxCollider.h"
-
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
 //-------------------------------------------------------------------------------------------------------------
@@ -23,7 +22,7 @@
 #define CSTONE_SHAKECOEFF			0.02f			// ゆれる係数
 #define CSTONE_ROTSPEED				0.02f			// 回転速度
 
-#define STONE_DEFAULT_LIFE			3				// ストーンの初期ライフ
+#define STONE_DEFAULT_LIFE			5				// ストーンの初期ライフ
 
 #define CSTONE_SOPENFILENAME		"data/TEXT/StoneInfo/StoneTypeFileName.txt"
 
@@ -316,6 +315,8 @@ CStone * CStone::Create(CONST int nIndexPos, CONST STONE_ID eumID, CONST D3DXVEC
 	pStone->m_nIndexPos = nIndexPos;
 	// ライフの設定
 	pStone->m_nLife = STONE_DEFAULT_LIFE;
+	// ダメージフラグの設定
+	pStone->m_bDamage = true;
 	// ボックスコライダーの設定
 	pStone->m_nBoxClliderID = C3DBoxCollider::SetColliderInfo(&pStone->m_pos, pStone, C3DBoxCollider::COLLIDER_SUB_OVERRAP , C3DBoxCollider::ID_STONE);
 
@@ -359,6 +360,9 @@ void CStone::Update(void)
 {
 #ifdef CSTONE_UPDATE
 
+	// ダメージフラグの復活
+	
+
 	// 回転処理
 	CMylibrary::SetFixTheRotation(&(this->m_rot.y += CSTONE_ROTSPEED));
 	// ゆらゆら
@@ -395,6 +399,22 @@ void CStone::Catch(void)
 {
 	C3DBoxCollider::unset(this->m_nBoxClliderID);
 	CScene::Release();
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// ダメージの発生
+//-------------------------------------------------------------------------------------------------------------
+bool CStone::ApplyDamage(void)
+{
+	// ライフを減らす
+	m_nLife--;
+
+	// 0以下の時
+	if (m_nLife <= 0)
+	{
+		return true;
+	}
+	return false;
 }
 
 //-------------------------------------------------------------------------------------------------------------

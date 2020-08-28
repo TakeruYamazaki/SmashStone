@@ -1,6 +1,6 @@
 //==================================================================================================================
 //
-// ƒvƒŒƒCƒ„[[player.h]
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼[player.h]
 // Author : Seiya Takahashi
 //
 //==================================================================================================================
@@ -8,7 +8,7 @@
 #define _PLAYER_H_
 
 //==================================================================================================================
-// ƒCƒ“ƒNƒ‹[ƒhƒtƒ@ƒCƒ‹
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«
 //==================================================================================================================
 #include "main.h"
 #include "sceneX.h"
@@ -16,14 +16,14 @@
 #include "character.h"
 
 //==================================================================================================================
-// ƒ}ƒNƒ’è‹`
+// ãƒã‚¯ãƒ­å®šç¾©
 //==================================================================================================================
-#define TEXTURE_PLAYER "data/TEXTURE/field000.jpg"		// “Ç‚İ‚ŞƒeƒNƒXƒ`ƒƒ‚Ìƒ\[ƒXæ
-#define PLAYER_MODEL "data/MODEL/testmodel.x"			// “Ç‚İ‚Şƒ‚ƒfƒ‹‚Ìƒ\[ƒXæ
-#define PLAYER_MAX_MODEL (6)							// player.cpp“à‚Ìƒ‚ƒfƒ‹‚Ìƒp[ƒc”
+#define TEXTURE_PLAYER "data/TEXTURE/field000.jpg"		// èª­ã¿è¾¼ã‚€ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚½ãƒ¼ã‚¹å…ˆ
+#define PLAYER_MODEL "data/MODEL/testmodel.x"			// èª­ã¿è¾¼ã‚€ãƒ¢ãƒ‡ãƒ«ã®ã‚½ãƒ¼ã‚¹å…ˆ
+#define PLAYER_MAX_MODEL (6)							// player.cppå†…ã®ãƒ¢ãƒ‡ãƒ«ã®ãƒ‘ãƒ¼ãƒ„æ•°
 
 //==================================================================================================================
-// ‘O•ûéŒ¾
+// å‰æ–¹å®£è¨€
 //==================================================================================================================
 class CCamera;
 class CMotionModel;
@@ -32,75 +32,75 @@ class CInputKeyboard;
 class CInputGamepad;
 class CFade;
 class CHitPoint;
-
+class CStone;
 //==================================================================================================================
 //
-// ƒvƒŒƒCƒ„[ƒNƒ‰ƒX‚Ì’è‹`
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¯ãƒ©ã‚¹ã®å®šç¾©
 //
 //==================================================================================================================
 class CPlayer : public CCharacter
 {
 public:
-	CPlayer(PRIORITY type);							// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	~CPlayer();										// ƒfƒXƒgƒ‰ƒNƒ^
-	void Init(void);								// ‰Šú‰»ˆ—
-	void Uninit(void);								// I—¹ˆ—
-	void Update(void);								// XVˆ—
-	void Draw(void);								// •`‰æˆ—
+	CPlayer(PRIORITY type);							// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	~CPlayer();										// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	void Init(void);								// åˆæœŸåŒ–å‡¦ç†
+	void Uninit(void);								// çµ‚äº†å‡¦ç†
+	void Update(void);								// æ›´æ–°å‡¦ç†
+	void Draw(void);								// æç”»å‡¦ç†
 
-	static CPlayer *Create(int nPlayer, CHARACTER_TYPE type);	// ¶¬ˆ—
+	static CPlayer *Create(int nPlayer, CHARACTER_TYPE type);	// ç”Ÿæˆå‡¦ç†
 
-	int GetNumStone(void)	{ return m_nNumStone; }	// æ“¾‚µ‚½ƒXƒg[ƒ“‚Ì”‚ğæ“¾
-	int GetnPlayer(void) { return m_nPlayer; }		// ƒvƒŒƒCƒ„[”Ô†æ“¾
+	int GetNumStone(void)	{ return m_nNumStone; }	// å–å¾—ã—ãŸã‚¹ãƒˆãƒ¼ãƒ³ã®æ•°ã‚’å–å¾—
+	int GetnPlayer(void) { return m_nPlayer; }		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·å–å¾—
 	inline int GetBoxColliderID(void) { return m_nBoxColliderID; }
-	CPlayer*GetAnotherPlayer(void);					// ˆá‚¤ƒvƒŒƒCƒ„[‚Ìæ“¾
+	CPlayer*GetAnotherPlayer(void);					// é•ã†ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å–å¾—
 
 
-	bool ReadyToHit(const int &nCapColliID);			// UŒ‚“–‚Ä‚é€”õ‚©‚Å‚«‚Ä‚¢‚é‚©
-	bool HitConditionAttack0(const int &nCapColliID);	// UŒ‚0‚ğ“–‚Ä‚éğŒ
-	bool HitConditionAttack1(const int &nCapColliID);	// UŒ‚1‚ğ“–‚Ä‚éğŒ
-	bool HitConditionAttack2(const int &nCapColliID);	// UŒ‚2‚ğ“–‚Ä‚éğŒ
-	bool HitConditionAttack3(const int &nCapColliID);	// UŒ‚3‚ğ“–‚Ä‚éğŒ
-	bool HitConditionSmash(const int &nCapColliID);		// ƒXƒ}ƒbƒVƒ…U‚ğ“–‚Ä‚éğŒ
+	bool ReadyToHit(const int &nCapColliID);			// æ”»æ’ƒå½“ã¦ã‚‹æº–å‚™ã‹ã§ãã¦ã„ã‚‹ã‹
+	bool HitConditionAttack0(const int &nCapColliID);	// æ”»æ’ƒ0ã‚’å½“ã¦ã‚‹æ¡ä»¶
+	bool HitConditionAttack1(const int &nCapColliID);	// æ”»æ’ƒ1ã‚’å½“ã¦ã‚‹æ¡ä»¶
+	bool HitConditionAttack2(const int &nCapColliID);	// æ”»æ’ƒ2ã‚’å½“ã¦ã‚‹æ¡ä»¶
+	bool HitConditionAttack3(const int &nCapColliID);	// æ”»æ’ƒ3ã‚’å½“ã¦ã‚‹æ¡ä»¶
+	bool HitConditionSmash(const int &nCapColliID);		// ã‚¹ãƒãƒƒã‚·ãƒ¥æ”»ã‚’å½“ã¦ã‚‹æ¡ä»¶
 
-	void SetHitSound();		// UŒ‚ƒ‚[ƒVƒ‡ƒ“–ˆ‚Éˆá‚¤Œø‰Ê‰¹‚ğÄ¶‚·‚é
+	void SetHitSound();		// æ”»æ’ƒãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³æ¯ã«é•ã†åŠ¹æœéŸ³ã‚’å†ç”Ÿã™ã‚‹
+	void CatchStone(CStone *pStone);							// ã‚¹ãƒˆãƒ¼ãƒ³ã®å–å¾—åˆ¤å®š
 protected:
 
 private:
-	void Control(void);								// ‘€ìŠÖ”
-	void Collision(void);							// “–‚½‚è”»’èŠÖ”
-	void Smash(void);								// ƒXƒ}ƒbƒVƒ…ˆ—
-	void NormalAttack(void);						// ’ÊíUŒ‚ˆ—
-	void Jump(void);								// ƒWƒƒƒ“ƒvˆ—
-	void Lift(void);								// •¨‚¿ˆ—
+	void Control(void);								// æ“ä½œé–¢æ•°
+	void Collision(void);							// å½“ãŸã‚Šåˆ¤å®šé–¢æ•°
+	void Smash(void);								// ã‚¹ãƒãƒƒã‚·ãƒ¥å‡¦ç†
+	void NormalAttack(void);						// é€šå¸¸æ”»æ’ƒå‡¦ç†
+	void Jump(void);								// ã‚¸ãƒ£ãƒ³ãƒ—å‡¦ç†
+	void Lift(void);								// ç‰©æŒã¡å‡¦ç†
 
-	void CollisionAttack(void);						// UŒ‚”»’è
+	void CollisionAttack(void);						// æ”»æ’ƒåˆ¤å®š
 
-	static CHitPoint *m_pHitPoint;					// HPî•ñ
+	static CHitPoint *m_pHitPoint;					// HPæƒ…å ±
 
-	void ControlGamepad(CInputGamepad *pGamepad);	// ƒQ[ƒ€ƒpƒbƒh‘€ì
-	void ControlKeyboard(CInputKeyboard *pKeyboard);// ƒL[ƒ{[ƒh‘€ì
-	void CatchStone(void);							// ƒXƒg[ƒ“‚Ìæ“¾”»’è
-	void SetnPlayer(int nPlayerNum);				// ƒvƒŒƒCƒ„[”Ô†İ’èˆ—
+	void ControlGamepad(CInputGamepad *pGamepad);	// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ“ä½œ
+	void ControlKeyboard(CInputKeyboard *pKeyboard);// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æ“ä½œ
+	void SetnPlayer(int nPlayerNum);				// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·è¨­å®šå‡¦ç†
 
-	void AnotherPlayerAttack0(CPlayer *pAnother);	// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚0‚µ‚Ä‚¢‚é
-	void AnotherPlayerAttack1(CPlayer *pAnother);	// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚1‚µ‚Ä‚¢‚é
-	void AnotherPlayerAttack2(CPlayer *pAnother);	// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚2‚µ‚Ä‚¢‚é
-	void AnotherPlayerAttack3(CPlayer *pAnother);	// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚3‚µ‚Ä‚¢‚é
-	void AnotherPlayerSmash(CPlayer *pAnother);		// •Ê‚ÌƒvƒŒƒCƒ„[‚ªƒXƒ}ƒbƒVƒ…UŒ‚‚µ‚Ä‚¢‚é
+	void AnotherPlayerAttack0(CPlayer *pAnother);	// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ0ã—ã¦ã„ã‚‹æ™‚
+	void AnotherPlayerAttack1(CPlayer *pAnother);	// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ1ã—ã¦ã„ã‚‹æ™‚
+	void AnotherPlayerAttack2(CPlayer *pAnother);	// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ2ã—ã¦ã„ã‚‹æ™‚
+	void AnotherPlayerAttack3(CPlayer *pAnother);	// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ3ã—ã¦ã„ã‚‹æ™‚
+	void AnotherPlayerSmash(CPlayer *pAnother);		// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒã‚¹ãƒãƒƒã‚·ãƒ¥æ”»æ’ƒã—ã¦ã„ã‚‹æ™‚
 
-	void TakeDamage(CPlayer * pAnother);							// ƒ_ƒ[ƒW‚ğó‚¯‚é
-	void TakeAttack3Damage(CPlayer * pAnother);					// UŒ‚3‚Ìƒ_ƒ[ƒW‚ğó‚¯‚é
-	void TakeSmashDamage(CPlayer * pAnother);						// UŒ‚3‚Ìƒ_ƒ[ƒW‚ğó‚¯‚é
+	void TakeDamage(CPlayer * pAnother);							// ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹
+	void TakeAttack3Damage(CPlayer * pAnother);					// æ”»æ’ƒ3ã®ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹
+	void TakeSmashDamage(CPlayer * pAnother);						// æ”»æ’ƒ3ã®ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹
 
 
-	bool BlowAway(CPlayer *pAnother, const float MoveVecY, const float fBlowAwayForce);		// ‚«”ò‚Ô
+	bool BlowAway(CPlayer *pAnother, const float MoveVecY, const float fBlowAwayForce);		// å¹ãé£›ã¶
 
-	int m_nPlayer;			// ƒvƒŒƒCƒ„[”Ô†
-	int m_nBoxColliderID;	// ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[ID
+	int m_nPlayer;			// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·
+	int m_nBoxColliderID;	// ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ID
 
 #ifdef _DEBUG
-	void ShowDebugInfo(void);									// ImGui‚ÌXV
+	void ShowDebugInfo(void);									// ImGuiã®æ›´æ–°
 #endif
 };
 #endif

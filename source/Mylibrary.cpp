@@ -199,9 +199,56 @@ bool CMylibrary::colCapsuleCapsule(const CAPSULE & Cap1, const CAPSULE & Cap2)
 
 	// 線分同士の距離の計算
 	fDist = calcSegmentSegmentDist(Cap1.Segment, Cap2.Segment, PerpendFoot1, PerpendFoot2, fVecCoeffi1, fVecCoeffi2);
+	// 線分同士の距離が半径以下の時衝突している
+	return (fDist <= Cap1.fRadius + Cap2.fRadius);
+}
+
+bool CMylibrary::colCapsuleCapsule(const CAPSULE & Cap1, const CAPSULE & Cap2, D3DXVECTOR3 & HitPos)
+{
+	// 変数宣言
+	FLOAT3 PerpendFoot1;	// 線分1側の垂線の足
+	FLOAT3 PerpendFoot2;	// 線分2側の垂線の足
+	float fVecCoeffi1;		// 線分1側ベクトルの係数
+	float fVecCoeffi2;		// 線分2側ベクトルの係数
+	float fDist;			// 線分同士の距離
+
+	// 線分同士の距離の計算
+	fDist = calcSegmentSegmentDist(Cap1.Segment, Cap2.Segment, PerpendFoot1, PerpendFoot2, fVecCoeffi1, fVecCoeffi2);
+
+	FLOAT3 HitPosSeg1 = Cap1.Segment.GetPoint(fVecCoeffi1);
+	HitPos = ((Cap2.Segment.GetPoint(fVecCoeffi2) - HitPosSeg1) *0.5f) + HitPosSeg1;
 
 	// 線分同士の距離が半径以下の時衝突している
 	return (fDist <= Cap1.fRadius + Cap2.fRadius);
+}
+
+float CMylibrary::calcSegmentPosDist(const SEGMENT & Seg1, const D3DXVECTOR3 & pos, FLOAT3 &PerpendFoot1, float &fVecCoeffi1)
+{
+	// Seg1縮退している?
+	if (Seg1.Vec.LengthSq() < MYLIB_OX_EPSILON)
+	{
+		float fLength = calcPointSegmentDist(pos, Seg1, PerpendFoot1, fVecCoeffi1);
+		PerpendFoot1 = Seg1.Point;
+		fVecCoeffi1 = 0.0f;
+		return fLength;
+	}
+
+	float fLength = calcPointSegmentDist(pos, Seg1, PerpendFoot1, fVecCoeffi1);
+	return fLength;
+}
+
+bool CMylibrary::colCapsuleSphere(const CAPSULE & Cap1, const D3DXVECTOR3 & pos, const float & fRadius, D3DXVECTOR3 & HitPos)
+{
+	// 変数宣言
+	float fDist;			// 線分同士の距離
+	FLOAT3 PerpendFoot1;	// 線分1側の垂線の足
+	float fVecCoeffi1;		// 線分1側ベクトルの係数
+	fDist = calcSegmentPosDist(Cap1.Segment, pos, PerpendFoot1, fVecCoeffi1);
+
+	FLOAT3 HitPosSeg1 = Cap1.Segment.GetPoint(fVecCoeffi1);
+	HitPos = ((pos - HitPosSeg1) *0.5f) + HitPosSeg1;
+
+	return (fDist <= Cap1.fRadius + fRadius);
 }
 
 

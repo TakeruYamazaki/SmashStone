@@ -1308,6 +1308,7 @@ void C3DBoxCollider::unset(int nID)
 {
 	CMylibrary::Setdifferentvalue(m_ColliderInfo[nID].bUse, false);
 	m_ColliderInfo[nID].bUse = false;
+	m_ColliderInfo[nID].pScene = NULL;
 }
 
 //-------------------------------------------------------------------------------------------------------------
