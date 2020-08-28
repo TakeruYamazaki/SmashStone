@@ -62,6 +62,8 @@ public:
 	bool HitConditionAttack2(const int &nCapColliID);	// 攻撃2を当てる条件
 	bool HitConditionAttack3(const int &nCapColliID);	// 攻撃3を当てる条件
 	bool HitConditionSmash(const int &nCapColliID);		// スマッシュ攻を当てる条件
+
+	void SetHitSound();		// 攻撃モーション毎に違う効果音を再生する
 protected:
 
 private:

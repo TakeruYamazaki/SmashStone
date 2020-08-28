@@ -33,6 +33,7 @@
 #include "hitpoint.h"
 #include "PolygonCollider.h"
 #include "CapsuleCollider.h"
+#include "sound.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -286,7 +287,10 @@ void CPlayer::Smash(void)
 	// スマッシュチャージ
 	else if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
 		m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH)
+	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_SMASHCHARGE);	// 効果音の再生
+	}
 
 	// 攻撃が当たったフラグをオフにする
 	m_bAttakHit = false;
@@ -783,8 +787,21 @@ void CPlayer::CatchStone(void)
 		m_nNumStone++;
 		// 3つ取得している
 		if (m_nNumStone >= 3)
+		{
 			// 変身
 			this->m_bTrans = true;
+			// 効果音再生
+			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_TRANSFORM);
+			// BGM変更
+			CRenderer::GetSound()->StopSound(CSound::SOUND_LABEL_BGM_GAME);
+			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_BGM_TRANS);
+		}
+		// 石入手の効果音を再生
+		else
+		{
+			// 効果音再生
+			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_GETSTONE);
+		}
 	}
 }
 
@@ -939,6 +956,38 @@ void CPlayer::TakeSmashDamage(CPlayer * pAnother)
 	m_bSmashBlowAway = true;
 	// 当てたフラグを立てる
 	pAnother->m_bAttakHit = true;
+}
+
+//==================================================================================================================
+// 攻撃モーション毎に違う効果音を再生する
+//==================================================================================================================
+void CPlayer::SetHitSound()
+{
+	// 攻撃モーション毎に違う効果音を再生する
+	switch (m_pModelCharacter->GetMotion())
+	{
+	case CMotion::PLAYER_ATTACK_0:
+		// 効果音再生
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT1);
+		break;
+	case CMotion::PLAYER_ATTACK_1:
+		// 効果音再生
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT1);
+		break;
+	case CMotion::PLAYER_ATTACK_2:
+		// 効果音再生
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT2);
+		break;
+	case CMotion::PLAYER_ATTACK_3:
+		// 効果音再生
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT3);
+		break;
+	case CMotion::PLAYER_SMASH:
+		// 効果音再生
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_SMASHHIT);
+		break;
+	}
+	
 }
 
 //==================================================================================================================

@@ -91,6 +91,8 @@ private:
 
 	int			m_nCountFPS = 0;						// FPSカウンタ
 
+	void StartMode();									// 選択モードの開始
+
 #ifdef _DEBUG
 	void InitImGui(D3DPRESENT_PARAMETERS d3dpp, HWND hWnd);	// ImGuiの初期化
 	void UpdateImGui(void);									// ImGuiの更新

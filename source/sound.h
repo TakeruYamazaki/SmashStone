@@ -25,11 +25,20 @@ public:
 	// ==========================================================
 	typedef enum
 	{
-		SOUND_LABEL_BGMTITLE = 0,	// タイトル
-		SOUND_LABEL_BGMTUTORIAL,	// チュートリアル
-		SOUND_LABEL_BGMGAME,		// ゲーム
-		SOUND_LABEL_BGMRESULT,		// リザルト
+		SOUND_LABEL_BGM_TITLE = 0,	// タイトル
+		SOUND_LABEL_BGM_MAPSELECT,	// マップ選択画面
+		SOUND_LABEL_BGM_GAME,		// ゲーム画面
+		SOUND_LABEL_BGM_TRANS,		// 変身中
+		SOUND_LABEL_BGM_RESULT,		// リザルト画面
+		SOUND_LABEL_SE_CURSORMOVE,	// カーソル移動
 		SOUND_LABEL_SE_DECISION,	// 決定
+		SOUND_LABEL_SE_HIT1,		// 攻撃を受けた(その１)
+		SOUND_LABEL_SE_HIT2,		// 攻撃を受けた(その２)
+		SOUND_LABEL_SE_HIT3,		// 攻撃を受けた(その３)
+		SOUND_LABEL_SE_GETSTONE,	// 石を入手
+		SOUND_LABEL_SE_TRANSFORM,	// 変身
+		SOUND_LABEL_SE_SMASHCHARGE,	// スマッシュ攻撃のチャージ
+		SOUND_LABEL_SE_SMASHHIT,	// スマッシュ攻撃を受けた
 		SOUND_LABEL_MAX,			// 最大
 	} SOUND_LABEL;					// 音の種類
 

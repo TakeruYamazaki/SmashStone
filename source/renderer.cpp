@@ -43,7 +43,7 @@ CResult *CRenderer::m_pResult = NULL;					// リザルト情報
 CTutorial *CRenderer::m_pTutorial = NULL;				// チュートリアル情報
 CSound *CRenderer::m_pSound = NULL;						// 音情報
 CMapSelect *CRenderer::m_pMapSelect = NULL;				// マップ選択画面の情報
-CRenderer::MODE CRenderer::m_mode = MODE_GAME;			// 最初の画面
+CRenderer::MODE CRenderer::m_mode = MODE_TUTORIAL;			// 最初の画面
 
 //==================================================================================================================
 // コンストラクタ
@@ -174,46 +174,8 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	CModelCharacter::Load();
 	CMotion::Load();
 
-	switch (m_mode)
-	{
-		// タイトルのとき
-	case MODE_TITLE:
-		// タイトルの生成
-		m_pTitle = CTitle::Create();
-		// BGM再生
-		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMTITLE);
-		break;
-
-		// チュートリアルのとき
-	case MODE_TUTORIAL:
-		// チュートリアルの生成
-		m_pTutorial = CTutorial::Create();
-		// BGM再生
-		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMTUTORIAL);
-		break;
-
-		// マップ選択画面のとき
-	case MODE_MAPSELECT:
-		// マップ選択画面の生成
-		m_pMapSelect = CMapSelect::Create();
-		// BGM再生
-		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMTUTORIAL);
-		break;
-
-		// ゲームのとき
-	case MODE_GAME:
-		// ゲームの生成
-		m_pGame = CGame::Create();
-		// BGM再生
-		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMGAME);
-		break;
-
-		// ランキングのとき
-	case MODE_RESULT:
-		// ランキングの生成
-		m_pResult = CResult::Create();
-		break;
-	}
+	// モードの開始
+	StartMode();
 
 	// 値を返す
 	return S_OK;
@@ -527,6 +489,8 @@ void CRenderer::SetMode(MODE mode)
 	{
 		// タイトルのとき
 	case MODE_TITLE:
+		// 音を止める
+		m_pSound->StopSound(CSound::SOUND_LABEL_BGM_TITLE);
 		// 終了処理
 		m_pTitle->Uninit();
 		// 破棄
@@ -537,6 +501,8 @@ void CRenderer::SetMode(MODE mode)
 
 		// チュートリアルのとき
 	case MODE_TUTORIAL:
+		// 音を止める
+		m_pSound->StopSound(CSound::SOUND_LABEL_BGM_MAPSELECT);
 		// 終了処理
 		m_pTutorial->Uninit();
 		// 破棄
@@ -547,6 +513,8 @@ void CRenderer::SetMode(MODE mode)
 
 		// マップ選択画面のとき
 	case MODE_MAPSELECT:
+		// 音を止める
+		m_pSound->StopSound(CSound::SOUND_LABEL_BGM_MAPSELECT);
 		// 終了処理
 		m_pMapSelect->Uninit();
 		// 破棄
@@ -557,6 +525,9 @@ void CRenderer::SetMode(MODE mode)
 
 		// ゲームのとき
 	case MODE_GAME:
+		// 音を止める
+		m_pSound->StopSound(CSound::SOUND_LABEL_BGM_GAME);
+		m_pSound->StopSound(CSound::SOUND_LABEL_BGM_TRANS);
 		// 終了処理
 		m_pGame->Uninit();
 		// 破棄
@@ -567,6 +538,8 @@ void CRenderer::SetMode(MODE mode)
 
 		// リザルト
 	case MODE_RESULT:
+		// 音を止める
+		m_pSound->StopSound(CSound::SOUND_LABEL_BGM_RESULT);
 		// 終了処理
 		m_pResult->Uninit();
 		// 破棄
@@ -579,41 +552,55 @@ void CRenderer::SetMode(MODE mode)
 	// モード変数を代入
 	m_mode = mode;
 
-	switch (mode)
+	// モードの開始
+	CManager::GetRenderer()->StartMode();
+}
+
+//==================================================================================================================
+// 選択モードの開始
+//==================================================================================================================
+void CRenderer::StartMode()
+{
+	switch (m_mode)
 	{
 		// タイトルのとき
 	case MODE_TITLE:
-		// 生成処理
+		// タイトルの生成
 		m_pTitle = CTitle::Create();
-		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMTITLE);
+		// BGM再生
+		m_pSound->PlaySound(CSound::SOUND_LABEL_BGM_TITLE);
 		break;
 
 		// チュートリアルのとき
 	case MODE_TUTORIAL:
-		// 生成処理
+		// チュートリアルの生成
 		m_pTutorial = CTutorial::Create();
-		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMTUTORIAL);
+		// BGM再生
+		m_pSound->PlaySound(CSound::SOUND_LABEL_BGM_MAPSELECT);
 		break;
 
 		// マップ選択画面のとき
 	case MODE_MAPSELECT:
-		// 生成処理
+		// マップ選択画面の生成
 		m_pMapSelect = CMapSelect::Create();
-		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMTUTORIAL);
+		// BGM再生
+		m_pSound->PlaySound(CSound::SOUND_LABEL_BGM_MAPSELECT);
 		break;
 
 		// ゲームのとき
 	case MODE_GAME:
-		// 生成処理
+		// ゲームの生成
 		m_pGame = CGame::Create();
-		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMGAME);
+		// BGM再生
+		m_pSound->PlaySound(CSound::SOUND_LABEL_BGM_GAME);
 		break;
 
-		// リザルト
+		// ランキングのとき
 	case MODE_RESULT:
-		// 生成処理
+		// ランキングの生成
 		m_pResult = CResult::Create();
-		//m_pSound->PlaySound(CSound::SOUND_LABEL_BGMRESULT);
+		// BGM再生
+		m_pSound->PlaySound(CSound::SOUND_LABEL_BGM_RESULT);
 		break;
 	}
 }

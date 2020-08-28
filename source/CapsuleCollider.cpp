@@ -483,6 +483,7 @@ bool CCapsuleCollider::Collision(void)
 	CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule) ?
 		CDebugProc::Print("“–‚½‚Á‚Ä‚é\n"),
 		CCharEffectOffset::Set(&pOthers->GetPos(), CCharEffectOffset::STR_ƒhƒ“ƒb),
+		pOwn->SetHitSound(),
 		pOwn->SetAttakHit(true) :
 		CDebugProc::Print("“–‚½‚Á‚Ä‚È‚¢\n");
 #else

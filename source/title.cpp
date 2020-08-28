@@ -146,6 +146,8 @@ void CTitle::Update(void)
 		(pInputGamepad[PLAYER_TWO]->GetTrigger(CInputGamepad::JOYPADKEY_START)) || 
 		(pInputKeyboard && pInputKeyboard->GetKeyboardTrigger(DIK_RETURN)))
 	{
+		// Œø‰Ê‰¹Ä¶
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
 		// ŽŸ‚Ì‰æ–Ê‚Ì‚Æ‚«
 		if (m_bNextScreen)
 		{
