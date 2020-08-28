@@ -31,6 +31,9 @@ void CCharEffectOffset::Load(void)
 	// ファイル名
 	CONST_STRING pFileName[OFFSETNAME::OFFSET_MAX] = {
 		{ "data/TEXT/Effect/CharEffectOffset/Offset_ドンッ.txt" },
+		{ "data/TEXT/Effect/CharEffectOffset/Offset_ゴッ.txt" },
+		{ "data/TEXT/Effect/CharEffectOffset/Offset_キーン.txt" },
+
 	};
 
 	for (int nCntOffSet = 0; nCntOffSet < OFFSETNAME::OFFSET_MAX; nCntOffSet++)
@@ -236,26 +239,10 @@ void CCharEffectOffset::Update(void)
 		{
 			continue;
 		}
-
-		if (m_pParent != nullptr)
-		{
-			pParamCell[nCntParam].pParent = m_pParent;
-		}
-		else
-		{
-			pParamCell[nCntParam].pos += m_pos;
-		}
-		
+		pParamCell[nCntParam].pos += m_pos;
 		C3DEffect::Set(pParamCell[nCntParam]);
 
-		if (m_pParent != nullptr)
-		{
-			pParamCell[nCntParam].pParent = nullptr;
-		}
-		else
-		{
-			pParamCell[nCntParam].pos -= m_pos;
-		}
+		pParamCell[nCntParam].pos -= m_pos;
 	}
 
 	// 開放確認
@@ -323,7 +310,8 @@ void CCharEffectOffset::SetPos(D3DXVECTOR3 * pParent)
 		m_pParent = nullptr;
 		m_pos = *(D3DXVECTOR3 *)pParent;
 	}
-	
+	m_pos = *(D3DXVECTOR3 *)pParent;
+	m_pParent = &m_pos;
 }
 
 //-------------------------------------------------------------------------------------------------------------

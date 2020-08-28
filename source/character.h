@@ -79,21 +79,12 @@ public:
 	inline CHARACTER_TYPE    GetCharaType(void)					{ return m_type; }					// キャラタイプの取得
 	inline STATE_LIFT_OBJET  GetStateLift(void)					{ return m_StateLift; }				// 物持ち上げの状態取得
 	inline D3DXVECTOR3       &GetPos(void)						{ return m_pos; }					// 位置の取得
-<<<<<<< HEAD
-	inline D3DXVECTOR3       GetMove(void)						{ return m_move; }					// 移動値の取得
-	inline D3DXVECTOR3       &GetRot(void)						{ return m_rot; }					// 回転の取得
-	inline D3DXVECTOR3       GetRotDest(void)					{ return m_rotDest; }				// 回転先の取得
-	inline float             GetMaxLife(void)					{ return m_param.fMaxLife; }		// 最大ライフ取得
-	inline float             GetLife(void)						{ return m_nLife; }					// ライフ取得
-	inline bool              GetbJump(void)						{ return m_bJump; }					// ジャンプ状態の取得
-=======
 	inline D3DXVECTOR3       &GetMove(void)						{ return m_move; }					// 移動値の取得
 	inline D3DXVECTOR3       &GetRot(void)						{ return m_rot; }					// 回転の取得
 	inline D3DXVECTOR3       &GetRotDest(void)					{ return m_rotDest; }				// 回転先の取得
 	inline float             &GetMaxLife(void)					{ return m_param.fMaxLife; }		// 最大ライフ取得
 	inline float             &GetLife(void)						{ return m_nLife; }					// ライフ取得
 	inline bool              &GetbJump(void)					{ return m_bJump; }					// ジャンプ状態の取得
->>>>>>> fdbba7ed3b383ac2fdd5546b7ab86609f13e9494
 	inline void              Damage(const int nDamage)			{ m_nLife -= nDamage; }				// ダメージ処理
 	inline CCapsuleCollider* GetCapCollider(int nPartsIndex)	{ return m_pCapColi[nPartsIndex]; }	// カプセルコライダーの取得
 

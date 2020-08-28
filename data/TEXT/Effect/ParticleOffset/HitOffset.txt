@@ -15,7 +15,7 @@ SETPARAM
 	FRAME = 1
 
 	// 個数
-	NUMBER = 15
+	NUMBER = 10
 	
 	// 種類
 	TYPE = 0
@@ -44,7 +44,7 @@ SETPARAM
 	RADIUS = 0.0
 	
 	// 半径のランダム(最小 最大) 使わない場合NULL
-	RADIUSRAND = 6 2
+	RADIUSRAND = 4 2
 	
 	// 半径の変化量
 	RADIUSVALUE = 1.0

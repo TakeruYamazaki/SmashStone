@@ -119,6 +119,9 @@ public:
 	int GetStoneID(void) { return m_enmStoneID; }
 	// ライフの取得
 	int GetLife(void) { return m_nLife; }
+	// ダメージの発生ライフ0の時 true
+	bool ApplyDamage(void);
+
 
 private:
 	/* メンバ関数 */
@@ -138,7 +141,7 @@ private:
 	int                m_nBoxClliderID;			// ボックスコライダーID
 	int				   m_nIndexPos;				// 生成座標の番号
 	int				   m_nLife;					// ライフ
-
+	bool			   m_bDamage;				// ダメージを受けるフラグ
 #ifdef CSTONE_DEBUG_DRAW
 	static int         m_nNumAll;				// 全ての個数
 	int                m_nNumID;				// 個数ID(何個目)
