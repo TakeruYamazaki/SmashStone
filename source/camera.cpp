@@ -524,7 +524,7 @@ CCamera * CCamera::Create(void)
 	else if (CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 	{// チュートリアルのとき
 		// カメラの位置設定
-		m_pCamera->SetCameraPos(D3DXVECTOR3(350.0f, 150.0f, -300.0f),
+		m_pCamera->SetCameraPos(D3DXVECTOR3(1.0f, 150.0f, 1.0f),
 			D3DXVECTOR3(0.0f, 10.0f, 0.0f), ZeroVector3);
 	}
 	else if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)

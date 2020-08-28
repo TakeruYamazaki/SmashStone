@@ -147,7 +147,7 @@ void CTitle::Update(void)
 		(pInputKeyboard && pInputKeyboard->GetKeyboardTrigger(DIK_RETURN)))
 	{
 		// 次の画面のとき
-		if (m_bNextScreen)
+		if (!m_bNextScreen)
 		{
 			// フェードが何もない時
 			if (fade == CFade::FADE_NONE)
