@@ -1,11 +1,11 @@
 //*************************************************************************************************************
 //
-// ƒ|ƒŠƒSƒ“ƒRƒ‰ƒCƒ_[ˆ—[PolygonCollider.h]
+// ãƒãƒªã‚´ãƒ³ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼å‡¦ç†[PolygonCollider.h]
 // Author : Sekine Ikuto
 //
 //*************************************************************************************************************
 //-------------------------------------------------------------------------------------------------------------
-// ƒCƒ“ƒNƒ‹[ƒhƒtƒ@ƒCƒ‹
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«
 //-------------------------------------------------------------------------------------------------------------
 #include "CapsuleCollider.h"
 #include "manager.h"
@@ -18,106 +18,106 @@
 #include "3DParticle.h"
 
 //-------------------------------------------------------------------------------------------------------------
-// ƒ}ƒNƒ’è‹`
+// ãƒã‚¯ãƒ­å®šç¾©
 //-------------------------------------------------------------------------------------------------------------
 #define CAPCOLLI_SLICES		5
 #define CAPCOLLI_STACKS		5
 
-#define CAPCOLLI_BOTTOMUNITVEC_NUMVTX	(3)		// ’ê–Ê‚Ì’PˆÊƒxƒNƒgƒ‹ŒvZ‚É•K—v‚È’¸“_”
+#define CAPCOLLI_BOTTOMUNITVEC_NUMVTX	(3)		// åº•é¢ã®å˜ä½ãƒ™ã‚¯ãƒˆãƒ«è¨ˆç®—ã«å¿…è¦ãªé ‚ç‚¹æ•°
 
-#define CAPCOLLI_FILENAME						"data/TEXT/ColliInfo/Cylinder.csv"	// ƒtƒ@ƒCƒ‹–¼
-#define CAPCOLLI_OPENMODE						"r"		// ƒtƒ@ƒCƒ‹‚ÌŠJ‚­ƒ‚[ƒh
+#define CAPCOLLI_FILENAME						"data/TEXT/ColliInfo/Cylinder.csv"	// ãƒ•ã‚¡ã‚¤ãƒ«å
+#define CAPCOLLI_OPENMODE						"r"		// ãƒ•ã‚¡ã‚¤ãƒ«ã®é–‹ããƒ¢ãƒ¼ãƒ‰
 
-#define CAPCOLLI_WORDSIZE						16		// ƒ[ƒhƒTƒCƒY
-
-//-------------------------------------------------------------------------------------------------------------
-// Ã“Iƒƒ“ƒo•Ï”
-//-------------------------------------------------------------------------------------------------------------
-CCapsuleCollider::READINFOFILEBUFFER	CCapsuleCollider::m_ReadInfoFileBuff;		// “Ç‚İ‚±‚ñ‚¾ƒtƒ@ƒCƒ‹î•ñ
+#define CAPCOLLI_WORDSIZE						16		// ãƒ¯ãƒ¼ãƒ‰ã‚µã‚¤ã‚º
 
 //-------------------------------------------------------------------------------------------------------------
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// é™çš„ãƒ¡ãƒ³ãƒå¤‰æ•°
+//-------------------------------------------------------------------------------------------------------------
+CCapsuleCollider::READINFOFILEBUFFER	CCapsuleCollider::m_ReadInfoFileBuff;		// èª­ã¿ã“ã‚“ã ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±
+
+//-------------------------------------------------------------------------------------------------------------
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //-------------------------------------------------------------------------------------------------------------
 CCapsuleCollider::CCapsuleCollider() : CScene(PRIORITY_COLLISION)
 {
-	m_ColliderInfo.TopTransVec = MYLIB_VEC3_UNSET;		// ã–Ê‚Ü‚Å‚Ì’·‚³‚ÆŒü‚«
-	m_ColliderInfo.BottomTransVec = MYLIB_VEC3_UNSET;	// ’ê–Ê‚Ü‚Å‚Ì’·‚³‚ÆŒü‚«
-	m_ColliderInfo.enmTtpeID = TYPEID_NOEN;				// ƒ^ƒCƒvID
+	m_ColliderInfo.TopTransVec = MYLIB_VEC3_UNSET;		// ä¸Šé¢ã¾ã§ã®é•·ã•ã¨å‘ã
+	m_ColliderInfo.BottomTransVec = MYLIB_VEC3_UNSET;	// åº•é¢ã¾ã§ã®é•·ã•ã¨å‘ã
+	m_ColliderInfo.enmTtpeID = TYPEID_NOEN;				// ã‚¿ã‚¤ãƒ—ID
 	m_ColliderInfo.trans.pos = MYLIB_VEC3_UNSET;
 	m_ColliderInfo.trans.rot = MYLIB_VEC3_UNSET;
 	m_ColliderInfo.trans.scal = MYLIB_SCALE_UNSET;
-	m_ColliderInfo.pMtxParent = NULL;		// e‚Ìƒ}ƒgƒŠƒbƒNƒXƒ|ƒCƒ“ƒ^
+	m_ColliderInfo.pMtxParent = NULL;		// è¦ªã®ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ãƒã‚¤ãƒ³ã‚¿
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// “Ç‚İ‚İ
+// èª­ã¿è¾¼ã¿
 //-------------------------------------------------------------------------------------------------------------
 HRESULT CCapsuleCollider::Load(void)
 {
-	// “Ç‚İ‚±‚ñ‚¾ƒtƒ@ƒCƒ‹î•ñ‚Ì‰Šú‰»
+	// èª­ã¿ã“ã‚“ã ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±ã®åˆæœŸåŒ–
 	m_ReadInfoFileBuff.nNumReadInfo = MYLIB_INT_UNSET;
 	m_ReadInfoFileBuff.pCell = NULL;
 	m_ReadInfoFileBuff.pSetThisID = NULL;
 #ifdef _DEBUG
 	cout << "---------------------------------------------------------------------\n";
-	cout << "CCapsuleCollider::Load ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[‚Ì“Ç‚İ‚İŠJn\n";
-	DWORD start = timeGetTime();			// Œv‘ªƒXƒ^[ƒgŠÔ
+	cout << "CCapsuleCollider::Load ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®èª­ã¿è¾¼ã¿é–‹å§‹\n";
+	DWORD start = timeGetTime();			// è¨ˆæ¸¬ã‚¹ã‚¿ãƒ¼ãƒˆæ™‚é–“
 #endif
-											// •Ï”éŒ¾
+											// å¤‰æ•°å®£è¨€
 	FILE *pFile = fopen(CAPCOLLI_FILENAME, CAPCOLLI_OPENMODE);
-	// ŠJ‚¯‚È‚©‚Á‚½
+	// é–‹ã‘ãªã‹ã£ãŸ
 	if (pFile == NULL)
 	{
 #ifdef _DEBUG
-		cout << "CCapsuleCollider::Load ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[‚Ì“Ç‚İ‚İ‚Ìƒtƒ@ƒCƒ‹‚ªŠJ‚¯‚Ü‚¹‚ñ‚Å‚µ‚½\n";
+		cout << "CCapsuleCollider::Load ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®èª­ã¿è¾¼ã¿ã®ãƒ•ã‚¡ã‚¤ãƒ«ãŒé–‹ã‘ã¾ã›ã‚“ã§ã—ãŸ\n";
 		cout << "---------------------------------------------------------------------\n";
 #endif
 		return E_FAIL;
 	}
 
-	// •Ï”éŒ¾
-	char aRead[MYLIB_STRINGSIZE];		// “Ç‚İ‚İ—p
-	char aComp[MYLIB_STRINGSIZE];		// ”äŠr—p
-	char aEmpty[MYLIB_STRINGSIZE];		// —v‚ç‚È‚¢‚à‚Ì—p
-	int  nCntInfo;						// î•ñƒJƒEƒ“ƒg
+	// å¤‰æ•°å®£è¨€
+	char aRead[MYLIB_STRINGSIZE];		// èª­ã¿è¾¼ã¿ç”¨
+	char aComp[MYLIB_STRINGSIZE];		// æ¯”è¼ƒç”¨
+	char aEmpty[MYLIB_STRINGSIZE];		// è¦ã‚‰ãªã„ã‚‚ã®ç”¨
+	int  nCntInfo;						// æƒ…å ±ã‚«ã‚¦ãƒ³ãƒˆ
 
-	aRead[0] = MYLIB_CHAR_UNSET;		// “Ç‚İ‚İ—p
-	aComp[0] = MYLIB_CHAR_UNSET;		// ”äŠr—p
-	aEmpty[0] = MYLIB_CHAR_UNSET;		// —v‚ç‚È‚¢‚à‚Ì—p
-	nCntInfo = MYLIB_INT_UNSET;			// î•ñƒJƒEƒ“ƒg
+	aRead[0] = MYLIB_CHAR_UNSET;		// èª­ã¿è¾¼ã¿ç”¨
+	aComp[0] = MYLIB_CHAR_UNSET;		// æ¯”è¼ƒç”¨
+	aEmpty[0] = MYLIB_CHAR_UNSET;		// è¦ã‚‰ãªã„ã‚‚ã®ç”¨
+	nCntInfo = MYLIB_INT_UNSET;			// æƒ…å ±ã‚«ã‚¦ãƒ³ãƒˆ
 
 #ifdef _DEBUG
-	int  nCntError;						// ƒGƒ‰[ƒJƒEƒ“ƒg
-	nCntError = MYLIB_INT_UNSET;		// ƒGƒ‰[ƒJƒEƒ“ƒg
+	int  nCntError;						// ã‚¨ãƒ©ãƒ¼ã‚«ã‚¦ãƒ³ãƒˆ
+	nCntError = MYLIB_INT_UNSET;		// ã‚¨ãƒ©ãƒ¼ã‚«ã‚¦ãƒ³ãƒˆ
 #endif
-										// ƒXƒNƒŠƒvƒg‚ª—ˆ‚é‚Ü‚Å‚Æ‚Î‚·
+										// ã‚¹ã‚¯ãƒªãƒ—ãƒˆãŒæ¥ã‚‹ã¾ã§ã¨ã°ã™
 	while (strcmp(aComp, "SCRIPT") != 0)
 	{
-		// 1s“Ç‚İ‚Ş
+		// 1è¡Œèª­ã¿è¾¼ã‚€
 		fgets(aRead, sizeof(aRead), pFile);
-		// “Ç‚İ‚ñ‚Ç•¶š—ñ‘ã“ü
+		// èª­ã¿è¾¼ã‚“ã©æ–‡å­—åˆ—ä»£å…¥
 		sscanf(aRead, "%[^,]s", &aComp);
 #ifdef _DEBUG
-		// ƒGƒ‰[ƒJƒEƒ“ƒg‚ğƒCƒ“ƒNƒŠƒƒ“ƒg
+		// ã‚¨ãƒ©ãƒ¼ã‚«ã‚¦ãƒ³ãƒˆã‚’ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
 		if (++nCntError > 1048576)
-		{// ƒGƒ‰[
+		{// ã‚¨ãƒ©ãƒ¼
 			nCntError = 0;
 			fclose(pFile);
 			return E_FAIL;
 		}
 #endif
 	}
-	// END_SCRIPT‚Ü‚Åƒ‹[ƒv
+	// END_SCRIPTã¾ã§ãƒ«ãƒ¼ãƒ—
 	while (strcmp(aComp, "END_SCRIPT") != 0)
 	{
-		// 1s“Ç‚İ‚Ş
+		// 1è¡Œèª­ã¿è¾¼ã‚€
 		fgets(aRead, sizeof(aRead), pFile);
-		// “Ç‚İ‚ñ‚Ç•¶š—ñ‘ã“ü
+		// èª­ã¿è¾¼ã‚“ã©æ–‡å­—åˆ—ä»£å…¥
 		sscanf(aRead, "%[^,]s", &aComp);
 #ifdef _DEBUG
-		// ƒGƒ‰[ƒJƒEƒ“ƒg‚ğƒCƒ“ƒNƒŠƒƒ“ƒg
+		// ã‚¨ãƒ©ãƒ¼ã‚«ã‚¦ãƒ³ãƒˆã‚’ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
 		if (++nCntError > 1048576)
-		{// ƒGƒ‰[
+		{// ã‚¨ãƒ©ãƒ¼
 			nCntError = 0;
 			fclose(pFile);
 			return E_FAIL;
@@ -125,36 +125,36 @@ HRESULT CCapsuleCollider::Load(void)
 #endif
 		if (m_ReadInfoFileBuff.nNumReadInfo <= 0)
 		{
-			// İ’è‚·‚éŒÂ”
+			// è¨­å®šã™ã‚‹å€‹æ•°
 			if (strcmp(aComp, "SET_NUM") == 0)
 			{
 				sscanf(aRead, "%[^,],%d", &aEmpty, &m_ReadInfoFileBuff.nNumReadInfo);
-				// ’P‘Ìî•ñ‚ğŒÂ”•ª¶¬
+				// å˜ä½“æƒ…å ±ã‚’å€‹æ•°åˆ†ç”Ÿæˆ
 				m_ReadInfoFileBuff.pCell = new READINFOFILE_CELL[m_ReadInfoFileBuff.nNumReadInfo];
-				// ‰Šú‰»‚·‚éID‚ğŒÂ”•ª¶¬
+				// åˆæœŸåŒ–ã™ã‚‹IDã‚’å€‹æ•°åˆ†ç”Ÿæˆ
 				m_ReadInfoFileBuff.pSetThisID = new int[m_ReadInfoFileBuff.nNumReadInfo];
-				// •¶š—ñ‚Ì‰Šú‰»
+				// æ–‡å­—åˆ—ã®åˆæœŸåŒ–
 				aComp[0] = '\0';
-				cout << "“Ç‚İ‚±‚İŒÂ”‚ğæ“¾‚µ‚Ü‚µ‚½\n";
+				cout << "èª­ã¿ã“ã¿å€‹æ•°ã‚’å–å¾—ã—ã¾ã—ãŸ\n";
 			}
 		}
 		else
 		{
-			// İ’è‚·‚é‚à‚Ì
+			// è¨­å®šã™ã‚‹ã‚‚ã®
 			if (strcmp(aComp, "SET") == 0)
 			{
-				// •Ï”éŒ¾
-				char aSizeWord[CAPCOLLI_WORDSIZE];		// ƒTƒCƒY‚Ìƒtƒ‰ƒO•¶š
-				char aDiffWord[CAPCOLLI_WORDSIZE];		// ·•ª‚Ìƒtƒ‰ƒO•¶š
-				READINFOFILE_CELL *pCell;					// ƒZƒ‹ƒ|ƒCƒ“ƒ^
+				// å¤‰æ•°å®£è¨€
+				char aSizeWord[CAPCOLLI_WORDSIZE];		// ã‚µã‚¤ã‚ºã®ãƒ•ãƒ©ã‚°æ–‡å­—
+				char aDiffWord[CAPCOLLI_WORDSIZE];		// å·®åˆ†ã®ãƒ•ãƒ©ã‚°æ–‡å­—
+				READINFOFILE_CELL *pCell;					// ã‚»ãƒ«ãƒã‚¤ãƒ³ã‚¿
 
-															// ‰Šú‰»
+															// åˆæœŸåŒ–
 				aSizeWord[0] = MYLIB_CHAR_UNSET;
 				aDiffWord[0] = MYLIB_CHAR_UNSET;
 				pCell = &m_ReadInfoFileBuff.pCell[nCntInfo];
 
-				/* ˆês•ª‚Ìî•ñ‚ğ‰ğÍ‚·‚é */
-				//			   SET     ƒƒ‚   ID  ã‘å‚«‚³               ·•ª                  ƒ^ƒCƒv
+				/* ä¸€è¡Œåˆ†ã®æƒ…å ±ã‚’è§£æã™ã‚‹ */
+				//			   SET     ãƒ¡ãƒ¢   ID  ä¸Šå¤§ãã•               å·®åˆ†                  ã‚¿ã‚¤ãƒ—
 				sscanf(aRead, "%[^, ],%[^, ], %d, %[^, ], %[^, ], %[^, ],%[^, ], %[^, ], %[^, ], %d",
 					&aEmpty, &aEmpty,
 					&m_ReadInfoFileBuff.pSetThisID[nCntInfo],
@@ -163,12 +163,12 @@ HRESULT CCapsuleCollider::Load(void)
 					&aDiffWord,
 					&aEmpty, &aEmpty,
 					&pCell->nColliderType);
-				// ƒTƒCƒY‚ğİ’è‚µ‚È‚¢
+				// ã‚µã‚¤ã‚ºã‚’è¨­å®šã—ãªã„æ™‚
 				if (strcmp(aSizeWord, "UNSET") != 0)
 				{
-					// ƒTƒCƒYî•ñ‚Ì¶¬
+					// ã‚µã‚¤ã‚ºæƒ…å ±ã®ç”Ÿæˆ
 					pCell->pSizeInfo = new SIZE_INFO;
-					//             SET     ƒƒ‚    ID      
+					//             SET     ãƒ¡ãƒ¢    ID      
 					sscanf(aRead, "%[^, ], %[^, ], %[^, ], %f, %f, %f, ",
 						&aEmpty, &aEmpty, &aEmpty,
 						&pCell->pSizeInfo->fTop,
@@ -176,13 +176,13 @@ HRESULT CCapsuleCollider::Load(void)
 						&pCell->pSizeInfo->fRadius);
 				}
 				else
-				{// ‚»‚êˆÈŠO‚Ì
+				{// ãã‚Œä»¥å¤–ã®æ™‚
 					pCell->pSizeInfo = NULL;
 				}
-				// ·•ª‚ğİ’è‚µ‚È‚¢
+				// å·®åˆ†ã‚’è¨­å®šã—ãªã„æ™‚
 				if (strcmp(aDiffWord, "UNSET") != 0)
 				{
-					// ·•ª‚Ì¶¬
+					// å·®åˆ†ã®ç”Ÿæˆ
 					pCell->pDifference = new D3DXVECTOR3;
 					sscanf(aRead, "%[^, ], %[^, ], %[^, ], %[^, ], %[^, ], %[^, ], %f, %f, %f, ",
 						&aEmpty, &aEmpty, &aEmpty, &aEmpty, &aEmpty, &aEmpty,
@@ -191,24 +191,24 @@ HRESULT CCapsuleCollider::Load(void)
 						&pCell->pDifference->z);
 				}
 				else
-				{// ‚»‚êˆÈŠO‚Ì
+				{// ãã‚Œä»¥å¤–ã®æ™‚
 					pCell->pDifference = NULL;
 				}
-				// î•ñƒJƒEƒ“ƒgƒCƒ“ƒNƒŠƒƒ“ƒg
+				// æƒ…å ±ã‚«ã‚¦ãƒ³ãƒˆã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
 				nCntInfo++;
-				// •¶š—ñ‚Ì‰Šú‰»
+				// æ–‡å­—åˆ—ã®åˆæœŸåŒ–
 				aComp[0] = '\0';
 #ifdef _DEBUG
-				cout << "[" << nCntInfo << "]ŒÂ–Ú‚Ìî•ñ‚ğæ“¾‚µ‚Ü‚µ‚½\n";
+				cout << "[" << nCntInfo << "]å€‹ç›®ã®æƒ…å ±ã‚’å–å¾—ã—ã¾ã—ãŸ\n";
 #endif
 			}
 		}
 	}
 	fclose(pFile);
 #ifdef _DEBUG
-	DWORD end = timeGetTime();			// Œv‘ªƒXƒ^[ƒgŠÔ
-	cout << "CCapsuleCollider::Load ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[‚Ì“Ç‚İ‚İI—¹\n";
-	cout << " CCapsuleCollider::Load ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[‚Ì“Ç‚İ‚İ ˆ—‘¬“x = " << (end - start) << "@[" << (end - start) * 0.001f << "sec.]\n";
+	DWORD end = timeGetTime();			// è¨ˆæ¸¬ã‚¹ã‚¿ãƒ¼ãƒˆæ™‚é–“
+	cout << "CCapsuleCollider::Load ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®èª­ã¿è¾¼ã¿çµ‚äº†\n";
+	cout << " CCapsuleCollider::Load ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®èª­ã¿è¾¼ã¿ å‡¦ç†é€Ÿåº¦ = " << (end - start) << "ã€€[" << (end - start) * 0.001f << "sec.]\n";
 #endif
 	cout << "---------------------------------------------------------------------\n";
 	return S_OK;
@@ -216,33 +216,33 @@ HRESULT CCapsuleCollider::Load(void)
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ŠJ•ú
+// é–‹æ”¾
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::Unload(void)
 {
-	// ’P‘Ìî•ñ‚ÌŒÂ”•ªƒ‹[ƒv
+	// å˜ä½“æƒ…å ±ã®å€‹æ•°åˆ†ãƒ«ãƒ¼ãƒ—
 	for (int nCntCell = 0; nCntCell < m_ReadInfoFileBuff.nNumReadInfo; nCntCell++)
 	{
-		// ‘å‚«‚³‚Ì”jŠü
+		// å¤§ãã•ã®ç ´æ£„
 		if (m_ReadInfoFileBuff.pCell[nCntCell].pSizeInfo != NULL)
 		{
 			delete m_ReadInfoFileBuff.pCell[nCntCell].pSizeInfo;
 			m_ReadInfoFileBuff.pCell[nCntCell].pSizeInfo = NULL;
 		}
-		// ·•ª‚Ì”jŠü
+		// å·®åˆ†ã®ç ´æ£„
 		if (m_ReadInfoFileBuff.pCell[nCntCell].pDifference != NULL)
 		{
 			delete m_ReadInfoFileBuff.pCell[nCntCell].pDifference;
 			m_ReadInfoFileBuff.pCell[nCntCell].pDifference = NULL;
 		}
 	}
-	// ’P‘Ìî•ñ‚ğ”jŠü
+	// å˜ä½“æƒ…å ±ã‚’ç ´æ£„
 	if (m_ReadInfoFileBuff.pCell != NULL)
 	{
 		delete[]m_ReadInfoFileBuff.pCell;
 		m_ReadInfoFileBuff.pCell = NULL;
 	}
-	// ‰Šú‰»‚·‚éID‚Ì”jŠü
+	// åˆæœŸåŒ–ã™ã‚‹IDã®ç ´æ£„
 	if (m_ReadInfoFileBuff.pSetThisID != NULL)
 	{
 		delete[]m_ReadInfoFileBuff.pSetThisID;
@@ -251,87 +251,87 @@ void CCapsuleCollider::Unload(void)
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::Init(void)
 {
 	m_ColliderInfo.nSlices = CAPCOLLI_SLICES * 2;
 	m_ColliderInfo.nStacks_1_2 = (CAPCOLLI_STACKS % 2 == 0) ? CAPCOLLI_STACKS: CAPCOLLI_STACKS + 1;
-	// ’¸“_”
+	// é ‚ç‚¹æ•°
 	m_ColliderInfo.nNumVertex = (m_ColliderInfo.nStacks_1_2 + 1) * (m_ColliderInfo.nSlices + 1);
-	// Œ©‚½–Ú‚Ì’¸“_”
+	// è¦‹ãŸç›®ã®é ‚ç‚¹æ•°
 	m_ColliderInfo.nNumindex = 2 * m_ColliderInfo.nSlices * (m_ColliderInfo.nStacks_1_2 + 1);
-	// OŠpŒ`‚Ì”
+	// ä¸‰è§’å½¢ã®æ•°
 	m_ColliderInfo.nNumPolygon = m_ColliderInfo.nNumVertex - 2;
 
 
-	// •Ï”éŒ¾
+	// å¤‰æ•°å®£è¨€
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
-	// ’¸“_‚Ìì¬
+	// é ‚ç‚¹ã®ä½œæˆ
 	MakeVertex(pDevice);
-	// ƒCƒ“ƒfƒbƒNƒX‚Ìì¬
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ä½œæˆ
 	MakeIndex(pDevice);
 
-	// ƒJƒvƒZƒ‹î•ñ‚Ì‰Šú‰»
+	// ã‚«ãƒ—ã‚»ãƒ«æƒ…å ±ã®åˆæœŸåŒ–
 	InitCapsInfo();
 }
 //-------------------------------------------------------------------------------------------------------------
-// I—¹
+// çµ‚äº†
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::Uninit(void)
 {
-	// ’¸“_ƒoƒbƒtƒ@‚ªNULL‚¶‚á‚È‚¢
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãŒNULLã˜ã‚ƒãªã„æ™‚
 	if (m_ColliderInfo.pVtexBuff != NULL)
 	{
-		// ’¸“_ƒoƒbƒtƒ@‚ÌŠJ•ú
+		// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®é–‹æ”¾
 		m_ColliderInfo.pVtexBuff->Release();
 		m_ColliderInfo.pVtexBuff = NULL;
 	}
 
-	// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ªNULL‚¶‚á‚È‚¢
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãŒNULLã˜ã‚ƒãªã„æ™‚
 	if (m_ColliderInfo.pIdxBuff != NULL)
 	{
-		// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÌŠJ•ú
+		// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®é–‹æ”¾
 		m_ColliderInfo.pIdxBuff->Release();
 		m_ColliderInfo.pIdxBuff = NULL;
 	}
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// XV
+// æ›´æ–°
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::Update(void)
 {
-	// ƒV[ƒ“‚ªNULL‚¶‚á‚È‚¢
+	// ã‚·ãƒ¼ãƒ³ãŒNULLã˜ã‚ƒãªã„æ™‚
 	if (m_ColliderInfo.pScene != NULL)
-	{// Õ“Ë”»’è
+	{// è¡çªåˆ¤å®š
 		this->Collision();
-		// Î‚Æ‚ÌÕ“Ë”»’è
+		// çŸ³ã¨ã®è¡çªåˆ¤å®š
 		this->CollisionStone();
 	}
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// •`‰æ
+// æç”»
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::Draw(void)
 {
-	// ƒŒƒ“ƒ_ƒ‰[î•ñæ“¾
-	CRenderer *pRenderer = CManager::GetRenderer();			// ƒŒƒ“ƒ_ƒ‰[‚Ìî•ñæ“¾
-	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();		// ƒfƒoƒCƒX‚Ìæ“¾
-	D3DXMATRIX mtxTrans, mtxRot;							// ŒvZ—pƒ}ƒgƒŠƒbƒNƒX
+	// ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼æƒ…å ±å–å¾—
+	CRenderer *pRenderer = CManager::GetRenderer();			// ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã®æƒ…å ±å–å¾—
+	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();		// ãƒ‡ãƒã‚¤ã‚¹ã®å–å¾—
+	D3DXMATRIX mtxTrans, mtxRot;							// è¨ˆç®—ç”¨ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
 
-	// ƒ‰ƒCƒeƒBƒ“ƒOƒ‚[ƒh–³Œø
+	// ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ç„¡åŠ¹
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-	// Fill Mode ‚Ìİ’è
+	// Fill Mode ã®è¨­å®š
 	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	// ƒJƒŠƒ“ƒO‚µ‚È‚¢
+	// ã‚«ãƒªãƒ³ã‚°ã—ãªã„
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ì‰Šú‰»
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®åˆæœŸåŒ–
 	D3DXMatrixIdentity(&m_ColliderInfo.trans.mtxWorld);
 
-	// ‰ñ“]‚ğ”½‰f
+	// å›è»¢ã‚’åæ˜ 
 	D3DXMatrixRotationYawPitchRoll(&mtxRot,
 		m_ColliderInfo.trans.rot.y,
 		m_ColliderInfo.trans.rot.x,
@@ -340,7 +340,7 @@ void CCapsuleCollider::Draw(void)
 		&m_ColliderInfo.trans.mtxWorld,
 		&mtxRot);
 
-	// ˆÊ’u‚ğ”½‰f
+	// ä½ç½®ã‚’åæ˜ 
 	D3DXMatrixTranslation(&mtxTrans,
 		m_ColliderInfo.trans.pos.x,
 		m_ColliderInfo.trans.pos.y,
@@ -355,7 +355,7 @@ void CCapsuleCollider::Draw(void)
 		&mtxTrans);
 
 
-	// eƒ‚ƒfƒ‹‚Ìî•ñ‚ª‚ ‚é‚Æ‚«
+	// è¦ªãƒ¢ãƒ‡ãƒ«ã®æƒ…å ±ãŒã‚ã‚‹ã¨ã
 	if (m_ColliderInfo.pMtxParent != NULL)
 	{
 		D3DXMatrixMultiply(&m_ColliderInfo.trans.mtxWorld
@@ -363,41 +363,41 @@ void CCapsuleCollider::Draw(void)
 			, m_ColliderInfo.pMtxParent);
 	}
 
-	// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ìİ’è
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®è¨­å®š
 	pDevice->SetTransform(D3DTS_WORLD, &m_ColliderInfo.trans.mtxWorld);
 
-	// ƒJƒvƒZƒ‹ˆÊ’u‚ÌŒvZ
+	// ã‚«ãƒ—ã‚»ãƒ«ä½ç½®ã®è¨ˆç®—
 	CalCapPosition();
 #ifdef _DEBUG
 
-	// ’¸“_ƒoƒbƒtƒ@‚ğƒf[ƒ^ƒXƒgƒŠ[ƒ€‚Éİ’è
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ‡ãƒ¼ã‚¿ã‚¹ãƒˆãƒªãƒ¼ãƒ ã«è¨­å®š
 	pDevice->SetStreamSource(0, m_ColliderInfo.pVtexBuff, 0, sizeof(VERTEX_3D));
 
-	// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğƒf[ƒ^ƒXƒgƒŠ[ƒ€‚Éİ’è
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ‡ãƒ¼ã‚¿ã‚¹ãƒˆãƒªãƒ¼ãƒ ã«è¨­å®š
 	pDevice->SetIndices(m_ColliderInfo.pIdxBuff);
 
-	// ’¸“_ƒtƒH[ƒ}ƒbƒg‚Ìİ’è
+	// é ‚ç‚¹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®è¨­å®š
 	pDevice->SetFVF(FVF_VERTEX_3D);
 
-	// ƒeƒNƒXƒ`ƒƒ‚Ìİ’è
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è¨­å®š
 	pDevice->SetTexture(0, NULL);
 
-	// ƒ|ƒŠƒSƒ“‚Ì•`‰æ
+	// ãƒãƒªã‚´ãƒ³ã®æç”»
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_ColliderInfo.nNumindex, 0, m_ColliderInfo.nNumPolygon);
 
 #endif
 
-	// ƒ‰ƒCƒeƒBƒ“ƒOƒ‚[ƒh—LŒø
+	// ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰æœ‰åŠ¹
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
-	// Fill Mode ‚Ìİ’è
+	// Fill Mode ã®è¨­å®š
 	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	// ƒŒƒ“ƒ_ƒ‰[‚Ìİ’è
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);				// — –Ê(¶‰ñ‚è)‚ğƒJƒŠƒ“ƒO‚·‚é
+	// ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã®è¨­å®š
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);				// è£é¢(å·¦å›ã‚Š)ã‚’ã‚«ãƒªãƒ³ã‚°ã™ã‚‹
 
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// e‚Ìƒ}ƒgƒŠƒbƒNƒXƒ|ƒCƒ“ƒ^‚Ìİ’è
+// è¦ªã®ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ãƒã‚¤ãƒ³ã‚¿ã®è¨­å®š
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::SetMtxParent(D3DXMATRIX * pMtxParent)
 {
@@ -405,7 +405,7 @@ void CCapsuleCollider::SetMtxParent(D3DXMATRIX * pMtxParent)
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ƒV[ƒ“‚Ìƒ|ƒCƒ“ƒ^
+// ã‚·ãƒ¼ãƒ³ã®ãƒã‚¤ãƒ³ã‚¿
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::SetScene(CScene * pScene)
 {
@@ -413,42 +413,42 @@ void CCapsuleCollider::SetScene(CScene * pScene)
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ¶¬
+// ç”Ÿæˆ
 //-------------------------------------------------------------------------------------------------------------
 CCapsuleCollider * CCapsuleCollider::Create(CScene *pScene, D3DXMATRIX *pMtxParent, int nTypeID)
 {
-	// •Ï”éŒ¾
+	// å¤‰æ•°å®£è¨€
 	CCapsuleCollider *pCollider = new CCapsuleCollider;
 
-	int nID = CCapsuleCollider::m_ReadInfoFileBuff.pSetThisID[nTypeID];	// ID‚Ìæ“¾
-	READINFOFILE_CELL *pCell = &CCapsuleCollider::m_ReadInfoFileBuff.pCell[nID];			// ƒZƒ‹‚Ìƒ|ƒCƒ“ƒ^
+	int nID = CCapsuleCollider::m_ReadInfoFileBuff.pSetThisID[nTypeID];	// IDã®å–å¾—
+	READINFOFILE_CELL *pCell = &CCapsuleCollider::m_ReadInfoFileBuff.pCell[nID];			// ã‚»ãƒ«ã®ãƒã‚¤ãƒ³ã‚¿
 
 	pCollider->SeteumTypeID(nID);
-	// î•ñ‚Ìİ’è‚Æ“¯Šú
+	// æƒ…å ±ã®è¨­å®šã¨åŒæœŸ
 	pCollider->InfoSetSync(
-		pCell->pSizeInfo->fRadius,		// ”¼Œa
-		pCell->pSizeInfo->fTop,			// ã–Ê‚Ü‚Å‚ÌƒTƒCƒY
-		pCell->pSizeInfo->fBottom,		// ’ê–Ê‚Ü‚Å‚ÌƒTƒCƒY
-		*pCell->pDifference				// ·•ª
+		pCell->pSizeInfo->fRadius,		// åŠå¾„
+		pCell->pSizeInfo->fTop,			// ä¸Šé¢ã¾ã§ã®ã‚µã‚¤ã‚º
+		pCell->pSizeInfo->fBottom,		// åº•é¢ã¾ã§ã®ã‚µã‚¤ã‚º
+		*pCell->pDifference				// å·®åˆ†
 	);
 
-	// e‚Ìƒ}ƒgƒŠƒbƒNƒXƒ|ƒCƒ“ƒ^‚Ìİ’è
+	// è¦ªã®ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ãƒã‚¤ãƒ³ã‚¿ã®è¨­å®š
 	pCollider->SetMtxParent(pMtxParent);
-	// ƒV[ƒ“‚Ìİ’è
+	// ã‚·ãƒ¼ãƒ³ã®è¨­å®š
 	pCollider->SetScene(pScene);
-	// İ’è
+	// è¨­å®š
 	pCollider->Init();
 	return pCollider;
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// î•ñ‚Ìİ’è‚Æ“¯Šú
+// æƒ…å ±ã®è¨­å®šã¨åŒæœŸ
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::InfoSetSync(float fRadius, float fLengthMax, float fLengthMin, D3DXVECTOR3 & diff)
 {
-	m_ColliderInfo.TopTransVec.y = fLengthMax;		// ’·‚³Å‘å
-	m_ColliderInfo.BottomTransVec.y = fLengthMin;	// ’·‚³Å¬
-	m_ColliderInfo.trans.pos = diff;				// ·•ª
+	m_ColliderInfo.TopTransVec.y = fLengthMax;		// é•·ã•æœ€å¤§
+	m_ColliderInfo.BottomTransVec.y = fLengthMin;	// é•·ã•æœ€å°
+	m_ColliderInfo.trans.pos = diff;				// å·®åˆ†
 
 	m_ColliderInfo.Capsule.fRadius = fRadius;
 	m_ColliderInfo.Capsule.Segment.Point.y = fLengthMax;
@@ -456,26 +456,26 @@ void CCapsuleCollider::InfoSetSync(float fRadius, float fLengthMax, float fLengt
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ƒJƒvƒZƒ‹î•ñ‚Ì‰Šú‰»
+// ã‚«ãƒ—ã‚»ãƒ«æƒ…å ±ã®åˆæœŸåŒ–
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::InitCapsInfo(void)
 {
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// Õ“Ë”»’è
+// è¡çªåˆ¤å®š
 //-------------------------------------------------------------------------------------------------------------
 bool CCapsuleCollider::Collision(void)
 {
-	// ‘Ì‚Ì
+	// ä½“ã®æ™‚
 	if (m_ColliderInfo.enmTtpeID == COLLIPARTS_BODY)
-	{// ˆ—‚µ‚È‚¢
+	{// å‡¦ç†ã—ãªã„
 		return false;
 	}
-	// •Ï”éŒ¾
-	CPlayer          *pOwn            = (CPlayer *)m_ColliderInfo.pScene;						// ‚±‚ÌƒRƒ‰ƒCƒ_[‚ğ‚Á‚Ä‚¢‚éƒvƒŒƒCƒ„[
-	CPlayer          *pOthers         = pOwn->GetAnotherPlayer();								// ‚»‚Ì‘¼‚ÌƒvƒŒƒCƒ„[
-	CCapsuleCollider *pOthersCapColli = pOthers->GetCapCollider(CCharacter::COLLIPARTS_BODY);	// ‚»‚Ì‘¼‚ÌƒvƒŒƒCƒ„[‚ÌƒRƒ‰ƒCƒ_[î•ñ
+	// å¤‰æ•°å®£è¨€
+	CPlayer          *pOwn            = (CPlayer *)m_ColliderInfo.pScene;						// ã“ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’æŒã£ã¦ã„ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
+	CPlayer          *pOthers         = pOwn->GetAnotherPlayer();								// ãã®ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
+	CCapsuleCollider *pOthersCapColli = pOthers->GetCapCollider(CCharacter::COLLIPARTS_BODY);	// ãã®ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æƒ…å ±
 
 	if (pOwn->ReadyToHit(m_ColliderInfo.enmTtpeID) == false)
 	{
@@ -486,24 +486,24 @@ bool CCapsuleCollider::Collision(void)
 
 	D3DXVECTOR3 HitPos;
 #ifdef _DEBUG
-	// 2ü•ª‚ÌÅ’Z‹—‚ğ‹‚ß‚é
+	// 2ç·šåˆ†ã®æœ€çŸ­è·ã‚’æ±‚ã‚ã‚‹
 	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
 	{
-		CDebugProc::Print("“–‚½‚Á‚Ä‚é\n");
-		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ƒhƒ“ƒb);
+		CDebugProc::Print("å½“ãŸã£ã¦ã‚‹\n");
+		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ãƒ‰ãƒ³ãƒƒ);
 		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
 		pOwn->SetAttakHit(true);
 	}
 	else
 	{
-		CDebugProc::Print("“–‚½‚Á‚Ä‚È‚¢\n");
+		CDebugProc::Print("å½“ãŸã£ã¦ãªã„\n");
 	}
 #else
 
-	// 2ü•ª‚ÌÅ’Z‹—‚ğ‹‚ß‚é
+	// 2ç·šåˆ†ã®æœ€çŸ­è·ã‚’æ±‚ã‚ã‚‹
 	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
 	{
-		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ƒhƒ“ƒb);
+		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ãƒ‰ãƒ³ãƒƒ);
 		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
 		pOwn->SetAttakHit(true);
 	}
@@ -516,13 +516,13 @@ bool CCapsuleCollider::Collision(void)
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// Î‚Æ‚ÌÕ“Ëˆ—
+// çŸ³ã¨ã®è¡çªå‡¦ç†
 //-------------------------------------------------------------------------------------------------------------
 bool CCapsuleCollider::CollisionStone(void)
 {
-	// •Ï”éŒ¾
-	CPlayer*                         pOwn = (CPlayer *)m_ColliderInfo.pScene;		// ‚±‚ÌƒRƒ‰ƒCƒ_[‚ğ‚Á‚Ä‚¢‚éƒvƒŒƒCƒ„[
-	C3DBoxCollider::_3DBOXCOLLIDER * pBoxColli = C3DBoxCollider::GetInfo();			// ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[‚Ìƒ|ƒCƒ“ƒ^
+	// å¤‰æ•°å®£è¨€
+	CPlayer*                         pOwn = (CPlayer *)m_ColliderInfo.pScene;		// ã“ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’æŒã£ã¦ã„ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
+	C3DBoxCollider::_3DBOXCOLLIDER * pBoxColli = C3DBoxCollider::GetInfo();			// ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿
 
 	if (pOwn->ReadyToHit(m_ColliderInfo.enmTtpeID) == false)
 	{
@@ -545,17 +545,17 @@ bool CCapsuleCollider::CollisionStone(void)
 
 		if (CMylibrary::colCapsuleSphere(m_ColliderInfo.Capsule, pBoxColli[nCntBox].pos, ikuminLib::VEC3(pBoxColli[nCntBox].size).Length(), HitPos) == true)
 		{
-			// ƒXƒg[ƒ“‚Ìƒ|ƒCƒ“ƒ^
+			// ã‚¹ãƒˆãƒ¼ãƒ³ã®ãƒã‚¤ãƒ³ã‚¿
 			CStone *pStone = (CStone *)pBoxColli[nCntBox].pScene;
 			pOwn->SetAttakHit(true);
 			if (pStone->ApplyDamage() == true)
-			{// ƒGƒtƒFƒNƒg‚Ìİ’è
-				CCharEffectOffset::Set(pStone->GetPos(), CCharEffectOffset::OFFSETNAME::STR_ƒL[ƒ“);
+			{// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®è¨­å®š
+				CCharEffectOffset::Set(pStone->GetPos(), CCharEffectOffset::OFFSETNAME::STR_ã‚­ãƒ¼ãƒ³);
 				pOwn->CatchStone(pStone);
 			}
 			else
-			{// ƒGƒtƒFƒNƒg‚Ìİ’è
-				CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ƒSƒb);
+			{// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®è¨­å®š
+				CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ã‚´ãƒƒ);
 			}
 		}
 	}
@@ -563,29 +563,29 @@ bool CCapsuleCollider::CollisionStone(void)
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ƒJƒvƒZƒ‹ˆÊ’u‚ÌŒvZ
+// ã‚«ãƒ—ã‚»ãƒ«ä½ç½®ã®è¨ˆç®—
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::CalCapPosition(void)
 {
-	// •Ï”éŒ¾
-	D3DXVECTOR3 BottomPoint;	// ’ê–Ê‚ÌˆÊ’u
+	// å¤‰æ•°å®£è¨€
+	D3DXVECTOR3 BottomPoint;	// åº•é¢ã®ä½ç½®
 
-	// ã–Ê‚ÌˆÊ’u
+	// ä¸Šé¢ã®ä½ç½®
 	D3DXVec3TransformCoord(&m_ColliderInfo.Capsule.Segment.Point, &m_ColliderInfo.TopTransVec, &m_ColliderInfo.trans.mtxWorld);
-	// ’ê–Ê‚ÌˆÊ’u
+	// åº•é¢ã®ä½ç½®
 	D3DXVec3TransformCoord(&BottomPoint, &m_ColliderInfo.BottomTransVec, &m_ColliderInfo.trans.mtxWorld);
 
-	// ƒxƒNƒgƒ‹‚ÉZo
+	// ãƒ™ã‚¯ãƒˆãƒ«ã«ç®—å‡º
 	m_ColliderInfo.Capsule.Segment.Vec = BottomPoint - m_ColliderInfo.Capsule.Segment.Point;
 }
 
 
 //-------------------------------------------------------------------------------------------------------------
-// ’¸“_‚Ìì¬
+// é ‚ç‚¹ã®ä½œæˆ
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::MakeVertex(LPDIRECT3DDEVICE9 pDevice)
 {
-	// ƒIƒuƒWƒFƒNƒg‚Ì’¸“_ƒoƒbƒtƒ@‚ğ¶¬
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ç”Ÿæˆ
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * m_ColliderInfo.nNumVertex,
 		D3DUSAGE_WRITEONLY,
 		FVF_VERTEX_3D,
@@ -593,59 +593,59 @@ void CCapsuleCollider::MakeVertex(LPDIRECT3DDEVICE9 pDevice)
 		&m_ColliderInfo.pVtexBuff,
 		NULL);
 
-	// •Ï”éŒ¾
-	D3DXVECTOR3 TopPoint = m_ColliderInfo.Capsule.Segment.Point;			// ã–Ê‚ÌˆÊ’u
-	D3DXVECTOR3 BottomPoint = m_ColliderInfo.Capsule.Segment.GetEndPoint();	// ’ê–Ê‚ÌˆÊ’u
-	float fSlicesPI = (D3DX_PI * 2.0f) / m_ColliderInfo.nSlices;			// •ªŠ„”‚É‘Î‰‚µ‚½‰~ü—¦
-	float fStacksPI = (D3DX_PI * 2.0f) / m_ColliderInfo.nStacks_1_2;		// •ªŠ„”‚É‘Î‰‚µ‚½‰~ü—¦
-	// c‚ğƒJƒEƒ“ƒg
+	// å¤‰æ•°å®£è¨€
+	D3DXVECTOR3 TopPoint = m_ColliderInfo.Capsule.Segment.Point;			// ä¸Šé¢ã®ä½ç½®
+	D3DXVECTOR3 BottomPoint = m_ColliderInfo.Capsule.Segment.GetEndPoint();	// åº•é¢ã®ä½ç½®
+	float fSlicesPI = (D3DX_PI * 2.0f) / m_ColliderInfo.nSlices;			// åˆ†å‰²æ•°ã«å¯¾å¿œã—ãŸå††å‘¨ç‡
+	float fStacksPI = (D3DX_PI * 2.0f) / m_ColliderInfo.nStacks_1_2;		// åˆ†å‰²æ•°ã«å¯¾å¿œã—ãŸå††å‘¨ç‡
+	// ç¸¦ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
 	int nCompSlices = (CAPCOLLI_SLICES / 2);
 	nCompSlices += (CAPCOLLI_SLICES % 2 == 0) ? 0 : 1;
 
-	// ’¸“_î•ñ‚Ìİ’è
+	// é ‚ç‚¹æƒ…å ±ã®è¨­å®š
 	VERTEX_3D *pVtx;
-	// ’¸“_ƒf[ƒ^‚Ì”ÍˆÍƒƒbƒN‚µA’¸“_ƒoƒbƒtƒ@‚Ö‚Ìƒ|ƒCƒ“ƒ^æ“¾
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ç¯„å›²ãƒ­ãƒƒã‚¯ã—ã€é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¸ã®ãƒã‚¤ãƒ³ã‚¿å–å¾—
 	m_ColliderInfo.pVtexBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	for (int nCntSlices = 0; nCntSlices < m_ColliderInfo.nSlices + 1; nCntSlices++)
 	{
-		float fSlicesSinValue = sinf((fSlicesPI * nCntSlices));							// ƒTƒCƒ“‚Ì’l
-		float fPos_y = cosf(fSlicesPI * nCntSlices) *  m_ColliderInfo.Capsule.fRadius;	// ”¼Œa‚ÌYÀ•W‚ÌˆÊ’u
-		D3DXVECTOR3 pos = (nCntSlices <  nCompSlices) ? TopPoint : BottomPoint;			// ”¼Œa‚Ì’†SˆÊ’u
+		float fSlicesSinValue = sinf((fSlicesPI * nCntSlices));							// ã‚µã‚¤ãƒ³ã®å€¤
+		float fPos_y = cosf(fSlicesPI * nCntSlices) *  m_ColliderInfo.Capsule.fRadius;	// åŠå¾„ã®Yåº§æ¨™ã®ä½ç½®
+		D3DXVECTOR3 pos = (nCntSlices <  nCompSlices) ? TopPoint : BottomPoint;			// åŠå¾„ã®ä¸­å¿ƒä½ç½®
 
-		// ‰¡‚ğƒJƒEƒ“ƒg
+		// æ¨ªã‚’ã‚«ã‚¦ãƒ³ãƒˆ
 		for (int nCntStacks = 0; nCntStacks < m_ColliderInfo.nStacks_1_2 + 1; nCntStacks++)
 		{
-			float fStacksRadian = fStacksPI * nCntStacks;								// ƒ‰ƒWƒAƒ“’l
+			float fStacksRadian = fStacksPI * nCntStacks;								// ãƒ©ã‚¸ã‚¢ãƒ³å€¤
 
-			// ’¸“_À•W‚Ìİ’è
+			// é ‚ç‚¹åº§æ¨™ã®è¨­å®š
 			pVtx[0].pos.x = pos.x+ fSlicesSinValue * cosf(fStacksRadian) * m_ColliderInfo.Capsule.fRadius;
 			pVtx[0].pos.y = pos.y+ fPos_y;
 			pVtx[0].pos.z = pos.z+ fSlicesSinValue * sinf(fStacksRadian) * m_ColliderInfo.Capsule.fRadius;
-			// ’¸“_î•ñ‚É–@ü‚ÌŒvZŒ‹‰Ê‘ã“ü
+			// é ‚ç‚¹æƒ…å ±ã«æ³•ç·šã®è¨ˆç®—çµæœä»£å…¥
 			pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
-			// ƒeƒNƒXƒ`ƒƒ•`Ê‚ÌˆÊ’u
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£æå†™ã®ä½ç½®
 			pVtx[0].tex = D3DXVECTOR2(1.0f, 1.0f);
 
-			// ’¸“_ƒJƒ‰[
+			// é ‚ç‚¹ã‚«ãƒ©ãƒ¼
 			pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
-			// ’¸“_”Ô†‰ÁZ
+			// é ‚ç‚¹ç•ªå·åŠ ç®—
 			pVtx++;
 		}
 	}
 
-	// ’¸“_ƒf[ƒ^‚ğƒAƒ“ƒƒbƒN‚·‚é
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’ã‚¢ãƒ³ãƒ­ãƒƒã‚¯ã™ã‚‹
 	m_ColliderInfo.pVtexBuff->Unlock();
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ƒCƒ“ƒfƒbƒNƒX‚Ìì¬
+// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ä½œæˆ
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::MakeIndex(LPDIRECT3DDEVICE9 pDevice)
 {
-	// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚Ì¶¬
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®ç”Ÿæˆ
 	pDevice->CreateIndexBuffer(
 		sizeof(WORD) * m_ColliderInfo.nNumindex,
 		D3DUSAGE_WRITEONLY,
@@ -654,24 +654,24 @@ void CCapsuleCollider::MakeIndex(LPDIRECT3DDEVICE9 pDevice)
 		&m_ColliderInfo.pIdxBuff,
 		NULL);
 
-	WORD *pIdx;				// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	int nNumber = 0;		// ƒCƒ“ƒfƒbƒNƒX”Ô†
+	WORD *pIdx;				// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	int nNumber = 0;		// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
 
-	// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğƒƒbƒN‚µƒCƒ“ƒfƒbƒNƒXƒf[ƒ^‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ­ãƒƒã‚¯ã—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—
 	m_ColliderInfo.pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
-	// c‚ğƒJƒEƒ“ƒg
+	// ç¸¦ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
 	for (int nCntSlices = 0; nCntSlices < m_ColliderInfo.nSlices; nCntSlices++)
 	{
-		// ‰¡‚ğƒJƒEƒ“ƒg
+		// æ¨ªã‚’ã‚«ã‚¦ãƒ³ãƒˆ
 		for (int nCntStacks = 0; nCntStacks < m_ColliderInfo.nStacks_1_2 + 1; nCntStacks++)
 		{
-			// ‡‚ÉƒCƒ“ƒfƒbƒNƒXŠi”[
+			// é †ã«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ ¼ç´
 			pIdx[nNumber++] = nCntSlices * (m_ColliderInfo.nStacks_1_2 + 1) + nCntStacks;
 			pIdx[nNumber++] = pIdx[nNumber - 1] + m_ColliderInfo.nStacks_1_2 + 1;
 		}
 	}
 
-	// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğƒAƒ“ƒƒbƒN‚·‚é
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¢ãƒ³ãƒ­ãƒƒã‚¯ã™ã‚‹
 	m_ColliderInfo.pIdxBuff->Unlock();
 }

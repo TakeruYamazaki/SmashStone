@@ -1,6 +1,6 @@
 //==================================================================================================================
 //
-// ƒvƒŒƒCƒ„[ˆ—[player.cpp]
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å‡¦ç†[player.cpp]
 // Author : Seiya Takahashi
 //
 //==================================================================================================================
@@ -21,9 +21,9 @@
 #include "scene.h"
 #include "modelCharacter.h"
 #include "motion.h"
-#include "ImGui/imgui.h"				// Imgui‚ÌÀ‘•‚É•K—v
-#include "ImGui/imgui_impl_dx9.h"		// Imgui‚ÌÀ‘•‚É•K—v
-#include "ImGui/imgui_impl_win32.h"		// Imgui‚ÌÀ‘•‚É•K—v
+#include "ImGui/imgui.h"				// Imguiã®å®Ÿè£…ã«å¿…è¦
+#include "ImGui/imgui_impl_dx9.h"		// Imguiã®å®Ÿè£…ã«å¿…è¦
+#include "ImGui/imgui_impl_win32.h"		// Imguiã®å®Ÿè£…ã«å¿…è¦
 #include "3DBoxCollider.h"
 #include "stone.h"
 #include "wall.h"
@@ -33,22 +33,23 @@
 #include "hitpoint.h"
 #include "PolygonCollider.h"
 #include "CapsuleCollider.h"
+#include "sound.h"
 
 //==================================================================================================================
-// ƒ}ƒNƒ’è‹`
+// ãƒã‚¯ãƒ­å®šç¾©
 //==================================================================================================================
-#define HEIGHT_CEILING	(400.0f)			// “Vˆä‚Ì‚‚³
+#define HEIGHT_CEILING	(400.0f)			// å¤©äº•ã®é«˜ã•
 
-#define BLOWAWAYFORCE_SMASH		(100.0f)	// ‚«”ò‚Î‚µ—Í(ƒXƒ}ƒbƒVƒ…UŒ‚)
-#define BLOWAWAYFORCE_NORMAL	(8.0f)		// ‚«”ò‚Î‚µ—Í(’ÊíUŒ‚)
-
-//==================================================================================================================
-// Ã“Iƒƒ“ƒo•Ï”‚Ì‰Šú‰»
-//==================================================================================================================
-CHitPoint *CPlayer::m_pHitPoint = NULL;				// HPî•ñ
+#define BLOWAWAYFORCE_SMASH		(100.0f)	// å¹ãé£›ã°ã—åŠ›(ã‚¹ãƒãƒƒã‚·ãƒ¥æ”»æ’ƒ)
+#define BLOWAWAYFORCE_NORMAL	(8.0f)		// å¹ãé£›ã°ã—åŠ›(é€šå¸¸æ”»æ’ƒ)
 
 //==================================================================================================================
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// é™çš„ãƒ¡ãƒ³ãƒå¤‰æ•°ã®åˆæœŸåŒ–
+//==================================================================================================================
+CHitPoint *CPlayer::m_pHitPoint = NULL;				// HPæƒ…å ±
+
+//==================================================================================================================
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //==================================================================================================================
 CPlayer::CPlayer(PRIORITY type = CScene::PRIORITY_PLAYER) : CCharacter(type)
 {
@@ -56,7 +57,7 @@ CPlayer::CPlayer(PRIORITY type = CScene::PRIORITY_PLAYER) : CCharacter(type)
 }
 
 //==================================================================================================================
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //==================================================================================================================
 CPlayer::~CPlayer()
 {
@@ -64,40 +65,40 @@ CPlayer::~CPlayer()
 }
 
 //==================================================================================================================
-// ‰Šú‰»ˆ—
+// åˆæœŸåŒ–å‡¦ç†
 //==================================================================================================================
 void CPlayer::Init(void)
 {
-	// —v‘f‚Ì‰Šú‰»
+	// è¦ç´ ã®åˆæœŸåŒ–
 	m_bTrans = false;
 	for (int nCnt = 0; nCnt < CStone::STONE_ID_MAX; nCnt++)
 	{
 		m_bGetStoneType[nCnt] = false;
 	}
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	CCharacter::Init();
 	CCharacter::SetModelType(m_type);
 
-	// “–‚½‚è”»’è‚Ìİ’è
+	// å½“ãŸã‚Šåˆ¤å®šã®è¨­å®š
 	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), this, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::ID_CHARACTER);
 
-	m_pHitPoint = CHitPoint::Create(m_nPlayer, m_param.fMaxLife);	// ƒvƒŒƒCƒ„[‚Ì¶¬ˆ—
-	m_pHitPoint->SetnPlayerNum(m_nPlayer);							// ƒvƒŒƒCƒ„[”Ô†İ’è
+	m_pHitPoint = CHitPoint::Create(m_nPlayer, m_param.fMaxLife);	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç”Ÿæˆå‡¦ç†
+	m_pHitPoint->SetnPlayerNum(m_nPlayer);							// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·è¨­å®š
 }
 
 //==================================================================================================================
-// I—¹ˆ—
+// çµ‚äº†å‡¦ç†
 //==================================================================================================================
 void CPlayer::Uninit(void)
 {
 	CCharacter::Uninit();
 
-	m_pHitPoint = nullptr;	// •Ï”NULL
+	m_pHitPoint = nullptr;	// å¤‰æ•°NULL
 }
 
 //==================================================================================================================
-// XVˆ—
+// æ›´æ–°å‡¦ç†
 //==================================================================================================================
 void CPlayer::Update(void)
 {
@@ -105,16 +106,16 @@ void CPlayer::Update(void)
 	if (m_bBlowAway == false && m_bDaunted == false &&
 		(gameState == CGame::GAMESTATE_NORMAL || 
 		gameState == CGame::GAMESTATE_BEFORE))
-		// ‘€ì
+		// æ“ä½œ
 		Control();
 
-	// XV
+	// æ›´æ–°
 	CCharacter::Update();
 
-	// “–‚½‚è”»’è
+	// å½“ãŸã‚Šåˆ¤å®š
 	Collision();
 
-	// ƒvƒŒƒCƒ„[‚Ì”Ô†İ’è
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç•ªå·è¨­å®š
 	SetnPlayer(m_nPlayer);
 
 	char cText[8];
@@ -124,7 +125,7 @@ void CPlayer::Update(void)
 	CDebugProc::Print(cText);
 	 
 #ifdef _DEBUG
-	CDebugProc::Print("ƒvƒŒƒCƒ„[‚ÌˆÊ’u [%.4f][%.4f][%.4f]\n", m_pos.x, m_pos.y, m_pos.z);
+	CDebugProc::Print("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½® [%.4f][%.4f][%.4f]\n", m_pos.x, m_pos.y, m_pos.z);
 
 	ShowDebugInfo();
 
@@ -134,7 +135,7 @@ void CPlayer::Update(void)
 }
 
 //==================================================================================================================
-// •`‰æˆ—
+// æç”»å‡¦ç†
 //==================================================================================================================
 void CPlayer::Draw(void)
 {
@@ -142,85 +143,85 @@ void CPlayer::Draw(void)
 }
 
 //==================================================================================================================
-// ¶¬ˆ—
+// ç”Ÿæˆå‡¦ç†
 //==================================================================================================================
 CPlayer *CPlayer::Create(int nPlayer, CHARACTER_TYPE type)
 {
-	// ƒV[ƒ““®“I‚ÉŠm•Û
+	// ã‚·ãƒ¼ãƒ³å‹•çš„ã«ç¢ºä¿
 	CPlayer *pPlayer = new CPlayer(CScene::PRIORITY_PLAYER);
 
-	// ¸”s
+	// å¤±æ•—
 	if (!pPlayer)
 		return nullptr;
 
-	// ƒvƒŒƒCƒ„[‚ÌƒLƒƒƒ‰ƒ^ƒCƒv‚ğİ’è
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚­ãƒ£ãƒ©ã‚¿ã‚¤ãƒ—ã‚’è¨­å®š
 	pPlayer->m_type = type;
-	// ƒvƒŒƒCƒ„[”Ô†‚Ì•Û‘¶
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·ã®ä¿å­˜
 	pPlayer->m_nPlayer = nPlayer;
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	pPlayer->Init();
 
-	// ’l‚ğ•Ô‚·
+	// å€¤ã‚’è¿”ã™
 	return pPlayer;
 }
 
 //==================================================================================================================
-// ƒvƒŒƒCƒ„[‚Ì‘€ì
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ“ä½œ
 //==================================================================================================================
 void CPlayer::Control(void)
 {
-	// ƒQ[ƒ€ƒpƒbƒhæ“¾
+	// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰å–å¾—
 	CInputGamepad *pGamepad = CManager::GetInputGamepad(m_nPlayer);
-	// ƒL[ƒ{[ƒh‚Ìæ“¾
+	// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å–å¾—
 	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
 
-	// ƒQ[ƒ€ƒpƒbƒh—LŒø
+	// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æœ‰åŠ¹æ™‚
 	if (pGamepad->GetbConnect())
-		// ƒQ[ƒ€ƒpƒbƒh‘€ì
+		// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ“ä½œ
 		ControlGamepad(pGamepad);
-	// ƒQ[ƒ€ƒpƒbƒh–³Œø
+	// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ç„¡åŠ¹æ™‚
 	else
-		// ƒL[ƒ{[ƒh‘€ì
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æ“ä½œ
 		ControlKeyboard(pKeyboard);
 }
 
 //==================================================================================================================
-// “–‚½‚è”»’èˆ—
+// å½“ãŸã‚Šåˆ¤å®šå‡¦ç†
 //==================================================================================================================
 void CPlayer::Collision(void)
 {
-	// UŒ‚”»’è
+	// æ”»æ’ƒåˆ¤å®š
 	CollisionAttack();
 
-	// “–‚½‚è”»’èˆÊ’u‚ÌXV
+	// å½“ãŸã‚Šåˆ¤å®šä½ç½®ã®æ›´æ–°
 	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
-	// “–‚½‚è”»’è
+	// å½“ãŸã‚Šåˆ¤å®š
 	if (C3DBoxCollider::CollisionBox(this->m_nBoxColliderID, this->m_pos, m_move))
 		m_bJump = false;
 
-	// •Ç‚Ìæ“¾
+	// å£ã®å–å¾—
 	CWall *pWall = CGame::GetWall();
-	// o—Í‚³‚ê‚éŒğ“_
+	// å‡ºåŠ›ã•ã‚Œã‚‹äº¤ç‚¹
 	D3DXVECTOR3 out_intersect = ZeroVector3;
-	// o—Í‚³‚ê‚é–@ü
+	// å‡ºåŠ›ã•ã‚Œã‚‹æ³•ç·š
 	D3DXVECTOR3 out_nor = ZeroVector3;
-	// •Ç‚Æ‚Ì“–‚½‚è”»’è
+	// å£ã¨ã®å½“ãŸã‚Šåˆ¤å®š
 	if (pWall->Collision(&m_pos, &m_posOld, &out_intersect,&out_nor, m_bSmashBlowAway) == true)
 	{
-		// ”½Ëƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚é‚Æ‚«‚©‚Â
-		// o—Í‚³‚ê‚½–@ü‚ªƒ[ƒ‚¶‚á‚È‚¢‚©‚Â
-		// o—Í‚³‚ê‚½Œğ“_‚ªƒ[ƒ‚¶‚á‚È‚¢
+		// åå°„ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ã‚‹ã¨ãã‹ã¤
+		// å‡ºåŠ›ã•ã‚ŒãŸæ³•ç·šãŒã‚¼ãƒ­ã˜ã‚ƒãªã„æ™‚ã‹ã¤
+		// å‡ºåŠ›ã•ã‚ŒãŸäº¤ç‚¹ãŒã‚¼ãƒ­ã˜ã‚ƒãªã„æ™‚
 		if (m_bSmashBlowAway == true &&
 			out_nor != ZeroVector3 &&
 			out_intersect != ZeroVector3)
 		{
-			// ƒ_ƒ[ƒW
+			// ãƒ€ãƒ¡ãƒ¼ã‚¸
 			this->Damage(2);
-			// Œü‚«‚ğŒˆ’è
+			// å‘ãã‚’æ±ºå®š
 			this->m_rotDest.y =  atan2f(out_nor.x, out_nor.z);
-			// ‰ñ“]‚ğ•âŠÔ
+			// å›è»¢ã‚’è£œé–“
 			CKananLibrary::InterpolationFloat(m_rotDest.y);
-			// ˆêu‚ÅŒü‚«‚ğ•Ï‚¦‚é
+			// ä¸€ç¬ã§å‘ãã‚’å¤‰ãˆã‚‹
 			this->m_rot.y = this->m_rotDest.y;
 			CReflection::GetPlaneReflectingAfterPosAndVec(&this->m_pos,&this->m_move, &out_intersect, &this->m_move, &out_nor);
 		}
@@ -228,29 +229,29 @@ void CPlayer::Collision(void)
 
 	for (int nCntPolyColli = 0; nCntPolyColli < CPolygonCollider::POLYCOLLI_MAX; nCntPolyColli++)
 	{
-		// ƒ|ƒŠƒSƒ“ƒRƒ‰ƒCƒ_[‚Ìæ“¾
+		// ãƒãƒªã‚´ãƒ³ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®å–å¾—
 		CPolygonCollider*pPolyColli = CGame::GetpolyColly(nCntPolyColli);
 
-		// ƒ|ƒŠƒSƒ“ƒRƒ‰ƒCƒ_[ƒ|ƒCƒ“ƒ^‚ªNULL‚¾‚Á‚½
+		// ãƒãƒªã‚´ãƒ³ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒã‚¤ãƒ³ã‚¿ãŒNULLã ã£ãŸæ™‚
 		if (pPolyColli == NULL)
-		{// ƒXƒLƒbƒv
+		{// ã‚¹ã‚­ãƒƒãƒ—
 			continue;
 		}
 
-		// ƒ|ƒŠƒSƒ“ƒRƒ‰ƒCƒ_[‚ÌÕ“Ë”»’è
+		// ãƒãƒªã‚´ãƒ³ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®è¡çªåˆ¤å®š
 		if (pPolyColli[0].Collision(&m_pos, &m_posOld, &m_move, &out_intersect, &out_nor, m_bSmashBlowAway) == true)
 		{
 			if (m_bSmashBlowAway == false)
 			{
 #ifdef _DEBUG
-				CDebugProc::Print("æ‚Á‚Ä‚¢‚é\n");
+				CDebugProc::Print("ä¹—ã£ã¦ã„ã‚‹\n");
 #endif
-				// ’n–Ê‚Éæ‚Á‚Ä‚¢‚½‚çAˆÚ“®—Ê‚ğ‚È‚­‚·
+				// åœ°é¢ã«ä¹—ã£ã¦ã„ãŸã‚‰ã€ç§»å‹•é‡ã‚’ãªãã™
 				if (m_move.y <= -5.0f)
 					m_move.y = -5.0f;
-				// ƒWƒƒƒ“ƒv‰ğœ
+				// ã‚¸ãƒ£ãƒ³ãƒ—è§£é™¤
 				m_bJump = false;
-				// ƒWƒƒƒ“ƒvƒJƒEƒ“ƒ^‚ğ‰Šú‰»
+				// ã‚¸ãƒ£ãƒ³ãƒ—ã‚«ã‚¦ãƒ³ã‚¿ã‚’åˆæœŸåŒ–
 				m_nCntJump = 0;
 			}
 			else
@@ -260,7 +261,7 @@ void CPlayer::Collision(void)
 		}
 	}
 
-	// ‚‚³§ŒÀ
+	// é«˜ã•åˆ¶é™
 	if (m_pos.y > HEIGHT_CEILING)
 	{
 		m_pos.y = HEIGHT_CEILING;
@@ -269,30 +270,33 @@ void CPlayer::Collision(void)
 }
 
 //==================================================================================================================
-// ƒXƒ}ƒbƒVƒ…
+// ã‚¹ãƒãƒƒã‚·ãƒ¥
 //==================================================================================================================
 void CPlayer::Smash(void)
 {
-	// ğŒ‚ğİ’è
+	// æ¡ä»¶ã‚’è¨­å®š
 	m_bWalk = false;
 	m_bAttack = true;
 
-	// ƒXƒ}ƒbƒVƒ…
+	// ã‚¹ãƒãƒƒã‚·ãƒ¥
 	if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH);
-	// ƒXƒ}ƒbƒVƒ…ƒ`ƒƒ[ƒW
+	// ã‚¹ãƒãƒƒã‚·ãƒ¥ãƒãƒ£ãƒ¼ã‚¸
 	else if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
 		m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH)
+	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_SMASHCHARGE);	// åŠ¹æœéŸ³ã®å†ç”Ÿ
+	}
 
-	// UŒ‚‚ª“–‚½‚Á‚½ƒtƒ‰ƒO‚ğƒIƒt‚É‚·‚é
+	// æ”»æ’ƒãŒå½“ãŸã£ãŸãƒ•ãƒ©ã‚°ã‚’ã‚ªãƒ•ã«ã™ã‚‹
 	m_bAttakHit = false;
-	// UŒ‚ƒtƒŒ[ƒ€‚ğİ’è
+	// æ”»æ’ƒãƒ•ãƒ¬ãƒ¼ãƒ ã‚’è¨­å®š
 	m_nAttackFrame = m_pModelCharacter->GetAllFrame();
 }
 
 //==================================================================================================================
-// ’ÊíUŒ‚
+// é€šå¸¸æ”»æ’ƒ
 //==================================================================================================================
 void CPlayer::NormalAttack(void)
 {
@@ -300,7 +304,7 @@ void CPlayer::NormalAttack(void)
 
 	if (!m_bAttack && !m_bJump)
 	{
-		// ğŒ‚ğİ’è
+		// æ¡ä»¶ã‚’è¨­å®š
 		m_bWalk = false;
 		m_bAttack = true;
 	}
@@ -311,13 +315,13 @@ void CPlayer::NormalAttack(void)
 			return;
 	}
 
-	// ƒ‚[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦
+	// ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆ‡ã‚Šæ›¿ãˆ
 	m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
-	// UŒ‚‚ª“–‚½‚Á‚½ƒtƒ‰ƒO‚ğƒIƒt‚É‚·‚é
+	// æ”»æ’ƒãŒå½“ãŸã£ãŸãƒ•ãƒ©ã‚°ã‚’ã‚ªãƒ•ã«ã™ã‚‹
 	m_bAttakHit = false;
-	// UŒ‚ƒtƒŒ[ƒ€‚ğİ’è
+	// æ”»æ’ƒãƒ•ãƒ¬ãƒ¼ãƒ ã‚’è¨­å®š
 	m_nAttackFrame = m_pModelCharacter->GetAllFrame();
-	// UŒ‚‚Ì‡”Ô‚ğİ’è
+	// æ”»æ’ƒã®é †ç•ªã‚’è¨­å®š
 	m_nAttackFlow++;
 	if (m_nAttackFlow >= 4)
 		m_nAttackFlow = 0;
@@ -325,24 +329,24 @@ void CPlayer::NormalAttack(void)
 }
 
 //==================================================================================================================
-// ƒWƒƒƒ“ƒv
+// ã‚¸ãƒ£ãƒ³ãƒ—
 //==================================================================================================================
 void CPlayer::Jump(void)
 {
-	// ğŒ‚ğİ’è
+	// æ¡ä»¶ã‚’è¨­å®š
 	m_bJump = true;
 	m_bWalk = false;
 
-	// ˆÚ“®’l‚ğİ’è
+	// ç§»å‹•å€¤ã‚’è¨­å®š
 	m_move.y = m_param.moveParam.fJumpPower;
 }
 
 //==================================================================================================================
-// •¨‚¿ˆ—
+// ç‰©æŒã¡å‡¦ç†
 //==================================================================================================================
 void CPlayer::Lift(void)
 {
-	// ‚¿ã‚°‚Ä‚¢‚È‚¯‚ê‚ÎAˆ—‚µ‚È‚¢
+	// æŒã¡ä¸Šã’ã¦ã„ãªã‘ã‚Œã°ã€å‡¦ç†ã—ãªã„
 	if (m_StateLift == STATE_NONE)
 	{
 		return;
@@ -350,37 +354,37 @@ void CPlayer::Lift(void)
 }
 
 //==================================================================================================================
-// UŒ‚”»’è
+// æ”»æ’ƒåˆ¤å®š
 //==================================================================================================================
 void CPlayer::CollisionAttack(void)
 {
-	// ˆá‚¤ƒvƒŒƒCƒ„[‚Ìæ“¾
+	// é•ã†ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å–å¾—
 	CPlayer *pAnother = GetAnotherPlayer();
 
-	// ˆá‚¤ƒvƒŒƒCƒ„[‚ªUŒ‚‚ğ“–‚Ä‚½ƒtƒ‰ƒO‚ª—§‚Á‚Ä‚È‚¢
+	// é•ã†ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒã‚’å½“ã¦ãŸãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ãªã„æ™‚
 	if (pAnother->m_bAttakHit == false)
 	{
-		// •Ê‚ÌƒvƒŒƒCƒ„[‚Ìƒ‚[ƒVƒ‡ƒ“‚ğ”äŠr
+		// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æ¯”è¼ƒ
 		switch (pAnother->m_pModelCharacter->GetMotion())
 		{
 		case CMotion::PLAYER_ATTACK_0:
-			// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚0‚ğ‚µ‚Ä‚¢‚é
+			// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ0ã‚’ã—ã¦ã„ã‚‹æ™‚
 			this->AnotherPlayerAttack0(pAnother);
 			break;
 		case CMotion::PLAYER_ATTACK_1:
-			// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚1‚ğ‚µ‚Ä‚¢‚é
+			// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ1ã‚’ã—ã¦ã„ã‚‹æ™‚
 			this->AnotherPlayerAttack1(pAnother);
 			break;
 		case CMotion::PLAYER_ATTACK_2:
-			// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚2‚ğ‚µ‚Ä‚¢‚é
+			// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ2ã‚’ã—ã¦ã„ã‚‹æ™‚
 			this->AnotherPlayerAttack2(pAnother);
 			break;
 		case CMotion::PLAYER_ATTACK_3:
-			// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚3‚ğ‚µ‚Ä‚¢‚é
+			// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ3ã‚’ã—ã¦ã„ã‚‹æ™‚
 			this->AnotherPlayerAttack3(pAnother);
 			break;
 		case CMotion::PLAYER_SMASH:
-			// •Ê‚ÌƒvƒŒƒCƒ„[‚ªƒXƒ}ƒbƒVƒ…UŒ‚‚µ‚Ä‚¢‚é‚Æ‚«
+			// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒã‚¹ãƒãƒƒã‚·ãƒ¥æ”»æ’ƒã—ã¦ã„ã‚‹ã¨ã
 			this->AnotherPlayerSmash(pAnother);
 			break;
 		}
@@ -388,14 +392,14 @@ void CPlayer::CollisionAttack(void)
 }
 
 //==================================================================================================================
-// UŒ‚“–‚Ä‚é€”õ‚©‚Å‚«‚Ä‚¢‚é‚©
+// æ”»æ’ƒå½“ã¦ã‚‹æº–å‚™ã‹ã§ãã¦ã„ã‚‹ã‹
 //==================================================================================================================
 bool CPlayer::ReadyToHit(const int &nCapColliID)
 {
-	// ˆá‚¤ƒvƒŒƒCƒ„[‚ªUŒ‚‚ğ“–‚Ä‚½ƒtƒ‰ƒO‚ª—§‚Á‚Ä‚È‚¢
+	// é•ã†ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒã‚’å½“ã¦ãŸãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ãªã„æ™‚
 	if (this->m_bAttakHit == false)
 	{
-		// •Ê‚ÌƒvƒŒƒCƒ„[‚Ìƒ‚[ƒVƒ‡ƒ“‚ğ”äŠr
+		// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æ¯”è¼ƒ
 		switch (this->m_pModelCharacter->GetMotion())
 		{
 		case CMotion::PLAYER_ATTACK_0: return HitConditionAttack0(nCapColliID);
@@ -409,7 +413,7 @@ bool CPlayer::ReadyToHit(const int &nCapColliID)
 }
 
 //==================================================================================================================
-//@UŒ‚0‚ğ“–‚Ä‚éğŒ
+//ã€€æ”»æ’ƒ0ã‚’å½“ã¦ã‚‹æ¡ä»¶
 //==================================================================================================================
 bool CPlayer::HitConditionAttack0(const int &nCapColliID)
 {
@@ -417,7 +421,7 @@ bool CPlayer::HitConditionAttack0(const int &nCapColliID)
 }
 
 //==================================================================================================================
-//@UŒ‚1‚ğ“–‚Ä‚éğŒ
+//ã€€æ”»æ’ƒ1ã‚’å½“ã¦ã‚‹æ¡ä»¶
 //==================================================================================================================
 bool CPlayer::HitConditionAttack1(const int &nCapColliID)
 {
@@ -425,7 +429,7 @@ bool CPlayer::HitConditionAttack1(const int &nCapColliID)
 }
 
 //==================================================================================================================
-//@UŒ‚2‚ğ“–‚Ä‚éğŒ
+//ã€€æ”»æ’ƒ2ã‚’å½“ã¦ã‚‹æ¡ä»¶
 //==================================================================================================================
 bool CPlayer::HitConditionAttack2(const int &nCapColliID)
 {
@@ -433,7 +437,7 @@ bool CPlayer::HitConditionAttack2(const int &nCapColliID)
 }
 
 //==================================================================================================================
-//@UŒ‚3‚ğ“–‚Ä‚éğŒ
+//ã€€æ”»æ’ƒ3ã‚’å½“ã¦ã‚‹æ¡ä»¶
 //==================================================================================================================
 bool CPlayer::HitConditionAttack3(const int &nCapColliID)
 {
@@ -441,7 +445,7 @@ bool CPlayer::HitConditionAttack3(const int &nCapColliID)
 }
 
 //==================================================================================================================
-//@ƒXƒ}ƒbƒVƒ…U‚ğ“–‚Ä‚éğŒ
+//ã€€ã‚¹ãƒãƒƒã‚·ãƒ¥æ”»ã‚’å½“ã¦ã‚‹æ¡ä»¶
 //==================================================================================================================
 bool CPlayer::HitConditionSmash(const int &nCapColliID)
 {
@@ -449,7 +453,7 @@ bool CPlayer::HitConditionSmash(const int &nCapColliID)
 }
 
 //==================================================================================================================
-// ˆá‚¤ƒvƒŒƒCƒ„[‚Ìæ“¾
+// é•ã†ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å–å¾—
 //==================================================================================================================
 CPlayer * CPlayer::GetAnotherPlayer(void)
 {
@@ -457,16 +461,16 @@ CPlayer * CPlayer::GetAnotherPlayer(void)
 }
 
 //==================================================================================================================
-// ƒQ[ƒ€ƒpƒbƒh‚Ì‘€ì
+// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ã®æ“ä½œ
 //==================================================================================================================
 void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 {
-	float fValueX, fValueY;	// ƒQ[ƒ€ƒpƒbƒh‚ÌƒXƒeƒBƒbƒNî•ñ‚Ìæ“¾—p
+	float fValueX, fValueY;	// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ã®ã‚¹ãƒ†ã‚£ãƒƒã‚¯æƒ…å ±ã®å–å¾—ç”¨
 
-	// ¶ƒXƒeƒBƒbƒNæ“¾
+	// å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯å–å¾—
 	pGamepad->GetStickLeft(&fValueX, &fValueY);
 
-	// ‰½‚à“ü—Í‚³‚ê‚Ä‚¢‚È‚¯‚ê‚ÎAˆ—‚µ‚È‚¢
+	// ä½•ã‚‚å…¥åŠ›ã•ã‚Œã¦ã„ãªã‘ã‚Œã°ã€å‡¦ç†ã—ãªã„
 	if (FAILED(CKananLibrary::GetMoveByGamepad(pGamepad)) && 
 		fValueX == 0 && fValueY == 0)
 	{
@@ -476,42 +480,42 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 
 	if (CGame::GetGameState() == CGame::GAMESTATE_NORMAL)
 	{
-		// •Ïg’†AƒXƒ}ƒbƒVƒ…“ü—Í
+		// å¤‰èº«ä¸­ã€ã‚¹ãƒãƒƒã‚·ãƒ¥å…¥åŠ›
 		if (m_bTrans &&
 			(pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_B)))
-			// ƒXƒ}ƒbƒVƒ…
+			// ã‚¹ãƒãƒƒã‚·ãƒ¥
 			Smash();
 
-		// ƒXƒ}ƒbƒVƒ…Œnƒ‚[ƒVƒ‡ƒ“’†‚ÍˆÈ~‚Ìˆ—‚ğ‚µ‚È‚¢
+		// ã‚¹ãƒãƒƒã‚·ãƒ¥ç³»ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ä¸­ã¯ä»¥é™ã®å‡¦ç†ã‚’ã—ãªã„
 		if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE ||
 			m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH)
-			// ˆ—‚ğI‚¦‚é
+			// å‡¦ç†ã‚’çµ‚ãˆã‚‹
 			return;
 
-		// UŒ‚“ü—Í
+		// æ”»æ’ƒå…¥åŠ›
 		if (pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X) &&
 			(m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
 				m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH))
 		{
-			// ’ÊíUŒ‚
+			// é€šå¸¸æ”»æ’ƒ
 			NormalAttack();
-			// ˆ—‚ğI‚¦‚é
+			// å‡¦ç†ã‚’çµ‚ãˆã‚‹
 			return;
 		}
 	}
 
-	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// ƒJƒƒ‰æ“¾
+	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// ã‚«ãƒ¡ãƒ©å–å¾—
 
-	D3DXVECTOR3 rotDest = GetRotDest();				// –Ú“I‚ÌŒü‚«‚ğŠi”[‚·‚é•Ï”
-	D3DXVECTOR3 *vecCamera = pCamera->GetVec();		// ƒJƒƒ‰‚ÌŒü‚¢‚Ä‚¢‚é•ûŒü‚Ìæ“¾
-	float		CameraRotY = pCamera->GetRotY();	// ƒJƒƒ‰‚ÌY²‰ñ“]‚Ìæ“¾
-	float		fSpeed = 0.0f;						// ƒvƒŒƒCƒ„[‚Ì‘¬“x
-	float		fAngle;								// ƒXƒeƒBƒbƒNŠp“x‚ÌŒvZ—p•Ï”
+	D3DXVECTOR3 rotDest = GetRotDest();				// ç›®çš„ã®å‘ãã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°
+	D3DXVECTOR3 *vecCamera = pCamera->GetVec();		// ã‚«ãƒ¡ãƒ©ã®å‘ã„ã¦ã„ã‚‹æ–¹å‘ã®å–å¾—
+	float		CameraRotY = pCamera->GetRotY();	// ã‚«ãƒ¡ãƒ©ã®Yè»¸å›è»¢ã®å–å¾—
+	float		fSpeed = 0.0f;						// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®é€Ÿåº¦
+	float		fAngle;								// ã‚¹ãƒ†ã‚£ãƒƒã‚¯è§’åº¦ã®è¨ˆç®—ç”¨å¤‰æ•°
 
 	if (!m_bJump && !m_bAttack && 
 		pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A))
 	{
-		// ƒWƒƒƒ“ƒv
+		// ã‚¸ãƒ£ãƒ³ãƒ—
 		Jump();
 	}
 
@@ -527,21 +531,21 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 		return;
 	}
 
-	// Šp“x‚ÌŒvZ‚µ‚Ä•â³
+	// è§’åº¦ã®è¨ˆç®—ã—ã¦è£œæ­£
 	fAngle = atan2f(fValueX, fValueY);
 	CKananLibrary::InterpolationFloat(fAngle);
 
-	// ƒXƒeƒBƒbƒN‚Ì“|‚ê‹ï‡‚ÅƒXƒs[ƒh‚ğŒˆ’è
+	// ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å€’ã‚Œå…·åˆã§ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’æ±ºå®š
 	if (abs(fValueX) > abs(fValueY))
-		fSpeed = (abs(fValueX));		// ‰¡‚Ì“|‚ê‹ï‡
+		fSpeed = (abs(fValueX));		// æ¨ªã®å€’ã‚Œå…·åˆ
 	else
-		fSpeed = (abs(fValueY));		// c‚Ì“|‚ê‹ï‡
+		fSpeed = (abs(fValueY));		// ç¸¦ã®å€’ã‚Œå…·åˆ
 
-	// ƒXƒeƒBƒbƒN‚ÌŠp“x‚É‚æ‚Á‚ÄƒvƒŒƒCƒ„[ˆÚ“®
+	// ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®è§’åº¦ã«ã‚ˆã£ã¦ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç§»å‹•
 	m_move.x += sinf(fAngle + CameraRotY) * fSpeed * m_param.moveParam.fRunSpeed;
 	m_move.z += cosf(fAngle + CameraRotY) * fSpeed * m_param.moveParam.fRunSpeed;
 
-	// –Ú“I‚ÌŒü‚«‚ğŒˆ’è
+	// ç›®çš„ã®å‘ãã‚’æ±ºå®š
 	if (fValueX != 0 || fValueY != 0)
 	{
 		rotDest.y = D3DX_PI + fAngle + CameraRotY;
@@ -551,60 +555,60 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 	if (!m_bJump)
 	{
 		if (!m_bWalk)
-			// •à‚«n‚ß‚Íƒ‚[ƒVƒ‡ƒ“ƒŠƒZƒbƒg
+			// æ­©ãå§‹ã‚ã¯ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒªã‚»ãƒƒãƒˆ
 			m_pModelCharacter->ResetMotion();
-		// •à‚¢‚Ä‚¢‚é
+		// æ­©ã„ã¦ã„ã‚‹
 		m_bWalk = true;
 	}
 
-	// ‰ñ“]‚Ì•â³
+	// å›è»¢ã®è£œæ­£
 	CKananLibrary::InterpolationRot(&rotDest);
 
-	// –Ú“I‚Ì‰ñ“]‚Ìİ’è
+	// ç›®çš„ã®å›è»¢ã®è¨­å®š
 	SetRotDest(rotDest);
 }
 
 //==================================================================================================================
-// ƒL[ƒ{[ƒh‚Ì‘€ì
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®æ“ä½œ
 //==================================================================================================================
 void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 {
-	// “ü—Í‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Îˆ—‚ğI‚¦‚é
+	// å…¥åŠ›ã•ã‚Œã¦ã„ãªã‘ã‚Œã°å‡¦ç†ã‚’çµ‚ãˆã‚‹
 	if (FAILED(CKananLibrary::GetMoveByKeyboard(pKeyboard, m_nPlayer)))
 	{
 		m_bWalk = false;
 		return;
 	}
 
-	// •Ï”éŒ¾
-	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// ƒJƒƒ‰æ“¾
-	D3DXVECTOR3 rotDest = GetRotDest();										// –Ú“I‚ÌŒü‚«‚ğŠi”[‚·‚é•Ï”
-	float		CameraRotY = pCamera->GetRotY();								// ƒJƒƒ‰‚ÌY²‰ñ“]‚Ìæ“¾
+	// å¤‰æ•°å®£è¨€
+	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// ã‚«ãƒ¡ãƒ©å–å¾—
+	D3DXVECTOR3 rotDest = GetRotDest();										// ç›®çš„ã®å‘ãã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°
+	float		CameraRotY = pCamera->GetRotY();								// ã‚«ãƒ¡ãƒ©ã®Yè»¸å›è»¢ã®å–å¾—
 
 	if (CGame::GetGameState() == CGame::GAMESTATE_NORMAL)
 	{
-		// •Ïg’†AƒXƒ}ƒbƒVƒ…“ü—Í
+		// å¤‰èº«ä¸­ã€ã‚¹ãƒãƒƒã‚·ãƒ¥å…¥åŠ›
 		if (m_bTrans &&
 			((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_SMASH)) ||
 			(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_SMASH))))
-			// ƒXƒ}ƒbƒVƒ…
+			// ã‚¹ãƒãƒƒã‚·ãƒ¥
 			Smash();
 
-		// ƒXƒ}ƒbƒVƒ…Œnƒ‚[ƒVƒ‡ƒ“’†‚ÍˆÈ~‚Ìˆ—‚ğ‚µ‚È‚¢
+		// ã‚¹ãƒãƒƒã‚·ãƒ¥ç³»ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ä¸­ã¯ä»¥é™ã®å‡¦ç†ã‚’ã—ãªã„
 		if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE ||
 			m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH)
-			// ˆ—‚ğI‚¦‚é
+			// å‡¦ç†ã‚’çµ‚ãˆã‚‹
 			return;
 
-		// UŒ‚“ü—Í
+		// æ”»æ’ƒå…¥åŠ›
 		if ((((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
 			(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_ATTACK))) &&
 			m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
 			m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH))
 		{
-			// ’ÊíUŒ‚
+			// é€šå¸¸æ”»æ’ƒ
 			NormalAttack();
-			// ˆ—‚ğI‚¦‚é
+			// å‡¦ç†ã‚’çµ‚ãˆã‚‹
 			return;
 		}
 	}
@@ -616,14 +620,14 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		m_StateLift = STATE_LIFT;
 	}
 
-	// •¨‚¿ã‚°‚Ìˆ—
+	// ç‰©æŒã¡ä¸Šã’ã®å‡¦ç†
 	Lift();
 
 	if (!m_bJump && !m_bAttack &&
 		(m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_JUMP)) ||
 			m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_JUMP))))
 	{
-		// ƒWƒƒƒ“ƒv
+		// ã‚¸ãƒ£ãƒ³ãƒ—
 		Jump();
 	}
 
@@ -639,288 +643,333 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		return;
 	}
 
-	// AƒL[’·‰Ÿ‚µ
+	// Aã‚­ãƒ¼é•·æŠ¼ã—
 	if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_LEFT)) ||
 		m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_LEFT))
 	{
-		// WƒL[’·‰Ÿ‚µ
+		// Wã‚­ãƒ¼é•·æŠ¼ã—
 		if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_UP)) ||
 			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_UP))
 		{
-			// ¶ãˆÚ“®
+			// å·¦ä¸Šç§»å‹•
 			m_move.x += sinf(-D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			m_move.z -= cosf(-D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// –Ú“I‚ÌŒü‚«‚ğŒˆ’è
+			// ç›®çš„ã®å‘ãã‚’æ±ºå®š
 			rotDest.y = D3DX_PI * 0.75f + CameraRotY;
 		}
-		// SƒL[’·‰Ÿ‚µ
+		// Sã‚­ãƒ¼é•·æŠ¼ã—
 		else if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_DOWN)) ||
 			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_DOWN))
 		{
-			// ¶‰ºˆÚ“®
+			// å·¦ä¸‹ç§»å‹•
 			m_move.x += sinf(-D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			m_move.z -= cosf(-D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// –Ú“I‚ÌŒü‚«‚ğŒˆ’è
+			// ç›®çš„ã®å‘ãã‚’æ±ºå®š
 			rotDest.y = D3DX_PI * 0.25f + CameraRotY;
 		}
-		// AƒL[‚Ì‚İ
+		// Aã‚­ãƒ¼ã®ã¿
 		else
 		{
-			// ¶ˆÚ“®
+			// å·¦ç§»å‹•
 			m_move.x += sinf(-D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			m_move.z -= cosf(-D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// –Ú“I‚ÌŒü‚«‚ğŒˆ’è
+			// ç›®çš„ã®å‘ãã‚’æ±ºå®š
 			rotDest.x = 0.0f;
 			rotDest.y = D3DX_PI * 0.5f + CameraRotY;
 		}
 	}
-	// DƒL[’·‰Ÿ‚µ
+	// Dã‚­ãƒ¼é•·æŠ¼ã—
 	else if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_RIGHT)) ||
 		m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_RIGHT))
 	{
-		// WƒL[’·‰Ÿ‚µ
+		// Wã‚­ãƒ¼é•·æŠ¼ã—
 		if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_UP)) ||
 			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_UP))
 		{
-			// ‰EãˆÚ“®
+			// å³ä¸Šç§»å‹•
 			m_move.x += sinf(D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			m_move.z -= cosf(D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// –Ú“I‚ÌŒü‚«‚ğŒˆ’è
+			// ç›®çš„ã®å‘ãã‚’æ±ºå®š
 			rotDest.y = -D3DX_PI * 0.75f + CameraRotY;
 		}
-		// SƒL[’·‰Ÿ‚µ
+		// Sã‚­ãƒ¼é•·æŠ¼ã—
 		else if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_DOWN)) ||
 			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_DOWN))
 		{
-			// ‰E‰ºˆÚ“®
+			// å³ä¸‹ç§»å‹•
 			m_move.x += sinf(D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			m_move.z -= cosf(D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// –Ú“I‚ÌŒü‚«‚ğŒˆ’è
+			// ç›®çš„ã®å‘ãã‚’æ±ºå®š
 			rotDest.y = -D3DX_PI * 0.25f + CameraRotY;
 		}
-		// DƒL[‚Ì‚İ
+		// Dã‚­ãƒ¼ã®ã¿
 		else
 		{
-			// ‰EˆÚ“®
+			// å³ç§»å‹•
 			m_move.x += sinf(D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
 			m_move.z -= cosf(D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// –Ú“I‚ÌŒü‚«‚ğŒˆ’è
+			// ç›®çš„ã®å‘ãã‚’æ±ºå®š
 			rotDest.y = -D3DX_PI * 0.5f + CameraRotY;
 		}
 	}
-	// WƒL[’·‰Ÿ‚µ
+	// Wã‚­ãƒ¼é•·æŠ¼ã—
 	else if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_UP)) ||
 		m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_UP))
 	{
-		// ãˆÚ“®
+		// ä¸Šç§»å‹•
 		m_move.x += sinf(D3DX_PI * 1.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
 		m_move.z -= cosf(D3DX_PI * 1.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
-		// –Ú“I‚ÌŒü‚«‚ğŒˆ’è
+		// ç›®çš„ã®å‘ãã‚’æ±ºå®š
 		rotDest.y = -D3DX_PI * 1.0f + CameraRotY;
 	}
-	// SƒL[’·‰Ÿ‚µ
+	// Sã‚­ãƒ¼é•·æŠ¼ã—
 	else if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_DOWN)) ||
 		m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_DOWN))
 	{
-		// ‰ºˆÚ“®
+		// ä¸‹ç§»å‹•
 		m_move.x += sinf(D3DX_PI * 0.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
 		m_move.z -= cosf(D3DX_PI * 0.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
-		// –Ú“I‚ÌŒü‚«‚ğŒˆ’è
+		// ç›®çš„ã®å‘ãã‚’æ±ºå®š
 		rotDest.y = CameraRotY;
 	}
 
 	if (!m_bJump)
 	{
 		if (!m_bWalk)
-			// •à‚«n‚ß‚Íƒ‚[ƒVƒ‡ƒ“ƒŠƒZƒbƒg
+			// æ­©ãå§‹ã‚ã¯ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒªã‚»ãƒƒãƒˆ
 			m_pModelCharacter->ResetMotion();
-		// •à‚¢‚Ä‚¢‚é
+		// æ­©ã„ã¦ã„ã‚‹
 		m_bWalk = true;
 	}
 
-	// ‰ñ“]‚Ì•â³
+	// å›è»¢ã®è£œæ­£
 	CKananLibrary::InterpolationRot(&rotDest);
 
-	// –Ú“I‚Ì‰ñ“]‚Ìİ’è
+	// ç›®çš„ã®å›è»¢ã®è¨­å®š
 	SetRotDest(rotDest);
 }
 
 //==================================================================================================================
-// ƒXƒg[ƒ“‚Ìæ“¾”»’è
+// ã‚¹ãƒˆãƒ¼ãƒ³ã®å–å¾—åˆ¤å®š
 //==================================================================================================================
 void CPlayer::CatchStone(CStone *pStone)
 {
-	// oŒ»ƒXƒg[ƒ“”‚ğŒ¸Z
+	// å‡ºç¾ã‚¹ãƒˆãƒ¼ãƒ³æ•°ã‚’æ¸›ç®—
 	CGame::RemoveNumStone(pStone->GetIndexPos());
-	// æ“¾ƒXƒg[ƒ“‚Ìƒ^ƒCƒv‚ğ—LŒø
+	// å–å¾—ã‚¹ãƒˆãƒ¼ãƒ³ã®ã‚¿ã‚¤ãƒ—ã‚’æœ‰åŠ¹
 	int nStoneID = pStone->GetStoneID();
 	m_bGetStoneType[nStoneID] = true;
-	// ƒXƒg[ƒ“‚Ìæ“¾
+	// ã‚¹ãƒˆãƒ¼ãƒ³ã®å–å¾—
 	pStone->Catch();
 
-	// ƒXƒg[ƒ“‚Ìæ“¾”‚ğ‰ÁZ
+	// ã‚¹ãƒˆãƒ¼ãƒ³ã®å–å¾—æ•°ã‚’åŠ ç®—
 	m_nNumStone++;
-	// 3‚Âæ“¾‚µ‚Ä‚¢‚é
-	if (m_nNumStone >= 3)
-		// •Ïg
-		this->m_bTrans = true;
+	// 3ã¤å–å¾—ã—ã¦ã„ã‚‹
+		if (m_nNumStone >= 3)
+		{
+			// å¤‰èº«
+			this->m_bTrans = true;
+			// åŠ¹æœéŸ³å†ç”Ÿ
+			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_TRANSFORM);
+			// BGMå¤‰æ›´
+			CRenderer::GetSound()->StopSound(CSound::SOUND_LABEL_BGM_GAME);
+			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_BGM_TRANS);
+		}
+		// çŸ³å…¥æ‰‹ã®åŠ¹æœéŸ³ã‚’å†ç”Ÿ
+		else
+		{
+			// åŠ¹æœéŸ³å†ç”Ÿ
+			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_GETSTONE);
+		}
 }
 
 //==================================================================================================================
-// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚0‚µ‚Ä‚¢‚é
+// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ0ã—ã¦ã„ã‚‹æ™‚
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 {
 	// if (pAnother->m_pCapColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
 	// 	pAnother->m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
 	// {
-	// 	// ƒ_ƒ[ƒW‚ğó‚¯‚é
+	// 	// ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹
 	// 	TakeDamage();
-	// 	// “–‚Ä‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// 	// å½“ã¦ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	// 	pAnother->m_bAttakHit = true;
 	// }
 }
 
 //==================================================================================================================
-// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚1‚µ‚Ä‚¢‚é
+// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ1ã—ã¦ã„ã‚‹æ™‚
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 {
 	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
 	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
 	//{
-	// ƒ_ƒ[ƒW‚ğó‚¯‚é
+	// ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹
 	//	TakeDamage();
-	//	// “–‚Ä‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	//	// å½“ã¦ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	//	pAnother->m_bAttakHit = true;
 	//}
 }
 
 //==================================================================================================================
-// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚2‚µ‚Ä‚¢‚é
+// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ2ã—ã¦ã„ã‚‹æ™‚
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 {
 	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
 	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
 	//{
-	// ƒ_ƒ[ƒW‚ğó‚¯‚é
+	// ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹
 	//	TakeDamage();
-	//	// “–‚Ä‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	//	// å½“ã¦ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	//	pAnother->m_bAttakHit = true;
 	//}
 }
 
 //==================================================================================================================
-// •Ê‚ÌƒvƒŒƒCƒ„[‚ªUŒ‚3‚µ‚Ä‚¢‚é
+// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ”»æ’ƒ3ã—ã¦ã„ã‚‹æ™‚
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 {
 	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
 	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
 	//{
-	//	// ƒ_ƒ[ƒW
+	//	// ãƒ€ãƒ¡ãƒ¼ã‚¸
 	//	this->Damage(2);
-	//	// •Ïg’†ˆÈŠO‚Í‚«”ò‚Ô
+	//	// å¤‰èº«ä¸­ä»¥å¤–ã¯å¹ãé£›ã¶
 	//	if (!m_bTrans)
 	//	{
-	//		// ‚«”ò‚Ñ
+	//		// å¹ãé£›ã³
 	//		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
-	//		// ‚«”ò‚Ñ‚ğ—LŒø
+	//		// å¹ãé£›ã³ã‚’æœ‰åŠ¹
 	//		m_bBlowAway = true;
 	//		if (m_nNumStone > 0)
 	//		{
-	//			// ŠƒXƒg[ƒ“‚ğˆê‚ÂŒ¸‚ç‚·n
+	//			// æ‰€æŒã‚¹ãƒˆãƒ¼ãƒ³ã‚’ä¸€ã¤æ¸›ã‚‰ã™n
 	//			m_nNumStone--;
-	//			// Œ¸‚ç‚µ‚½ƒXƒg[ƒ“‚ğ‘¦¶¬
+	//			// æ¸›ã‚‰ã—ãŸã‚¹ãƒˆãƒ¼ãƒ³ã‚’å³ç”Ÿæˆ
 	//			CGame::AppearStone();
 	//		}
 	//	}
-	//	// “–‚Ä‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	//	// å½“ã¦ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	//	pAnother->m_bAttakHit = true;
 	//}
 }
 
 //==================================================================================================================
-// •Ê‚ÌƒvƒŒƒCƒ„[‚ªƒXƒ}ƒbƒVƒ…UŒ‚‚µ‚Ä‚¢‚é
+// åˆ¥ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒã‚¹ãƒãƒƒã‚·ãƒ¥æ”»æ’ƒã—ã¦ã„ã‚‹æ™‚
 //==================================================================================================================
 void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 {
-	//// ƒVƒŠƒ“ƒ_[ƒRƒ‰ƒCƒ_[‚ÌÕ“Ë”»’è
+	//// ã‚·ãƒªãƒ³ãƒ€ãƒ¼ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®è¡çªåˆ¤å®š
 	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
 	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
 	//{
-	//	// ƒ_ƒ[ƒW
+	//	// ãƒ€ãƒ¡ãƒ¼ã‚¸
 	//	this->Damage(2);
-	//	// •Ïg’†ˆÈŠO‚Í‚«”ò‚Ô
+	//	// å¤‰èº«ä¸­ä»¥å¤–ã¯å¹ãé£›ã¶
 	//	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
-	//	// ƒXƒ}ƒbƒVƒ…‚É‚æ‚é‚«”ò‚Ñ‚ğÀs
+	//	// ã‚¹ãƒãƒƒã‚·ãƒ¥ã«ã‚ˆã‚‹å¹ãé£›ã³ã‚’å®Ÿè¡Œ
 	//	m_bSmashBlowAway = true;
-	//	// “–‚Ä‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	//	// å½“ã¦ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	//	pAnother->m_bAttakHit = true;
 	//}
 }
 
 //==================================================================================================================
-//ƒ_ƒ[ƒW‚ğó‚¯‚é
+//ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹
 //==================================================================================================================
 void CPlayer::TakeDamage(CPlayer * pAnother)
 {
-	// ƒ_ƒ[ƒW
+	// ãƒ€ãƒ¡ãƒ¼ã‚¸
 	this->Damage(2);
 	if (!m_bTrans)
-		// ‹¯‚İ
+		// æ€¯ã¿
 		this->Daunted(20);
 
-	// “–‚Ä‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// å½“ã¦ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	pAnother->m_bAttakHit = true;
 }
 
 //==================================================================================================================
-// UŒ‚3‚Ìƒ_ƒ[ƒW‚ğó‚¯‚é
+// æ”»æ’ƒ3ã®ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹
 //==================================================================================================================
 void CPlayer::TakeAttack3Damage(CPlayer * pAnother)
 {
-	// ƒ_ƒ[ƒW
+	// ãƒ€ãƒ¡ãƒ¼ã‚¸
 	this->Damage(2);
-	// •Ïg’†ˆÈŠO‚Í‚«”ò‚Ô
+	// å¤‰èº«ä¸­ä»¥å¤–ã¯å¹ãé£›ã¶
 	if (!m_bTrans)
 	{
-		// ‚«”ò‚Ñ
+		// å¹ãé£›ã³
 		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
-		// ‚«”ò‚Ñ‚ğ—LŒø
+		// å¹ãé£›ã³ã‚’æœ‰åŠ¹
 		m_bBlowAway = true;
 		if (m_nNumStone > 0)
 		{
-			// ŠƒXƒg[ƒ“‚ğˆê‚ÂŒ¸‚ç‚·
+			// æ‰€æŒã‚¹ãƒˆãƒ¼ãƒ³ã‚’ä¸€ã¤æ¸›ã‚‰ã™
 			m_nNumStone--;
-			// Ä”z’u‚Å‚«‚é‚æ‚¤ƒXƒg[ƒ“‚ğg—p‚³‚ê‚Ä‚¢‚È‚¢ó‘Ô‚É‚·‚é
+			// å†é…ç½®ã§ãã‚‹ã‚ˆã†ã‚¹ãƒˆãƒ¼ãƒ³ã‚’ä½¿ç”¨ã•ã‚Œã¦ã„ãªã„çŠ¶æ…‹ã«ã™ã‚‹
 			CGame::RemoveTypeStone(CKananLibrary::DecideRandomValue(m_nNumStone + 1, m_bGetStoneType));
-			// Œ¸‚ç‚µ‚½ƒXƒg[ƒ“‚ğ‘¦¶¬
+			// æ¸›ã‚‰ã—ãŸã‚¹ãƒˆãƒ¼ãƒ³ã‚’å³ç”Ÿæˆ
 			CGame::AppearStone();
 		}
 	}
-	// “–‚Ä‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// å½“ã¦ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	pAnother->m_bAttakHit = true;
 }
 
 //==================================================================================================================
-// ƒXƒ}ƒbƒVƒ…UŒ‚‚Ìƒ_ƒ[ƒW‚ğó‚¯‚é
+// ã‚¹ãƒãƒƒã‚·ãƒ¥æ”»æ’ƒã®ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹
 //==================================================================================================================
 void CPlayer::TakeSmashDamage(CPlayer * pAnother)
 {
-	// ƒ_ƒ[ƒW
+	// ãƒ€ãƒ¡ãƒ¼ã‚¸
 	this->Damage(2);
-	// •Ïg’†ˆÈŠO‚Í‚«”ò‚Ô
+	// å¤‰èº«ä¸­ä»¥å¤–ã¯å¹ãé£›ã¶
 	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
-	// ƒXƒ}ƒbƒVƒ…‚É‚æ‚é‚«”ò‚Ñ‚ğÀs
+	// ã‚¹ãƒãƒƒã‚·ãƒ¥ã«ã‚ˆã‚‹å¹ãé£›ã³ã‚’å®Ÿè¡Œ
 	m_bSmashBlowAway = true;
-	// “–‚Ä‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// å½“ã¦ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	pAnother->m_bAttakHit = true;
 }
 
 //==================================================================================================================
-// ƒvƒŒƒCƒ„[”Ô†İ’èˆ—
+// æ”»æ’ƒãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³æ¯ã«é•ã†åŠ¹æœéŸ³ã‚’å†ç”Ÿã™ã‚‹
+//==================================================================================================================
+void CPlayer::SetHitSound()
+{
+	// æ”»æ’ƒãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³æ¯ã«é•ã†åŠ¹æœéŸ³ã‚’å†ç”Ÿã™ã‚‹
+	switch (m_pModelCharacter->GetMotion())
+	{
+	case CMotion::PLAYER_ATTACK_0:
+		// åŠ¹æœéŸ³å†ç”Ÿ
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT1);
+		break;
+	case CMotion::PLAYER_ATTACK_1:
+		// åŠ¹æœéŸ³å†ç”Ÿ
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT1);
+		break;
+	case CMotion::PLAYER_ATTACK_2:
+		// åŠ¹æœéŸ³å†ç”Ÿ
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT2);
+		break;
+	case CMotion::PLAYER_ATTACK_3:
+		// åŠ¹æœéŸ³å†ç”Ÿ
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT3);
+		break;
+	case CMotion::PLAYER_SMASH:
+		// åŠ¹æœéŸ³å†ç”Ÿ
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_SMASHHIT);
+		break;
+	}
+	
+}
+
+//==================================================================================================================
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·è¨­å®šå‡¦ç†
 //==================================================================================================================
 void CPlayer::SetnPlayer(int nPlayerNum)
 {
@@ -928,33 +977,33 @@ void CPlayer::SetnPlayer(int nPlayerNum)
 }
 
 //==================================================================================================================
-// ‚«”ò‚Ô
+// å¹ãé£›ã¶
 //==================================================================================================================
 inline bool CPlayer::BlowAway(CPlayer *pAnother, const float MoveVecY, const float fBlowAwayForce)
 {
-	// NULL‚¾‚Á‚½ˆ—‚µ‚È‚¢
+	// NULLã ã£ãŸæ™‚å‡¦ç†ã—ãªã„
 	if (pAnother == NULL)
 	{
 		return false;
 	}
-	// •Ï”éŒ¾
-	D3DXVECTOR3 MoveVec;	// ˆÚ“®ƒxƒNƒgƒ‹
+	// å¤‰æ•°å®£è¨€
+	D3DXVECTOR3 MoveVec;	// ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«
 
 	MoveVec.x = sinf(pAnother->m_rot.y + D3DX_PI);
 	MoveVec.y = MoveVecY;
 	MoveVec.z = cosf(pAnother->m_rot.y + D3DX_PI);
 
-	// ‚Ô‚Á”ò‚Ñƒ‚[ƒVƒ‡ƒ“
+	// ã¶ã£é£›ã³ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³
 	m_pModelCharacter->ResetMotion();
 	m_pModelCharacter->SetMotion(CMotion::PLAYER_BLOWAWAY);
-	// Œü‚«‚ğŒˆ’è
+	// å‘ãã‚’æ±ºå®š
 	m_rotDest.y = pAnother->m_rot.y + D3DX_PI;
-	// ‰ñ“]‚Ì•âŠÔ
+	// å›è»¢ã®è£œé–“
 	CKananLibrary::InterpolationFloat(m_rotDest.y);
-	// ˆêu‚ÅŒü‚«‚ğ•Ï‚¦‚é
+	// ä¸€ç¬ã§å‘ãã‚’å¤‰ãˆã‚‹
 	m_rot.y = m_rotDest.y;
 
-	// ˆÚ“®’l‚É‰ÁZ
+	// ç§»å‹•å€¤ã«åŠ ç®—
 	this->m_move.x = MoveVec.x * fBlowAwayForce;
 	this->m_move.z = MoveVec.z * fBlowAwayForce;
 	this->m_move.y = MoveVec.y * fBlowAwayForce;
@@ -964,17 +1013,17 @@ inline bool CPlayer::BlowAway(CPlayer *pAnother, const float MoveVecY, const flo
 
 #ifdef _DEBUG
 //==================================================================================================================
-// ImGui‚ÌXV
+// ImGuiã®æ›´æ–°
 //==================================================================================================================
 void CPlayer::ShowDebugInfo()
 {
 	char cHead[8];
-	sprintf(cHead, "Player%d", m_nPlayer);			// ƒvƒŒƒCƒ„[”Ô†‚ğ•¶š—ñ‚É’Ç‰Á
+	sprintf(cHead, "Player%d", m_nPlayer);			// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·ã‚’æ–‡å­—åˆ—ã«è¿½åŠ 
 
 	if (ImGui::CollapsingHeader(cHead))
 	{
 		int nAllFrame = m_pModelCharacter->GetAllFrame();
-		// î•ñ‚Ì•\¦
+		// æƒ…å ±ã®è¡¨ç¤º
 		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
 		ImGui::Text("nLife       : %f", m_nLife);
 		ImGui::Text("bJump       : %d", m_bJump);

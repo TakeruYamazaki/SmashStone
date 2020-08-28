@@ -20,6 +20,7 @@
 #include "meshField.h"
 #include "modelParts.h"
 #include "CapsuleCollider.h"
+#include "sound.h"
 
 //=============================================================================
 // マクロ定義
@@ -480,4 +481,7 @@ void CCharacter::Trans(void)
 	m_pModelCharacter->ModelRebind(m_type);
 	// モデルタイプを再設定
 	m_pModelCharacter->SetModelType(m_type);
+	// BGM変更
+	CRenderer::GetSound()->StopSound(CSound::SOUND_LABEL_BGM_TRANS);
+	CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_BGM_GAME);
 }
