@@ -277,7 +277,7 @@ void CCamera::MoveCamera(void)
 	{
 		// –Ú“I‚ÌŽ‹“_‚ÌŒvŽZ
 		m_posVDest.x = m_posR.x + -cosf(m_rot.x) * sinf(m_rot.y) * m_fDistance * m_fDisScale;
-		m_posVDest.y = m_posR.y + sinf(m_rot.x) * m_fDistance * m_fDisScale;
+		m_posVDest.y = m_posR.y + sinf(m_rot.x) * m_fDistance * 1.2f;
 		m_posVDest.z = m_posR.z + -cosf(m_rot.x) * cosf(m_rot.y) * m_fDistance * m_fDisScale;
 	}
 #ifdef _DEBUG
