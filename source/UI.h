@@ -12,6 +12,7 @@
 //==================================================================================================================
 #include "main.h"
 #include "scene.h"
+#include "stone.h"
 
 //==================================================================================================================
 // 前方宣言
@@ -69,9 +70,11 @@ public:
 		LOGOTYPE_MAPEXPLANATION3,	// マップ説明
 		LOGOTYPE_MAPEXPLANATION4,	// マップ説明
 		LOGOTYPE_GAMEBG,			// ゲーム背景
-		LOGOTYPE_JEWELRYBULE,		// 宝石青
+		LOGOTYPE_JEWELRYBG1P,		// 宝石背景1P
+		LOGOTYPE_JEWELRYBG2P,		// 宝石背景2P
 		LOGOTYPE_JEWELRYRED,		// 宝石赤
-		LOGOTYPE_JEWELRYYELLOW,		// 宝石黄
+		LOGOTYPE_JEWELRYBULE,		// 宝石青
+		LOGOTYPE_JEWELRYGREEN,		// 宝石緑
 		LOGOTYPE_PLAYER1,			// プレイヤーアイコン1P
 		LOGOTYPE_PLAYER2,			// プレイヤーアイコン2P
 		LOGOTYPE_CHARANAME0,		// 1Pのキャラクターネーム
@@ -146,5 +149,8 @@ private:
 	bool m_bCharaDecide[MAX_PLAYER];					// 自分のキャラクターを選択したかどうか
 	bool m_bStickReturn[MAX_PLAYER];					// パッドのスティックを戻したかどうか
 	bool m_bMapSelect;									// マップを選択したかどうか
+	bool m_bTransform[MAX_PLAYER];						// 変身したかどうか
+	bool m_bStoneID[MAX_PLAYER][CStone::STONE_ID_MAX];	// ストーンID
+
 };
 #endif

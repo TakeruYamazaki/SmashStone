@@ -89,6 +89,7 @@ public:
 	inline CCapsuleCollider* GetCapCollider(int nPartsIndex)	{ return m_pCapColi[nPartsIndex]; }	// カプセルコライダーの取得
 
 	inline bool				 GetbMotionAttack(void);				// モーションの攻撃判定の取得
+	inline bool				 GetStoneType(int nID)				{ return m_bGetStoneType[nID]; }	// 取得したストーンタイプ取得
 
 	void			   Daunted(const int nGap);						// 怯み処理
 	void			   VictoryAction(void);							// 勝利行動

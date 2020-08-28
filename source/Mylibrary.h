@@ -1086,6 +1086,7 @@ public:
 	//* [contents] 0～1の間に制限する
 	//* [out] fValue（制限する値）
 	static void Limit0to1(float &fValue);
+
 	//* [contents] 2直線の最短距離
 	//* [in] Seg1（線分1）, Seg2（線分2）
 	//* [out] PerpendFoot1（線分1側の垂線の足）,PerpendFoot2（線分2側の垂線の足）,fVecCoeffi1（線分1側のベクトル係数）, fVecCoeffi2（線分2側のベクトル係数）
@@ -1096,6 +1097,22 @@ public:
 	//* [in] Cap1（カプセル1）, Cap2（カプセル2）
 	//* [return] 衝突している時true
 	static bool colCapsuleCapsule(const CAPSULE &Cap1, const CAPSULE &Cap2);
+
+	//* [contents] カプセル同士の衝突判定
+	//* [in] Cap1（カプセル1）, Cap2（カプセル2）
+	//* [return] 衝突している時true
+	static bool colCapsuleCapsule(const CAPSULE &Cap1, const CAPSULE &Cap2,D3DXVECTOR3 &HitPos);
+
+	//* [contents] 線分と球の距離
+	//* [in] Seg1（線分1）, Seg2（線分2）
+	//* [out] PerpendFoot1（線分1側の垂線の足）,PerpendFoot2（線分2側の垂線の足）,fVecCoeffi1（線分1側のベクトル係数）, fVecCoeffi2（線分2側のベクトル係数）
+	//* [return] 最短距離
+	static float calcSegmentPosDist(const SEGMENT &Seg1, const D3DXVECTOR3 &pos, FLOAT3 &PerpendFoot1, float &fVecCoeffi1);
+
+	//* [contents] カプセル同士の衝突判定
+	//* [in] Cap1（カプセル1）, Cap2（カプセル2）
+	//* [return] 衝突している時true
+	static bool colCapsuleSphere(const CAPSULE &Cap1, const D3DXVECTOR3 &pos, const float &fRadius, D3DXVECTOR3 & HitPos);
 
 	//----------------------------------------------------------------------------------------------------
 	// 2D

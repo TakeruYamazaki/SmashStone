@@ -211,8 +211,9 @@ void CMeshField::Update(void)
 	// 頂点データの範囲をロックし、頂点バッファへのポインタ取得
 	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
 
-	// タイトルのとき
-	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
+	// タイトルのとき 又は チュートリアルのとき
+	if (CRenderer::GetMode() == CRenderer::MODE_TITLE ||
+		CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 	{
 		// 動かす
 		fDivide -= 0.05f;
@@ -342,7 +343,8 @@ HRESULT CMeshField::Load(void)
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();					// デバイスを取得する
 
 	// タイトルのとき
-	if (CRenderer::GetMode() == CRenderer::MODE_TITLE)
+	if (CRenderer::GetMode() == CRenderer::MODE_TITLE ||
+		CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
 	{
 		// テクスチャの読み込み
 		D3DXCreateTextureFromFile(pDevice,			// デバイスへのポインタ

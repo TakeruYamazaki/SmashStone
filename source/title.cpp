@@ -149,7 +149,7 @@ void CTitle::Update(void)
 		// 効果音再生
 		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
 		// 次の画面のとき
-		if (m_bNextScreen)
+		if (!m_bNextScreen)
 		{
 			// フェードが何もない時
 			if (fade == CFade::FADE_NONE)

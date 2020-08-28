@@ -23,6 +23,8 @@ public:
 	{
 		OFFSET_NONE = -1,
 		STR_ドンッ,
+		STR_ゴッ,
+		STR_キーン,
 		OFFSET_MAX
 	} OFFSETNAME;
 
