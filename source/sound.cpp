@@ -47,6 +47,7 @@ SOUNDPARAM g_aParam[CSound::SOUND_LABEL_MAX] =
 	{ "data/BGM/result.wav", -1 },			// リザルト画面
 	{ "data/SE/cursormove.wav", 0 },		// カーソル移動
 	{ "data/SE/deceiion.wav", 0 },			// 決定
+	{ "data/SE/move.wav", 0 },				// 移動
 	{ "data/SE/hit1.wav", 0 },				// 攻撃を受けた(その1)
 	{ "data/SE/hit2.wav", 0 },				// 攻撃を受けた(その2)
 	{ "data/SE/hit3.wav", 0 },				// 攻撃を受けた(その3)
@@ -54,6 +55,7 @@ SOUNDPARAM g_aParam[CSound::SOUND_LABEL_MAX] =
 	{ "data/SE/transform.wav", 0 },			// 変身
 	{ "data/SE/smashcharge.wav", 0 },		// スマッシュ攻撃のチャージ
 	{ "data/SE/smashhit.wav", 0 },			// スマッシュ攻撃を受けた
+	{ "data/SE/finish.wav", 0 },			// KOの効果音
 };
 
 //==================================================================================================================

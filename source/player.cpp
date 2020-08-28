@@ -558,8 +558,12 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 	if (!m_bJump)
 	{
 		if (!m_bWalk)
+		{
 			// 歩き始めはモーションリセット
 			m_pModelCharacter->ResetMotion();
+			// 効果音の再生
+			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_MOVE);
+		}
 		// 歩いている
 		m_bWalk = true;
 	}
@@ -739,8 +743,10 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	if (!m_bJump)
 	{
 		if (!m_bWalk)
+		{
 			// 歩き始めはモーションリセット
 			m_pModelCharacter->ResetMotion();
+		}
 		// 歩いている
 		m_bWalk = true;
 	}

@@ -32,6 +32,7 @@ public:
 		SOUND_LABEL_BGM_RESULT,		// リザルト画面
 		SOUND_LABEL_SE_CURSORMOVE,	// カーソル移動
 		SOUND_LABEL_SE_DECISION,	// 決定
+		SOUND_LABEL_SE_MOVE,		// 移動
 		SOUND_LABEL_SE_HIT1,		// 攻撃を受けた(その１)
 		SOUND_LABEL_SE_HIT2,		// 攻撃を受けた(その２)
 		SOUND_LABEL_SE_HIT3,		// 攻撃を受けた(その３)
@@ -39,6 +40,7 @@ public:
 		SOUND_LABEL_SE_TRANSFORM,	// 変身
 		SOUND_LABEL_SE_SMASHCHARGE,	// スマッシュ攻撃のチャージ
 		SOUND_LABEL_SE_SMASHHIT,	// スマッシュ攻撃を受けた
+		SOUND_LABEL_SE_FINISH,		// KOの効果音
 		SOUND_LABEL_MAX,			// 最大
 	} SOUND_LABEL;					// 音の種類
 

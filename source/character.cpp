@@ -327,9 +327,13 @@ void CCharacter::Rot(void)
 void CCharacter::Motion(void)
 {
 	if (!m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown && m_StateLift == STATE_NONE)
+	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// ニュートラルモーション
+	}
 	if (m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown && m_StateLift == STATE_NONE)
+	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);	// 移動モーション
+	}
 
 	switch (m_StateLift)
 	{
