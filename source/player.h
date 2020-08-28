@@ -32,7 +32,7 @@ class CInputKeyboard;
 class CInputGamepad;
 class CFade;
 class CHitPoint;
-
+class CStone;
 //==================================================================================================================
 //
 // プレイヤークラスの定義
@@ -62,6 +62,9 @@ public:
 	bool HitConditionAttack2(const int &nCapColliID);	// 攻撃2を当てる条件
 	bool HitConditionAttack3(const int &nCapColliID);	// 攻撃3を当てる条件
 	bool HitConditionSmash(const int &nCapColliID);		// スマッシュ攻を当てる条件
+
+	void CatchStone(CStone *pStone);							// ストーンの取得判定
+
 protected:
 
 private:
@@ -78,7 +81,6 @@ private:
 
 	void ControlGamepad(CInputGamepad *pGamepad);	// ゲームパッド操作
 	void ControlKeyboard(CInputKeyboard *pKeyboard);// キーボード操作
-	void CatchStone(void);							// ストーンの取得判定
 	void SetnPlayer(int nPlayerNum);				// プレイヤー番号設定処理
 
 	void AnotherPlayerAttack0(CPlayer *pAnother);	// 別のプレイヤーが攻撃0している時

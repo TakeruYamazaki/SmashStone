@@ -14,8 +14,8 @@
 #include "game.h"
 #include "debugProc.h"
 #include "CharEffectOffset.h"
-#include "stone.h"
 #include "3DBoxCollider.h"
+#include "3DParticle.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -306,6 +306,8 @@ void CCapsuleCollider::Update(void)
 	if (m_ColliderInfo.pScene != NULL)
 	{// 衝突判定
 		this->Collision();
+		// 石との衝突判定
+		this->CollisionStone();
 	}
 }
 
@@ -366,6 +368,7 @@ void CCapsuleCollider::Draw(void)
 
 	// カプセル位置の計算
 	CalCapPosition();
+#ifdef _DEBUG
 
 	// 頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, m_ColliderInfo.pVtexBuff, 0, sizeof(VERTEX_3D));
@@ -381,6 +384,8 @@ void CCapsuleCollider::Draw(void)
 
 	// ポリゴンの描画
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_ColliderInfo.nNumindex, 0, m_ColliderInfo.nNumPolygon);
+
+#endif
 
 	// ライティングモード有効
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
@@ -479,17 +484,30 @@ bool CCapsuleCollider::Collision(void)
 
 	CDebugProc::Print("COLLIPARTS [%d]", m_ColliderInfo.enmTtpeID);
 
-
+	D3DXVECTOR3 HitPos;
 #ifdef _DEBUG
 	// 2線分の最短距を求める
-	CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule) ?
-		CDebugProc::Print("当たってる\n"),
-		CCharEffectOffset::Set(&pOthers->GetPos(), CCharEffectOffset::STR_ドンッ),
-		pOwn->SetAttakHit(true) :
+	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
+	{
+		CDebugProc::Print("当たってる\n");
+		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ドンッ);
+		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+		pOwn->SetAttakHit(true);
+	}
+	else
+	{
 		CDebugProc::Print("当たってない\n");
+	}
 #else
+
 	// 2線分の最短距を求める
-	CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule);
+	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
+	{
+		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ドンッ);
+		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+		pOwn->SetAttakHit(true);
+	}
+
 #endif // _DEBUG
 
 
@@ -498,54 +516,51 @@ bool CCapsuleCollider::Collision(void)
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// ストーンとの衝突判定
+// 石との衝突処理
 //-------------------------------------------------------------------------------------------------------------
-/*bool CCapsuleCollider::CollisionStone(void)
+bool CCapsuleCollider::CollisionStone(void)
 {
-	// 体の時
-	if (m_ColliderInfo.enmTtpeID == COLLIPARTS_BODY)
-	{// 処理しない
+	// 変数宣言
+	CPlayer*                         pOwn = (CPlayer *)m_ColliderInfo.pScene;		// このコライダーを持っているプレイヤー
+	C3DBoxCollider::_3DBOXCOLLIDER * pBoxColli = C3DBoxCollider::GetInfo();			// ボックスコライダーのポインタ
+
+	if (pOwn->ReadyToHit(m_ColliderInfo.enmTtpeID) == false)
+	{
 		return false;
 	}
 
-	for (int nCnt = 0; nCnt < _3DBOXCOLLIDER_MAX; nCnt++)
+	for (int nCntBox = 0; nCntBox < _3DBOXCOLLIDER_MAX; nCntBox++)
 	{
-		CScene *pScene = C3DBoxCollider::GetInfo(nCnt)->pScene;
-		// 取得に失敗したとき
-		if (pScene == NULL)
+		if (pBoxColli[nCntBox].pScene == NULL)
 		{
-			return;
+			continue;
+		}
+		if (pBoxColli[nCntBox].bUse == false ||
+			pBoxColli[nCntBox].pScene->GetPriority() != CScene::PRIORITY_STONE)
+		{
+			continue;
 		}
 
-		if (pScene->GetPriority() != CScene::PRIORITY_STONE)
+		D3DXVECTOR3 HitPos;
+
+		if (CMylibrary::colCapsuleSphere(m_ColliderInfo.Capsule, pBoxColli[nCntBox].pos, ikuminLib::VEC3(pBoxColli[nCntBox].size).Length(), HitPos) == true)
 		{
-			return;
+			// ストーンのポインタ
+			CStone *pStone = (CStone *)pBoxColli[nCntBox].pScene;
+			pOwn->SetAttakHit(true);
+			if (pStone->ApplyDamage() == true)
+			{// エフェクトの設定
+				CCharEffectOffset::Set(pStone->GetPos(), CCharEffectOffset::OFFSETNAME::STR_キーン);
+				pOwn->CatchStone(pStone);
+			}
+			else
+			{// エフェクトの設定
+				CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ゴッ);
+			}
 		}
-
-		// 変数宣言
-		CPlayer *pOwn = (CPlayer *)m_ColliderInfo.pScene;	// このコライダーを持っているプレイヤー
-		CStone *pOthers = (CStone *)pScene;								// ストーン
-
-		if (pOwn->ReadyToHit(m_ColliderInfo.enmTtpeID) == false)
-		{
-			return false;
-		}
-
-#ifdef _DEBUG
-		// 2線分の最短距を求める
-		CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule) ?
-			CDebugProc::Print("当たってる\n"),
-			CCharEffectOffset::Set(pOthers->GetPos(), CCharEffectOffset::STR_ドンッ),
-			pOwn->SetAttakHitStone(true) :
-			CDebugProc::Print("当たってない\n");
-#else
-																		// 2線分の最短距を求める
-		CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule);
-#endif // _DEBUG
 	}
-
 	return false;
-}*/
+}
 
 //-------------------------------------------------------------------------------------------------------------
 // カプセル位置の計算

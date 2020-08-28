@@ -17,7 +17,7 @@ SETPARAM
 	// エフェクトの種類
 	TYPE = 1
 	// テクスチャの種類
-	TEXTYPE = 16
+	TEXTYPE = 6
 	// 位置
 	POS = -30.0 40.0 0.0
 	// 移動量
@@ -27,7 +27,7 @@ SETPARAM
 	// 半径
 	RADIUS = 20.0
 	// ライフ
-	LIFE = 10
+	LIFE = 30
 	// 重力
 	GRAVITY = 0
 	// 半径の変化値
@@ -42,17 +42,17 @@ SETPARAM
 	// エフェクトの種類
 	TYPE = 1
 	// テクスチャの種類
-	TEXTYPE = 18
+	TEXTYPE = 5
 	// 位置
-	POS = 0.0 50.0 0.0
+	POS = 0.0 45.0 0.0
 	// 移動量
 	MOVE = 0.0 0.0 0.0
 	// 色 r g b a
 	COL = 1.0 1.0 1.0 1.0
 	// 半径
-	RADIUS = 20.0
+	RADIUS = 15.0
 	// ライフ
-	LIFE = 8
+	LIFE = 28
 	// 重力
 	GRAVITY = 0
 	// 半径の変化値
@@ -67,17 +67,17 @@ SETPARAM
 	// エフェクトの種類
 	TYPE = 1
 	// テクスチャの種類
-	TEXTYPE = 15
+	TEXTYPE = 18
 	// 位置
-	POS = 30.0 40.0 0.0
+	POS = 30.0 50.0 0.0
 	// 移動量
 	MOVE = 0.0 0.0 0.0
 	// 色 r g b a
 	COL = 1.0 1.0 1.0 1.0
 	// 半径
-	RADIUS = 10.0
+	RADIUS = 20.0
 	// ライフ
-	LIFE = 6
+	LIFE = 26
 	// 重力
 	GRAVITY = 0
 	// 半径の変化値

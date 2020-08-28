@@ -114,9 +114,6 @@ void CPlayer::Update(void)
 	// 当たり判定
 	Collision();
 
-	// ストーンの取得判定
-	CatchStone();
-
 	// プレイヤーの番号設定
 	SetnPlayer(m_nPlayer);
 
@@ -751,41 +748,22 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 //==================================================================================================================
 // ストーンの取得判定
 //==================================================================================================================
-void CPlayer::CatchStone(void)
+void CPlayer::CatchStone(CStone *pStone)
 {
-	// 変数宣言
-	int nHitID = MYLIB_INT_NOELEM;	// 当たったID
-	// 当たったコライダのIDを取得
-	if (C3DBoxCollider::Collisionoverlap(this->m_nBoxColliderID, &nHitID) == false)
-	{
-		return;
-	}
+	// 出現ストーン数を減算
+	CGame::RemoveNumStone(pStone->GetIndexPos());
+	// 取得ストーンのタイプを有効
+	int nStoneID = pStone->GetStoneID();
+	m_bGetStoneType[nStoneID] = true;
+	// ストーンの取得
+	pStone->Catch();
 
-	// scene取得
-	CScene *pScene = C3DBoxCollider::GetScene(nHitID);	// シーンポインタ
-	// 取得に失敗したとき
-	if (pScene == NULL)
-	{
-		return;
-	}
-	// プライオリティがストーンのとき
-	if (pScene->GetPriority() == CScene::PRIORITY_STONE)
-	{
-		// 出現ストーン数を減算
-		CGame::RemoveNumStone(((CStone *)pScene)->GetIndexPos());
-		// 取得ストーンのタイプを有効
-		int nStoneID = ((CStone *)pScene)->GetStoneID();
-		m_bGetStoneType[nStoneID] = true;
-		// ストーンの取得
-		((CStone *)pScene)->Catch();
-
-		// ストーンの取得数を加算
-		m_nNumStone++;
-		// 3つ取得している
-		if (m_nNumStone >= 3)
-			// 変身
-			this->m_bTrans = true;
-	}
+	// ストーンの取得数を加算
+	m_nNumStone++;
+	// 3つ取得している
+	if (m_nNumStone >= 3)
+		// 変身
+		this->m_bTrans = true;
 }
 
 //==================================================================================================================
